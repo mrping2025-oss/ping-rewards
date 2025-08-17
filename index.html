@@ -1,9 +1,10 @@
 <!DOCTYPE html>
+<!--နမောဿတ ဘဂဝတော အရဟံသမ္မံ ဒမ္ဗုဒ္ဓဿ-->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zenith Rewards</title>
+    <title>Ping Rewards</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -805,6 +806,51 @@
             margin-right: 15px;
             cursor: pointer;
         }
+        
+        /* Manage Users Styles */
+        .manage-users table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .manage-users th, .manage-users td {
+            text-align: left;
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .manage-users th {
+            font-weight: 600;
+            color: #99aab5;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+        
+        .manage-users .actions-btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .manage-users .actions-btn.toggle-role-btn {
+            background-color: var(--accent-purple);
+        }
+        
+        .manage-users .actions-btn.view-history-btn {
+            background-color: var(--accent-green);
+        }
+        
+        .user-id-short {
+            font-family: monospace;
+            font-size: 0.9em;
+            color: #8c96b0;
+        }
 
         /* Modal Styles */
         .modal-overlay {
@@ -926,7 +972,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14c0 .55-.45 1-1 1s-1-.45-1-1v-4c0-.55.45-1 1-1s1 .45 1 1v4zm4-2c0 .55-.45 1-1 1s-1-.45-1-1V9c0-.55.45-1 1-1s1 .45 1 1v5zm-2-9c-2.76 0-5 2.24-5 5h2c0-1.66 1.34-3 3-3s3 1.34 3 3H17c0-2.76-2.24-5-5-5z"/>
                     </svg>
-                    <div class="logo-text">Zenith Rewards</div>
+                    <div class="logo-text">Ping Rewards</div>
                     <div class="tagline">Watch videos, earn points, get rewarded.</div>
                 </div>
                 <div class="login-card">
@@ -955,7 +1001,7 @@
                     <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14c0 .55-.45 1-1 1s-1-.45-1-1v-4c0-.55.45-1 1-1s1 .45 1 1v4zm4-2c0 .55-.45 1-1 1s-1-.45-1-1V9c0-.55.45-1 1-1s1 .45 1 1v5zm-2-9c-2.76 0-5 2.24-5 5h2c0-1.66 1.34-3 3-3s3 1.34 3 3H17c0-2.76-2.24-5-5-5z"/>
                     </svg>
-                    <span class="logo-text">Zenith Rewards</span>
+                    <span class="logo-text">Ping Rewards</span>
                 </div>
                 <ul class="nav-links">
                     <li>
@@ -1127,7 +1173,7 @@
                                 </div>
                                 <div class="stat-content">
                                     <h3>Total Users</h3>
-                                    <div class="value" id="total-users-value">0</div>
+                                    <div class="value" id="admin-total-users-value">0</div>
                                 </div>
                             </div>
                             <div class="stat-card">
@@ -1136,7 +1182,7 @@
                                 </div>
                                 <div class="stat-content">
                                     <h3>Total Videos</h3>
-                                    <div class="value" id="total-videos-value">0</div>
+                                    <div class="value" id="admin-total-videos-value">0</div>
                                 </div>
                             </div>
                             <div class="stat-card">
@@ -1145,7 +1191,7 @@
                                 </div>
                                 <div class="stat-content">
                                     <h3>Total Points Earned</h3>
-                                    <div class="value" id="total-points-earned-value">0</div>
+                                    <div class="value" id="admin-total-points-earned-value">0</div>
                                 </div>
                             </div>
                             <div class="stat-card">
@@ -1154,7 +1200,7 @@
                                 </div>
                                 <div class="stat-content">
                                     <h3>Total Payouts</h3>
-                                    <div class="value" id="total-payouts-value">$0</div>
+                                    <div class="value" id="admin-total-payouts-value">$0</div>
                                 </div>
                             </div>
                         </div>
@@ -1215,11 +1261,21 @@
                         <div class="manage-users">
                             <h2>Manage Users</h2>
                             <p>View user details, manage status, and edit information.</p>
-                            <div style="text-align: center; margin-top: 50px; color: #6c7e9e;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                                <h3>User Management Coming Soon</h3>
-                                <p>This section will allow you to view, edit, and suspend users.</p>
-                            </div>
+                             <table id="users-table">
+                                <thead>
+                                    <tr>
+                                        <th>User ID</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Points</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="users-table-body">
+                                    <!-- User rows will be dynamically rendered here by JS -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -1234,6 +1290,30 @@
                 <div class="modal-actions">
                     <button type="button" class="cancel-btn">မလုပ်တော့ဘူး</button>
                     <button type="button" class="save-btn" id="confirm-delete-btn">ဖျက်မယ်</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal for Viewing User History -->
+        <div id="user-history-modal" class="modal-overlay">
+            <div class="modal-content">
+                <h3 id="user-history-title"></h3>
+                <div id="user-history-content">
+                     <table id="user-history-table">
+                         <thead>
+                             <tr>
+                                 <th>Date</th>
+                                 <th>Description</th>
+                                 <th>Points</th>
+                             </tr>
+                         </thead>
+                         <tbody id="user-history-table-body">
+                             <!-- History rows will be dynamically rendered here by JS -->
+                         </tbody>
+                     </table>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="cancel-btn" id="user-history-close-btn">Close</button>
                 </div>
             </div>
         </div>
@@ -1290,8 +1370,9 @@
                     <div class="form-group">
                         <label for="payment-method">Payment Method</label>
                         <select id="payment-method" name="paymentMethod">
-                            <option value="paypal">PayPal</option>
-                            <option value="bank">Bank Transfer</option>
+                            <option value="paypal">Binance</option>
+                            <option value="bank">WavePay</option>
+                            <option value="bank">KBZpay</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -1300,7 +1381,7 @@
                     </div>
                     <div class="modal-actions">
                         <button type="button" class="cancel-btn">Cancel</button>
-                        <button type="submit" class="save-btn">Submit Request</button>
+                        <button type="submit" class="save-btn" id="cashout-submit-btn"><a href="https://t.me/MMMMOline" style="text-decoration: none;">Submit Request</a></button>
                     </div>
                 </form>
             </div>
@@ -1369,19 +1450,27 @@
             const cashoutCancelBtn = document.querySelector('#cashout-modal .cancel-btn');
             const cashoutForm = document.getElementById('cashout-form');
             const totalPointsValue = document.getElementById('total-points-value');
-            const estimatedEarningsValue = document.querySelector('.value.green');
-            const videosWatchedValue = document.querySelector('.value.purple');
+            const estimatedEarningsValue = document.getElementById('estimated-earnings-value');
+            const videosWatchedValue = document.getElementById('videos-watched-value');
             const pointsHistoryTableBody = document.querySelector('#points-history-table tbody');
-            const totalUsersValue = document.getElementById('total-users-value');
-            const totalVideosValue = document.getElementById('total-videos-value');
-            const totalPointsEarnedValue = document.getElementById('total-points-earned-value');
-            const totalPayoutsValue = document.getElementById('total-payouts-value');
+            
+            // Refactored Admin Dashboard IDs
+            const adminTotalUsersValue = document.getElementById('admin-total-users-value');
+            const adminTotalVideosValue = document.getElementById('admin-total-videos-value');
+            const adminTotalPointsEarnedValue = document.getElementById('admin-total-points-earned-value');
+            const adminTotalPayoutsValue = document.getElementById('admin-total-payouts-value');
             
             const welcomeMessage = document.getElementById('welcome-message');
             
             const deleteConfirmModal = document.getElementById('delete-confirm-modal');
             const deleteConfirmBtn = document.getElementById('confirm-delete-btn');
             const deleteCancelBtn = document.querySelector('#delete-confirm-modal .cancel-btn');
+            
+            const usersTableBody = document.getElementById('users-table-body');
+            const userHistoryModal = document.getElementById('user-history-modal');
+            const userHistoryTitle = document.getElementById('user-history-title');
+            const userHistoryTableBody = document.getElementById('user-history-table-body');
+            const userHistoryCloseBtn = document.getElementById('user-history-close-btn');
             
             let videos = [];
             let currentUser = null;
@@ -1446,38 +1535,6 @@
                 }
             }
 
-            onAuthStateChanged(auth, async (user) => {
-                isAuthReady = true;
-                if (user) {
-                    if(user.isAnonymous) {
-                         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-                         if (initialAuthToken) {
-                             try {
-                                  await signInWithCustomToken(auth, initialAuthToken);
-                             } catch(e) {
-                                  console.error("Error signing in with custom token:", e);
-                                  if (loginPage) loginPage.style.display = 'flex';
-                                  if (appContainer) appContainer.style.display = 'none';
-                                  hideLoading();
-                             }
-                         } else {
-                              if (loginPage) loginPage.style.display = 'flex';
-                              if (appContainer) appContainer.style.display = 'none';
-                              hideLoading();
-                         }
-                    } else {
-                         userId = user.uid;
-                         await seedInitialData(user);
-                         await fetchUserData(userId);
-                    }
-                } else {
-                    console.log("No user is signed in. Showing login page.");
-                    if (loginPage) loginPage.style.display = 'flex';
-                    if (appContainer) appContainer.style.display = 'none';
-                    hideLoading();
-                }
-            });
-
             async function fetchUserData(uid) {
                 const userDocRef = doc(db, `/artifacts/${appId}/users/${uid}`);
                 onSnapshot(userDocRef, (docSnap) => {
@@ -1512,6 +1569,34 @@
                     console.error("Error fetching videos:", e);
                 } finally {
                     hideLoading();
+                }
+            }
+            
+            async function fetchAllUsers() {
+                showLoading();
+                if (!usersTableBody) return;
+                usersTableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #6c7e9e;">Fetching users...</td></tr>`;
+                try {
+                    const usersCollectionRef = collection(db, `/artifacts/${appId}/users`);
+                    const querySnapshot = await getDocs(usersCollectionRef);
+                    const users = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    renderUsersTable(users);
+                } catch (e) {
+                    console.error("Error fetching users:", e);
+                    usersTableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #e74c3c;">Error fetching users.</td></tr>`;
+                } finally {
+                    hideLoading();
+                }
+            }
+            
+            async function toggleUserRole(targetUserId, currentRole) {
+                const userDocRef = doc(db, `/artifacts/${appId}/users/${targetUserId}`);
+                const newRole = currentRole === 'admin' ? 'user' : 'admin';
+                try {
+                    await updateDoc(userDocRef, { role: newRole });
+                    console.log(`User role updated to ${newRole}`);
+                } catch (e) {
+                    console.error("Error updating user role:", e);
                 }
             }
 
@@ -1603,17 +1688,15 @@
                     const usersSnapshot = await getDocs(usersCollectionRef);
                     const totalUsers = usersSnapshot.docs.length;
                     
-                    // Fetch total points earned
+                    // Fetch total points earned and total payouts
                     let totalPointsEarned = 0;
-                    usersSnapshot.forEach(doc => {
-                        const userPoints = doc.data().points || 0;
-                        totalPointsEarned += userPoints;
-                    });
-                    
-                    // Fetch total payouts
                     let totalPayouts = 0;
                     usersSnapshot.forEach(doc => {
-                        const payoutHistory = doc.data().payoutHistory || [];
+                        const userData = doc.data();
+                        const userPoints = userData.points || 0;
+                        totalPointsEarned += userPoints;
+                        
+                        const payoutHistory = userData.payoutHistory || [];
                         payoutHistory.forEach(payout => {
                              totalPayouts += payout.amount || 0;
                         });
@@ -1625,10 +1708,10 @@
                     const totalVideos = videosSnapshot.docs.length;
                     
                     // Update the UI with fetched data
-                    if (totalUsersValue) totalUsersValue.textContent = totalUsers;
-                    if (totalVideosValue) totalVideosValue.textContent = totalVideos;
-                    if (totalPointsEarnedValue) totalPointsEarnedValue.textContent = totalPointsEarned;
-                    if (totalPayoutsValue) totalPayoutsValue.textContent = `$${totalPayouts.toFixed(2)}`;
+                    if (adminTotalUsersValue) adminTotalUsersValue.textContent = totalUsers;
+                    if (adminTotalVideosValue) adminTotalVideosValue.textContent = totalVideos;
+                    if (adminTotalPointsEarnedValue) adminTotalPointsEarnedValue.textContent = totalPointsEarned;
+                    if (adminTotalPayoutsValue) adminTotalPayoutsValue.textContent = `$${totalPayouts.toFixed(2)}`;
                 } catch (e) {
                     console.error("Admin dashboard data fetch error:", e);
                 } finally {
@@ -1705,8 +1788,8 @@
                  return `
                     <div class="admin-meta">
                         <div class="meta-item">
-                            <span>0 PTS</span>
-                            <span class="role">$0.00</span>
+                            <span id="admin-points-display">0 PTS</span>
+                            <span class="role" id="admin-earnings-display">$0.00</span>
                         </div>
                         <div class="meta-item">
                             <span>${nameText}</span>
@@ -1765,7 +1848,7 @@
                 if (!titleElement) return;
 
                 const menuToggle = `<button id="menu-toggle" class="menu-toggle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></button>`;
-                let titleText = 'Zenith Rewards';
+                let titleText = 'Ping Rewards';
 
                 switch (viewId) {
                     case 'user-dashboard-view': titleText = 'Dashboard'; break;
@@ -1782,7 +1865,7 @@
                 if (toggleBtn) {
                      toggleBtn.addEventListener('click', () => {
                         if (sidebar) sidebar.classList.toggle('open');
-                        if (document.body) document.body.classList.toggle('sidebar-open');
+                        if (document.body) document.body.classList.remove('sidebar-open');
                      });
                 }
             }
@@ -1818,6 +1901,35 @@
                     videoGrid.innerHTML += videoCardHtml;
                 });
                 attachVideoCardListeners();
+            }
+            
+            function renderUsersTable(users) {
+                if (!usersTableBody) return;
+                usersTableBody.innerHTML = ''; // Clear previous content
+
+                if (users.length === 0) {
+                     usersTableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #6c7e9e;">No users found.</td></tr>`;
+                     return;
+                }
+                
+                users.forEach(user => {
+                    const toggleRoleBtnText = user.role === 'admin' ? 'Demote to User' : 'Promote to Admin';
+                    const tableRowHtml = `
+                        <tr data-user-id="${user.id}">
+                            <td class="user-id-display">${user.id.substring(0, 8)}...</td>
+                            <td>${user.name || 'N/A'}</td>
+                            <td>${user.email || 'N/A'}</td>
+                            <td>${user.role}</td>
+                            <td>${user.points || 0}</td>
+                            <td>
+                                <button class="actions-btn view-history-btn" data-user-id="${user.id}">View History</button>
+                                ${user.id !== userId ? `<button class="actions-btn toggle-role-btn" data-user-id="${user.id}" data-current-role="${user.role}">${toggleRoleBtnText}</button>` : ''}
+                            </td>
+                        </tr>
+                    `;
+                    usersTableBody.innerHTML += tableRowHtml;
+                });
+                attachManageUsersListeners(users);
             }
 
             function renderManageVideosTable() {
@@ -1919,7 +2031,6 @@
                     }, 1000 + i * 20);
                 }
             }
-
 
             async function attachVideoCardListeners() {
                 const cards = document.querySelectorAll('.video-card');
@@ -2039,238 +2150,22 @@
                     });
                 });
             }
-
-            if (googleSignInBtn) {
-                googleSignInBtn.addEventListener('click', async (e) => {
-                    e.preventDefault();
-                    showLoading();
-                    const provider = new GoogleAuthProvider();
-                    try {
-                        const result = await signInWithPopup(auth, provider);
-                        if (result.user) {
-                           console.log("User signed in with Google successfully.");
-                        }
-                    } catch (error) {
-                        console.error("Google Sign-in failed:", error);
-                        if (loginMessage) {
-                            loginMessage.textContent = 'Google Sign-in failed. Please check your Authorized domains.';
-                            loginMessage.style.display = 'block';
-                        }
-                        hideLoading();
-                    }
-                });
-            }
             
-            if (getSummaryBtn) {
-                getSummaryBtn.addEventListener('click', async () => {
-                    const currentVideo = videos.find(v => v.id === window.currentWatchedVideoId);
-                    if (!currentVideo) {
-                        if (summaryOutput) summaryOutput.innerHTML = "ဗီဒီယိုကို မတွေ့ပါ။";
-                        return;
-                    }
-
-                    if (summaryOutput) summaryOutput.innerHTML = `<p>Summary ကို ဖော်ပြနေပါသည်...</p>`;
-
-                    try {
-                        const prompt = `ဗီဒီယိုခေါင်းစဉ်: "${currentVideo.title}"။ ဖော်ပြချက်: "${currentVideo.description}" ကို အနှစ်ချုပ် ဖော်ပြပေးပါ။`;
-                        const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
-                        const payload = { contents: chatHistory };
-                        const apiKey = "";
-                        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-                        
-                        const response = await fetch(apiUrl, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(payload)
-                        });
-                        
-                        const result = await response.json();
-                        if (result.candidates && result.candidates.length > 0 &&
-                            result.candidates[0].content && result.candidates[0].content.parts &&
-                            result.candidates[0].content.parts.length > 0) {
-                            const summaryText = result.candidates[0].content.parts[0].text;
-                            if (summaryOutput) summaryOutput.innerHTML = `<h3>အနှစ်ချုပ်</h3><p>${summaryText}</p>`;
-                        } else {
-                            if (summaryOutput) summaryOutput.innerHTML = "အနှစ်ချုပ်ဖော်ပြချက်ကို မရရှိပါ။";
-                        }
-                    } catch (error) {
-                        console.error("Gemini API Error:", error);
-                        if (summaryOutput) summaryOutput.innerHTML = "အနှစ်ချုပ်ဖော်ပြချက်ကို ရယူရာတွင် အမှားဖြစ်ပွားပါသည်။";
-                    }
-                });
-            }
-
-            if (menuToggleBtn) {
-                menuToggleBtn.addEventListener('click', () => {
-                    if (sidebar) sidebar.classList.toggle('open');
-                    if (document.body) document.body.classList.toggle('sidebar-open');
-                });
-            }
-            
-            navLinks.forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const targetId = link.getAttribute('data-target');
-                    showView(targetId);
-                    if (sidebar) sidebar.classList.remove('open');
-                    if (document.body) document.body.classList.remove('sidebar-open');
-                    if (targetId === 'watch-videos-view') {
-                        renderVideoGrid('all');
-                    } else if (targetId === 'manage-videos-view') {
-                        renderManageVideosTable();
-                    } else if (targetId === 'points-history-view') {
-                        renderPointsHistoryTable();
-                    }
-                });
-            });
-            
-            if (backdrop) {
-                backdrop.addEventListener('click', () => {
-                    if (sidebar) sidebar.classList.remove('open');
-                    if (document.body) document.body.classList.remove('sidebar-open');
-                });
-            }
-
-            filterButtons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    filterButtons.forEach(b => { if(b) b.classList.remove('active'); });
-                    btn.classList.add('active');
-                    const category = btn.getAttribute('data-category');
-                    renderVideoGrid(category);
-                });
-            });
-
-            if (addVideoBtn) {
-                addVideoBtn.addEventListener('click', () => {
-                    if (addModalTitle) addModalTitle.textContent = "Add New Video";
-                    if (addVideoForm) addVideoForm.reset();
-                    if (addVideoForm) addVideoForm.removeAttribute('data-editing-id');
-                    if (addVideoModal) addVideoModal.style.display = 'flex';
-                });
-            }
-
-            if (addVideoModalCancelBtn) {
-                addVideoModalCancelBtn.addEventListener('click', () => {
-                    if (addVideoModal) addVideoModal.style.display = 'none';
-                });
-            }
-
-            if (addVideoForm) {
-                addVideoForm.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    
-                    const formData = new FormData(addVideoForm);
-                    const videoData = {
-                        title: formData.get('videoTitle'),
-                        description: formData.get('videoDescription'),
-                        category: formData.get('videoCategory'),
-                        videoUrl: formData.get('videoUrl'),
-                        points: parseInt(formData.get('videoPoints')),
-                        watchDuration: parseInt(formData.get('watchDuration'))
-                    };
-                    
-                    const editingId = addVideoForm.getAttribute('data-editing-id');
-                    await saveVideo(videoData, editingId);
-                    
-                    if (addVideoModal) addVideoModal.style.display = 'none';
-                });
-            }
-            
-            if (cashoutBtn) {
-                cashoutBtn.addEventListener('click', () => {
-                    if (cashoutModal) cashoutModal.style.display = 'flex';
-                    if (userData) {
-                        const payoutAmount = (userData.points / 5000).toFixed(2);
-                        const payoutInput = document.getElementById('payout-amount');
-                        if (payoutInput) payoutInput.value = payoutAmount;
-                    }
-                });
-            }
-
-            if (cashoutCancelBtn) {
-                cashoutCancelBtn.addEventListener('click', () => {
-                    if (cashoutModal) cashoutModal.style.display = 'none';
-                });
-            }
-
-            if (cashoutForm) {
-                cashoutForm.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    if (!userData || userData.points <= 0) {
-                        console.log("Cash out is not available as you have no points.");
-                        if (cashoutModal) cashoutModal.style.display = 'none';
-                        return;
-                    }
-                    showLoading();
-                    try {
-                        const userDocRef = doc(db, `/artifacts/${appId}/users/${userId}`);
-                        const pointsCashedOut = userData.points;
-                        const payoutAmount = (pointsCashedOut / 5000).toFixed(2);
-                        const newHistoryEntry = {
-                            date: new Date().toLocaleDateString(),
-                            description: `Cashed out ${pointsCashedOut} points`,
-                            points: -pointsCashedOut
-                        };
-                        const newPayoutEntry = {
-                             date: new Date().toLocaleDateString(),
-                             amount: parseFloat(payoutAmount)
-                        };
-
-                        await updateDoc(userDocRef, {
-                            points: 0,
-                            pointsHistory: [...(userData.pointsHistory || []), newHistoryEntry],
-                            payoutHistory: [...(userData.payoutHistory || []), newPayoutEntry]
-                        });
-
-                        console.log('Cash out request submitted and points reset.');
-                        if (cashoutModal) cashoutModal.style.display = 'none';
-                    } catch (error) {
-                        console.error("Error during cash out:", error);
-                    } finally {
-                        hideLoading();
-                    }
-                });
-            }
-            
-            generateRandomChartData();
-            showLoading();
-            
-            onAuthStateChanged(auth, async (user) => {
-                isAuthReady = true;
-                if (user) {
-                    if(user.isAnonymous) {
-                         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-                         if (initialAuthToken) {
-                             try {
-                                  await signInWithCustomToken(auth, initialAuthToken);
-                             } catch(e) {
-                                  console.error("Error signing in with custom token:", e);
-                                  if (loginPage) loginPage.style.display = 'flex';
-                                  if (appContainer) appContainer.style.display = 'none';
-                                  hideLoading();
-                             }
-                         } else {
-                              if (loginPage) loginPage.style.display = 'flex';
-                              if (appContainer) appContainer.style.display = 'none';
-                              hideLoading();
-                         }
-                    } else {
-                         userId = user.uid;
-                         await seedInitialData(user);
-                         await fetchUserData(userId);
-                    }
-                } else {
-                    console.log("No user is signed in. Showing login page.");
-                    if (loginPage) loginPage.style.display = 'flex';
-                    if (appContainer) appContainer.style.display = 'none';
-                    hideLoading();
-                }
-            });
-
-            if (typeof __initial_auth_token === 'undefined') {
-                 signInAnonymously(auth);
-            }
-        });
-    </script>
-</body>
-</html>
+            function attachManageUsersListeners(users) {
+                const viewHistoryBtns = document.querySelectorAll('.view-history-btn');
+                viewHistoryBtns.forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        const userId = btn.getAttribute('data-user-id');
+                        const user = users.find(u => u.id === userId);
+                        if (user && userHistoryModal && userHistoryTitle && userHistoryTableBody) {
+                             userHistoryTitle.textContent = `${user.name || 'User'}'s Points History`;
+                             userHistoryTableBody.innerHTML = ''; // Clear previous history
+                             
+                             if (user.pointsHistory && user.pointsHistory.length > 0) {
+                                 user.pointsHistory.forEach(item => {
+                                      const row = document.createElement('tr');
+                                      row.innerHTML = `<td>${item.date}</td><td>${item.description}</td><td>${item.points}</td>`;
+                                      userHistoryTableBody.appendChild(row);
+                                 });
+                             } else {
+                                  userHistoryTableBody.innerHTML = `<tr><td colspan="3" styl
