@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!--နမောဿတ ဘဂဝတော အရဟံသမ္မံ ဒမ္ဗုဒ္ဓဿ-->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -1370,9 +1369,9 @@
                     <div class="form-group">
                         <label for="payment-method">Payment Method</label>
                         <select id="payment-method" name="paymentMethod">
-                            <option value="paypal">Binance</option>
-                            <option value="bank">WavePay</option>
-                            <option value="bank">KBZpay</option>
+                            <option value="paypal">Binance Pay</option>
+                            <option value="paypal">Wave Pay</option>
+                            <option value="bank">KBZ Pay</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -1490,7 +1489,7 @@
                     const userDocSnap = await getDoc(userDocRef);
                     if (!userDocSnap.exists()) {
                          let userRole = 'user';
-                         let userName = user.displayName || (user.email ? user.email.split('@')[0] : 'Zenith User');
+                         let userName = user.displayName || (user.email ? user.email.split('@')[0] : 'Ping User');
                          if (user.email === adminEmail) {
                              userRole = 'admin';
                              userName = 'Mr. Ping';
@@ -2168,4 +2167,271 @@
                                       userHistoryTableBody.appendChild(row);
                                  });
                              } else {
-                                  userHistoryTableBody.innerHTML = `<tr><td colspan="3" styl
+                                  userHistoryTableBody.innerHTML = `<tr><td colspan="3" style="text-align: center;">No history found.</td></tr>`;
+                             }
+                             userHistoryModal.style.display = 'flex';
+                        }
+                    });
+                });
+                
+                if (userHistoryCloseBtn) {
+                     userHistoryCloseBtn.addEventListener('click', () => {
+                         if(userHistoryModal) userHistoryModal.style.display = 'none';
+                     });
+                }
+                
+                const toggleRoleBtns = document.querySelectorAll('.toggle-role-btn');
+                toggleRoleBtns.forEach(btn => {
+                     btn.addEventListener('click', async () => {
+                         const targetUserId = btn.getAttribute('data-user-id');
+                         const currentRole = btn.getAttribute('data-current-role');
+                         await toggleUserRole(targetUserId, currentRole);
+                     });
+                });
+            }
+
+            if (googleSignInBtn) {
+                googleSignInBtn.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    showLoading();
+                    const provider = new GoogleAuthProvider();
+                    try {
+                        const result = await signInWithPopup(auth, provider);
+                        if (result.user) {
+                           console.log("User signed in with Google successfully.");
+                        }
+                    } catch (error) {
+                        console.error("Google Sign-in failed:", error);
+                        if (loginMessage) {
+                            loginMessage.textContent = 'Google Sign-in failed. Please check your Authorized domains.';
+                            loginMessage.style.display = 'block';
+                        }
+                        hideLoading();
+                    }
+                });
+            }
+            
+            if (getSummaryBtn) {
+                getSummaryBtn.addEventListener('click', async () => {
+                    const currentVideo = videos.find(v => v.id === window.currentWatchedVideoId);
+                    if (!currentVideo) {
+                        if (summaryOutput) summaryOutput.innerHTML = "ဗီဒီယိုကို မတွေ့ပါ။";
+                        return;
+                    }
+
+                    if (summaryOutput) summaryOutput.innerHTML = `<p>Summary ကို ဖော်ပြနေပါသည်...</p>`;
+
+                    try {
+                        const prompt = `ဗီဒီယိုခေါင်းစဉ်: "${currentVideo.title}"။ ဖော်ပြချက်: "${currentVideo.description}" ကို အနှစ်ချုပ် ဖော်ပြပေးပါ။`;
+                        const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                        const payload = { contents: chatHistory };
+                        const apiKey = "";
+                        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                        
+                        const response = await fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+                        
+                        const result = await response.json();
+                        if (result.candidates && result.candidates.length > 0 &&
+                            result.candidates[0].content && result.candidates[0].content.parts &&
+                            result.candidates[0].content.parts.length > 0) {
+                            const summaryText = result.candidates[0].content.parts[0].text;
+                            if (summaryOutput) summaryOutput.innerHTML = `<h3>အနှစ်ချုပ်</h3><p>${summaryText}</p>`;
+                        } else {
+                            if (summaryOutput) summaryOutput.innerHTML = "အနှစ်ချုပ်ဖော်ပြချက်ကို မရရှိပါ။";
+                        }
+                    } catch (error) {
+                        console.error("Gemini API Error:", error);
+                        if (summaryOutput) summaryOutput.innerHTML = "အနှစ်ချုပ်ဖော်ပြချက်ကို ရယူရာတွင် အမှားဖြစ်ပွားပါသည်။";
+                    }
+                });
+            }
+
+            if (menuToggleBtn) {
+                menuToggleBtn.addEventListener('click', () => {
+                    if (sidebar) sidebar.classList.toggle('open');
+                    if (document.body) document.body.classList.remove('sidebar-open');
+                });
+            }
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = link.getAttribute('data-target');
+                    showView(targetId);
+                    if (sidebar) sidebar.classList.remove('open');
+                    if (document.body) document.body.classList.remove('sidebar-open');
+                    if (targetId === 'watch-videos-view') {
+                        renderVideoGrid('all');
+                    } else if (targetId === 'manage-videos-view') {
+                        renderManageVideosTable();
+                    } else if (targetId === 'manage-users-view') {
+                        fetchAllUsers();
+                    } else if (targetId === 'points-history-view') {
+                        renderPointsHistoryTable();
+                    }
+                });
+            });
+            
+            if (backdrop) {
+                backdrop.addEventListener('click', () => {
+                    if (sidebar) sidebar.classList.remove('open');
+                    if (document.body) document.body.classList.remove('sidebar-open');
+                });
+            }
+
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterButtons.forEach(b => { if(b) b.classList.remove('active'); });
+                    btn.classList.add('active');
+                    const category = btn.getAttribute('data-category');
+                    renderVideoGrid(category);
+                });
+            });
+
+            if (addVideoBtn) {
+                addVideoBtn.addEventListener('click', () => {
+                    if (addModalTitle) addModalTitle.textContent = "Add New Video";
+                    if (addVideoForm) addVideoForm.reset();
+                    if (addVideoForm) addVideoForm.removeAttribute('data-editing-id');
+                    if (addVideoModal) addVideoModal.style.display = 'flex';
+                });
+            }
+
+            if (addVideoModalCancelBtn) {
+                addVideoModalCancelBtn.addEventListener('click', () => {
+                    if (addVideoModal) addVideoModal.style.display = 'none';
+                });
+            }
+
+            if (addVideoForm) {
+                addVideoForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    
+                    const formData = new FormData(addVideoForm);
+                    const videoData = {
+                        title: formData.get('videoTitle'),
+                        description: formData.get('videoDescription'),
+                        category: formData.get('videoCategory'),
+                        videoUrl: formData.get('videoUrl'),
+                        points: parseInt(formData.get('videoPoints')),
+                        watchDuration: parseInt(formData.get('watchDuration'))
+                    };
+                    
+                    const editingId = addVideoForm.getAttribute('data-editing-id');
+                    await saveVideo(videoData, editingId);
+                    
+                    if (addVideoModal) addVideoModal.style.display = 'none';
+                });
+            }
+            
+            if (cashoutBtn) {
+                cashoutBtn.addEventListener('click', () => {
+                    if (cashoutModal) cashoutModal.style.display = 'flex';
+                    if (userData) {
+                        const payoutAmount = (userData.points / 5000).toFixed(2);
+                        const payoutInput = document.getElementById('payout-amount');
+                        if (payoutInput) payoutInput.value = payoutAmount;
+                    }
+                });
+            }
+
+            if (cashoutCancelBtn) {
+                cashoutCancelBtn.addEventListener('click', () => {
+                    if (cashoutModal) cashoutModal.style.display = 'none';
+                });
+            }
+            
+            // Modified cashout form submit listener
+            if (cashoutForm) {
+                cashoutForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    
+                    const channelUrl = "https://t.me/MMMMOline";
+                    
+                    // First, update Firestore
+                    if (!userData || userData.points <= 0) {
+                        console.log("Cash out is not available as you have no points.");
+                        if (cashoutModal) cashoutModal.style.display = 'none';
+                        window.open(channelUrl, '_blank');
+                        return;
+                    }
+                    showLoading();
+                    try {
+                        const userDocRef = doc(db, `/artifacts/${appId}/users/${userId}`);
+                        const pointsCashedOut = userData.points;
+                        const payoutAmount = (pointsCashedOut / 5000).toFixed(2);
+                        const newHistoryEntry = {
+                            date: new Date().toLocaleDateString(),
+                            description: `Cashed out ${pointsCashedOut} points`,
+                            points: -pointsCashedOut
+                        };
+                        const newPayoutEntry = {
+                             date: new Date().toLocaleDateString(),
+                             amount: parseFloat(payoutAmount)
+                        };
+
+                        await updateDoc(userDocRef, {
+                            points: 0,
+                            pointsHistory: [...(userData.pointsHistory || []), newHistoryEntry],
+                            payoutHistory: [...(userData.payoutHistory || []), newPayoutEntry]
+                        });
+
+                        console.log('Cash out request submitted and points reset.');
+                        if (cashoutModal) cashoutModal.style.display = 'none';
+                        window.open(channelUrl, '_blank');
+                    } catch (error) {
+                        console.error("Error during cash out:", error);
+                        // Even on error, we might still want to redirect
+                        window.open(channelUrl, '_blank');
+                    } finally {
+                        hideLoading();
+                    }
+                });
+            }
+            
+            generateRandomChartData();
+            showLoading();
+            
+            onAuthStateChanged(auth, async (user) => {
+                isAuthReady = true;
+                if (user) {
+                    if(user.isAnonymous) {
+                         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+                         if (initialAuthToken) {
+                             try {
+                                  await signInWithCustomToken(auth, initialAuthToken);
+                             } catch(e) {
+                                  console.error("Error signing in with custom token:", e);
+                                  if (loginPage) loginPage.style.display = 'flex';
+                                  if (appContainer) appContainer.style.display = 'none';
+                                  hideLoading();
+                             }
+                         } else {
+                              if (loginPage) loginPage.style.display = 'flex';
+                              if (appContainer) appContainer.style.display = 'none';
+                              hideLoading();
+                         }
+                    } else {
+                         userId = user.uid;
+                         await seedInitialData(user);
+                         await fetchUserData(userId);
+                    }
+                } else {
+                    console.log("No user is signed in. Showing login page.");
+                    if (loginPage) loginPage.style.display = 'flex';
+                    if (appContainer) appContainer.style.display = 'none';
+                    hideLoading();
+                }
+            });
+
+            if (typeof __initial_auth_token === 'undefined') {
+                 signInAnonymously(auth);
+            }
+        });
+    </script>
+</body>
+</html>
