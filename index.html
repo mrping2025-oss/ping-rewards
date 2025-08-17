@@ -1281,6 +1281,17 @@
             </div>
         </div>
         
+        <!-- Modal for Cash Out Confirmation Message -->
+        <div id="cashout-message-modal" class="modal-overlay">
+            <div class="modal-content">
+                <h3>Cash Out Request</h3>
+                <p id="cashout-message-text">Cash Out လုပ်ရန်အတွက် Point 5000 လိုအပ်ပါသည်။</p>
+                <div class="modal-actions">
+                    <button type="button" class="cancel-btn" id="cashout-message-close-btn">Close</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Modal for Delete Confirmation -->
         <div id="delete-confirm-modal" class="modal-overlay">
             <div class="modal-content">
@@ -1369,9 +1380,8 @@
                     <div class="form-group">
                         <label for="payment-method">Payment Method</label>
                         <select id="payment-method" name="paymentMethod">
-                            <option value="paypal">Wave Pay</option>
-                            <option value="bank">KBZ Pay</option>
-                            <option value="bank">Binance Pay</option>
+                            <option value="paypal">PayPal</option>
+                            <option value="bank">Bank Transfer</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -1380,7 +1390,7 @@
                     </div>
                     <div class="modal-actions">
                         <button type="button" class="cancel-btn">Cancel</button>
-                        <button type="submit" class="save-btn" id="cashout-submit-btn"><a href="https://t.me/MMMMOline" style="text-decoration: none;">Submit Request</a></button>
+                        <button type="submit" class="save-btn" id="cashout-submit-btn">Submit Request</button>
                     </div>
                 </form>
             </div>
@@ -1470,6 +1480,10 @@
             const userHistoryTitle = document.getElementById('user-history-title');
             const userHistoryTableBody = document.getElementById('user-history-table-body');
             const userHistoryCloseBtn = document.getElementById('user-history-close-btn');
+
+            const cashoutMessageModal = document.getElementById('cashout-message-modal');
+            const cashoutMessageCloseBtn = document.getElementById('cashout-message-close-btn');
+            const cashoutMessageText = document.getElementById('cashout-message-text');
             
             let videos = [];
             let currentUser = null;
@@ -2333,12 +2347,25 @@
             
             if (cashoutBtn) {
                 cashoutBtn.addEventListener('click', () => {
-                    if (cashoutModal) cashoutModal.style.display = 'flex';
-                    if (userData) {
-                        const payoutAmount = (userData.points / 5000).toFixed(2);
-                        const payoutInput = document.getElementById('payout-amount');
-                        if (payoutInput) payoutInput.value = payoutAmount;
+                    if (!userData || userData.points < 5000) {
+                        if (cashoutMessageModal) {
+                            cashoutMessageText.textContent = `Cash Out လုပ်ရန်အတွက် Point 5000 လိုအပ်ပါသည်။ သင်၏ လက်ရှိ point မှာ ${userData?.points || 0} ဖြစ်ပါသည်။`;
+                            cashoutMessageModal.style.display = 'flex';
+                        }
+                    } else {
+                        if (cashoutModal) cashoutModal.style.display = 'flex';
+                        if (userData) {
+                            const payoutAmount = (userData.points / 5000).toFixed(2);
+                            const payoutInput = document.getElementById('payout-amount');
+                            if (payoutInput) payoutInput.value = payoutAmount;
+                        }
                     }
+                });
+            }
+            
+            if(cashoutMessageCloseBtn) {
+                cashoutMessageCloseBtn.addEventListener('click', () => {
+                     if (cashoutMessageModal) cashoutMessageModal.style.display = 'none';
                 });
             }
 
@@ -2348,16 +2375,13 @@
                 });
             }
             
-            // Modified cashout form submit listener
             if (cashoutForm) {
                 cashoutForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
                     
                     const channelUrl = "https://t.me/MMMMOline";
                     
-                    // First, update Firestore
                     if (!userData || userData.points <= 0) {
-                        console.log("Cash out is not available as you have no points.");
                         if (cashoutModal) cashoutModal.style.display = 'none';
                         window.open(channelUrl, '_blank');
                         return;
