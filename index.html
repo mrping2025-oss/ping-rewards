@@ -1354,6 +1354,9 @@
                     <div class="form-group">
                         <label for="video-category">Category</label>
                         <select id="video-category" name="videoCategory" required>
+                            <option value="YouTube">YouTube</option>
+                            <option value="TikTok">TikTok</option>
+                            <option value="Facebook">Facebook</option>
                             <option value="Nature">Nature</option>
                             <option value="Education">Education</option>
                             <option value="Travel">Travel</option>
@@ -1390,8 +1393,9 @@
                     <div class="form-group">
                         <label for="payment-method">Payment Method</label>
                         <select id="payment-method" name="paymentMethod">
-                            <option value="paypal">PayPal</option>
-                            <option value="bank">Bank Transfer</option>
+                            <option value="paypal">KBZ Pay</option>
+                            <option value="bank">Wave Pay</option>
+                            <option value="paypal">Binance Pay</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -1952,11 +1956,11 @@
                 filteredVideos.forEach(video => {
                     let thumbnailUrl;
                     // Get video thumbnail based on platform
-                    if (video.videoUrl.includes('youtube.com') || video.videoUrl.includes('youtu.be')) {
-                        const videoId = getYouTubeId(video.videoUrl);
-                        thumbnailUrl = getYouTubeThumbnail(videoId);
+                    const youtubeId = getYouTubeId(video.videoUrl);
+                    if (youtubeId) {
+                        thumbnailUrl = getYouTubeThumbnail(youtubeId);
                     } else {
-                        // Placeholder for TikTok and Facebook
+                        // Placeholder for TikTok and Facebook and others
                         thumbnailUrl = 'https://placehold.co/400x225/1f3148/ffffff?text=Video';
                     }
 
