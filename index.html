@@ -600,6 +600,16 @@
             margin-bottom: 20px;
         }
 
+        .video-browse .search-bar {
+            flex-grow: 1;
+            margin-right: 10px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background-color: var(--input-bg-color);
+            color: var(--text-color);
+        }
+
         .video-browse .filter-buttons {
             display: flex;
             flex-wrap: wrap;
@@ -1109,7 +1119,7 @@
                     <div id="watch-videos-view" class="content-view" style="display: none;">
                         <div class="video-browse">
                             <div class="video-header">
-                                <h2>Browse Videos</h2>
+                                <input type="text" id="search-bar" class="search-bar" placeholder="Search videos...">
                                 <div class="filter-buttons">
                                     <button class="filter-btn active" data-category="all">All</button>
                                     <button class="filter-btn" data-category="Nature">Nature</button>
@@ -1380,9 +1390,8 @@
                     <div class="form-group">
                         <label for="payment-method">Payment Method</label>
                         <select id="payment-method" name="paymentMethod">
-                            <option value="paypal">KBZ Pay</option>
-                            <option value="bank">Wave Pay</option>
-                            <option value="paypal">Binance Pay</option>
+                            <option value="paypal">PayPal</option>
+                            <option value="bank">Bank Transfer</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -1435,6 +1444,7 @@
             const sidebarProfile = document.getElementById('sidebar-profile');
 
             const videoGrid = document.getElementById('video-grid');
+            const searchBar = document.getElementById('search-bar');
             const filterButtons = document.querySelectorAll('.filter-btn');
             const videoPlayerView = document.getElementById('video-player-view');
             const videoIframe = document.getElementById('video-iframe');
@@ -1464,7 +1474,6 @@
             const videosWatchedValue = document.getElementById('videos-watched-value');
             const pointsHistoryTableBody = document.querySelector('#points-history-table tbody');
             
-            // Refactored Admin Dashboard IDs
             const adminTotalUsersValue = document.getElementById('admin-total-users-value');
             const adminTotalVideosValue = document.getElementById('admin-total-videos-value');
             const adminTotalPointsEarnedValue = document.getElementById('admin-total-points-earned-value');
@@ -1492,6 +1501,25 @@
             let videoCardToAnimate = null;
 
             const adminEmail = 'mr.ping2025@gmail.com';
+            
+            // Utility function to extract YouTube video ID from a URL
+            function getYouTubeId(url) {
+                const urlObj = new URL(url);
+                if (urlObj.hostname.includes('youtube.com')) {
+                    return urlObj.searchParams.get('v');
+                } else if (urlObj.hostname.includes('youtu.be')) {
+                    return urlObj.pathname.substring(1);
+                }
+                return null;
+            }
+
+            // Function to get a YouTube thumbnail
+            function getYouTubeThumbnail(videoId) {
+                if (videoId) {
+                    return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+                }
+                return 'https://placehold.co/400x225/1f3148/ffffff?text=Video';
+            }
             
             async function seedInitialData(user) {
                 try {
@@ -1895,18 +1923,46 @@
                 });
             }
 
-            function renderVideoGrid(category) {
+            function renderVideoGrid(category, searchQuery = '') {
                 const videoGrid = document.getElementById('video-grid');
                 if (!videoGrid) {
                     console.error("Video grid element not found.");
                     return;
                 }
                 videoGrid.innerHTML = '';
-                const filteredVideos = category === 'all' ? videos : videos.filter(video => video.category === category);
+                let filteredVideos = videos;
+
+                if (category !== 'all') {
+                    filteredVideos = filteredVideos.filter(video => video.category === category);
+                }
+
+                if (searchQuery) {
+                    const query = searchQuery.toLowerCase();
+                    filteredVideos = filteredVideos.filter(video => 
+                        video.title.toLowerCase().includes(query) || 
+                        video.description.toLowerCase().includes(query)
+                    );
+                }
+
+                if (filteredVideos.length === 0) {
+                     videoGrid.innerHTML = `<p style="text-align:center; color:#6c7e9e;">ဗီဒီယိုများ ရှာမတွေ့ပါ။</p>`;
+                     return;
+                }
+
                 filteredVideos.forEach(video => {
+                    let thumbnailUrl;
+                    // Get video thumbnail based on platform
+                    if (video.videoUrl.includes('youtube.com') || video.videoUrl.includes('youtu.be')) {
+                        const videoId = getYouTubeId(video.videoUrl);
+                        thumbnailUrl = getYouTubeThumbnail(videoId);
+                    } else {
+                        // Placeholder for TikTok and Facebook
+                        thumbnailUrl = 'https://placehold.co/400x225/1f3148/ffffff?text=Video';
+                    }
+
                     const videoCardHtml = `
                         <div class="video-card" data-category="${video.category}" data-video-url="${video.videoUrl}" data-video-id="${video.id}">
-                            <img src="https://placehold.co/400x225/1f3148/ffffff?text=Video" alt="${video.title}">
+                            <img src="${thumbnailUrl}" alt="${video.title}" onerror="this.onerror=null; this.src='https://placehold.co/400x225/1f3148/ffffff?text=Video';">
                             <span class="points-badge">${video.points} PTS</span>
                             <div class="video-info">
                                 <div class="category">${video.category}</div>
@@ -2310,12 +2366,34 @@
                 });
             });
 
+            if(searchBar) {
+                searchBar.addEventListener('input', () => {
+                     const activeFilterBtn = document.querySelector('.filter-btn.active');
+                     const category = activeFilterBtn ? activeFilterBtn.getAttribute('data-category') : 'all';
+                     renderVideoGrid(category, searchBar.value);
+                });
+            }
+
             if (addVideoBtn) {
                 addVideoBtn.addEventListener('click', () => {
                     if (addModalTitle) addModalTitle.textContent = "Add New Video";
                     if (addVideoForm) addVideoForm.reset();
                     if (addVideoForm) addVideoForm.removeAttribute('data-editing-id');
                     if (addVideoModal) addVideoModal.style.display = 'flex';
+                    // Update video category options
+                    const videoCategorySelect = document.getElementById('video-category');
+                    if (videoCategorySelect) {
+                        videoCategorySelect.innerHTML = `
+                            <option value="YouTube">YouTube</option>
+                            <option value="TikTok">TikTok</option>
+                            <option value="Facebook">Facebook</option>
+                            <option value="Nature">Nature</option>
+                            <option value="Education">Education</option>
+                            <option value="Travel">Travel</option>
+                            <option value="Food">Food</option>
+                            <option value="Gaming">Gaming</option>
+                        `;
+                    }
                 });
             }
 
@@ -2424,7 +2502,6 @@
             generateRandomChartData();
             showLoading();
             
-            // Refactored onAuthStateChanged to avoid duplicate code
             onAuthStateChanged(auth, async (user) => {
                 isAuthReady = true;
                 if (user) {
