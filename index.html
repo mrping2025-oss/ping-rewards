@@ -1639,6 +1639,7 @@
             let videoCardToAnimate = null;
 
             const adminEmail = 'mr.ping2025@gmail.com';
+            let isPointsAwarded = false; // Add a flag to track if points have been awarded for the current video.
             
             // Utility function to extract YouTube video ID from a URL
             function getYouTubeId(url) {
@@ -2297,10 +2298,10 @@
                             showView('video-player-view');
                             if (summaryOutput) summaryOutput.innerHTML = ''; // Clear previous summary
 
-                            let pointsEarnedInSession = false;
+                            isPointsAwarded = false; // Reset the flag for the new video
                             clearTimeout(window.videoWatchTimer);
                             window.videoWatchTimer = setTimeout(async () => {
-                                pointsEarnedInSession = true;
+                                isPointsAwarded = true; // Set the flag to true after timer ends
                                 console.log(`ဗီဒီယိုကြည့်ချိန်ပြည့်ပါပြီ။ အမှတ်ရရှိရန် 'Back to Videos' ကိုနှိပ်ပါ`);
                                 
                                 // Auto-award points and animate
@@ -2326,7 +2327,7 @@
                                     if (videoIframe) videoIframe.src = '';
                                     
                                     // If points were already earned in this session, don't award again
-                                    if (!pointsEarnedInSession) {
+                                    if (!isPointsAwarded) {
                                         console.log(`You did not watch the video for the required duration. No points were awarded.`);
                                     }
                                     showView('watch-videos-view');
