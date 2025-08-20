@@ -480,7 +480,8 @@
                         <thead class="bg-slate-700 text-slate-400 uppercase text-xs sticky top-0">
                             <tr>
                                 <th class="p-4 rounded-tl-lg">Date</th>
-                                <th class="p-4 rounded-tr-lg">Amount ($)</th>
+                                <th class="p-4">Amount ($)</th>
+                                <th class="p-4 rounded-tr-lg">Actions</th>
                             </tr>
                         </thead>
                         <tbody id="user-cashout-history-table-body" class="divide-y divide-slate-700">
@@ -815,21 +816,21 @@
                     const userDocSnap = await getDoc(userDocRef);
                     if (userDocSnap.exists()) {
                          const userData = userDocSnap.data();
-                         let newHistory = userData.pointsHistory.filter(item => 
-                            !(item.date === historyItem.date && item.description === historyItem.description && item.points === historyItem.points)
-                         );
-
-                         // Calculate the new points total
-                         let newPoints = userData.points - historyItem.points;
-                         if (newPoints < 0) newPoints = 0; // Prevent negative points
+                         // We need to use arrayRemove, which requires an exact match of the item.
+                         // So we'll get the item from the array directly.
+                         const itemToRemove = {
+                             date: historyItem.date,
+                             description: historyItem.description,
+                             points: historyItem.points
+                         };
 
                          await updateDoc(userDocRef, {
-                            pointsHistory: newHistory,
-                            points: newPoints
+                            pointsHistory: arrayRemove(itemToRemove),
+                            points: userData.points - itemToRemove.points
                          });
 
                          console.log("Points history item deleted and points updated.");
-
+                         
                          // Re-render the user history modal to reflect the changes
                          const updatedUserDoc = await getDoc(userDocRef);
                          const updatedUser = { id: targetUserId, ...updatedUserDoc.data() };
@@ -837,6 +838,40 @@
                     }
                 } catch (e) {
                     console.error("Error deleting history item:", e);
+                } finally {
+                    hideLoading();
+                }
+            }
+
+            async function deleteCashOutHistoryItem(targetUserId, historyItem) {
+                if (!targetUserId || !historyItem) return;
+                
+                showLoading();
+                try {
+                    const userDocRef = doc(db, `/artifacts/${appId}/users/${targetUserId}`);
+                    const userDocSnap = await getDoc(userDocRef);
+                    if (userDocSnap.exists()) {
+                         const userData = userDocSnap.data();
+                         // We need to use arrayRemove, which requires an exact match of the item.
+                         // So we'll get the item from the array directly.
+                         const itemToRemove = {
+                             date: historyItem.date,
+                             amount: historyItem.amount
+                         };
+
+                         await updateDoc(userDocRef, {
+                            payoutHistory: arrayRemove(itemToRemove)
+                         });
+
+                         console.log("Cash out history item deleted.");
+                         
+                         // Re-render the user history modal to reflect the changes
+                         const updatedUserDoc = await getDoc(userDocRef);
+                         const updatedUser = { id: targetUserId, ...updatedUserDoc.data() };
+                         renderUserHistoryTables(updatedUser);
+                    }
+                } catch (e) {
+                    console.error("Error deleting cash out history item:", e);
                 } finally {
                     hideLoading();
                 }
@@ -1246,7 +1281,7 @@
                             <td class="p-4">${item.description}</td>
                             <td class="p-4">${item.points}</td>
                             <td class="p-4">
-                               <button class="delete-history-btn px-3 py-1 bg-red-600 hover:bg-red-500 text-white text-xs rounded-lg transition-colors duration-200" data-history-index="${index}" data-user-id="${user.id}">Delete</button>
+                               <button class="delete-points-history-btn px-3 py-1 bg-red-600 hover:bg-red-500 text-white text-xs rounded-lg transition-colors duration-200" data-history-index="${index}" data-user-id="${user.id}">Delete</button>
                             </td>
                          `;
                          userHistoryTableBody.appendChild(row);
@@ -1259,30 +1294,46 @@
                 userCashoutHistoryTableBody.innerHTML = '';
                 const cashoutHistory = user.payoutHistory || [];
                 if (cashoutHistory.length > 0) {
-                    cashoutHistory.forEach(item => {
+                    cashoutHistory.forEach((item, index) => {
                         const row = document.createElement('tr');
                         row.className = 'hover:bg-slate-700 transition-colors duration-200';
                         row.innerHTML = `
                             <td class="p-4">${item.date}</td>
                             <td class="p-4">$${item.amount.toFixed(2)}</td>
+                            <td class="p-4">
+                                <button class="delete-cashout-history-btn px-3 py-1 bg-red-600 hover:bg-red-500 text-white text-xs rounded-lg transition-colors duration-200" data-history-index="${index}" data-user-id="${user.id}">Delete</button>
+                            </td>
                         `;
                         userCashoutHistoryTableBody.appendChild(row);
                     });
                 } else {
-                    userCashoutHistoryTableBody.innerHTML = `<tr><td colspan="2" class="p-4 text-center text-muted-text">No cash out history found.</td></tr>`;
+                    userCashoutHistoryTableBody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-muted-text">No cash out history found.</td></tr>`;
                 }
                 
-                 document.querySelectorAll('.delete-history-btn').forEach(btn => {
-                      btn.addEventListener('click', async () => {
-                          const historyIndex = parseInt(btn.getAttribute('data-history-index'));
-                          const targetUserId = btn.getAttribute('data-user-id');
-                          const user = cachedUsers.find(u => u.id === targetUserId);
-                          if (user && user.pointsHistory && user.pointsHistory[historyIndex]) {
-                               const historyItem = user.pointsHistory[historyIndex];
-                                await deletePointsHistoryItem(targetUserId, historyItem);
-                          }
-                      });
-                  });
+                // Attach new event listeners
+                document.querySelectorAll('.delete-points-history-btn').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        const historyIndex = parseInt(btn.getAttribute('data-history-index'));
+                        const targetUserId = btn.getAttribute('data-user-id');
+                        const user = cachedUsers.find(u => u.id === targetUserId);
+                        if (user && user.pointsHistory && user.pointsHistory[historyIndex]) {
+                            const historyItem = user.pointsHistory[historyIndex];
+                            await deletePointsHistoryItem(targetUserId, historyItem);
+                        }
+                    });
+                });
+
+                document.querySelectorAll('.delete-cashout-history-btn').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        const historyIndex = parseInt(btn.getAttribute('data-history-index'));
+                        const targetUserId = btn.getAttribute('data-user-id');
+                        const user = cachedUsers.find(u => u.id === targetUserId);
+                        if (user && user.payoutHistory && user.payoutHistory[historyIndex]) {
+                            const historyItem = user.payoutHistory[historyIndex];
+                            await deleteCashOutHistoryItem(targetUserId, historyItem);
+                        }
+                    });
+                });
             }
 
             function renderManageVideosTable() {
