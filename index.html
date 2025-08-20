@@ -816,8 +816,7 @@
                     const userDocSnap = await getDoc(userDocRef);
                     if (userDocSnap.exists()) {
                          const userData = userDocSnap.data();
-                         // We need to use arrayRemove, which requires an exact match of the item.
-                         // So we'll get the item from the array directly.
+                         // Find the exact item to remove from the array
                          const itemToRemove = {
                              date: historyItem.date,
                              description: historyItem.description,
@@ -837,7 +836,7 @@
                          renderUserHistoryTables(updatedUser);
                     }
                 } catch (e) {
-                    console.error("Error deleting history item:", e);
+                    console.error("Error deleting points history item:", e);
                 } finally {
                     hideLoading();
                 }
@@ -852,8 +851,7 @@
                     const userDocSnap = await getDoc(userDocRef);
                     if (userDocSnap.exists()) {
                          const userData = userDocSnap.data();
-                         // We need to use arrayRemove, which requires an exact match of the item.
-                         // So we'll get the item from the array directly.
+                         // Find the exact item to remove from the array
                          const itemToRemove = {
                              date: historyItem.date,
                              amount: historyItem.amount
