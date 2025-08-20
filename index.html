@@ -3,1399 +3,374 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!--     နမော တဿ ဘဂဝတော အရဟတော သမ္မာသမ္ဗုဒ္ဓဿ -->
     <title>Ping Rewards</title>
+    <!-- Use Inter font from Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"></script>
+    <!-- Tailwind CSS for a clean and modern design -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* General Styles for the entire app */
-        :root {
-            --bg-color: #2e3a59;
-            --sidebar-color: #1a1a2e;
-            --card-color: #16213e;
-            --text-color: #e0e0e0;
-            --primary-color: #9b59b6; /* Changed to vibrant purple */
-            --accent-green: #2ecc71;
-            --accent-purple: #9b59b6;
-            --accent-orange: #f39c12;
-            --border-color: rgba(155, 89, 182, 0.5); /* Semi-transparent purple border */
-            --active-bg: #4a3861; /* Darker purple for active state */
-            --modal-bg: rgba(0, 0, 0, 0.7);
-            --input-bg-color: #3b4b6b; /* Darker blue-grey for inputs */
-            --logo-color-primary: #3498db;
-            --logo-color-secondary: #9b59b6;
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
+        /* Custom styles to override or add specific features */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            overflow-x: hidden; /* Prevent horizontal scroll on drawer open */
+            background-color: #1a1a2e;
+            color: #e0e0e0;
         }
-        
-        /* Mobile-first approach for main container */
         .main-container {
-            display: flex;
-            flex-direction: column; /* Stack on mobile */
-            width: 100%;
             min-height: 100vh;
         }
-
-        /* Login Page Styles */
-        .login-page-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            width: 100%;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        .login-container {
-            text-align: center;
-            width: 100%;
-            max-width: 400px;
-        }
-
-        .logo-container {
-            margin-bottom: 2rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .logo-container svg {
-            width: 80px;
-            height: 80px;
-        }
-
-        .logo-text {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-top: 10px;
-            color: #bdc3c7;
-        }
-
-        .logo-rewards {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--primary-color);
-        }
-
-        .tagline {
-            font-size: 1rem;
-            color: #bdc3c7;
-            margin-top: 5px;
-        }
-
-        .login-card {
-            background-color: var(--card-color);
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            border: 1px solid var(--border-color);
-        }
-
-        .login-card h2 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-top: 0;
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-            text-align: left;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 12px;
-            background-color: var(--input-bg-color);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-color);
-            font-size: 1rem;
-            box-sizing: border-box;
-            transition: border-color 0.3s;
-        }
-
-        .form-group input::placeholder {
-            color: #6c7e9e;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-        
-        .google-sign-in-btn {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(45deg, #3498db, #4285F4);
-            color: #ffffff;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        .google-sign-in-btn:hover {
-            background: linear-gradient(45deg, #2980b9, #357ae8);
-        }
-
-        .google-sign-in-btn svg {
-            width: 20px;
-            height: 20px;
-        }
-        
-        .login-message {
-            color: #e74c3c;
-            text-align: center;
-            margin-top: 10px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            display: none;
-        }
-
-        /* Drawer Sidebar Styles */
-        .app-content {
-            flex-grow: 1;
-            padding: 20px;
-            transition: transform 0.3s ease;
-        }
-
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 250px;
-            height: 100vh;
-            background-color: var(--sidebar-color);
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            transform: translateX(-100%);
-            transition: transform 0.3s ease;
-            z-index: 100;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.5);
-        }
-
-        .sidebar.open {
-            transform: translateX(0);
-        }
-        
-        .backdrop {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 99;
-            display: none;
-        }
-        
-        body.sidebar-open .backdrop {
-            display: block;
-        }
-        
-        /* Tablet and Desktop Styles */
-        @media (min-width: 768px) {
-            .main-container {
-                flex-direction: row; /* Side-by-side on desktop */
-            }
-            .sidebar {
-                transform: translateX(0);
-                position: relative;
-                box-shadow: none;
-            }
-            .app-content {
-                padding: 40px;
-            }
-            .header .menu-toggle {
-                display: none !important; /* Hide menu toggle on desktop */
-            }
-        }
-        
-        .sidebar-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-
-        .sidebar-header .logo-icon {
-            width: 40px;
-            height: 40px;
-        }
-        
-        .sidebar-header .logo-text {
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin-left: 10px;
-            color: #bdc3c7;
-        }
-
-        .sidebar-header .logo-rewards {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--primary-color);
-            margin-left: 10px;
-        }
-
-
-        .nav-links {
-            flex-grow: 1;
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .nav-links a {
-            display: flex;
-            align-items: center;
-            padding: 15px 20px;
-            color: #bdc3c7;
-            text-decoration: none;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            transition: background-color 0.3s, color 0.3s;
-            cursor: pointer;
-        }
-
-        .nav-links a.active {
-            background-color: var(--active-bg);
-            color: var(--text-color);
-        }
-
-        .nav-links a:hover {
-            background-color: var(--active-bg);
-            color: var(--text-color);
-        }
-
-        .nav-links svg {
-            width: 24px;
-            height: 24px;
-            fill: currentColor;
-            margin-right: 15px;
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            padding: 20px 0;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .user-profile img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 15px;
-        }
-
-        .user-info .name {
-            font-weight: 600;
-        }
-
-        .user-info .role {
-            font-size: 0.8rem;
-            color: #bdc3c7;
-        }
-
-        .main-content {
-            flex-grow: 1;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .header h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin: 0;
-            display: flex;
-            align-items: center;
-        }
-        
-        .header .menu-toggle {
-            display: block;
-            background: none;
-            border: none;
-            padding: 0;
-            cursor: pointer;
-            margin-right: 10px;
-        }
-        
-        .header .menu-toggle svg {
-            width: 24px;
-            height: 24px;
-            fill: var(--text-color);
-        }
-
-        .user-meta, .admin-meta {
-            display: none; /* Hide on mobile */
-        }
-        @media (min-width: 768px) {
-            .user-meta, .admin-meta {
-                display: flex; /* Show on desktop */
-                align-items: center;
-                color: #bdc3c7;
-            }
-        }
-        
-
-        .user-meta .meta-item, .admin-meta .meta-item {
-            display: flex;
-            align-items: center;
-            margin-left: 20px;
-        }
-
-        .user-meta .meta-item img {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            margin-left: 10px;
-        }
-
-        .user-meta .meta-item span, .admin-meta .meta-item span {
-            font-weight: 600;
-        }
-
-        .user-meta .meta-item .role, .admin-meta .meta-item .role {
-            font-size: 0.8rem;
-            color: #6c7e9e;
-            margin-left: 5px;
-        }
-
-        .user-meta .logout-btn, .admin-meta .logout-btn {
-            background: none;
-            border: none;
-            color: #bdc3c7;
-            cursor: pointer;
-            margin-left: 10px;
-        }
-
-        .user-meta .logout-btn svg, .admin-meta .logout-btn svg {
-            width: 20px;
-            height: 20px;
-            fill: currentColor;
-        }
-        
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--modal-bg);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1002;
-        }
-
-        .loading-spinner {
-            border: 4px solid var(--text-color);
-            border-top: 4px solid var(--primary-color);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-
-        /* Dashboard specific styles */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
         .card {
-            background-color: var(--card-color);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            position: relative;
-            border: 1px solid var(--border-color);
+            background-color: #16213e;
+            border: 1px solid rgba(155, 89, 182, 0.5);
         }
-
-        .card h2 {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin: 0 0 10px 0;
+        .text-primary-color {
+            color: #9b59b6;
         }
-
-        .card .value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--primary-color);
+        .bg-primary-color {
+            background-color: #9b59b6;
         }
-
-        .card .value.green { color: var(--accent-green); }
-        .card .value.purple { color: var(--accent-purple); }
-
-        .welcome-card {
-            grid-column: 1 / -1;
-            padding: 30px;
-            background-color: var(--input-bg-color);
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            text-align: center;
-        }
-
-        @media (min-width: 500px) {
-            .welcome-card {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-            }
-        }
-        .welcome-card h2 {
-            font-size: 1.5rem;
-            margin-bottom: 5px;
-        }
-
-        .watch-btn {
-            background-color: var(--primary-color);
-            color: #ffffff;
-            padding: 10px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            text-align: center;
-        }
-        
-        .quick-actions {
-            margin-bottom: 20px;
-        }
-
-        .quick-actions h2 {
-            font-size: 1.2rem;
-        }
-
-        .quick-actions-buttons a {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: var(--card-color);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            margin-right: 10px;
-            color: var(--text-color);
-            text-decoration: none;
-            transition: background-color 0.3s;
-            cursor: pointer;
-        }
-
-        .quick-actions-buttons a:hover {
-            background-color: var(--active-bg);
-        }
-
-        .conversion-card {
-            grid-column: 1 / -1;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            text-align: center;
-            background-color: var(--input-bg-color);
-            padding: 20px;
-            border-radius: 12px;
-        }
-        @media (min-width: 500px) {
-            .conversion-card {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-            }
-        }
-
-        .cashout-btn {
-            background-color: var(--primary-color);
-            color: #ffffff;
-            padding: 10px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-        }
-        
-        .stat-card {
-            display: flex;
-            align-items: center;
-            background-color: var(--card-color);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            position: relative;
-            border: 1px solid var(--border-color);
-        }
-        
-        .stat-card .icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-right: 15px;
-            background-color: rgba(155, 89, 182, 0.2);
-        }
-
-        .stat-card .icon.purple { background-color: rgba(155, 89, 182, 0.2); }
-        .stat-card .icon.green { background-color: rgba(46, 204, 113, 0.2); }
-        .stat-card .icon.orange { background-color: rgba(243, 156, 18, 0.2); }
-
-        .stat-card .icon svg {
-            width: 24px;
-            height: 24px;
-            fill: var(--primary-color);
-        }
-
-        .stat-card .icon.purple svg { fill: var(--accent-purple); }
-        .stat-card .icon.green svg { fill: var(--accent-green); }
-        .stat-card .icon.orange svg { fill: var(--accent-orange); }
-
-        .stat-content h3 {
-            margin: 0;
-            font-size: 1.2rem;
-            color: #bdc3c7;
-        }
-
-        .stat-content .value {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-top: 5px;
-        }
-
-        .chart-container {
-            background-color: var(--card-color);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            border: 1px solid var(--border-color);
-        }
-
-        .chart-container h2 {
-            margin: 0 0 20px 0;
-            font-size: 1.2rem;
-            font-weight: 600;
-        }
-
-        .bar-chart {
-            display: flex;
-            align-items: flex-end;
-            height: 250px;
-            padding-bottom: 30px;
-            border-left: 2px solid #555;
-            border-bottom: 2px solid #555;
-            position: relative;
-        }
-        .bar-chart::before { content: "8"; position: absolute; left: -20px; top: 0; color: #bdc3c7; font-size: 0.8rem; }
-        .bar-chart::after { content: "0"; position: absolute; left: -20px; bottom: -20px; color: #bdc3c7; font-size: 0.8rem; }
-        .bar-chart .bar {
-            width: 12%;
-            margin: 0 2%;
-            background: linear-gradient(to top, var(--primary-color), var(--accent-purple));
-            position: relative;
-            transition: height 0.5s ease-in-out;
-        }
-        .bar-chart .bar-label {
-            position: absolute; bottom: -25px; left: 50%; transform: translateX(-50%);
-            color: #bdc3c7; font-size: 0.8rem;
-        }
-        
-        /* Video Browse Styles */
-        .video-browse {
-            padding: 20px 0;
-        }
-
-        .video-browse .video-header {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        @media (min-width: 600px) {
-            .video-browse .video-header {
-                flex-direction: row;
-                align-items: center;
-                flex-wrap: nowrap;
-            }
-        }
-
-        .video-browse .search-bar {
-            flex-grow: 1;
-            width: 100%;
-            padding: 8px 16px;
-            border-radius: 20px;
-            border: 1px solid var(--border-color);
-            background-color: var(--input-bg-color);
-            color: var(--text-color);
-        }
-        @media (min-width: 600px) {
-            .video-browse .search-bar {
-                width: auto;
-            }
-        }
-
-        .video-browse .filter-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-        }
-
-        .video-browse .filter-buttons button {
-            background-color: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
+        .btn-primary {
+            background-color: #9b59b6;
             transition: background-color 0.3s;
         }
-
-        .video-browse .filter-buttons button.active,
-        .video-browse .filter-buttons button:hover {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-
-        .video-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-
-        .video-card {
-            background-color: var(--card-color);
-            border-radius: 12px;
-            overflow: hidden;
-            position: relative;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            border: 1px solid var(--border-color);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .video-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .video-card img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            display: block;
-        }
-        /* Video thumbnail improvements */
-        .video-thumbnail-container {
-            position: relative;
-            width: 100%;
-            height: 150px;
-            overflow: hidden;
-            border-radius: 12px;
-        }
-        .video-thumbnail-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s ease-in-out;
-        }
-        .video-card:hover .video-thumbnail-container img {
-            transform: scale(1.05);
-        }
-        .thumbnail-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.3);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            transition: opacity 0.3s ease-in-out;
-        }
-        .video-card:hover .thumbnail-overlay {
-            opacity: 1;
-        }
-        .play-icon {
-            width: 60px;
-            height: 60px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-            border: 2px solid rgba(255, 255, 255, 0.5);
-        }
-        .play-icon svg {
-            width: 24px;
-            height: 24px;
-            fill: #fff;
-            transform: translateX(2px);
-        }
-
-        .duration-badge {
-            position: absolute;
-            bottom: 8px;
-            right: 8px;
-            background-color: rgba(0, 0, 0, 0.8);
-            color: #fff;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .video-card .points-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: linear-gradient(45deg, #2e3a59, #9b59b6);
-            color: #fff;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .video-card .video-info {
-            padding: 15px;
-        }
-
-        .video-card .video-info .category {
-            font-size: 0.8rem;
-            color: #bdc3c7;
-            margin-bottom: 5px;
-        }
-
-        .video-card .video-info .title {
-            font-size: 1rem;
-            font-weight: 600;
-            margin: 0 0 5px 0;
-        }
-
-        .video-card .video-info .description {
-            font-size: 0.8rem;
-            color: #6c7e9e;
-            margin: 0;
-        }
-
-        .video-player-view {
-            padding: 20px;
-        }
-
-        .video-player-view h2 {
-            margin-top: 0;
-        }
-
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%; /* 16:9 aspect ratio */
-            height: 0;
-            margin-top: 20px;
-        }
-        
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-        }
-
-        .video-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .video-actions .action-btn {
-            background-color: var(--primary-color);
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background-color 0.3s;
-        }
-
-        .video-actions .action-btn:hover {
+        .btn-primary:hover {
             background-color: #7d498f;
         }
-
-        /* Points History Styles */
-        .points-history {
-            padding: 20px 0;
-        }
-
-        .points-history table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        .points-history th, .points-history td {
-            text-align: left;
-            padding: 15px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .points-history th {
-            font-weight: 600;
-            color: #bdc3c7;
-            text-transform: uppercase;
-            font-size: 0.9rem;
-        }
-
-        .points-history tbody tr:hover {
-            background-color: var(--input-bg-color);
-        }
-
-        .points-history .status-icon {
-            width: 18px;
-            height: 18px;
-            fill: var(--accent-green);
-            vertical-align: middle;
-            margin-right: 5px;
-        }
-
-        /* Manage Videos Styles */
-        .manage-videos {
-            padding: 20px 0;
-        }
-
-        .manage-videos-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .manage-videos-header h2 {
-            margin: 0;
-            font-size: 1.5rem;
-        }
-
-        .add-video-btn {
-            background-color: var(--primary-color);
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .manage-videos table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        .manage-videos th, .manage-videos td {
-            text-align: left;
-            padding: 15px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .manage-videos th {
-            font-weight: 600;
-            color: #bdc3c7;
-            text-transform: uppercase;
-            font-size: 0.9rem;
-        }
-
-        .manage-videos .actions-btn {
-            color: var(--primary-color);
-            text-decoration: none;
-            margin-right: 15px;
-            cursor: pointer;
-        }
-        
-        /* Manage Users Styles */
-        .manage-users table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        
-        .manage-users th, .manage-users td {
-            text-align: left;
-            padding: 15px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        .manage-users th {
-            font-weight: 600;
-            color: #bdc3c7;
-            text-transform: uppercase;
-            font-size: 0.9rem;
-        }
-        
-        .manage-users .actions-btn {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 0.9rem;
-            cursor: pointer;
-            border: none;
-        }
-        
-        .manage-users .actions-btn.toggle-role-btn {
-            background-color: var(--accent-purple);
-        }
-        
-        .manage-users .actions-btn.view-history-btn {
-            background-color: var(--accent-green);
-        }
-        
-        .user-id-short {
-            font-family: monospace;
-            font-size: 0.9em;
-            color: #8c96b0;
-        }
-
-        /* Modal Styles */
         .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--modal-bg);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
         }
-
-        .modal-content {
-            background-color: var(--card-color);
-            padding: 30px;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 500px;
-            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.4);
-            border: 1px solid var(--border-color);
-        }
-
-        .modal-content h3 {
-            margin-top: 0;
-        }
-
-        .modal-form .form-group {
-            margin-bottom: 15px;
-        }
-
-        .modal-form label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-        }
-
-        .modal-form input, .modal-form textarea, .modal-form select {
-            width: 100%;
-            padding: 10px;
-            background-color: var(--input-bg-color);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-color);
-            appearance: none;
-            -webkit-appearance: none;
-        }
-        
-        .modal-form select {
-            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23e0e0e0%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.5H18.4c-5.5%200-10.5%202.1-14.4%205.5-3.9%203.4-5.9%207.9-5.9%2012.4%200%204.6%202.2%209.1%206.1%2012.5l128.8%20127.9c3.7%203.6%208.7%205.7%2013.9%205.7s10.1-2.1%2013.9-5.7l128.8-127.9c3.9-3.4%206.1-7.9%206.1-12.5.1-4.5-1.9-9-5.8-12.4z%22%2F%3E%3C%2Fsvg%3E');
-            background-repeat: no-repeat;
-            background-position: right 10px top 50%;
-            background-size: 12px;
-        }
-        
-        .modal-message {
-            color: #e74c3c;
-            text-align: center;
-            margin-top: 10px;
-            font-weight: 600;
-        }
-
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .modal-actions button {
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            border: none;
-        }
-
-        .modal-actions .cancel-btn {
-            background-color: #555;
+        .nav-link.active {
+            background-color: #4a3861;
             color: #fff;
         }
-
-        .modal-actions .save-btn {
-            background-color: var(--primary-color);
-            color: #fff;
+        .loading-overlay {
+            background-color: rgba(0, 0, 0, 0.7);
         }
-
-        /* Coin Animation Styles */
-        .coin {
-            position: absolute;
-            background-color: gold;
-            width: 15px;
-            height: 15px;
-            border-radius: 50%;
-            opacity: 1;
-            transform: scale(1);
-            transition: transform 1s, opacity 1s, top 1s, left 1s;
-            z-index: 100;
+        .input-bg {
+            background-color: #3b4b6b;
+        }
+        .gradient-bg {
+            background: linear-gradient(45deg, #2e3a59, #9b59b6);
         }
         .coin-animation-active {
             transform: scale(0.5);
             opacity: 0;
+        }
+        /* Mobile menu specific styles */
+        .sidebar {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        .sidebar.open {
+            transform: translateX(0);
+        }
+        .backdrop {
+            display: none;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .sidebar-open .backdrop {
+            display: block;
         }
     </style>
 </head>
 <body>
 
     <!-- Loading Overlay -->
-    <div id="loading-overlay" class="loading-overlay" style="display: none;">
-        <div class="loading-spinner"></div>
+    <div id="loading-overlay" class="loading-overlay fixed inset-0 flex items-center justify-center z-[1002] hidden">
+        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-purple-500"></div>
     </div>
 
     <!-- Login Page View -->
-    <div id="login-page" class="view" style="display: flex;">
-        <div class="login-page-container">
-            <div class="login-container">
-                <div class="logo-container">
-                    <!-- Updated SVG logo based on user's image -->
-                    <svg width="100" height="100" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M64.0007 128C99.3465 128 128.001 99.3458 128.001 64.0007C128.001 28.6556 99.3465 0 64.0007 0C28.6556 0 0 28.6556 0 64.0007C0 81.3323 7.02604 97.0223 18.3072 108.995L18.3375 109.027L18.3496 109.043C19.167 109.845 20.3061 110.334 21.5794 110.334C22.2575 110.334 22.9554 110.155 23.5855 109.789L35.4339 102.825C37.0709 101.884 37.6698 99.7845 36.8378 98.1132C35.0874 94.6192 34.0007 90.4124 34.0007 86.0007C34.0007 65.5658 50.5658 49.0007 71.0007 49.0007C91.4357 49.0007 108 65.5658 108 86.0007C108 97.2721 102.883 107.219 94.4022 113.844L94.4173 113.856C95.2351 114.658 96.3746 115.147 97.6482 115.147C98.3265 115.147 99.0245 114.968 99.6548 114.602L111.503 107.638C113.14 106.697 113.739 104.597 112.907 102.926C111.157 99.4323 110.071 95.2255 110.071 90.8138V64.0007C110.071 39.7368 89.2646 19.0007 64.0007 19.0007C38.7368 19.0007 19.0007 39.7368 19.0007 64.0007C19.0007 72.8228 21.6033 81.0425 26.2415 87.8967L26.2483 87.9067C27.0657 88.7086 28.2047 89.1979 29.478 89.1979C30.1561 89.1979 30.854 89.0189 31.4841 88.6528L43.3325 81.6888C44.9695 80.7482 45.5684 78.6485 44.7364 76.9772C42.986 73.4831 41.9001 69.2764 41.9001 64.8647C41.9001 44.4297 58.4652 27.8647 78.9001 27.8647C99.3351 27.8647 116 44.4297 116 64.8647C116 76.1361 110.883 86.0825 102.402 92.7077V64.0007C102.402 46.5492 84.4447 32.0007 64.0007 32.0007C43.5566 32.0007 26.0007 46.5492 26.0007 64.0007C26.0007 72.8228 28.6033 81.0425 33.2415 87.8967L33.2483 87.9067C34.0657 88.7086 35.2047 89.1979 36.478 89.1979C37.1561 89.1979 37.854 89.0189 38.4841 88.6528L50.3325 81.6888C51.9695 80.7482 52.5684 78.6485 51.7364 76.9772C49.986 73.4831 41.9001 69.2764 41.9001 64.8647C41.9001 44.4297 65.4652 27.8647 85.9001 27.8647C106.335 27.8647 122.9 44.4297 122.9 64.8647V101.996C122.9 105.748 120.916 109.117 117.898 111.189L108.575 117.48C107.037 118.528 105.105 119.06 103.179 119.06C99.4172 119.06 95.897 117.29 93.9936 114.28L85.2913 100.865C83.9113 98.7758 81.1685 98.1565 78.9669 99.3087C76.7654 100.461 76.1039 103.22 77.2921 105.421L85.9944 118.836C87.4827 121.054 88.761 122.788 90.0007 124.001C88.0872 125.864 85.7335 127.345 83.176 128.36L64.0007 128ZM39.6997 64.0007C39.6997 45.4754 55.4754 29.6997 74.0007 29.6997C92.526 29.6997 108.301 45.4754 108.301 64.0007C108.301 82.526 92.526 98.3017 74.0007 98.3017C55.4754 98.3017 39.6997 82.526 39.6997 64.0007ZM74.0007 88.0007C79.5236 88.0007 84.0007 83.5236 84.0007 78.0007C84.0007 72.4778 79.5236 68.0007 74.0007 68.0007C68.4778 68.0007 64.0007 72.4778 64.0007 78.0007C64.0007 83.5236 68.4778 88.0007 74.0007 88.0007ZM74.0007 58.0007C85.0463 58.0007 94.0007 66.9551 94.0007 78.0007C94.0007 89.0463 85.0463 98.0007 74.0007 98.0007C62.9551 98.0007 54.0007 89.0463 54.0007 78.0007C54.0007 66.9551 62.9551 58.0007 74.0007 58.0007ZM74.0007 90.0007C86.1504 90.0007 96.0007 79.3756 96.0007 66.0007C96.0007 52.6258 86.1504 42.0007 74.0007 42.0007C61.851 42.0007 52.0007 52.6258 52.0007 66.0007C52.0007 79.3756 61.851 90.0007 74.0007 90.0007Z" fill="#3498DB"/>
+    <div id="login-page" class="view flex items-center justify-center min-h-screen p-4">
+        <div class="text-center w-full max-w-sm">
+            <div class="flex flex-col items-center justify-center mb-8">
+                <!-- Updated SVG logo -->
+                <svg class="w-20 h-20 text-blue-500" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M64.0007 128C99.3465 128 128.001 99.3458 128.001 64.0007C128.001 28.6556 99.3465 0 64.0007 0C28.6556 0 0 28.6556 0 64.0007C0 81.3323 7.02604 97.0223 18.3072 108.995L18.3375 109.027L18.3496 109.043C19.167 109.845 20.3061 110.334 21.5794 110.334C22.2575 110.334 22.9554 110.155 23.5855 109.789L35.4339 102.825C37.0709 101.884 37.6698 99.7845 36.8378 98.1132C35.0874 94.6192 34.0007 90.4124 34.0007 86.0007C34.0007 65.5658 50.5658 49.0007 71.0007 49.0007C91.4357 49.0007 108 65.5658 108 86.0007C108 97.2721 102.883 107.219 94.4022 113.844L94.4173 113.856C95.2351 114.658 96.3746 115.147 97.6482 115.147C98.3265 115.147 99.0245 114.968 99.6548 114.602L111.503 107.638C113.14 106.697 113.739 104.597 112.907 102.926C111.157 99.4323 110.071 95.2255 110.071 90.8138V64.0007C110.071 39.7368 89.2646 19.0007 64.0007 19.0007C38.7368 19.0007 19.0007 39.7368 19.0007 64.0007C19.0007 72.8228 21.6033 81.0425 26.2415 87.8967L26.2483 87.9067C27.0657 88.7086 28.2047 89.1979 29.478 89.1979C30.1561 89.1979 30.854 89.0189 31.4841 88.6528L43.3325 81.6888C44.9695 80.7482 45.5684 78.6485 44.7364 76.9772C42.986 73.4831 41.9001 69.2764 41.9001 64.8647C41.9001 44.4297 58.4652 27.8647 78.9001 27.8647C99.3351 27.8647 116 44.4297 116 64.8647C116 76.1361 110.883 86.0825 102.402 92.7077V64.0007C102.402 46.5492 84.4447 32.0007 64.0007 32.0007C43.5566 32.0007 26.0007 46.5492 26.0007 64.0007C26.0007 72.8228 28.6033 81.0425 33.2415 87.8967L33.2483 87.9067C34.0657 88.7086 35.2047 89.1979 36.478 89.1979C37.1561 89.1979 37.854 89.0189 38.4841 88.6528L50.3325 81.6888C51.9695 80.7482 52.5684 78.6485 51.7364 76.9772C49.986 73.4831 41.9001 69.2764 41.9001 64.8647C41.9001 44.4297 65.4652 27.8647 85.9001 27.8647C106.335 27.8647 122.9 44.4297 122.9 64.8647V101.996C122.9 105.748 120.916 109.117 117.898 111.189L108.575 117.48C107.037 118.528 105.105 119.06 103.179 119.06C99.4172 119.06 95.897 117.29 93.9936 114.28L85.2913 100.865C83.9113 98.7758 81.1685 98.1565 78.9669 99.3087C76.7654 100.461 76.1039 103.22 77.2921 105.421L85.9944 118.836C87.4827 121.054 88.761 122.788 90.0007 124.001C88.0872 125.864 85.7335 127.345 83.176 128.36L64.0007 128ZM39.6997 64.0007C39.6997 45.4754 55.4754 29.6997 74.0007 29.6997C92.526 29.6997 108.301 45.4754 108.301 64.0007C108.301 82.526 92.526 98.3017 74.0007 98.3017C55.4754 98.3017 39.6997 82.526 39.6997 64.0007ZM74.0007 88.0007C79.5236 88.0007 84.0007 83.5236 84.0007 78.0007C84.0007 72.4778 79.5236 68.0007 74.0007 68.0007C68.4778 68.0007 64.0007 72.4778 64.0007 78.0007C64.0007 83.5236 68.4778 88.0007 74.0007 88.0007ZM74.0007 58.0007C85.0463 58.0007 94.0007 66.9551 94.0007 78.0007C94.0007 89.0463 85.0463 98.0007 74.0007 98.0007C62.9551 98.0007 54.0007 89.0463 54.0007 78.0007C54.0007 66.9551 62.9551 58.0007 74.0007 58.0007ZM74.0007 90.0007C86.1504 90.0007 96.0007 79.3756 96.0007 66.0007C96.0007 52.6258 86.1504 42.0007 74.0007 42.0007C61.851 42.0007 52.0007 52.6258 52.0007 66.0007C52.0007 79.3756 61.851 90.0007 74.0007 90.0007Z" fill="currentColor"/>
+                </svg>
+                <div class="text-3xl font-bold mt-2 text-gray-400">PING</div>
+                <div class="text-xl font-semibold text-primary-color">REWARDS</div>
+            </div>
+            <div class="bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-700">
+                <h2 class="text-2xl font-semibold mb-6 text-white">ပြန်လာပါပြီနော်</h2>
+                <p id="login-message" class="text-red-500 text-center text-sm font-semibold mb-4 hidden"></p>
+                <button id="google-sign-in-btn" class="w-full py-3 bg-white text-gray-800 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-gray-200 transition">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.4 12.2c0-.7-.1-1.3-.2-1.9H12v3.8h5.3c-.2 1.2-.8 2.2-1.6 3l3.2 2.5c2.1-1.9 3.4-4.7 3.4-8.4z"/>
+                        <path fill="#34A853" d="M12 22c3.2 0 5.9-1.1 7.8-3l-3.2-2.5c-1 1.2-2.3 1.9-4.6 1.9-3.5 0-6.5-2.4-7.6-5.6l-3.3 2.5c1.4 2.8 4.4 4.8 7.9 4.8z"/>
+                        <path fill="#FBBC04" d="M4.4 12.2c0-1.6.4-3.1 1.2-4.4L2.3 5.4C.9 7.7 0 10 0 12.2c0 2.2.9 4.5 2.3 6.8l3.3-2.4c-.8-1.3-1.2-2.8-1-1.4z"/>
+                        <path fill="#EA4335" d="M12 4.1c1.8 0 3.3.6 4.6 1.8L19.4 3C17.5 1.1 14.8 0 12 0c-3.5 0-6.5 2-7.9 4.8l3.3 2.4C8.7 5.7 10.2 5 12 5z"/>
                     </svg>
-                    <div class="logo-text">PING</div>
-                    <div class="logo-rewards">REWARDS</div>
-                </div>
-                <div class="login-card">
-                    <h2>Welcome Back</h2>
-                    <p id="login-message" class="login-message"></p>
-                    <button id="google-sign-in-btn" class="google-sign-in-btn">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                            <path fill="#ffffff" d="M22.4 12.2c0-.7-.1-1.3-.2-1.9H12v3.8h5.3c-.2 1.2-.8 2.2-1.6 3l3.2 2.5c2.1-1.9 3.4-4.7 3.4-8.4z"/>
-                            <path fill="#ffffff" d="M12 22c3.2 0 5.9-1.1 7.8-3l-3.2-2.5c-1 1.2-2.3 1.9-4.6 1.9-3.5 0-6.5-2.4-7.6-5.6l-3.3 2.5c1.4 2.8 4.4 4.8 7.9 4.8z"/>
-                            <path fill="#ffffff" d="M4.4 12.2c0-1.6.4-3.1 1.2-4.4L2.3 5.4C.9 7.7 0 10 0 12.2c0 2.2.9 4.5 2.3 6.8l3.3-2.4c-.8-1.3-1.2-2.8-1-1.4z"/>
-                            <path fill="#ffffff" d="M12 4.1c1.8 0 3.3.6 4.6 1.8L19.4 3C17.5 1.1 14.8 0 12 0c-3.5 0-6.5 2-7.9 4.8l3.3 2.4C8.7 5.7 10.2 5 12 5z"/>
-                        </svg>
-                        Sign in with Google
-                    </button>
-                </div>
+                    Google ဖြင့် ဝင်ပါ
+                </button>
             </div>
         </div>
     </div>
     
     <!-- Main Application Container (Hidden initially) -->
-    <div id="app-container" class="view" style="display: none;">
-        <div class="main-container">
+    <div id="app-container" class="view hidden">
+        <div class="main-container flex flex-col md:flex-row bg-[#2e3a59]">
             <!-- Sidebar -->
-            <div id="sidebar" class="sidebar">
-                <div class="sidebar-header">
-                    <svg class="logo-icon" width="40" height="40" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M64.0007 128C99.3465 128 128.001 99.3458 128.001 64.0007C128.001 28.6556 99.3465 0 64.0007 0C28.6556 0 0 28.6556 0 64.0007C0 81.3323 7.02604 97.0223 18.3072 108.995L18.3375 109.027L18.3496 109.043C19.167 109.845 20.3061 110.334 21.5794 110.334C22.2575 110.334 22.9554 110.155 23.5855 109.789L35.4339 102.825C37.0709 101.884 37.6698 99.7845 36.8378 98.1132C35.0874 94.6192 34.0007 90.4124 34.0007 86.0007C34.0007 65.5658 50.5658 49.0007 71.0007 49.0007C91.4357 49.0007 108 65.5658 108 86.0007C108 97.2721 102.883 107.219 94.4022 113.844L94.4173 113.856C95.2351 114.658 96.3746 115.147 97.6482 115.147C98.3265 115.147 99.0245 114.968 99.6548 114.602L111.503 107.638C113.14 106.697 113.739 104.597 112.907 102.926C111.157 99.4323 110.071 95.2255 110.071 90.8138V64.0007C110.071 39.7368 89.2646 19.0007 64.0007 19.0007C38.7368 19.0007 19.0007 39.7368 19.0007 64.0007C19.0007 72.8228 21.6033 81.0425 26.2415 87.8967L26.2483 87.9067C27.0657 88.7086 28.2047 89.1979 29.478 89.1979C30.1561 89.1979 30.854 89.0189 31.4841 88.6528L43.3325 81.6888C44.9695 80.7482 45.5684 78.6485 44.7364 76.9772C42.986 73.4831 41.9001 69.2764 41.9001 64.8647C41.9001 44.4297 58.4652 27.8647 78.9001 27.8647C99.3351 27.8647 116 44.4297 116 64.8647C116 76.1361 110.883 86.0825 102.402 92.7077V64.0007C102.402 46.5492 84.4447 32.0007 64.0007 32.0007C43.5566 32.0007 26.0007 46.5492 26.0007 64.0007C26.0007 72.8228 28.6033 81.0425 33.2415 87.8967L33.2483 87.9067C34.0657 88.7086 35.2047 89.1979 36.478 89.1979C37.1561 89.1979 37.854 89.0189 38.4841 88.6528L50.3325 81.6888C51.9695 80.7482 52.5684 78.6485 51.7364 76.9772C49.986 73.4831 41.9001 69.2764 41.9001 64.8647C41.9001 44.4297 65.4652 27.8647 85.9001 27.8647C106.335 27.8647 122.9 44.4297 122.9 64.8647V101.996C122.9 105.748 120.916 109.117 117.898 111.189L108.575 117.48C107.037 118.528 105.105 119.06 103.179 119.06C99.4172 119.06 95.897 117.29 93.9936 114.28L85.2913 100.865C83.9113 98.7758 81.1685 98.1565 78.9669 99.3087C76.7654 100.461 76.1039 103.22 77.2921 105.421L85.9944 118.836C87.4827 121.054 88.761 122.788 90.0007 124.001C88.0872 125.864 85.7335 127.345 83.176 128.36L64.0007 128ZM39.6997 64.0007C39.6997 45.4754 55.4754 29.6997 74.0007 29.6997C92.526 29.6997 108.301 45.4754 108.301 64.0007C108.301 82.526 92.526 98.3017 74.0007 98.3017C55.4754 98.3017 39.6997 82.526 39.6997 64.0007ZM74.0007 88.0007C79.5236 88.0007 84.0007 83.5236 84.0007 78.0007C84.0007 72.4778 79.5236 68.0007 74.0007 68.0007C68.4778 68.0007 64.0007 72.4778 64.0007 78.0007C64.0007 83.5236 68.4778 88.0007 74.0007 88.0007ZM74.0007 58.0007C85.0463 58.0007 94.0007 66.9551 94.0007 78.0007C94.0007 89.0463 85.0463 98.0007 74.0007 98.0007C62.9551 98.0007 54.0007 89.0463 54.0007 78.0007C54.0007 66.9551 62.9551 58.0007 74.0007 58.0007ZM74.0007 90.0007C86.1504 90.0007 96.0007 79.3756 96.0007 66.0007C96.0007 52.6258 86.1504 42.0007 74.0007 42.0007C61.851 42.0007 52.0007 52.6258 52.0007 66.0007C52.0007 79.3756 61.851 90.0007 74.0007 90.0007Z" fill="#3498DB"/>
+            <div id="sidebar" class="sidebar fixed inset-y-0 left-0 w-64 bg-[#1a1a2e] p-6 flex flex-col z-50 md:relative md:translate-x-0 md:shadow-none">
+                <div class="flex items-center mb-8">
+                    <svg class="w-10 h-10 text-blue-500" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M64.0007 128C99.3465 128 128.001 99.3458 128.001 64.0007C128.001 28.6556 99.3465 0 64.0007 0C28.6556 0 0 28.6556 0 64.0007C0 81.3323 7.02604 97.0223 18.3072 108.995L18.3375 109.027L18.3496 109.043C19.167 109.845 20.3061 110.334 21.5794 110.334C22.2575 110.334 22.9554 110.155 23.5855 109.789L35.4339 102.825C37.0709 101.884 37.6698 99.7845 36.8378 98.1132C35.0874 94.6192 34.0007 90.4124 34.0007 86.0007C34.0007 65.5658 50.5658 49.0007 71.0007 49.0007C91.4357 49.0007 108 65.5658 108 86.0007C108 97.2721 102.883 107.219 94.4022 113.844L94.4173 113.856C95.2351 114.658 96.3746 115.147 97.6482 115.147C98.3265 115.147 99.0245 114.968 99.6548 114.602L111.503 107.638C113.14 106.697 113.739 104.597 112.907 102.926C111.157 99.4323 110.071 95.2255 110.071 90.8138V64.0007C110.071 39.7368 89.2646 19.0007 64.0007 19.0007C38.7368 19.0007 19.0007 39.7368 19.0007 64.0007C19.0007 72.8228 21.6033 81.0425 26.2415 87.8967L26.2483 87.9067C27.0657 88.7086 28.2047 89.1979 29.478 89.1979C30.1561 89.1979 30.854 89.0189 31.4841 88.6528L43.3325 81.6888C44.9695 80.7482 45.5684 78.6485 44.7364 76.9772C42.986 73.4831 41.9001 69.2764 41.9001 64.8647C41.9001 44.4297 58.4652 27.8647 78.9001 27.8647C99.3351 27.8647 116 44.4297 116 64.8647C116 76.1361 110.883 86.0825 102.402 92.7077V64.0007C102.402 46.5492 84.4447 32.0007 64.0007 32.0007C43.5566 32.0007 26.0007 46.5492 26.0007 64.0007C26.0007 72.8228 28.6033 81.0425 33.2415 87.8967L33.2483 87.9067C34.0657 88.7086 35.2047 89.1979 36.478 89.1979C37.1561 89.1979 37.854 89.0189 38.4841 88.6528L50.3325 81.6888C51.9695 80.7482 52.5684 78.6485 51.7364 76.9772C49.986 73.4831 41.9001 69.2764 41.9001 64.8647C41.9001 44.4297 65.4652 27.8647 85.9001 27.8647C106.335 27.8647 122.9 44.4297 122.9 64.8647V101.996C122.9 105.748 120.916 109.117 117.898 111.189L108.575 117.48C107.037 118.528 105.105 119.06 103.179 119.06C99.4172 119.06 95.897 117.29 93.9936 114.28L85.2913 100.865C83.9113 98.7758 81.1685 98.1565 78.9669 99.3087C76.7654 100.461 76.1039 103.22 77.2921 105.421L85.9944 118.836C87.4827 121.054 88.761 122.788 90.0007 124.001C88.0872 125.864 85.7335 127.345 83.176 128.36L64.0007 128ZM39.6997 64.0007C39.6997 45.4754 55.4754 29.6997 74.0007 29.6997C92.526 29.6997 108.301 45.4754 108.301 64.0007C108.301 82.526 92.526 98.3017 74.0007 98.3017C55.4754 98.3017 39.6997 82.526 39.6997 64.0007ZM74.0007 88.0007C79.5236 88.0007 84.0007 83.5236 84.0007 78.0007C84.0007 72.4778 79.5236 68.0007 74.0007 68.0007C68.4778 68.0007 64.0007 72.4778 64.0007 78.0007C64.0007 83.5236 68.4778 88.0007 74.0007 88.0007ZM74.0007 58.0007C85.0463 58.0007 94.0007 66.9551 94.0007 78.0007C94.0007 89.0463 85.0463 98.0007 74.0007 98.0007C62.9551 98.0007 54.0007 89.0463 54.0007 78.0007C54.0007 66.9551 62.9551 58.0007 74.0007 58.0007ZM74.0007 90.0007C86.1504 90.0007 96.0007 79.3756 96.0007 66.0007C96.0007 52.6258 86.1504 42.0007 74.0007 42.0007C61.851 42.0007 52.0007 52.6258 52.0007 66.0007C52.0007 79.3756 61.851 90.0007 74.0007 90.0007Z" fill="currentColor"/>
                     </svg>
-                    <span class="logo-text">Ping Rewards</span>
+                    <span class="text-xl font-bold ml-2 text-gray-400">Ping Rewards</span>
                 </div>
-                <ul class="nav-links">
+                <!-- Navigation Links -->
+                <ul class="nav-links flex-grow list-none p-0 m-0">
                     <li>
-                        <a href="#" class="nav-link user-link" data-target="user-dashboard-view">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 13h11v-2H3v2zm0 4h11v-2H3v2zm0-8h11V7H3v2zm13 .01V7h5v2.01h-5zM16 17h5v-2h-5v2zm0-4h5v-2h-5v2z"/></svg>
+                        <a href="#" class="nav-link user-link flex items-center p-4 rounded-lg mb-2 text-gray-300 hover:bg-[#4a3861] transition" data-target="user-dashboard-view">
+                            <svg class="w-6 h-6 mr-4" fill="currentColor" viewBox="0 0 24 24"><path d="M3 13h11v-2H3v2zm0 4h11v-2H3v2zm0-8h11V7H3v2zm13 .01V7h5v2.01h-5zM16 17h5v-2h-5v2zm0-4h5v-2h-5v2z"/></svg>
                             Dashboard
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="nav-link user-link" data-target="watch-videos-view">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
-                            Watch Videos
+                        <a href="#" class="nav-link user-link flex items-center p-4 rounded-lg mb-2 text-gray-300 hover:bg-[#4a3861] transition" data-target="watch-videos-view">
+                            <svg class="w-6 h-6 mr-4" fill="currentColor" viewBox="0 0 24 24"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                            ဗီဒီယိုများ ကြည့်ရှုပါ
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="nav-link user-link" data-target="points-history-view">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-                            Points History
+                        <a href="#" class="nav-link user-link flex items-center p-4 rounded-lg mb-2 text-gray-300 hover:bg-[#4a3861] transition" data-target="points-history-view">
+                            <svg class="w-6 h-6 mr-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                            Point မှတ်တမ်း
                         </a>
                     </li>
                     
-                    <hr style="border: 1px solid var(--border-color); margin: 20px 0;">
+                    <hr class="border-gray-700 my-5">
 
                     <li>
-                        <a href="#" class="nav-link admin-link" data-target="admin-dashboard-view">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 13h11v-2H3v2zm0 4h11v-2H3v2zm0-8h11V7H3v2zm13 .01V7h5v2.01h-5zM16 17h5v-2h-5v2zm0-4h5v-2h-5v2z"/></svg>
+                        <a href="#" class="nav-link admin-link flex items-center p-4 rounded-lg mb-2 text-gray-300 hover:bg-[#4a3861] transition" data-target="admin-dashboard-view">
+                            <svg class="w-6 h-6 mr-4" fill="currentColor" viewBox="0 0 24 24"><path d="M3 13h11v-2H3v2zm0 4h11v-2H3v2zm0-8h11V7H3v2zm13 .01V7h5v2.01h-5zM16 17h5v-2h-5v2zm0-4h5v-2h-5v2z"/></svg>
                             Admin Dashboard
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="nav-link admin-link" data-target="manage-videos-view">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
-                            Manage Videos
+                        <a href="#" class="nav-link admin-link flex items-center p-4 rounded-lg mb-2 text-gray-300 hover:bg-[#4a3861] transition" data-target="manage-videos-view">
+                            <svg class="w-6 h-6 mr-4" fill="currentColor" viewBox="0 0 24 24"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                            ဗီဒီယို စီမံခန့်ခွဲခြင်း
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="nav-link admin-link" data-target="manage-users-view">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                            Manage Users
+                        <a href="#" class="nav-link admin-link flex items-center p-4 rounded-lg mb-2 text-gray-300 hover:bg-[#4a3861] transition" data-target="manage-users-view">
+                            <svg class="w-6 h-6 mr-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                            အသုံးပြုသူ စီမံခန့်ခွဲခြင်း
                         </a>
                     </li>
                 </ul>
-                <div id="sidebar-profile">
+                <div id="sidebar-profile" class="mt-auto pt-4 border-t border-gray-700">
                     <!-- Profile info will be updated by JS -->
                 </div>
             </div>
-            <div id="backdrop" class="backdrop"></div>
+            <div id="backdrop" class="backdrop fixed inset-0 z-40"></div>
 
             <!-- Main Content Area -->
-            <div id="app-content" class="app-content">
+            <div id="app-content" class="app-content flex-grow p-4 md:p-8">
                 <div class="main-content">
-                    <div class="header">
-                        <h1 id="page-title">
-                            <button id="menu-toggle" class="menu-toggle">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+                    <header class="flex justify-between items-center mb-6 md:mb-8">
+                        <h1 id="page-title" class="text-xl md:text-3xl font-bold flex items-center text-white">
+                            <button id="menu-toggle" class="md:hidden mr-4 text-white">
+                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
                             </button>
+                            Dashboard
                         </h1>
                         <div id="header-meta">
                             <!-- Header meta info will be updated by JS -->
                         </div>
-                    </div>
+                    </header>
 
                     <!-- User Dashboard View -->
-                    <div id="user-dashboard-view" class="content-view" style="display: none;">
-                        <div class="dashboard-grid">
-                            <div class="card welcome-card">
-                                <div>
-                                    <h2 id="welcome-message"></h2>
-                                    <p>Ready to earn some more points? Let's get watching.</p>
-                                </div>
-                                <a href="#" class="watch-btn nav-link user-link" data-target="watch-videos-view">Watch Now</a>
+                    <div id="user-dashboard-view" class="content-view hidden">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                            <div class="card p-6 rounded-xl shadow-lg flex flex-col items-start text-left bg-gradient-to-r from-purple-800 to-indigo-800">
+                                <h2 class="text-xl font-semibold mb-2 text-white">စုစုပေါင်း Point</h2>
+                                <div class="text-4xl font-bold text-yellow-400" id="total-points-value">0</div>
                             </div>
-                            <div class="card">
-                                <h2>Total Points</h2>
-                                <div class="value" id="total-points-value">0</div>
+                            <div class="card p-6 rounded-xl shadow-lg flex flex-col items-start text-left bg-gradient-to-r from-green-800 to-teal-800">
+                                <h2 class="text-xl font-semibold mb-2 text-white">ခန့်မှန်းဝင်ငွေ</h2>
+                                <div class="text-4xl font-bold text-green-300" id="estimated-earnings-value">$0.00</div>
                             </div>
-                            <div class="card">
-                                <h2>Estimated Earnings</h2>
-                                <div class="value green" id="estimated-earnings-value">$0.00</div>
+                            <div class="card p-6 rounded-xl shadow-lg flex flex-col items-start text-left bg-gradient-to-r from-blue-800 to-cyan-800">
+                                <h2 class="text-xl font-semibold mb-2 text-white">ကြည့်ရှုပြီး ဗီဒီယို</h2>
+                                <div class="text-4xl font-bold text-blue-300" id="videos-watched-value">0</div>
                             </div>
-                            <div class="card">
-                                <h2>Videos Watched</h2>
-                                <div class="value purple" id="videos-watched-value">0</div>
+                            <div class="card p-6 rounded-xl shadow-lg flex flex-col items-start text-left bg-gradient-to-r from-red-800 to-orange-800">
+                                <h2 class="text-xl font-semibold mb-2 text-white">နေ့စဉ်ဝင်ငွေ</h2>
+                                <div class="text-4xl font-bold text-orange-300">$20</div>
                             </div>
                         </div>
 
-                        <div class="quick-actions">
-                            <h2>Quick Actions</h2>
-                            <div class="quick-actions-buttons">
-                                <a href="#" class="nav-link user-link" data-target="watch-videos-view">Browse Videos</a>
-                                <a href="#" class="nav-link user-link" data-target="points-history-view">View History</a>
+                        <div class="quick-actions mb-6">
+                            <h2 class="text-2xl font-semibold mb-4 text-white">အမြန်ရွေးချယ်စရာများ</h2>
+                            <div class="flex flex-wrap gap-4">
+                                <a href="#" class="nav-link user-link px-6 py-3 bg-gray-800 text-gray-300 rounded-lg shadow-md hover:bg-gray-700 transition" data-target="watch-videos-view">ဗီဒီယိုများ ရှာဖွေပါ</a>
+                                <a href="#" class="nav-link user-link px-6 py-3 bg-gray-800 text-gray-300 rounded-lg shadow-md hover:bg-gray-700 transition" data-target="points-history-view">မှတ်တမ်းကြည့်ရန်</a>
                             </div>
                         </div>
 
-                        <div class="card conversion-card">
+                        <div class="card p-6 rounded-xl shadow-lg flex flex-col md:flex-row items-center justify-between mb-6">
                             <div>
-                                <h2>Points to Cash Conversion</h2>
-                                <p>5000 points = $1.00</p>
-                                <p>Keep watching to increase your earnings!</p>
+                                <h2 class="text-xl md:text-2xl font-semibold mb-2 text-white">Point ကို ငွေသားပြောင်းရန်</h2>
+                                <p class="text-gray-400">5000 Point = $1.00</p>
+                                <p class="text-sm text-gray-500 mt-1">ဝင်ငွေတိုးရန် ဆက်လက်ကြည့်ရှုပါ!</p>
                             </div>
-                            <button class="cashout-btn" id="cashout-button">Cash Out</button>
+                            <button class="cashout-btn btn-primary px-6 py-3 rounded-lg font-semibold mt-4 md:mt-0" id="cashout-button">ငွေထုတ်မယ်</button>
                         </div>
                     </div>
 
                     <!-- Watch Videos View -->
-                    <div id="watch-videos-view" class="content-view" style="display: none;">
+                    <div id="watch-videos-view" class="content-view hidden">
                         <div class="video-browse">
-                            <div class="video-header">
-                                <input type="text" id="search-bar" class="search-bar" placeholder="Search videos...">
-                                <div class="filter-buttons">
-                                    <button class="filter-btn active" data-category="all">All</button>
-                                    <button class="filter-btn" data-category="Nature">Nature</button>
-                                    <button class="filter-btn" data-category="Education">Education</button>
-                                    <button class="filter-btn" data-category="Travel">Travel</button>
-                                    <button class="filter-btn" data-category="Food">Food</button>
-                                    <button class="filter-btn" data-category="Gaming">Gaming</button>
+                            <div class="video-header flex flex-col md:flex-row md:items-center gap-4 mb-6">
+                                <input type="text" id="search-bar" class="search-bar flex-grow w-full md:w-auto px-5 py-3 rounded-full border border-gray-600 bg-[#3b4b6b] text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500" placeholder="ဗီဒီယိုများ ရှာဖွေပါ...">
+                                <div class="filter-buttons flex flex-wrap gap-2 justify-center">
+                                    <button class="filter-btn active px-4 py-2 rounded-full border border-gray-600 bg-gray-700 text-white hover:bg-purple-600 transition" data-category="all">အားလုံး</button>
+                                    <button class="filter-btn px-4 py-2 rounded-full border border-gray-600 bg-gray-700 text-white hover:bg-purple-600 transition" data-category="Nature">သဘာဝ</button>
+                                    <button class="filter-btn px-4 py-2 rounded-full border border-gray-600 bg-gray-700 text-white hover:bg-purple-600 transition" data-category="Education">ပညာရေး</button>
+                                    <button class="filter-btn px-4 py-2 rounded-full border border-gray-600 bg-gray-700 text-white hover:bg-purple-600 transition" data-category="Travel">ခရီးသွား</button>
+                                    <button class="filter-btn px-4 py-2 rounded-full border border-gray-600 bg-gray-700 text-white hover:bg-purple-600 transition" data-category="Food">အစားအသောက်</button>
+                                    <button class="filter-btn px-4 py-2 rounded-full border border-gray-600 bg-gray-700 text-white hover:bg-purple-600 transition" data-category="Gaming">ဂိမ်း</button>
                                 </div>
                             </div>
-                            <div class="video-grid" id="video-grid">
+                            <div class="video-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="video-grid">
                                 <!-- Video cards will be dynamically rendered here by JS -->
                             </div>
                         </div>
                     </div>
                     
                     <!-- Video Player View (New) -->
-                    <div id="video-player-view" class="content-view" style="display: none;">
-                        <button id="video-player-back-btn" class="back-btn" style="display: flex; align-items: center; gap: 8px; background-color:darkcyan;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-                            Back to Videos
+                    <div id="video-player-view" class="content-view hidden">
+                        <button id="video-player-back-btn" class="back-btn flex items-center gap-2 mb-4 text-gray-300 hover:text-white transition">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                            ဗီဒီယိုများသို့ ပြန်သွားရန်
                         </button>
-                        <h2 id="video-player-title"></h2>
-                        <p id="video-player-description"></p>
-                        <div class="video-container">
-                            <iframe id="video-iframe" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        <h2 id="video-player-title" class="text-2xl font-semibold text-white mb-2"></h2>
+                        <p id="video-player-description" class="text-gray-400 mb-4"></p>
+                        <div class="video-container relative pb-[56.25%] h-0 rounded-xl overflow-hidden mb-6">
+                            <iframe id="video-iframe" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="absolute top-0 left-0 w-full h-full"></iframe>
                         </div>
                         <!-- Gemini API Feature: Video Summary -->
-                        <div class="video-actions">
-                            <button id="get-summary-btn" class="action-btn">Get Summary ✨</button>
+                        <div class="video-actions flex gap-4">
+                            <button id="get-summary-btn" class="action-btn btn-primary px-6 py-3 rounded-lg font-semibold flex items-center gap-2">
+                                အနှစ်ချုပ်ရယူရန် ✨
+                            </button>
                         </div>
-                        <div id="summary-output" style="margin-top: 20px;"></div>
+                        <div id="summary-output" class="mt-6 p-4 rounded-lg bg-gray-800 border border-gray-700"></div>
                     </div>
 
                     <!-- Points History View -->
-                    <div id="points-history-view" class="content-view" style="display: none;">
+                    <div id="points-history-view" class="content-view hidden">
                         <div class="points-history">
-                            <h2>Points History</h2>
-                            <p>A record of all your earned points.</p>
-                            <table id="points-history-table">
-                                <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Description</th>
-                                        <th>Points</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <!-- Table rows will be dynamically rendered here by JS -->
-                                </tbody>
-                            </table>
+                            <h2 class="text-2xl font-semibold mb-2 text-white">Point မှတ်တမ်း</h2>
+                            <p class="text-gray-400 mb-6">သင်ရရှိခဲ့သော Point များ၏ မှတ်တမ်းဖြစ်သည်။</p>
+                            <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg border border-gray-700">
+                                <table class="w-full text-left table-auto">
+                                    <thead class="bg-gray-700 text-gray-300 uppercase text-sm">
+                                        <tr>
+                                            <th class="p-4">ရက်စွဲ</th>
+                                            <th class="p-4">ဖော်ပြချက်</th>
+                                            <th class="p-4">Point</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="points-history-table" class="divide-y divide-gray-700">
+                                        <!-- Table rows will be dynamically rendered here by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 
                     <!-- Admin Dashboard View -->
-                    <div id="admin-dashboard-view" class="content-view" style="display: none;">
-                        <div class="dashboard-grid" id="admin-dashboard-grid">
-                            <div class="stat-card">
-                                <div class="icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    <div id="admin-dashboard-view" class="content-view hidden">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="admin-dashboard-grid">
+                            <div class="card p-6 rounded-xl shadow-lg flex items-center bg-gray-800">
+                                <div class="bg-purple-900/20 p-4 rounded-full mr-4">
+                                    <svg class="w-8 h-8 text-purple-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
                                 </div>
-                                <div class="stat-content">
-                                    <h3>Total Users</h3>
-                                    <div class="value" id="admin-total-users-value">0</div>
-                                </div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="icon purple">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
-                                </div>
-                                <div class="stat-content">
-                                    <h3>Total Videos</h3>
-                                    <div class="value" id="admin-total-videos-value">0</div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-400">စုစုပေါင်း အသုံးပြုသူ</h3>
+                                    <div class="text-3xl font-bold text-white" id="admin-total-users-value">0</div>
                                 </div>
                             </div>
-                            <div class="stat-card">
-                                <div class="icon green">
-                                    <svg xmlns="http://www.w3.org/2d00/svg" viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4V8h16v10zm-12-7h4v2H8v-2zm-2-2v6h12V6H6z"/></svg>
+                            <div class="card p-6 rounded-xl shadow-lg flex items-center bg-gray-800">
+                                <div class="bg-purple-900/20 p-4 rounded-full mr-4">
+                                    <svg class="w-8 h-8 text-purple-400" fill="currentColor" viewBox="0 0 24 24"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
                                 </div>
-                                <div class="stat-content">
-                                    <h3>Total Points Earned</h3>
-                                    <div class="value" id="admin-total-points-earned-value">0</div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-400">စုစုပေါင်း ဗီဒီယို</h3>
+                                    <div class="text-3xl font-bold text-white" id="admin-total-videos-value">0</div>
                                 </div>
                             </div>
-                            <div class="stat-card">
-                                <div class="icon orange">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4V8h16v10zm-12-7h4v2H8v-2zm-2-2v6h12V6H6z"/></svg>
+                            <div class="card p-6 rounded-xl shadow-lg flex items-center bg-gray-800">
+                                <div class="bg-green-900/20 p-4 rounded-full mr-4">
+                                    <svg class="w-8 h-8 text-green-400" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4V8h16v10zm-12-7h4v2H8v-2zm-2-2v6h12V6H6z"/></svg>
                                 </div>
-                                <div class="stat-content">
-                                    <h3>Total Payouts</h3>
-                                    <div class="value" id="admin-total-payouts-value">$0</div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-400">စုစုပေါင်း Point</h3>
+                                    <div class="text-3xl font-bold text-white" id="admin-total-points-earned-value">0</div>
+                                </div>
+                            </div>
+                            <div class="card p-6 rounded-xl shadow-lg flex items-center bg-gray-800">
+                                <div class="bg-orange-900/20 p-4 rounded-full mr-4">
+                                    <svg class="w-8 h-8 text-orange-400" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4V8h16v10zm-12-7h4v2H8v-2zm-2-2v6h12V6H6z"/></svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-400">စုစုပေါင်း ငွေထုတ်မှု</h3>
+                                    <div class="text-3xl font-bold text-white" id="admin-total-payouts-value">$0</div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="chart-container">
-                            <h2>Weekly Watch Activity (Hours)</h2>
-                            <div class="bar-chart" id="weekly-watch-chart">
-                                <div class="bar" style="height: 50%;">
-                                    <div class="bar-label">Mon</div>
+                        <div class="chart-container card p-6 rounded-xl shadow-lg mt-6">
+                            <h2 class="text-xl font-semibold mb-4">အပတ်စဉ် ကြည့်ရှုမှု မှတ်တမ်း (နာရီ)</h2>
+                            <div class="bar-chart flex items-end h-64 relative border-l-2 border-b-2 border-gray-600 pb-8 pl-4">
+                                <div class="absolute top-0 left-0 -ml-4 text-gray-400 text-sm">8</div>
+                                <div class="absolute bottom-0 left-0 -ml-4 text-gray-400 text-sm">0</div>
+                                <div class="bar w-12 mx-2 bg-gradient-to-t from-purple-500 to-purple-700 relative transition-all duration-500" style="height: 50%;">
+                                    <div class="bar-label absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-gray-400 text-xs">Mon</div>
                                 </div>
-                                <div class="bar" style="height: 38%;">
-                                    <div class="bar-label">Tue</div>
+                                <div class="bar w-12 mx-2 bg-gradient-to-t from-purple-500 to-purple-700 relative transition-all duration-500" style="height: 38%;">
+                                    <div class="bar-label absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-gray-400 text-xs">Tue</div>
                                 </div>
-                                <div class="bar" style="height: 60%;">
-                                    <div class="bar-label">Wed</div>
+                                <div class="bar w-12 mx-2 bg-gradient-to-t from-purple-500 to-purple-700 relative transition-all duration-500" style="height: 60%;">
+                                    <div class="bar-label absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-gray-400 text-xs">Wed</div>
                                 </div>
-                                <div class="bar" style="height: 54%;">
-                                    <div class="bar-label">Thu</div>
+                                <div class="bar w-12 mx-2 bg-gradient-to-t from-purple-500 to-purple-700 relative transition-all duration-500" style="height: 54%;">
+                                    <div class="bar-label absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-gray-400 text-xs">Thu</div>
                                 </div>
-                                <div class="bar" style="height: 70%;">
-                                    <div class="bar-label">Fri</div>
+                                <div class="bar w-12 mx-2 bg-gradient-to-t from-purple-500 to-purple-700 relative transition-all duration-500" style="height: 70%;">
+                                    <div class="bar-label absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-gray-400 text-xs">Fri</div>
                                 </div>
-                                <div class="bar" style="height: 98%;">
-                                    <div class="bar-label">Sat</div>
+                                <div class="bar w-12 mx-2 bg-gradient-to-t from-purple-500 to-purple-700 relative transition-all duration-500" style="height: 98%;">
+                                    <div class="bar-label absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-gray-400 text-xs">Sat</div>
                                 </div>
-                                <div class="bar" style="height: 85%;">
-                                    <div class="bar-label">Sun</div>
+                                <div class="bar w-12 mx-2 bg-gradient-to-t from-purple-500 to-purple-700 relative transition-all duration-500" style="height: 85%;">
+                                    <div class="bar-label absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-gray-400 text-xs">Sun</div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Manage Videos View -->
-                    <div id="manage-videos-view" class="content-view" style="display: none;">
-                        <div class="manage-videos">
-                            <div class="manage-videos-header">
-                                <h2>Manage Videos</h2>
-                                <button id="add-video-btn" class="add-video-btn">Add Video</button>
-                            </div>
-                            <table id="videos-table">
-                                <thead>
+                    <div id="manage-videos-view" class="content-view hidden">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-2xl font-semibold text-white">ဗီဒီယို စီမံခန့်ခွဲခြင်း</h2>
+                            <button id="add-video-btn" class="btn-primary px-6 py-3 rounded-lg font-semibold">ဗီဒီယိုထည့်ရန်</button>
+                        </div>
+                        <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg border border-gray-700">
+                            <table class="w-full text-left table-auto">
+                                <thead class="bg-gray-700 text-gray-300 uppercase text-sm">
                                     <tr>
-                                        <th>Title</th>
-                                        <th>Category</th>
-                                        <th>Points</th>
-                                        <th>Actions</th>
+                                        <th class="p-4">ခေါင်းစဉ်</th>
+                                        <th class="p-4">အမျိုးအစား</th>
+                                        <th class="p-4">Point</th>
+                                        <th class="p-4">ရွေးချယ်စရာများ</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="videos-table" class="divide-y divide-gray-700">
                                     <!-- Table rows will be dynamically rendered here by JS -->
                                 </tbody>
                             </table>
@@ -1403,25 +378,27 @@
                     </div>
 
                     <!-- Manage Users View -->
-                    <div id="manage-users-view" class="content-view" style="display: none;">
+                    <div id="manage-users-view" class="content-view hidden">
                         <div class="manage-users">
-                            <h2>Manage Users</h2>
-                            <p>View user details, manage status, and edit information.</p>
-                             <table id="users-table">
-                                <thead>
-                                    <tr>
-                                        <th>User ID</th>
-                                        <th>Name</th>
-                                        <th>Email</th>
-                                        <th>Role</th>
-                                        <th>Points</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="users-table-body">
-                                    <!-- User rows will be dynamically rendered here by JS -->
-                                </tbody>
-                            </table>
+                            <h2 class="text-2xl font-semibold mb-2 text-white">အသုံးပြုသူ စီမံခန့်ခွဲခြင်း</h2>
+                            <p class="text-gray-400 mb-6">အသုံးပြုသူ အချက်အလက်များကို ကြည့်ရှု၊ အခြေအနေနှင့် အချက်အလက်များကို ပြင်ဆင်နိုင်သည်။</p>
+                             <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg border border-gray-700">
+                                <table class="w-full text-left table-auto">
+                                    <thead class="bg-gray-700 text-gray-300 uppercase text-sm">
+                                        <tr>
+                                            <th class="p-4">အသုံးပြုသူ ID</th>
+                                            <th class="p-4">အမည်</th>
+                                            <th class="p-4">Email</th>
+                                            <th class="p-4">ရာထူး</th>
+                                            <th class="p-4">Point</th>
+                                            <th class="p-4">ရွေးချယ်စရာများ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="users-table-body" class="divide-y divide-gray-700">
+                                        <!-- User rows will be dynamically rendered here by JS -->
+                                    </tbody>
+                                </table>
+                             </div>
                         </div>
                     </div>
                 </div>
@@ -1429,131 +406,132 @@
         </div>
         
         <!-- Modal for Cash Out Confirmation Message -->
-        <div id="cashout-message-modal" class="modal-overlay">
-            <div class="modal-content">
-                <h3>Cash Out Request</h3>
-                <p id="cashout-message-text">Cash Out လုပ်ရန်အတွက် Point 5000 လိုအပ်ပါသည်။</p>
-                <div class="modal-actions">
-                    <button type="button" class="cancel-btn" id="cashout-message-close-btn">Close</button>
+        <div id="cashout-message-modal" class="modal-overlay fixed inset-0 flex items-center justify-center p-4 hidden">
+            <div class="modal-content bg-gray-800 p-8 rounded-xl w-full max-w-lg text-center border border-gray-700">
+                <h3 class="text-2xl font-semibold mb-4">ငွေထုတ်ရန် တောင်းဆိုမှု</h3>
+                <p id="cashout-message-text" class="text-gray-400 mb-6">Cash Out လုပ်ရန်အတွက် Point 5000 လိုအပ်ပါသည်။</p>
+                <div class="flex justify-center gap-4">
+                    <button type="button" class="btn-primary px-6 py-3 rounded-lg font-semibold" id="cashout-message-close-btn">ပိတ်ရန်</button>
                 </div>
             </div>
         </div>
 
         <!-- Modal for Delete Confirmation -->
-        <div id="delete-confirm-modal" class="modal-overlay">
-            <div class="modal-content">
-                <h3 id="delete-modal-title">ဗီဒီယိုကို ဖျက်ရန် သေချာပါသလား။</h3>
-                <p>ဒီဗီဒီယိုကို ဖျက်လိုက်ရင် ပြန်ယူလို့ရမှာ မဟုတ်ပါဘူး။</p>
-                <div class="modal-actions">
-                    <button type="button" class="cancel-btn">မလုပ်တော့ဘူး</button>
-                    <button type="button" class="save-btn" id="confirm-delete-btn">ဖျက်မယ်</button>
+        <div id="delete-confirm-modal" class="modal-overlay fixed inset-0 flex items-center justify-center p-4 hidden">
+            <div class="modal-content bg-gray-800 p-8 rounded-xl w-full max-w-lg text-center border border-gray-700">
+                <h3 id="delete-modal-title" class="text-2xl font-semibold mb-4">ဗီဒီယိုကို ဖျက်ရန် သေချာပါသလား။</h3>
+                <p class="text-gray-400 mb-6">ဒီဗီဒီယိုကို ဖျက်လိုက်ရင် ပြန်ယူလို့ရမှာ မဟုတ်ပါဘူး။</p>
+                <div class="flex justify-center gap-4">
+                    <button type="button" class="bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-700 transition" id="delete-cancel-btn">မလုပ်တော့ဘူး</button>
+                    <button type="button" class="bg-red-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-600 transition" id="confirm-delete-btn">ဖျက်မယ်</button>
                 </div>
             </div>
         </div>
         
         <!-- Modal for Viewing User History -->
-        <div id="user-history-modal" class="modal-overlay">
-            <div class="modal-content">
-                <h3 id="user-history-title"></h3>
+        <div id="user-history-modal" class="modal-overlay fixed inset-0 flex items-center justify-center p-4 hidden">
+            <div class="modal-content bg-gray-800 p-8 rounded-xl w-full max-w-lg max-h-[80vh] overflow-y-auto border border-gray-700">
+                <h3 id="user-history-title" class="text-2xl font-semibold mb-4"></h3>
                 <div id="user-history-content">
-                     <table id="user-history-table">
-                         <thead>
+                     <table class="w-full text-left table-auto">
+                         <thead class="bg-gray-700 text-gray-300 uppercase text-sm">
                              <tr>
-                                 <th>Date</th>
-                                 <th>Description</th>
-                                 <th>Points</th>
+                                 <th class="p-4">ရက်စွဲ</th>
+                                 <th class="p-4">ဖော်ပြချက်</th>
+                                 <th class="p-4">Point</th>
                              </tr>
                          </thead>
-                         <tbody id="user-history-table-body">
+                         <tbody id="user-history-table-body" class="divide-y divide-gray-700">
                              <!-- History rows will be dynamically rendered here by JS -->
                          </tbody>
                      </table>
                 </div>
-                <div class="modal-actions">
-                    <button type="button" class="cancel-btn" id="user-history-close-btn">Close</button>
+                <div class="flex justify-end gap-4 mt-6">
+                    <button type="button" class="btn-primary px-6 py-3 rounded-lg font-semibold" id="user-history-close-btn">ပိတ်ရန်</button>
                 </div>
             </div>
         </div>
 
         <!-- Modal for Adding/Editing Videos (Hidden by default) -->
-        <div id="add-video-modal" class="modal-overlay">
-            <div class="modal-content">
-                <h3 id="modal-title">Add New Video</h3>
-                <form id="add-video-form" class="modal-form">
-                    <div class="form-group">
-                        <label for="video-title">Video Title</label>
-                        <input type="text" id="video-title" name="videoTitle" required>
+        <div id="add-video-modal" class="modal-overlay fixed inset-0 flex items-center justify-center p-4 hidden">
+            <div class="modal-content bg-gray-800 p-8 rounded-xl w-full max-w-lg border border-gray-700">
+                <h3 id="modal-title" class="text-2xl font-semibold mb-6">ဗီဒီယိုအသစ်ထည့်ရန်</h3>
+                <form id="add-video-form" class="space-y-4">
+                    <div>
+                        <label for="video-title" class="block text-gray-400 font-medium mb-1">ဗီဒီယိုခေါင်းစဉ်</label>
+                        <input type="text" id="video-title" name="videoTitle" required class="w-full px-4 py-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500">
                     </div>
-                    <div class="form-group">
-                        <label for="video-description">Description</label>
-                        <textarea id="video-description" name="videoDescription" rows="3" required></textarea>
+                    <div>
+                        <label for="video-description" class="block text-gray-400 font-medium mb-1">အကြောင်းအရာ</label>
+                        <textarea id="video-description" name="videoDescription" rows="3" required class="w-full px-4 py-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500"></textarea>
                     </div>
-                    <div class="form-group">
-                        <label for="video-category">Category</label>
-                        <select id="video-category" name="videoCategory" required>
+                    <div>
+                        <label for="video-category" class="block text-gray-400 font-medium mb-1">အမျိုးအစား</label>
+                        <select id="video-category" name="videoCategory" required class="w-full px-4 py-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500">
                             <option value="YouTube">YouTube</option>
                             <option value="TikTok">TikTok</option>
                             <option value="Facebook">Facebook</option>
-                            <option value="Nature">Nature</option>
-                            <option value="Education">Education</option>
-                            <option value="Travel">Travel</option>
-                            <option value="Food">Food</option>
-                            <option value="Gaming">Gaming</option>
+                            <option value="Nature">သဘာဝ</option>
+                            <option value="Education">ပညာရေး</option>
+                            <option value="Travel">ခရီးသွား</option>
+                            <option value="Food">အစားအသောက်</option>
+                            <option value="Gaming">ဂိမ်း</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label for="video-url">Video URL (YouTube Embed Link)</label>
-                        <input type="text" id="video-url" name="videoUrl" required>
+                    <div>
+                        <label for="video-url" class="block text-gray-400 font-medium mb-1">ဗီဒီယို URL (YouTube Embed Link)</label>
+                        <input type="text" id="video-url" name="videoUrl" required class="w-full px-4 py-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500">
                     </div>
-                    <div class="form-group">
-                        <label for="video-points">Points</label>
-                        <input type="number" id="video-points" name="videoPoints" required>
+                    <div>
+                        <label for="video-points" class="block text-gray-400 font-medium mb-1">Point</label>
+                        <input type="number" id="video-points" name="videoPoints" required class="w-full px-4 py-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500">
                     </div>
-                    <div class="form-group">
-                        <label for="watch-duration">Watch Duration (seconds) - ကြည့်ရှုရမည့်အချိန် (စက္ကန့်)</label>
-                        <input type="number" id="watch-duration" name="watchDuration" required>
+                    <div>
+                        <label for="watch-duration" class="block text-gray-400 font-medium mb-1">ကြည့်ရှုရမည့်အချိန် (စက္ကန့်)</label>
+                        <input type="number" id="watch-duration" name="watchDuration" required class="w-full px-4 py-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500">
                     </div>
-                    <div class="modal-actions">
-                        <button type="button" class="cancel-btn">Cancel</button>
-                        <button type="submit" class="save-btn">Save</button>
+                    <div class="flex justify-end gap-4 mt-6">
+                        <button type="button" class="bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-700 transition" id="add-video-cancel-btn">ပယ်ဖျက်ရန်</button>
+                        <button type="submit" class="btn-primary px-6 py-3 rounded-lg font-semibold" id="add-video-save-btn">သိမ်းမယ်</button>
                     </div>
                 </form>
             </div>
         </div>
         
         <!-- Cash Out Modal (New) -->
-        <div id="cashout-modal" class="modal-overlay">
-            <div class="modal-content">
-                <h3>Cash Out Request</h3>
-                <form id="cashout-form" class="modal-form">
-                    <p>Enter your payment details to receive your earnings.</p>
-                    <div class="form-group">
-                        <label for="payment-method">Payment Method</label>
-                        <select id="payment-method" name="paymentMethod">
-                            <option value="paypal">KBZ Pay</option>
-                            <option value="bank">Wave Pay</option>
-                            <option value="paypal">Binance Pay</option>
+        <div id="cashout-modal" class="modal-overlay fixed inset-0 flex items-center justify-center p-4 hidden">
+            <div class="modal-content bg-gray-800 p-8 rounded-xl w-full max-w-lg border border-gray-700">
+                <h3 class="text-2xl font-semibold mb-6 text-center">ငွေထုတ်ရန် တောင်းဆိုမှု</h3>
+                <form id="cashout-form" class="space-y-4">
+                    <p class="text-gray-400 mb-4 text-center">ငွေထုတ်ရန်အတွက် ငွေပေးချေမှု အချက်အလက်များကို ဖြည့်သွင်းပါ။</p>
+                    <div>
+                        <label for="payment-method" class="block text-gray-400 font-medium mb-1">ငွေပေးချေမှု နည်းလမ်း</label>
+                        <select id="payment-method" name="paymentMethod" class="w-full px-4 py-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            <option value="KBZ Pay">KBZ Pay</option>
+                            <option value="Wave Pay">Wave Pay</option>
+                            <option value="Binance Pay">Binance Pay</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label for="payout-amount">Amount ($)</label>
-                        <input type="number" id="payout-amount" name="payoutAmount" value="0.26" readonly>
+                    <div>
+                        <label for="payout-amount" class="block text-gray-400 font-medium mb-1">ပမာဏ ($)</label>
+                        <input type="number" id="payout-amount" name="payoutAmount" value="0.26" readonly class="w-full px-4 py-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none cursor-not-allowed">
                     </div>
-                    <div class="modal-actions">
-                        <button type="button" class="cancel-btn">Cancel</button>
-                        <button type="submit" class="save-btn" id="cashout-submit-btn">Submit Request</button>
+                    <div class="flex justify-end gap-4 mt-6">
+                        <button type="button" class="bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-700 transition" id="cashout-cancel-btn">ပယ်ဖျက်ရန်</button>
+                        <button type="submit" class="btn-primary px-6 py-3 rounded-lg font-semibold" id="cashout-submit-btn">တောင်းဆိုမှု တင်သွင်းရန်</button>
                     </div>
                 </form>
             </div>
         </div>
-
     </div>
+    
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut, signInAnonymously, GoogleAuthProvider, signInWithPopup, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, collection, query, where, addDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
         document.addEventListener('DOMContentLoaded', async () => {
+            // Firebase setup
             const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
             const firebaseConfig = {
               apiKey: "AIzaSyBKHF_6NIFD0-zrceg3BFJBdhJcFoXiKmA",
@@ -1572,6 +550,7 @@
             let userId = null;
             let isAuthReady = false;
 
+            // UI elements
             const loginPage = document.getElementById('login-page');
             const appContainer = document.getElementById('app-container');
             const googleSignInBtn = document.getElementById('google-sign-in-btn');
@@ -1599,21 +578,21 @@
 
             const addVideoBtn = document.getElementById('add-video-btn');
             const addVideoModal = document.getElementById('add-video-modal');
-            const addVideoModalCancelBtn = document.querySelector('#add-video-modal .cancel-btn');
+            const addVideoModalCancelBtn = document.querySelector('#add-video-modal #add-video-cancel-btn');
             const addVideoForm = document.getElementById('add-video-form');
             const addModalTitle = document.getElementById('modal-title');
-            const videoTableBody = document.querySelector('#videos-table tbody');
+            const videoTableBody = document.querySelector('#videos-table');
             const getSummaryBtn = document.getElementById('get-summary-btn');
             const summaryOutput = document.getElementById('summary-output');
 
             const cashoutBtn = document.getElementById('cashout-button');
             const cashoutModal = document.getElementById('cashout-modal');
-            const cashoutCancelBtn = document.querySelector('#cashout-modal .cancel-btn');
+            const cashoutCancelBtn = document.querySelector('#cashout-modal #cashout-cancel-btn');
             const cashoutForm = document.getElementById('cashout-form');
             const totalPointsValue = document.getElementById('total-points-value');
             const estimatedEarningsValue = document.getElementById('estimated-earnings-value');
             const videosWatchedValue = document.getElementById('videos-watched-value');
-            const pointsHistoryTableBody = document.querySelector('#points-history-table tbody');
+            const pointsHistoryTableBody = document.querySelector('#points-history-table');
             
             const adminTotalUsersValue = document.getElementById('admin-total-users-value');
             const adminTotalVideosValue = document.getElementById('admin-total-videos-value');
@@ -1624,7 +603,7 @@
             
             const deleteConfirmModal = document.getElementById('delete-confirm-modal');
             const deleteConfirmBtn = document.getElementById('confirm-delete-btn');
-            const deleteCancelBtn = document.querySelector('#delete-confirm-modal .cancel-btn');
+            const deleteCancelBtn = document.getElementById('delete-cancel-btn');
             
             const usersTableBody = document.getElementById('users-table-body');
             const userHistoryModal = document.getElementById('user-history-modal');
@@ -1645,11 +624,15 @@
             
             // Utility function to extract YouTube video ID from a URL
             function getYouTubeId(url) {
-                const urlObj = new URL(url);
-                if (urlObj.hostname.includes('youtube.com')) {
-                    return urlObj.searchParams.get('v');
-                } else if (urlObj.hostname.includes('youtu.be')) {
-                    return urlObj.pathname.substring(1);
+                try {
+                    const urlObj = new URL(url);
+                    if (urlObj.hostname.includes('youtube.com')) {
+                        return urlObj.searchParams.get('v');
+                    } else if (urlObj.hostname.includes('youtu.be')) {
+                        return urlObj.pathname.substring(1);
+                    }
+                } catch (e) {
+                    console.error("Invalid URL:", url);
                 }
                 return null;
             }
@@ -1768,7 +751,7 @@
             async function fetchAllUsers() {
                 showLoading();
                 if (!usersTableBody) return;
-                usersTableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #6c7e9e;">Fetching users...</td></tr>`;
+                usersTableBody.innerHTML = `<tr><td colspan="6" class="text-center text-gray-400 py-4">အသုံးပြုသူများကို ရှာဖွေနေသည်...</td></tr>`;
                 try {
                     const usersCollectionRef = collection(db, `/artifacts/${appId}/users`);
                     const querySnapshot = await getDocs(usersCollectionRef);
@@ -1776,7 +759,7 @@
                     renderUsersTable(users);
                 } catch (e) {
                     console.error("Error fetching users:", e);
-                    usersTableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #e74c3c;">Error fetching users.</td></tr>`;
+                    usersTableBody.innerHTML = `<tr><td colspan="6" class="text-center text-red-500 py-4">အသုံးပြုသူများကို ရှာဖွေရာတွင် အမှားဖြစ်ပွားပါသည်။</td></tr>`;
                 } finally {
                     hideLoading();
                 }
@@ -1876,7 +859,6 @@
             async function fetchAdminDashboardData() {
                 showLoading();
                 try {
-                    // Fetch total users, points, and payouts using onSnapshot for real-time updates
                     const usersCollectionRef = collection(db, `/artifacts/${appId}/users`);
                     onSnapshot(usersCollectionRef, (usersSnapshot) => {
                         const totalUsers = usersSnapshot.docs.length;
@@ -1900,7 +882,6 @@
                         console.error("Error fetching admin users data:", error);
                     });
 
-                    // Fetch total videos separately
                     const videosCollectionRef = collection(db, `/artifacts/${appId}/public/data/videos`);
                     onSnapshot(videosCollectionRef, (videosSnapshot) => {
                         const totalVideos = videosSnapshot.docs.length;
@@ -1921,13 +902,15 @@
                 views.forEach(view => { if(view) view.style.display = 'none'; });
                 if (loginPage) loginPage.style.display = 'none';
                 if (appContainer) appContainer.style.display = 'block';
+                if (sidebar) sidebar.classList.remove('open');
+                if (document.body) document.body.classList.remove('sidebar-open');
 
                 if (role === 'user') {
                     document.querySelectorAll('.admin-link').forEach(link => { if (link) link.style.display = 'none'; });
                     document.querySelectorAll('.user-link').forEach(link => { if (link) link.style.display = 'flex'; });
                     if (headerMeta) headerMeta.innerHTML = getUserHeaderHTML();
                     if (sidebarProfile) sidebarProfile.innerHTML = getUserProfileHTML();
-                    if (welcomeMessage) welcomeMessage.textContent = `Welcome back, ${currentUser.name}!`;
+                    if (welcomeMessage) welcomeMessage.textContent = `ပြန်လာပါပြီနော်, ${currentUser.name}!`;
                     showView('user-dashboard-view');
                     updatePointsDisplay();
                     renderPointsHistoryTable();
@@ -1939,21 +922,21 @@
                     if (sidebarProfile) sidebarProfile.innerHTML = getUserProfileHTML();
                     showView('admin-dashboard-view');
                     fetchVideos().then(renderManageVideosTable);
-                    fetchAdminDashboardData(); // Call new function to fetch admin data dynamically
+                    fetchAdminDashboardData();
                 }
                 attachLogoutListeners(); 
             }
             
             function getUserProfileHTML() {
                 const nameText = currentUser?.name || 'Unknown';
-                const profileText = nameText.split(' ').map(n => n[0]).join('');
+                const profileText = nameText.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
                 const roleText = currentUser?.role === 'admin' ? 'ADMINISTRATOR' : currentUser?.email || 'N/A';
                 return `
-                    <div class="user-profile">
-                        <img src="https://placehold.co/40x40/9b59b6/ffffff?text=${profileText}" alt="${nameText}">
+                    <div class="user-profile flex items-center p-4 rounded-xl bg-[#3b4b6b] mt-4">
+                        <img src="https://placehold.co/40x40/9b59b6/ffffff?text=${profileText}" alt="${nameText}" class="w-10 h-10 rounded-full mr-4">
                         <div class="user-info">
-                            <div class="name">${nameText}</div>
-                            <div class="role">${roleText}</div>
+                            <div class="font-semibold text-white">${nameText}</div>
+                            <div class="text-sm text-gray-400">${roleText}</div>
                         </div>
                     </div>
                 `;
@@ -1961,19 +944,20 @@
             
             function getUserHeaderHTML() {
                 const nameText = currentUser?.name || 'Unknown';
-                const profileText = nameText.split(' ').map(n => n[0]).join('');
+                const profileText = nameText.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
                 const roleText = currentUser?.role || 'user';
                 return `
-                    <div class="user-meta">
-                        <span id="user-points-display">${(userData?.points || 0).toLocaleString()} PTS</span>
-                        <span>$${(userData?.points / 5000).toFixed(2)}</span>
-                        <div class="meta-item">
-                            <span>${nameText}</span>
-                            <span class="role">${roleText}</span>
-                            <img src="https://placehold.co/32x32/9b59b6/ffffff?text=${profileText}" alt="${nameText}">
+                    <div class="user-meta hidden md:flex items-center space-x-4">
+                        <div class="flex items-center space-x-2">
+                           <span id="user-points-display" class="font-bold text-lg text-yellow-400">${(userData?.points || 0).toLocaleString()} PTS</span>
+                           <span class="text-sm text-gray-400">$${(userData?.points / 5000).toFixed(2)}</span>
                         </div>
-                        <button class="logout-btn">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+                        <div class="flex items-center">
+                            <span class="font-semibold text-gray-300 mr-2">${nameText}</span>
+                            <img src="https://placehold.co/32x32/9b59b6/ffffff?text=${profileText}" alt="${nameText}" class="w-8 h-8 rounded-full">
+                        </div>
+                        <button class="logout-btn text-gray-400 hover:text-white transition">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
                         </button>
                     </div>
                 `;
@@ -1981,18 +965,20 @@
             
             function getAdminHeaderHTML() {
                  const nameText = currentUser?.name || 'Unknown';
+                 const profileText = nameText.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
                  return `
-                    <div class="admin-meta">
-                        <div class="meta-item">
-                            <span id="admin-points-display">0 PTS</span>
-                            <span class="role" id="admin-earnings-display">$0.00</span>
+                    <div class="admin-meta hidden md:flex items-center space-x-4">
+                        <div class="flex items-center space-x-2">
+                           <span class="font-bold text-lg text-yellow-400" id="admin-points-display">0 PTS</span>
+                           <span class="text-sm text-gray-400" id="admin-earnings-display">$0.00</span>
                         </div>
-                        <div class="meta-item">
-                            <span>${nameText}</span>
-                            <span class="role">Admin</span>
+                        <div class="flex items-center">
+                            <span class="font-semibold text-gray-300 mr-2">${nameText}</span>
+                            <span class="text-sm text-gray-500 mr-2">Admin</span>
+                            <img src="https://placehold.co/32x32/9b59b6/ffffff?text=${profileText}" alt="${nameText}" class="w-8 h-8 rounded-full">
                         </div>
-                        <button class="logout-btn">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+                        <button class="logout-btn text-gray-400 hover:text-white transition">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
                         </button>
                     </div>
                  `;
@@ -2000,26 +986,22 @@
 
             function attachLogoutListeners() {
                 const logoutButtons = document.querySelectorAll('.logout-btn');
-                if (logoutButtons) {
-                    logoutButtons.forEach(btn => {
-                        const oldBtn = btn.cloneNode(true);
-                        btn.parentNode.replaceChild(oldBtn, btn);
-                    });
-                    const newLogoutButtons = document.querySelectorAll('.logout-btn');
-                    newLogoutButtons.forEach(btn => {
-                        btn.addEventListener('click', async () => {
-                            try {
-                                await signOut(auth);
-                                if (loginPage) loginPage.style.display = 'flex';
-                                if (appContainer) appContainer.style.display = 'none';
-                                currentUser = null;
-                                userData = null;
-                                console.log("User signed out.");
-                            } catch (error) {
-                                console.error("Error signing out:", error);
-                            }
-                        });
-                    });
+                logoutButtons.forEach(btn => {
+                    btn.removeEventListener('click', handleLogout);
+                    btn.addEventListener('click', handleLogout);
+                });
+            }
+
+            async function handleLogout() {
+                try {
+                    await signOut(auth);
+                    if (loginPage) loginPage.style.display = 'flex';
+                    if (appContainer) appContainer.style.display = 'none';
+                    currentUser = null;
+                    userData = null;
+                    console.log("User signed out.");
+                } catch (error) {
+                    console.error("Error signing out:", error);
                 }
             }
 
@@ -2043,17 +1025,17 @@
                 const titleElement = document.getElementById('page-title');
                 if (!titleElement) return;
 
-                const menuToggle = `<button id="menu-toggle" class="menu-toggle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></button>`;
+                const menuToggle = `<button id="menu-toggle" class="md:hidden mr-4 text-white"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></button>`;
                 let titleText = 'Ping Rewards';
 
                 switch (viewId) {
                     case 'user-dashboard-view': titleText = 'Dashboard'; break;
-                    case 'watch-videos-view': titleText = 'Watch Videos'; break;
-                    case 'points-history-view': titleText = 'Points History'; break;
+                    case 'watch-videos-view': titleText = 'ဗီဒီယိုများ ကြည့်ရှုပါ'; break;
+                    case 'points-history-view': titleText = 'Point မှတ်တမ်း'; break;
                     case 'admin-dashboard-view': titleText = 'Admin Dashboard'; break;
-                    case 'manage-videos-view': titleText = 'Manage Videos'; break;
-                    case 'manage-users-view': titleText = 'Manage Users'; break;
-                    case 'video-player-view': titleText = 'Video Player'; break;
+                    case 'manage-videos-view': titleText = 'ဗီဒီယို စီမံခန့်ခွဲခြင်း'; break;
+                    case 'manage-users-view': titleText = 'အသုံးပြုသူ စီမံခန့်ခွဲခြင်း'; break;
+                    case 'video-player-view': titleText = 'ဗီဒီယို'; break;
                 }
                 titleElement.innerHTML = `${menuToggle} ${titleText}`;
                 
@@ -2067,7 +1049,7 @@
             }
             
             function generateRandomChartData() {
-                const bars = document.querySelectorAll('#weekly-watch-chart .bar');
+                const bars = document.querySelectorAll('.bar-chart .bar');
                 bars.forEach(bar => {
                     const randomHeight = Math.floor(Math.random() * 90) + 10;
                     bar.style.height = `${randomHeight}%`;
@@ -2096,37 +1078,30 @@
                 }
 
                 if (filteredVideos.length === 0) {
-                     videoGrid.innerHTML = `<p style="text-align:center; color:#6c7e9e;">ဗီဒီယိုများ ရှာမတွေ့ပါ။</p>`;
+                     videoGrid.innerHTML = `<p class="text-center text-gray-400 col-span-full">ဗီဒီယိုများ ရှာမတွေ့ပါ။</p>`;
                      return;
                 }
 
                 filteredVideos.forEach(video => {
-                    let thumbnailUrl;
-                    // Get video thumbnail based on platform
                     const youtubeId = getYouTubeId(video.videoUrl);
-                    if (youtubeId) {
-                        thumbnailUrl = getYouTubeThumbnail(youtubeId);
-                    } else {
-                        // Placeholder for TikTok and Facebook and others
-                        thumbnailUrl = 'https://placehold.co/400x225/1f3148/ffffff?text=Video';
-                    }
+                    const thumbnailUrl = getYouTubeThumbnail(youtubeId);
 
                     const videoCardHtml = `
-                        <div class="video-card" data-category="${video.category}" data-video-url="${video.videoUrl}" data-video-id="${video.id}">
-                            <div class="video-thumbnail-container">
-                                <img src="${thumbnailUrl}" alt="${video.title}" onerror="this.onerror=null; this.src='https://placehold.co/400x225/1f3148/ffffff?text=Video';">
-                                <div class="thumbnail-overlay">
-                                    <div class="play-icon">
-                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 16.5l6-4.5-6-4.5v9z"/></svg>
+                        <div class="video-card card rounded-xl overflow-hidden shadow-lg cursor-pointer transform hover:scale-105 transition-transform duration-300" data-category="${video.category}" data-video-url="${video.videoUrl}" data-video-id="${video.id}">
+                            <div class="relative w-full h-40 overflow-hidden">
+                                <img src="${thumbnailUrl}" alt="${video.title}" onerror="this.onerror=null; this.src='https://placehold.co/400x225/1f3148/ffffff?text=Video';" class="w-full h-full object-cover transition-transform duration-300">
+                                <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 opacity-0 hover:opacity-100 transition-opacity duration-300">
+                                    <div class="w-16 h-16 rounded-full bg-white bg-opacity-20 backdrop-blur-sm flex items-center justify-center border-2 border-white/50">
+                                        <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M10 16.5l6-4.5-6-4.5v9z"/></svg>
                                     </div>
                                 </div>
-                                <span class="duration-badge">${formatDuration(video.duration)}</span>
+                                <span class="absolute bottom-2 right-2 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded-full font-semibold">${formatDuration(video.duration)}</span>
+                                <span class="absolute top-2 right-2 gradient-bg text-white text-xs px-3 py-1 rounded-full font-semibold">${video.points} PTS</span>
                             </div>
-                            <span class="points-badge">${video.points} PTS</span>
-                            <div class="video-info">
-                                <div class="category">${video.category}</div>
-                                <h3 class="title">${video.title}</h3>
-                                <p class="description">${video.description}</p>
+                            <div class="p-4">
+                                <div class="text-sm font-semibold text-gray-400 uppercase">${video.category}</div>
+                                <h3 class="text-lg font-semibold text-white mt-1 mb-2">${video.title}</h3>
+                                <p class="text-sm text-gray-500 line-clamp-2">${video.description}</p>
                             </div>
                         </div>
                     `;
@@ -2137,25 +1112,24 @@
             
             function renderUsersTable(users) {
                 if (!usersTableBody) return;
-                usersTableBody.innerHTML = ''; // Clear previous content
-
+                usersTableBody.innerHTML = '';
                 if (users.length === 0) {
-                     usersTableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #6c7e9e;">No users found.</td></tr>`;
+                     usersTableBody.innerHTML = `<tr><td colspan="6" class="text-center text-gray-400 py-4">အသုံးပြုသူ မတွေ့ပါ။</td></tr>`;
                      return;
                 }
                 
                 users.forEach(user => {
-                    const toggleRoleBtnText = user.role === 'admin' ? 'Demote to User' : 'Promote to Admin';
+                    const toggleRoleBtnText = user.role === 'admin' ? 'အသုံးပြုသူသို့ ပြောင်းလဲရန်' : 'Admin သို့ ပြောင်းလဲရန်';
                     const tableRowHtml = `
-                        <tr data-user-id="${user.id}">
-                            <td class="user-id-short">${user.id.substring(0, 8)}...</td>
-                            <td>${user.name || 'N/A'}</td>
-                            <td>${user.email || 'N/A'}</td>
-                            <td>${user.role}</td>
-                            <td>${user.points || 0}</td>
-                            <td>
-                                <button class="actions-btn view-history-btn" data-user-id="${user.id}">View History</button>
-                                ${user.id !== userId ? `<button class="actions-btn toggle-role-btn" data-user-id="${user.id}" data-current-role="${user.role}">${toggleRoleBtnText}</button>` : ''}
+                        <tr class="hover:bg-gray-700 transition" data-user-id="${user.id}">
+                            <td class="p-4">${user.id.substring(0, 8)}...</td>
+                            <td class="p-4">${user.name || 'N/A'}</td>
+                            <td class="p-4">${user.email || 'N/A'}</td>
+                            <td class="p-4">${user.role}</td>
+                            <td class="p-4">${user.points || 0}</td>
+                            <td class="p-4">
+                                <button class="bg-green-500 text-white text-sm px-4 py-2 rounded-lg mr-2 hover:bg-green-600 transition view-history-btn" data-user-id="${user.id}">မှတ်တမ်းကြည့်ရန်</button>
+                                ${user.id !== userId ? `<button class="bg-purple-500 text-white text-sm px-4 py-2 rounded-lg hover:bg-purple-600 transition toggle-role-btn" data-user-id="${user.id}" data-current-role="${user.role}">${toggleRoleBtnText}</button>` : ''}
                             </td>
                         </tr>
                     `;
@@ -2165,7 +1139,6 @@
             }
 
             function renderManageVideosTable() {
-                const videoTableBody = document.querySelector('#videos-table tbody');
                 if (!videoTableBody) {
                     console.error("Video table body element not found.");
                     return;
@@ -2173,13 +1146,13 @@
                 videoTableBody.innerHTML = '';
                 videos.forEach(video => {
                     const tableRowHtml = `
-                        <tr data-video-id="${video.id}">
-                            <td>${video.title}</td>
-                            <td>${video.category}</td>
-                            <td>${video.points}</td>
-                            <td>
-                                <a href="#" class="actions-btn edit-btn" data-video-id="${video.id}">Edit</a>
-                                <a href="#" class="actions-btn delete-btn" data-video-id="${video.id}">Delete</a>
+                        <tr class="hover:bg-gray-700 transition" data-video-id="${video.id}">
+                            <td class="p-4">${video.title}</td>
+                            <td class="p-4">${video.category}</td>
+                            <td class="p-4">${video.points}</td>
+                            <td class="p-4 space-x-2">
+                                <button class="bg-blue-500 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-600 transition edit-btn" data-video-id="${video.id}">ပြင်ဆင်ရန်</button>
+                                <button class="bg-red-500 text-white text-sm px-4 py-2 rounded-lg hover:bg-red-600 transition delete-btn" data-video-id="${video.id}">ဖျက်ရန်</button>
                             </td>
                         </tr>
                     `;
@@ -2189,26 +1162,25 @@
             }
             
             function renderPointsHistoryTable() {
-                const pointsHistoryTableBody = document.querySelector('#points-history-table tbody');
                 if (!pointsHistoryTableBody) {
                     console.error("Points history table body element not found.");
                     return;
                 }
                 pointsHistoryTableBody.innerHTML = '';
                 if (!userData || !userData.pointsHistory || userData.pointsHistory.length === 0) {
-                     pointsHistoryTableBody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: #6c7e9e;">No points history yet. Watch some videos!</td></tr>`;
+                     pointsHistoryTableBody.innerHTML = `<tr><td colspan="3" class="text-center text-gray-400 py-4">မှတ်တမ်းမရှိသေးပါ။ ဗီဒီယိုကြည့်ပြီး Point ရယူပါ!</td></tr>`;
                      return;
                 }
                 const history = userData.pointsHistory;
                 history.forEach(item => {
                     const tableRowHtml = `
-                        <tr>
-                            <td>${item.date}</td>
-                            <td>
-                                <svg class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5l-5-5 1.41-1.41L10 13.67l7.59-7.59L19 7l-9 9.5z"/></svg>
+                        <tr class="hover:bg-gray-700 transition">
+                            <td class="p-4">${item.date}</td>
+                            <td class="p-4">
+                                <svg class="w-4 h-4 inline-block mr-1 text-green-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5l-5-5 1.41-1.41L10 13.67l7.59-7.59L19 7l-9 9.5z"/></svg>
                                 ${item.description}
                             </td>
-                            <td>+${item.points}</td>
+                            <td class="p-4 text-green-400 font-semibold">+${item.points}</td>
                         </tr>
                     `;
                     pointsHistoryTableBody.innerHTML += tableRowHtml;
@@ -2234,193 +1206,191 @@
             }
 
             function animateCoins(startElement, endElement, points) {
-                // To prevent lag, we will animate a maximum of 10 coins.
                 const numberOfCoins = Math.min(points, 10);
                 const startRect = startElement.getBoundingClientRect();
                 const endRect = endElement.getBoundingClientRect();
-                const bodyRect = document.body.getBoundingClientRect();
                 
                 for (let i = 0; i < numberOfCoins; i++) {
                     const coin = document.createElement('div');
-                    coin.className = 'coin';
+                    coin.className = 'absolute w-4 h-4 rounded-full bg-yellow-400 transition-all duration-1000 ease-in-out z-50';
                     document.body.appendChild(coin);
 
-                    // Set initial position based on startElement's viewport position
-                    coin.style.left = `${startRect.left + (startRect.width / 2)}px`;
-                    coin.style.top = `${startRect.top + (startRect.height / 2)}px`;
+                    coin.style.left = `${startRect.left + (startRect.width / 2) - 8}px`;
+                    coin.style.top = `${startRect.top + (startRect.height / 2) - 8}px`;
 
-                    // Animate the coin after a short delay
                     setTimeout(() => {
-                        coin.style.left = `${endRect.left + (endRect.width / 2)}px`;
-                        coin.style.top = `${endRect.top + (endRect.height / 2)}px`;
+                        coin.style.left = `${endRect.left + (endRect.width / 2) - 8}px`;
+                        coin.style.top = `${endRect.top + (endRect.height / 2) - 8}px`;
                         coin.style.opacity = '0';
                         coin.style.transform = 'scale(0.5)';
-                    }, 50 + i * 20); // Stagger the animation
+                    }, 50 + i * 20);
 
-                    // Remove the coin from the DOM after the animation is complete
                     setTimeout(() => {
                         coin.remove();
-                    }, 1000 + i * 20);
+                    }, 1100 + i * 20);
                 }
             }
 
-            async function attachVideoCardListeners() {
+            function attachVideoCardListeners() {
                 const cards = document.querySelectorAll('.video-card');
                 cards.forEach(card => {
-                    const oldCard = card.cloneNode(true);
-                    card.parentNode.replaceChild(oldCard, card);
-                });
-
-                const newCards = document.querySelectorAll('.video-card');
-                newCards.forEach(card => {
-                    card.addEventListener('click', (e) => {
-                        const videoId = card.getAttribute('data-video-id');
-                        const video = videos.find(v => v.id === videoId);
-                        
-                        if (video) {
-                            videoCardToAnimate = card; // Store the card element for animation later
-                            if (videoIframe) videoIframe.src = video.videoUrl;
-                            if (videoPlayerTitle) videoPlayerTitle.textContent = video.title;
-                            if (videoPlayerDescription) videoPlayerDescription.textContent = video.description;
-                            showView('video-player-view');
-                            if (summaryOutput) summaryOutput.innerHTML = ''; // Clear previous summary
-
-                            let pointsEarnedInSession = false;
-                            clearTimeout(window.videoWatchTimer);
-                            window.videoWatchTimer = setTimeout(() => {
-                                pointsEarnedInSession = true;
-                                console.log(`ဗီဒီယိုကြည့်ချိန်ပြည့်ပါပြီ။ အမှတ်ရရှိရန် 'Back to Videos' ကိုနှိပ်ပါ`);
-                                window.currentWatchedVideoId = video.id; // Store ID for summary button
-                            }, video.watchDuration * 1000);
-                            
-                            if(videoPlayerBackBtn) {
-                                videoPlayerBackBtn.onclick = async () => {
-                                    clearTimeout(window.videoWatchTimer);
-                                    if (videoIframe) videoIframe.src = '';
-                                    if (pointsEarnedInSession) {
-                                        if (videoCardToAnimate) {
-                                            const endElement = document.getElementById('user-points-display');
-                                            animateCoins(videoCardToAnimate, endElement, video.points);
-                                            // Delay point update to coincide with the end of the animation
-                                            setTimeout(async () => {
-                                                await updatePointsInFirestore(video.points, `Watched "${video.title}"`);
-                                            }, 1000); // Match animation duration
-                                        } else {
-                                            await updatePointsInFirestore(video.points, `Watched "${video.title}"`);
-                                        }
-                                        console.log("Points updated via Firebase.");
-                                    } else {
-                                        console.log(`You did not watch the video for the required duration. No points were awarded.`);
-                                    }
-                                    showView('watch-videos-view');
-                                };
-                            }
-                        }
-                    });
+                    card.removeEventListener('click', handleVideoCardClick);
+                    card.addEventListener('click', handleVideoCardClick);
                 });
             }
+
+            async function handleVideoCardClick(e) {
+                const card = e.currentTarget;
+                const videoId = card.getAttribute('data-video-id');
+                const video = videos.find(v => v.id === videoId);
+                
+                if (video) {
+                    videoCardToAnimate = card;
+                    if (videoIframe) videoIframe.src = video.videoUrl;
+                    if (videoPlayerTitle) videoPlayerTitle.textContent = video.title;
+                    if (videoPlayerDescription) videoPlayerDescription.textContent = video.description;
+                    showView('video-player-view');
+                    if (summaryOutput) summaryOutput.innerHTML = '';
+                    
+                    clearTimeout(window.videoWatchTimer);
+                    window.pointsEarnedInSession = false;
+                    window.videoWatchTimer = setTimeout(() => {
+                        window.pointsEarnedInSession = true;
+                        console.log(`ဗီဒီယိုကြည့်ချိန်ပြည့်ပါပြီ။ Point ရရှိရန် 'Back to Videos' ကိုနှိပ်ပါ`);
+                        window.currentWatchedVideoId = video.id;
+                    }, video.watchDuration * 1000);
+                }
+            }
+
+            if(videoPlayerBackBtn) {
+                videoPlayerBackBtn.removeEventListener('click', handleVideoBack);
+                videoPlayerBackBtn.addEventListener('click', handleVideoBack);
+            }
             
+            async function handleVideoBack() {
+                clearTimeout(window.videoWatchTimer);
+                if (videoIframe) videoIframe.src = '';
+                if (window.pointsEarnedInSession) {
+                    if (videoCardToAnimate) {
+                        const videoId = videoCardToAnimate.getAttribute('data-video-id');
+                        const video = videos.find(v => v.id === videoId);
+                        if (video) {
+                            const endElement = document.getElementById('user-points-display');
+                            animateCoins(videoCardToAnimate, endElement, video.points);
+                            setTimeout(async () => {
+                                await updatePointsInFirestore(video.points, `Watched "${video.title}"`);
+                            }, 1000);
+                        }
+                    } else {
+                        const videoId = window.currentWatchedVideoId;
+                        const video = videos.find(v => v.id === videoId);
+                        if(video) await updatePointsInFirestore(video.points, `Watched "${video.title}"`);
+                    }
+                    console.log("Points updated via Firebase.");
+                } else {
+                    console.log(`You did not watch the video for the required duration. No points were awarded.`);
+                }
+                showView('watch-videos-view');
+            }
+
             function showDeleteModal(videoId) {
                 if (deleteConfirmModal) {
                     deleteConfirmModal.style.display = 'flex';
-                    // Clone and replace to remove old event listeners
-                    const oldConfirmBtn = deleteConfirmBtn.cloneNode(true);
-                    deleteConfirmBtn.parentNode.replaceChild(oldConfirmBtn, deleteConfirmBtn);
-                    const newConfirmBtn = document.getElementById('confirm-delete-btn');
+                    const newConfirmBtn = deleteConfirmBtn.cloneNode(true);
+                    deleteConfirmBtn.parentNode.replaceChild(newConfirmBtn, deleteConfirmBtn);
                     newConfirmBtn.addEventListener('click', async () => {
                         deleteConfirmModal.style.display = 'none';
                         await deleteVideo(videoId);
                     });
+                    deleteCancelBtn.removeEventListener('click', () => { deleteConfirmModal.style.display = 'none'; });
+                    deleteCancelBtn.addEventListener('click', () => { deleteConfirmModal.style.display = 'none'; });
                 }
-            }
-            
-            if (deleteCancelBtn) {
-                deleteCancelBtn.addEventListener('click', () => {
-                    if (deleteConfirmModal) {
-                        deleteConfirmModal.style.display = 'none';
-                    }
-                });
             }
 
             function attachManageVideosListeners() {
                 const editBtns = document.querySelectorAll('.edit-btn');
                 editBtns.forEach(btn => {
-                    const oldBtn = btn.cloneNode(true);
-                    btn.parentNode.replaceChild(oldBtn, btn);
-                });
-                const newEditBtns = document.querySelectorAll('.edit-btn');
-                newEditBtns.forEach(btn => {
-                    btn.addEventListener('click', async (e) => {
-                        e.preventDefault();
-                        const videoId = btn.getAttribute('data-video-id');
-                        const videoToEdit = videos.find(v => v.id === videoId);
-                        if (videoToEdit) {
-                            if (addModalTitle) addModalTitle.textContent = "Edit Video";
-                            if (document.getElementById('video-title')) document.getElementById('video-title').value = videoToEdit.title;
-                            if (document.getElementById('video-description')) document.getElementById('video-description').value = videoToEdit.description;
-                            if (document.getElementById('video-category')) document.getElementById('video-category').value = videoToEdit.category;
-                            if (document.getElementById('video-url')) document.getElementById('video-url').value = videoToEdit.videoUrl;
-                            if (document.getElementById('video-points')) document.getElementById('video-points').value = videoToEdit.points;
-                            if (document.getElementById('watch-duration')) document.getElementById('watch-duration').value = videoToEdit.watchDuration;
-                            if (addVideoModal) addVideoModal.style.display = 'flex';
-                            if (addVideoForm) addVideoForm.setAttribute('data-editing-id', videoId);
-                        }
-                    });
+                    btn.removeEventListener('click', handleEditVideo);
+                    btn.addEventListener('click', handleEditVideo);
                 });
 
                 const deleteBtns = document.querySelectorAll('.delete-btn');
                 deleteBtns.forEach(btn => {
-                    const oldBtn = btn.cloneNode(true);
-                    btn.parentNode.replaceChild(oldBtn, btn);
+                    btn.removeEventListener('click', handleDeleteVideo);
+                    btn.addEventListener('click', handleDeleteVideo);
                 });
-                const newDeleteBtns = document.querySelectorAll('.delete-btn');
-                newDeleteBtns.forEach(btn => {
-                    btn.addEventListener('click', async (e) => {
-                        e.preventDefault();
-                        const videoId = btn.getAttribute('data-video-id');
-                        showDeleteModal(videoId);
-                    });
-                });
+            }
+            
+            async function handleEditVideo(e) {
+                e.preventDefault();
+                const videoId = e.currentTarget.getAttribute('data-video-id');
+                const videoToEdit = videos.find(v => v.id === videoId);
+                if (videoToEdit) {
+                    if (addModalTitle) addModalTitle.textContent = "ဗီဒီယိုပြင်ဆင်ရန်";
+                    document.getElementById('video-title').value = videoToEdit.title;
+                    document.getElementById('video-description').value = videoToEdit.description;
+                    document.getElementById('video-category').value = videoToEdit.category;
+                    document.getElementById('video-url').value = videoToEdit.videoUrl;
+                    document.getElementById('video-points').value = videoToEdit.points;
+                    document.getElementById('watch-duration').value = videoToEdit.watchDuration;
+                    addVideoModal.style.display = 'flex';
+                    addVideoForm.setAttribute('data-editing-id', videoId);
+                }
+            }
+
+            function handleDeleteVideo(e) {
+                e.preventDefault();
+                const videoId = e.currentTarget.getAttribute('data-video-id');
+                showDeleteModal(videoId);
             }
             
             function attachManageUsersListeners(users) {
                 const viewHistoryBtns = document.querySelectorAll('.view-history-btn');
                 viewHistoryBtns.forEach(btn => {
-                    btn.addEventListener('click', async () => {
-                        const userId = btn.getAttribute('data-user-id');
-                        const user = users.find(u => u.id === userId);
-                        if (user && userHistoryModal && userHistoryTitle && userHistoryTableBody) {
-                             userHistoryTitle.textContent = `${user.name || 'User'}'s Points History`;
-                             userHistoryTableBody.innerHTML = ''; // Clear previous history
-                             
-                             if (user.pointsHistory && user.pointsHistory.length > 0) {
-                                 user.pointsHistory.forEach(item => {
-                                      const row = document.createElement('tr');
-                                      row.innerHTML = `<td>${item.date}</td><td>${item.description}</td><td>${item.points}</td>`;
-                                      userHistoryTableBody.appendChild(row);
-                                 });
-                             } else {
-                                  userHistoryTableBody.innerHTML = `<tr><td colspan="3" style="text-align: center;">No history found.</td></tr>`;
-                             }
-                             userHistoryModal.style.display = 'flex';
-                        }
-                    });
+                    btn.removeEventListener('click', handleViewHistory);
+                    btn.addEventListener('click', handleViewHistory);
                 });
                 
                 if (userHistoryCloseBtn) {
-                     userHistoryCloseBtn.addEventListener('click', () => {
-                         if(userHistoryModal) userHistoryModal.style.display = 'none';
-                     });
+                     userHistoryCloseBtn.removeEventListener('click', () => { if(userHistoryModal) userHistoryModal.style.display = 'none'; });
+                     userHistoryCloseBtn.addEventListener('click', () => { if(userHistoryModal) userHistoryModal.style.display = 'none'; });
                 }
                 
                 const toggleRoleBtns = document.querySelectorAll('.toggle-role-btn');
                 toggleRoleBtns.forEach(btn => {
-                     btn.addEventListener('click', async () => {
-                         const targetUserId = btn.getAttribute('data-user-id');
-                         const currentRole = btn.getAttribute('data-current-role');
-                         await toggleUserRole(targetUserId, currentRole);
-                     });
+                     btn.removeEventListener('click', handleToggleRole);
+                     btn.addEventListener('click', handleToggleRole);
                 });
+            }
+
+            async function handleViewHistory(e) {
+                const userId = e.currentTarget.getAttribute('data-user-id');
+                const userDocRef = doc(db, `/artifacts/${appId}/users/${userId}`);
+                const userDocSnap = await getDoc(userDocRef);
+                const user = userDocSnap.data();
+
+                if (user && userHistoryModal && userHistoryTitle && userHistoryTableBody) {
+                     userHistoryTitle.textContent = `${user.name || 'User'}'s Point မှတ်တမ်း`;
+                     userHistoryTableBody.innerHTML = '';
+                     
+                     if (user.pointsHistory && user.pointsHistory.length > 0) {
+                         user.pointsHistory.forEach(item => {
+                              const row = document.createElement('tr');
+                              row.className = "hover:bg-gray-700 transition";
+                              row.innerHTML = `<td class="p-4">${item.date}</td><td class="p-4">${item.description}</td><td class="p-4 text-green-400 font-semibold">${item.points}</td>`;
+                              userHistoryTableBody.appendChild(row);
+                         });
+                     } else {
+                          userHistoryTableBody.innerHTML = `<tr><td colspan="3" class="text-center text-gray-400 py-4">မှတ်တမ်းမရှိသေးပါ။</td></tr>`;
+                     }
+                     userHistoryModal.style.display = 'flex';
+                }
+            }
+
+            async function handleToggleRole(e) {
+                 const targetUserId = e.currentTarget.getAttribute('data-user-id');
+                 const currentRole = e.currentTarget.getAttribute('data-current-role');
+                 await toggleUserRole(targetUserId, currentRole);
             }
 
             if (googleSignInBtn) {
@@ -2451,8 +1421,7 @@
                         if (summaryOutput) summaryOutput.innerHTML = "ဗီဒီယိုကို မတွေ့ပါ။";
                         return;
                     }
-
-                    if (summaryOutput) summaryOutput.innerHTML = `<p>Summary ကို ဖော်ပြနေပါသည်...</p>`;
+                    if (summaryOutput) summaryOutput.innerHTML = `<p class="text-gray-400">အနှစ်ချုပ် ဖော်ပြနေပါသည်...</p>`;
 
                     try {
                         const prompt = `ဗီဒီယိုခေါင်းစဉ်: "${currentVideo.title}"။ ဖော်ပြချက်: "${currentVideo.description}" ကို အနှစ်ချုပ် ဖော်ပြပေးပါ။`;
@@ -2472,7 +1441,7 @@
                             result.candidates[0].content && result.candidates[0].content.parts &&
                             result.candidates[0].content.parts.length > 0) {
                             const summaryText = result.candidates[0].content.parts[0].text;
-                            if (summaryOutput) summaryOutput.innerHTML = `<h3>အနှစ်ချုပ်</h3><p>${summaryText}</p>`;
+                            if (summaryOutput) summaryOutput.innerHTML = `<h3 class="text-lg font-semibold text-white mb-2">အနှစ်ချုပ်</h3><p class="text-gray-400">${summaryText}</p>`;
                         } else {
                             if (summaryOutput) summaryOutput.innerHTML = "အနှစ်ချုပ်ဖော်ပြချက်ကို မရရှိပါ။";
                         }
@@ -2535,24 +1504,10 @@
 
             if (addVideoBtn) {
                 addVideoBtn.addEventListener('click', () => {
-                    if (addModalTitle) addModalTitle.textContent = "Add New Video";
+                    if (addModalTitle) addModalTitle.textContent = "ဗီဒီယိုအသစ်ထည့်ရန်";
                     if (addVideoForm) addVideoForm.reset();
                     if (addVideoForm) addVideoForm.removeAttribute('data-editing-id');
                     if (addVideoModal) addVideoModal.style.display = 'flex';
-                    // Update video category options
-                    const videoCategorySelect = document.getElementById('video-category');
-                    if (videoCategorySelect) {
-                        videoCategorySelect.innerHTML = `
-                            <option value="YouTube">YouTube</option>
-                            <option value="TikTok">TikTok</option>
-                            <option value="Facebook">Facebook</option>
-                            <option value="Nature">Nature</option>
-                            <option value="Education">Education</option>
-                            <option value="Travel">Travel</option>
-                            <option value="Food">Food</option>
-                            <option value="Gaming">Gaming</option>
-                        `;
-                    }
                 });
             }
 
@@ -2650,7 +1605,6 @@
                         window.open(channelUrl, '_blank');
                     } catch (error) {
                         console.error("Error during cash out:", error);
-                        // Even on error, we might still want to redirect
                         window.open(channelUrl, '_blank');
                     } finally {
                         hideLoading();
