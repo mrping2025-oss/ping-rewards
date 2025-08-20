@@ -267,7 +267,9 @@
                     <div class="aspect-video w-full rounded-xl overflow-hidden mb-4">
                         <iframe id="video-iframe" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full h-full"></iframe>
                     </div>
-                    <div class="flex justify-between items-center">
+                    <div class="flex justify-between items-center relative">
+                        <!-- New element for coin animation origin -->
+                        <div id="coin-origin" class="absolute bottom-6 right-6 w-8 h-8"></div>
                         <button id="get-summary-btn" class="action-btn px-6 py-3 bg-secondary hover:bg-pink-500 text-white font-semibold rounded-lg transition-colors duration-200">
                             အနှစ်ချုပ်ရယူရန် ✨
                         </button>
@@ -628,6 +630,9 @@
             
             const cashoutMessageModal = document.getElementById('cashout-message-modal');
             const cashoutMessageText = document.getElementById('cashout-message-text');
+            
+            // New element for coin animation
+            const coinOrigin = document.getElementById('coin-origin');
             
             let videos = [];
             let currentUser = null;
@@ -1303,13 +1308,14 @@
                                     clearTimeout(window.videoWatchTimer);
                                     if (videoIframe) videoIframe.src = '';
                                     if (pointsEarnedInSession) {
-                                        if (videoCardToAnimate) {
+                                        // Use the coinOrigin div as the starting point for the animation
+                                        if (coinOrigin) {
                                             const endElement = document.getElementById('user-points-display');
-                                            animateCoins(videoCardToAnimate, endElement, video.points);
-                                            // Pass video ID to the function
+                                            animateCoins(coinOrigin, endElement, video.points);
+                                            // Delay point update to coincide with the end of the animation
                                             setTimeout(async () => {
                                                 await updatePointsInFirestore(video.points, `Watched "${video.title}"`, video.id);
-                                            }, 1000);
+                                            }, 1000); // Match animation duration
                                         } else {
                                             await updatePointsInFirestore(video.points, `Watched "${video.title}"`, video.id);
                                         }
