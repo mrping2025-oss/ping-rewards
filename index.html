@@ -548,7 +548,8 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut, signInAnonymously, GoogleAuthProvider, signInWithPopup, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, collection, query, where, addDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        // Import arrayUnion for updating arrays in Firestore
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, collection, query, where, addDoc, getDocs, deleteDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
         document.addEventListener('DOMContentLoaded', async () => {
             const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
@@ -680,7 +681,8 @@
                             role: userRole,
                             points: 0,
                             pointsHistory: [],
-                            payoutHistory: [] // Add payout history field for tracking
+                            payoutHistory: [],
+                            watchedVideos: [] // New field to track watched videos
                          });
                          console.log("Seeding initial user data.");
                     }
@@ -779,7 +781,8 @@
                 }
             }
 
-            async function updatePointsInFirestore(pointsToAdd, description) {
+            // Updated function to track watched videos
+            async function updatePointsInFirestore(pointsToAdd, description, videoId) {
                 if (!userData || !userId) return;
                 showLoading();
                 try {
@@ -793,7 +796,8 @@
 
                     await updateDoc(userDocRef, {
                         points: newPoints,
-                        pointsHistory: newHistory
+                        pointsHistory: newHistory,
+                        watchedVideos: arrayUnion(videoId) // Add the video ID to the watched list
                     });
                     console.log("Points and history updated in Firestore.");
                 } catch (e) {
@@ -1075,6 +1079,7 @@
                 });
             }
 
+            // Updated function to sort videos with watched ones at the bottom
             function renderVideoGrid(category, searchQuery = '') {
                 const videoGrid = document.getElementById('video-grid');
                 if (!videoGrid) {
@@ -1082,12 +1087,12 @@
                     return;
                 }
                 videoGrid.innerHTML = '';
+                
+                // Filter videos based on category and search query
                 let filteredVideos = videos;
-
                 if (category !== 'all') {
                     filteredVideos = filteredVideos.filter(video => video.category === category);
                 }
-
                 if (searchQuery) {
                     const query = searchQuery.toLowerCase();
                     filteredVideos = filteredVideos.filter(video => 
@@ -1100,8 +1105,14 @@
                      videoGrid.innerHTML = `<p class="col-span-full text-center text-muted-text py-12">ဗီဒီယိုများ ရှာမတွေ့ပါ။</p>`;
                      return;
                 }
+                
+                // Sort videos: unwatched first, then watched
+                const watchedVideoIds = userData?.watchedVideos || [];
+                const unwatchedVideos = filteredVideos.filter(video => !watchedVideoIds.includes(video.id));
+                const watchedVideos = filteredVideos.filter(video => watchedVideoIds.includes(video.id));
+                const sortedVideos = [...unwatchedVideos, ...watchedVideos];
 
-                filteredVideos.forEach(video => {
+                sortedVideos.forEach(video => {
                     let thumbnailUrl;
                     const youtubeId = getYouTubeId(video.videoUrl);
                     if (youtubeId) {
@@ -1110,14 +1121,19 @@
                         thumbnailUrl = 'https://placehold.co/400x225/1f3148/ffffff?text=Video';
                     }
 
+                    // Add a class for watched videos to style them differently
+                    const isWatched = watchedVideoIds.includes(video.id);
+                    const watchedClass = isWatched ? 'opacity-50 grayscale' : '';
+
                     const videoCardHtml = `
-                        <div class="video-card bg-card-bg rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer border border-slate-700" data-category="${video.category}" data-video-url="${video.videoUrl}" data-video-id="${video.id}">
+                        <div class="video-card bg-card-bg rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer border border-slate-700 ${watchedClass}" data-category="${video.category}" data-video-url="${video.videoUrl}" data-video-id="${video.id}">
                             <img src="${thumbnailUrl}" alt="${video.title}" class="w-full h-40 object-cover" onerror="this.onerror=null; this.src='https://placehold.co/400x225/1f3148/ffffff?text=Video';">
                             <div class="p-4">
                                 <div class="text-xs text-secondary mb-1 uppercase">${video.category}</div>
                                 <h3 class="text-lg font-semibold truncate mb-1">${video.title}</h3>
                                 <p class="text-sm text-muted-text line-clamp-2">${video.description}</p>
                                 <span class="inline-block bg-primary text-white text-xs font-bold px-3 py-1 rounded-full mt-2">${video.points} PTS</span>
+                                ${isWatched ? '<span class="text-xs text-accent-green font-semibold ml-2">ကြည့်ရှုပြီး</span>' : ''}
                             </div>
                         </div>
                     `;
@@ -1290,11 +1306,12 @@
                                         if (videoCardToAnimate) {
                                             const endElement = document.getElementById('user-points-display');
                                             animateCoins(videoCardToAnimate, endElement, video.points);
+                                            // Pass video ID to the function
                                             setTimeout(async () => {
-                                                await updatePointsInFirestore(video.points, `Watched "${video.title}"`);
+                                                await updatePointsInFirestore(video.points, `Watched "${video.title}"`, video.id);
                                             }, 1000);
                                         } else {
-                                            await updatePointsInFirestore(video.points, `Watched "${video.title}"`);
+                                            await updatePointsInFirestore(video.points, `Watched "${video.title}"`, video.id);
                                         }
                                         console.log("Points updated via Firebase.");
                                     } else {
