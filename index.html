@@ -1,563 +1,556 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="my">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- နမော တဿ ဘဂဝတော အရဟတော သမ္မာသမ္ဗုဒ္ဓဿ -->
     <title>Ping Rewards</title>
-    <!-- Use Inter font from Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- Tailwind CSS for a clean and modern design -->
+    <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#6366f1',  /* Indigo */
+                        'secondary': '#f9a8d4', /* Pink */
+                        'background': '#0f172a', /* Slate 900 */
+                        'card-bg': '#1e293b', /* Slate 800 */
+                        'text-color': '#e2e8f0', /* Slate 200 */
+                        'muted-text': '#94a3b8', /* Slate 400 */
+                        'accent-green': '#10b981', /* Emerald */
+                        'accent-orange': '#f59e0b', /* Amber */
+                        'accent-purple': '#a855f7', /* Purple */
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    keyframes: {
+                        spin: {
+                            '0%': { transform: 'rotate(0deg)' },
+                            '100%': { transform: 'rotate(360deg)' },
+                        },
+                        coinFly: {
+                            '0%': { transform: 'translateY(0) scale(1)', opacity: '1' },
+                            '100%': { transform: 'translateY(-100px) scale(0.5)', opacity: '0' },
+                        }
+                    },
+                    animation: {
+                        spin: 'spin 1s linear infinite',
+                        coin: 'coinFly 1s ease-in-out forwards',
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        /* Custom styles to override or add specific features */
+        /* General Styles for the entire app */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #1a1a2e;
-            color: #e0e0e0;
+            background-color: #0f172a; /* Tailwind: bg-slate-900 */
+            color: #e2e8f0; /* Tailwind: text-slate-200 */
+            margin: 0;
+            overflow-x: hidden;
         }
-        .main-container {
-            min-height: 100vh;
-        }
-        .card {
-            background-color: #16213e;
-            border: 1px solid rgba(155, 89, 182, 0.5);
-        }
-        .text-primary-color {
-            color: #9b59b6;
-        }
-        .bg-primary-color {
-            background-color: #9b59b6;
-        }
-        .btn-primary {
-            background-color: #9b59b6;
-            transition: background-color 0.3s;
-        }
-        .btn-primary:hover {
-            background-color: #7d498f;
-        }
-        .modal-overlay {
-            background-color: rgba(0, 0, 0, 0.7);
-        }
-        .nav-link.active {
-            background-color: #4a3861;
-            color: #fff;
-        }
-        .loading-overlay {
-            background-color: rgba(0, 0, 0, 0.7);
-        }
-        .input-bg {
-            background-color: #3b4b6b;
-        }
-        .gradient-bg {
-            background: linear-gradient(45deg, #2e3a59, #9b59b6);
-        }
-        .coin-animation-active {
-            transform: scale(0.5);
-            opacity: 0;
-        }
-        /* Mobile menu specific styles */
-        .sidebar {
-            transform: translateX(-100%);
-            transition: transform 0.3s ease-in-out;
-        }
+        
+        /* Utility for drawer/sidebar state */
         .sidebar.open {
             transform: translateX(0);
         }
-        .backdrop {
-            display: none;
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-        .sidebar-open .backdrop {
+
+        .backdrop.open {
             display: block;
         }
+
+        .no-scroll {
+            overflow: hidden;
+        }
+
+        /* Coin Animation Styles - Adjusted for Tailwind CSS */
+        .coin-icon {
+            animation: coinFly 1s ease-in-out forwards;
+        }
+
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
     </style>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"></script>
 </head>
-<body>
+<body class="bg-background text-text-color">
 
     <!-- Loading Overlay -->
-    <div id="loading-overlay" class="fixed inset-0 flex items-center justify-center z-[1002] bg-gray-900 bg-opacity-70 hidden">
-        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-purple-500"></div>
+    <div id="loading-overlay" class="fixed inset-0 bg-background bg-opacity-70 flex justify-center items-center z-[1002] transition-opacity duration-300 opacity-0 pointer-events-none">
+        <div class="animate-spin rounded-full h-12 w-12 border-4 border-text-color border-t-primary"></div>
     </div>
 
     <!-- Login Page View -->
-    <div id="login-page" class="view flex items-center justify-center min-h-screen p-4">
-        <div class="text-center w-full max-w-sm">
-            <div class="flex flex-col items-center justify-center mb-8">
-                <!-- Updated SVG logo -->
-                <svg class="w-20 h-20 text-blue-500" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M64.0007 128C99.3465 128 128.001 99.3458 128.001 64.0007C128.001 28.6556 99.3465 0 64.0007 0C28.6556 0 0 28.6556 0 64.0007C0 81.3323 7.02604 97.0223 18.3072 108.995L18.3375 109.027L18.3496 109.043C19.167 109.845 20.3061 110.334 21.5794 110.334C22.2575 110.334 22.9554 110.155 23.5855 109.789L35.4339 102.825C37.0709 101.884 37.6698 99.7845 36.8378 98.1132C35.0874 94.6192 34.0007 90.4124 34.0007 86.0007C34.0007 65.5658 50.5658 49.0007 71.0007 49.0007C91.4357 49.0007 108 65.5658 108 86.0007C108 97.2721 102.883 107.219 94.4022 113.844L94.4173 113.856C95.2351 114.658 96.3746 115.147 97.6482 115.147C98.3265 115.147 99.0245 114.968 99.6548 114.602L111.503 107.638C113.14 106.697 113.739 104.597 112.907 102.926C111.157 99.4323 110.071 95.2255 110.071 90.8138V64.0007C110.071 39.7368 89.2646 19.0007 64.0007 19.0007C38.7368 19.0007 19.0007 39.7368 19.0007 64.0007C19.0007 72.8228 21.6033 81.0425 26.2415 87.8967L26.2483 87.9067C27.0657 88.7086 28.2047 89.1979 29.478 89.1979C30.1561 89.1979 30.854 89.0189 31.4841 88.6528L43.3325 81.6888C44.9695 80.7482 45.5684 78.6485 44.7364 76.9772C42.986 73.4831 41.9001 69.2764 41.9001 64.8647C41.9001 44.4297 65.4652 27.8647 85.9001 27.8647C106.335 27.8647 122.9 44.4297 122.9 64.8647V101.996C122.9 105.748 120.916 109.117 117.898 111.189L108.575 117.48C107.037 118.528 105.105 119.06 103.179 119.06C99.4172 119.06 95.897 117.29 93.9936 114.28L85.2913 100.865C83.9113 98.7758 81.1685 98.1565 78.9669 99.3087C76.7654 100.461 76.1039 103.22 77.2921 105.421L85.9944 118.836C87.4827 121.054 88.761 122.788 90.0007 124.001C88.0872 125.864 85.7335 127.345 83.176 128.36L64.0007 128ZM39.6997 64.0007C39.6997 45.4754 55.4754 29.6997 74.0007 29.6997C92.526 29.6997 108.301 45.4754 108.301 64.0007C108.301 82.526 92.526 98.3017 74.0007 98.3017C55.4754 98.3017 39.6997 82.526 39.6997 64.0007ZM74.0007 88.0007C79.5236 88.0007 84.0007 83.5236 84.0007 78.0007C84.0007 72.4778 79.5236 68.0007 74.0007 68.0007C68.4778 68.0007 64.0007 72.4778 64.0007 78.0007C64.0007 83.5236 68.4778 88.0007 74.0007 88.0007ZM74.0007 58.0007C85.0463 58.0007 94.0007 66.9551 94.0007 78.0007C94.0007 89.0463 85.0463 98.0007 74.0007 98.0007C62.9551 98.0007 54.0007 89.0463 54.0007 78.0007C54.0007 66.9551 62.9551 58.0007 74.0007 58.0007ZM74.0007 90.0007C86.1504 90.0007 96.0007 79.3756 96.0007 66.0007C96.0007 52.6258 86.1504 42.0007 74.0007 42.0007C61.851 42.0007 52.0007 52.6258 52.0007 66.0007C52.0007 79.3756 61.851 90.0007 74.0007 90.0007Z" fill="currentColor"/>
+    <div id="login-page" class="view flex justify-center items-center min-h-screen p-4" style="display: flex;">
+        <div class="w-full max-w-sm text-center">
+            <div class="mb-8">
+                <svg class="w-20 h-20 mx-auto fill-primary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14c0 .55-.45 1-1 1s-1-.45-1-1v-4c0-.55.45-1 1-1s1 .45 1 1v4zm4-2c0 .55-.45 1-1 1s-1-.45-1-1V9c0-.55.45-1 1-1s1 .45 1 1v5zm-2-9c-2.76 0-5 2.24-5 5h2c0-1.66 1.34-3 3-3s3 1.34 3 3H17c0-2.76-2.24-5-5-5z"/>
                 </svg>
-                <div class="text-3xl font-bold mt-2 text-gray-400">PING</div>
-                <div class="text-xl font-semibold text-primary-color">REWARDS</div>
+                <div class="text-2xl font-bold mt-2">Ping Rewards</div>
+                <div class="text-muted-text mt-1">ဗီဒီယိုကြည့်ရင်း အမှတ်တွေ ရယူပါ။</div>
             </div>
-            <div class="bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-700">
-                <h2 class="text-2xl font-semibold mb-6 text-white">Welcome Back</h2>
-                <p id="login-message" class="text-red-500 text-center text-sm font-semibold mb-4 hidden"></p>
-                <button id="google-sign-in-btn" class="w-full py-3 bg-white text-gray-800 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-gray-200 transition">
-                    <svg class="w-5 h-5" viewBox="0 0 24 24">
-                        <path fill="#4285F4" d="M22.4 12.2c0-.7-.1-1.3-.2-1.9H12v3.8h5.3c-.2 1.2-.8 2.2-1.6 3l3.2 2.5c2.1-1.9 3.4-4.7 3.4-8.4z"/>
-                        <path fill="#34A853" d="M12 22c3.2 0 5.9-1.1 7.8-3l-3.2-2.5c-1 1.2-2.3 1.9-4.6 1.9-3.5 0-6.5-2.4-7.6-5.6l-3.3 2.5c1.4 2.8 4.4 4.8 7.9 4.8z"/>
-                        <path fill="#FBBC04" d="M4.4 12.2c0-1.6.4-3.1 1.2-4.4L2.3 5.4C.9 7.7 0 10 0 12.2c0 2.2.9 4.5 2.3 6.8l3.3-2.4c-.8-1.3-1.2-2.8-1-1.4z"/>
-                        <path fill="#EA4335" d="M12 4.1c1.8 0 3.3.6 4.6 1.8L19.4 3C17.5 1.1 14.8 0 12 0c-3.5 0-6.5 2-7.9 4.8l3.3 2.4C8.7 5.7 10.2 5 12 5z"/>
+            <div class="bg-card-bg p-8 rounded-xl shadow-lg border border-slate-700">
+                <h2 class="text-xl font-semibold mb-6">ပြန်လည်ကြိုဆိုပါတယ်</h2>
+                <p id="login-message" class="text-red-500 text-sm mb-4" style="display: none;"></p>
+                <button id="google-sign-in-btn" class="w-full py-3 bg-primary hover:bg-indigo-600 text-white font-semibold rounded-lg transition-colors duration-300 flex items-center justify-center gap-3">
+                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path fill="#ffffff" d="M22.4 12.2c0-.7-.1-1.3-.2-1.9H12v3.8h5.3c-.2 1.2-.8 2.2-1.6 3l3.2 2.5c2.1-1.9 3.4-4.7 3.4-8.4z"/>
+                        <path fill="#ffffff" d="M12 22c3.2 0 5.9-1.1 7.8-3l-3.2-2.5c-1 1.2-2.3 1.9-4.6 1.9-3.5 0-6.5-2.4-7.6-5.6l-3.3 2.5c1.4 2.8 4.4 4.8 7.9 4.8z"/>
+                        <path fill="#ffffff" d="M4.4 12.2c0-1.6.4-3.1 1.2-4.4L2.3 5.4C.9 7.7 0 10 0 12.2c0 2.2.9 4.5 2.3 6.8l3.3-2.4c-.8-1.3-1.2-2.8-1-1.4z"/>
+                        <path fill="#ffffff" d="M12 4.1c1.8 0 3.3.6 4.6 1.8L19.4 3C17.5 1.1 14.8 0 12 0c-3.5 0-6.5 2-7.9 4.8l3.3 2.4C8.7 5.7 10.2 5 12 5z"/>
                     </svg>
-                    Sign in with Google
+                    Google ဖြင့် ဝင်ရောက်ရန်
                 </button>
             </div>
         </div>
     </div>
     
     <!-- Main Application Container (Hidden initially) -->
-    <div id="app-container" class="view hidden">
-        <div class="main-container flex flex-col md:flex-row bg-[#2e3a59]">
-            <!-- Sidebar -->
-            <div id="sidebar" class="sidebar fixed inset-y-0 left-0 w-64 bg-[#1a1a2e] p-6 flex flex-col z-50 md:relative md:translate-x-0 md:shadow-none">
-                <div class="flex items-center mb-8">
-                    <svg class="w-10 h-10 text-blue-500" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M64.0007 128C99.3465 128 128.001 99.3458 128.001 64.0007C128.001 28.6556 99.3465 0 64.0007 0C28.6556 0 0 28.6556 0 64.0007C0 81.3323 7.02604 97.0223 18.3072 108.995L18.3375 109.027L18.3496 109.043C19.167 109.845 20.3061 110.334 21.5794 110.334C22.2575 110.334 22.9554 110.155 23.5855 109.789L35.4339 102.825C37.0709 101.884 37.6698 99.7845 36.8378 98.1132C35.0874 94.6192 34.0007 90.4124 34.0007 86.0007C34.0007 65.5658 50.5658 49.0007 71.0007 49.0007C91.4357 49.0007 108 65.5658 108 86.0007C108 97.2721 102.883 107.219 94.4022 113.844L94.4173 113.856C95.2351 114.658 96.3746 115.147 97.6482 115.147C98.3265 115.147 99.0245 114.968 99.6548 114.602L111.503 107.638C113.14 106.697 113.739 104.597 112.907 102.926C111.157 99.4323 110.071 95.2255 110.071 90.8138V64.0007C110.071 39.7368 89.2646 19.0007 64.0007 19.0007C38.7368 19.0007 19.0007 39.7368 19.0007 64.0007C19.0007 72.8228 21.6033 81.0425 26.2415 87.8967L26.2483 87.9067C27.0657 88.7086 28.2047 89.1979 29.478 89.1979C30.1561 89.1979 30.854 89.0189 31.4841 88.6528L43.3325 81.6888C44.9695 80.7482 45.5684 78.6485 44.7364 76.9772C42.986 73.4831 41.9001 69.2764 41.9001 64.8647C41.9001 44.4297 65.4652 27.8647 85.9001 27.8647C106.335 27.8647 122.9 44.4297 122.9 64.8647V101.996C122.9 105.748 120.916 109.117 117.898 111.189L108.575 117.48C107.037 118.528 105.105 119.06 103.179 119.06C99.4172 119.06 95.897 117.29 93.9936 114.28L85.2913 100.865C83.9113 98.7758 81.1685 98.1565 78.9669 99.3087C76.7654 100.461 76.1039 103.22 77.2921 105.421L85.9944 118.836C87.4827 121.054 88.761 122.788 90.0007 124.001C88.0872 125.864 85.7335 127.345 83.176 128.36L64.0007 128ZM39.6997 64.0007C39.6997 45.4754 55.4754 29.6997 74.0007 29.6997C92.526 29.6997 108.301 45.4754 108.301 64.0007C108.301 82.526 92.526 98.3017 74.0007 98.3017C55.4754 98.3017 39.6997 82.526 39.6997 64.0007ZM74.0007 88.0007C79.5236 88.0007 84.0007 83.5236 84.0007 78.0007C84.0007 72.4778 79.5236 68.0007 74.0007 68.0007C68.4778 68.0007 64.0007 72.4778 64.0007 78.0007C64.0007 83.5236 68.4778 88.0007 74.0007 88.0007ZM74.0007 58.0007C85.0463 58.0007 94.0007 66.9551 94.0007 78.0007C94.0007 89.0463 85.0463 98.0007 74.0007 98.0007C62.9551 98.0007 54.0007 89.0463 54.0007 78.0007C54.0007 66.9551 62.9551 58.0007 74.0007 58.0007ZM74.0007 90.0007C86.1504 90.0007 96.0007 79.3756 96.0007 66.0007C96.0007 52.6258 86.1504 42.0007 74.0007 42.0007C61.851 42.0007 52.0007 52.6258 52.0007 66.0007C52.0007 79.3756 61.851 90.0007 74.0007 90.0007Z" fill="currentColor"/>
+    <div id="app-container" class="view flex flex-col md:flex-row w-full min-h-screen" style="display: none;">
+        <!-- Sidebar -->
+        <div id="sidebar" class="sidebar fixed md:relative z-[100] md:z-0 top-0 left-0 w-64 h-full bg-card-bg shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out md:translate-x-0">
+            <div class="p-6 pb-4 border-b border-slate-700 flex items-center">
+                <svg class="w-10 h-10 fill-primary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14c0 .55-.45 1-1 1s-1-.45-1-1v-4c0-.55.45-1 1-1s1 .45 1 1v4zm4-2c0 .55-.45 1-1 1s-1-.45-1-1V9c0-.55.45-1 1-1s1 .45 1 1v5zm-2-9c-2.76 0-5 2.24-5 5h2c0-1.66 1.34-3 3-3s3 1.34 3 3H17c0-2.76-2.24-5-5-5z"/>
                 </svg>
-                <div class="text-3xl font-bold mt-2 text-gray-400">PING</div>
-                <div class="text-xl font-semibold text-primary-color">REWARDS</div>
+                <span class="text-xl font-bold ml-2">Ping Rewards</span>
             </div>
-            <div class="bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-700">
-                <h2 class="text-2xl font-semibold mb-6 text-white">Welcome Back</h2>
-                <p id="login-message" class="text-red-500 text-center text-sm font-semibold mb-4 hidden"></p>
-                <button id="google-sign-in-btn" class="w-full py-3 bg-white text-gray-800 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-gray-200 transition">
-                    <svg class="w-5 h-5" viewBox="0 0 24 24">
-                        <path fill="#4285F4" d="M22.4 12.2c0-.7-.1-1.3-.2-1.9H12v3.8h5.3c-.2 1.2-.8 2.2-1.6 3l3.2 2.5c2.1-1.9 3.4-4.7 3.4-8.4z"/>
-                        <path fill="#34A853" d="M12 22c3.2 0 5.9-1.1 7.8-3l-3.2-2.5c-1 1.2-2.3 1.9-4.6 1.9-3.5 0-6.5-2.4-7.6-5.6l-3.3 2.5c1.4 2.8 4.4 4.8 7.9 4.8z"/>
-                        <path fill="#FBBC04" d="M4.4 12.2c0-1.6.4-3.1 1.2-4.4L2.3 5.4C.9 7.7 0 10 0 12.2c0 2.2.9 4.5 2.3 6.8l3.3-2.4c-.8-1.3-1.2-2.8-1-1.4z"/>
-                        <path fill="#EA4335" d="M12 4.1c1.8 0 3.3.6 4.6 1.8L19.4 3C17.5 1.1 14.8 0 12 0c-3.5 0-6.5 2-7.9 4.8l3.3 2.4C8.7 5.7 10.2 5 12 5z"/>
-                    </svg>
-                    Sign in with Google
-                </button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Main Application Container (Hidden initially) -->
-    <div id="app-container" class="view hidden">
-        <div class="main-container flex flex-col md:flex-row bg-[#2e3a59]">
-            <!-- Sidebar -->
-            <div id="sidebar" class="sidebar fixed inset-y-0 left-0 w-64 bg-[#1a1a2e] p-6 flex flex-col z-50 md:relative md:translate-x-0 md:shadow-none">
-                <div class="flex items-center mb-8">
-                    <svg class="w-10 h-10 text-blue-500" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M64.0007 128C99.3465 128 128.001 99.3458 128.001 64.0007C128.001 28.6556 99.3465 0 64.0007 0C28.6556 0 0 28.6556 0 64.0007C0 81.3323 7.02604 97.0223 18.3072 108.995L18.3375 109.027L18.3496 109.043C19.167 109.845 20.3061 110.334 21.5794 110.334C22.2575 110.334 22.9554 110.155 23.5855 109.789L35.4339 102.825C37.0709 101.884 37.6698 99.7845 36.8378 98.1132C35.0874 94.6192 34.0007 90.4124 34.0007 86.0007C34.0007 65.5658 50.5658 49.0007 71.0007 49.0007C91.4357 49.0007 108 65.5658 108 86.0007C108 97.2721 102.883 107.219 94.4022 113.844L94.4173 113.856C95.2351 114.658 96.3746 115.147 97.6482 115.147C98.3265 115.147 99.0245 114.968 99.6548 114.602L111.503 107.638C113.14 106.697 113.739 104.597 112.907 102.926C111.157 99.4323 110.071 95.2255 110.071 90.8138V64.0007C110.071 39.7368 89.2646 19.0007 64.0007 19.0007C38.7368 19.0007 19.0007 39.7368 19.0007 64.0007C19.0007 72.8228 21.6033 81.0425 26.2415 87.8967L26.2483 87.9067C27.0657 88.7086 28.2047 89.1979 29.478 89.1979C30.1561 89.1979 30.854 89.0189 31.4841 88.6528L43.3325 81.6888C44.9695 80.7482 45.5684 78.6485 44.7364 76.9772C42.986 73.4831 41.9001 69.2764 41.9001 64.8647C41.9001 44.4297 65.4652 27.8647 85.9001 27.8647C106.335 27.8647 122.9 44.4297 122.9 64.8647V101.996C122.9 105.748 120.916 109.117 117.898 111.189L108.575 117.48C107.037 118.528 105.105 119.06 103.179 119.06C99.4172 119.06 95.897 117.29 93.9936 114.28L85.2913 100.865C83.9113 98.7758 81.1685 98.1565 78.9669 99.3087C76.7654 100.461 76.1039 103.22 77.2921 105.421L85.9944 118.836C87.4827 121.054 88.761 122.788 90.0007 124.001C88.0872 125.864 85.7335 127.345 83.176 128.36L64.0007 128ZM39.6997 64.0007C39.6997 45.4754 55.4754 29.6997 74.0007 29.6997C92.526 29.6997 108.301 45.4754 108.301 64.0007C108.301 82.526 92.526 98.3017 74.0007 98.3017C55.4754 98.3017 39.6997 82.526 39.6997 64.0007ZM74.0007 88.0007C79.5236 88.0007 84.0007 83.5236 84.0007 78.0007C84.0007 72.4778 79.5236 68.0007 74.0007 68.0007C68.4778 68.0007 64.0007 72.4778 64.0007 78.0007C64.0007 83.5236 68.4778 88.0007 74.0007 88.0007ZM74.0007 58.0007C85.0463 58.0007 94.0007 66.9551 94.0007 78.0007C94.0007 89.0463 85.0463 98.0007 74.0007 98.0007C62.9551 98.0007 54.0007 89.0463 54.0007 78.0007C54.0007 66.9551 62.9551 58.0007 74.0007 58.0007ZM74.0007 90.0007C86.1504 90.0007 96.0007 79.3756 96.0007 66.0007C96.0007 52.6258 86.1504 42.0007 74.0007 42.0007C61.851 42.0007 52.0007 52.6258 52.0007 66.0007C52.0007 79.3756 61.851 90.0007 74.0007 90.0007Z" fill="currentColor"/>
-                </svg>
-                <span class="text-xl font-bold ml-2 text-gray-400">Ping Rewards</span>
-            </div>
-            <!-- Navigation Links -->
-            <ul class="nav-links flex-grow list-none p-0 m-0">
+            <ul class="flex flex-col p-4 space-y-2">
                 <li>
-                    <a href="#" class="nav-link user-link flex items-center p-4 rounded-lg mb-2 text-gray-300 hover:bg-[#4a3861] transition" data-target="user-dashboard-view">
-                        <svg class="w-6 h-6 mr-4" fill="currentColor" viewBox="0 0 24 24"><path d="M3 13h11v-2H3v2zm0 4h11v-2H3v2zm0-8h11V7H3v2zm13 .01V7h5v2.01h-5zM16 17h5v-2h-5v2zm0-4h5v-2h-5v2z"/></svg>
+                    <a href="#" class="nav-link user-link flex items-center p-3 rounded-lg hover:bg-primary/20 transition-colors duration-200" data-target="user-dashboard-view">
+                        <svg class="w-6 h-6 mr-3 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 13h11v-2H3v2zm0 4h11v-2H3v2zm0-8h11V7H3v2zm13 .01V7h5v2.01h-5zM16 17h5v-2h-5v2zm0-4h5v-2h-5v2z"/></svg>
                         Dashboard
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="nav-link user-link flex items-center p-4 rounded-lg mb-2 text-gray-300 hover:bg-[#4a3861] transition" data-target="watch-videos-view">
-                        <svg class="w-6 h-6 mr-4" fill="currentColor" viewBox="0 0 24 24"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
-                        Watch Videos
+                    <a href="#" class="nav-link user-link flex items-center p-3 rounded-lg hover:bg-primary/20 transition-colors duration-200" data-target="watch-videos-view">
+                        <svg class="w-6 h-6 mr-3 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                        ဗီဒီယိုကြည့်ရန်
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="nav-link user-link flex items-center p-4 rounded-lg mb-2 text-gray-300 hover:bg-[#4a3861] transition" data-target="points-history-view">
-                        <svg class="w-6 h-6 mr-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-                        Points History
+                    <a href="#" class="nav-link user-link flex items-center p-3 rounded-lg hover:bg-primary/20 transition-colors duration-200" data-target="points-history-view">
+                        <svg class="w-6 h-6 mr-3 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                        အမှတ်မှတ်တမ်း
                     </a>
                 </li>
                 
-                <hr class="border-gray-700 my-5">
+                <hr class="my-4 border-slate-700 admin-link">
 
                 <li>
-                    <a href="#" class="nav-link admin-link flex items-center p-4 rounded-lg mb-2 text-gray-300 hover:bg-[#4a3861] transition" data-target="admin-dashboard-view">
-                        <svg class="w-6 h-6 mr-4" fill="currentColor" viewBox="0 0 24 24"><path d="M3 13h11v-2H3v2zm0 4h11v-2H3v2zm0-8h11V7H3v2zm13 .01V7h5v2.01h-5zM16 17h5v-2h-5v2zm0-4h5v-2h-5v2z"/></svg>
+                    <a href="#" class="nav-link admin-link flex items-center p-3 rounded-lg hover:bg-primary/20 transition-colors duration-200" data-target="admin-dashboard-view">
+                        <svg class="w-6 h-6 mr-3 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 13h11v-2H3v2zm0 4h11v-2H3v2zm0-8h11V7H3v2zm13 .01V7h5v2.01h-5zM16 17h5v-2h-5v2zm0-4h5v-2h-5v2z"/></svg>
                         Admin Dashboard
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="nav-link admin-link flex items-center p-4 rounded-lg mb-2 text-gray-300 hover:bg-[#4a3861] transition" data-target="manage-videos-view">
-                        <svg class="w-6 h-6 mr-4" fill="currentColor" viewBox="0 0 24 24"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
-                        Manage Videos
+                    <a href="#" class="nav-link admin-link flex items-center p-3 rounded-lg hover:bg-primary/20 transition-colors duration-200" data-target="manage-videos-view">
+                        <svg class="w-6 h-6 mr-3 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                        ဗီဒီယိုများ စီမံခန့်ခွဲရန်
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="nav-link admin-link flex items-center p-4 rounded-lg mb-2 text-gray-300 hover:bg-[#4a3861] transition" data-target="manage-users-view">
-                        <svg class="w-6 h-6 mr-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                        Manage Users
+                    <a href="#" class="nav-link admin-link flex items-center p-3 rounded-lg hover:bg-primary/20 transition-colors duration-200" data-target="manage-users-view">
+                        <svg class="w-6 h-6 mr-3 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                        အသုံးပြုသူများ စီမံခန့်ခွဲရန်
                     </a>
                 </li>
             </ul>
-            <div id="sidebar-profile" class="mt-auto pt-4 border-t border-gray-700">
+            <div id="sidebar-profile" class="p-6 border-t border-slate-700 mt-auto">
                 <!-- Profile info will be updated by JS -->
             </div>
         </div>
-        <div id="backdrop" class="backdrop fixed inset-0 z-40"></div>
+
+        <div id="backdrop" class="backdrop fixed inset-0 bg-black bg-opacity-50 z-[99] hidden md:hidden"></div>
 
         <!-- Main Content Area -->
-        <div id="app-content" class="app-content flex-grow p-4 md:p-8">
-            <div class="main-content">
-                <header class="flex justify-between items-center mb-6 md:mb-8">
-                    <h1 id="page-title" class="text-xl md:text-3xl font-bold flex items-center text-white">
-                        <button id="menu-toggle" class="md:hidden mr-4 text-white">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
-                        </button>
-                        Dashboard
-                    </h1>
-                    <div id="header-meta">
-                        <!-- Header meta info will be updated by JS -->
-                    </div>
-                </header>
-
-                <!-- User Dashboard View -->
-                <div id="user-dashboard-view" class="content-view hidden">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-                        <div class="card p-6 rounded-xl shadow-lg flex flex-col items-start text-left bg-gradient-to-r from-purple-800 to-indigo-800">
-                            <h2 class="text-xl font-semibold mb-2 text-white">Total Points</h2>
-                            <div class="text-4xl font-bold text-yellow-400" id="total-points-value">0</div>
-                        </div>
-                        <div class="card p-6 rounded-xl shadow-lg flex flex-col items-start text-left bg-gradient-to-r from-green-800 to-teal-800">
-                            <h2 class="text-xl font-semibold mb-2 text-white">Estimated Earnings</h2>
-                            <div class="text-4xl font-bold text-green-300" id="estimated-earnings-value">$0.00</div>
-                        </div>
-                        <div class="card p-6 rounded-xl shadow-lg flex flex-col items-start text-left bg-gradient-to-r from-blue-800 to-cyan-800">
-                            <h2 class="text-xl font-semibold mb-2 text-white">Videos Watched</h2>
-                            <div class="text-4xl font-bold text-blue-300" id="videos-watched-value">0</div>
-                        </div>
-                        <div class="card p-6 rounded-xl shadow-lg flex flex-col items-start text-left bg-gradient-to-r from-red-800 to-orange-800">
-                            <h2 class="text-xl font-semibold mb-2 text-white">Daily Earnings</h2>
-                            <div class="text-4xl font-bold text-orange-300">$20</div>
-                        </div>
-                    </div>
-
-                    <div class="quick-actions mb-6">
-                        <h2 class="text-2xl font-semibold mb-4 text-white">Quick Actions</h2>
-                        <div class="flex flex-wrap gap-4">
-                            <a href="#" class="nav-link user-link px-6 py-3 bg-gray-800 text-gray-300 rounded-lg shadow-md hover:bg-gray-700 transition" data-target="watch-videos-view">Browse Videos</a>
-                            <a href="#" class="nav-link user-link px-6 py-3 bg-gray-800 text-gray-300 rounded-lg shadow-md hover:bg-gray-700 transition" data-target="points-history-view">View History</a>
-                        </div>
-                    </div>
-
-                    <div class="card p-6 rounded-xl shadow-lg flex flex-col md:flex-row items-center justify-between mb-6">
-                        <div>
-                            <h2 class="text-xl md:text-2xl font-semibold mb-2 text-white">Points to Cash Conversion</h2>
-                            <p class="text-gray-400">5000 Point = $1.00</p>
-                            <p class="text-sm text-gray-500 mt-1">Keep watching to increase your earnings!</p>
-                        </div>
-                        <button class="cashout-btn btn-primary px-6 py-3 rounded-lg font-semibold mt-4 md:mt-0" id="cashout-button">Cash Out</button>
-                    </div>
-                </div>
-
-                <!-- Watch Videos View -->
-                <div id="watch-videos-view" class="content-view hidden">
-                    <div class="video-browse">
-                        <div class="video-header flex flex-col md:flex-row md:items-center gap-4 mb-6">
-                            <input type="text" id="search-bar" class="search-bar flex-grow w-full md:w-auto px-5 py-3 rounded-full border border-gray-600 bg-[#3b4b6b] text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500" placeholder="Search videos...">
-                            <div class="filter-buttons flex flex-wrap gap-2 justify-center">
-                                <button class="filter-btn active px-4 py-2 rounded-full border border-gray-600 bg-gray-700 text-white hover:bg-purple-600 transition" data-category="all">All</button>
-                                <button class="filter-btn px-4 py-2 rounded-full border border-gray-600 bg-gray-700 text-white hover:bg-purple-600 transition" data-category="Nature">Nature</button>
-                                <button class="filter-btn px-4 py-2 rounded-full border border-gray-600 bg-gray-700 text-white hover:bg-purple-600 transition" data-category="Education">Education</button>
-                                <button class="filter-btn px-4 py-2 rounded-full border border-gray-600 bg-gray-700 text-white hover:bg-purple-600 transition" data-category="Travel">Travel</button>
-                                <button class="filter-btn px-4 py-2 rounded-full border border-gray-600 bg-gray-700 text-white hover:bg-purple-600 transition" data-category="Food">Food</button>
-                                <button class="filter-btn px-4 py-2 rounded-full border border-gray-600 bg-gray-700 text-white hover:bg-purple-600 transition" data-category="Gaming">Gaming</button>
-                            </div>
-                        </div>
-                        <div class="video-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="video-grid">
-                            <!-- Video cards will be dynamically rendered here by JS -->
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Video Player View (New) -->
-                <div id="video-player-view" class="content-view hidden">
-                    <button id="video-player-back-btn" class="back-btn flex items-center gap-2 mb-4 text-gray-300 hover:text-white transition">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-                        Back to Videos
+        <div id="app-content" class="flex-grow p-4 md:p-6 transition-all duration-300 ease-in-out">
+            <header class="flex justify-between items-center mb-6">
+                <h1 id="page-title" class="text-2xl md:text-3xl font-bold flex items-center">
+                    <button id="menu-toggle" class="md:hidden p-2 -ml-2 rounded-md hover:bg-card-bg transition-colors duration-200">
+                        <svg class="w-6 h-6 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
                     </button>
-                    <h2 id="video-player-title" class="text-2xl font-semibold text-white mb-2"></h2>
-                    <p id="video-player-description" class="text-gray-400 mb-4"></p>
-                    <div class="video-container relative pb-[56.25%] h-0 rounded-xl overflow-hidden mb-6">
-                        <iframe id="video-iframe" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="absolute top-0 left-0 w-full h-full"></iframe>
+                    Dashboard
+                </h1>
+                <div id="header-meta" class="hidden md:flex items-center space-x-4">
+                    <!-- Header meta info will be updated by JS -->
+                </div>
+            </header>
+
+            <!-- User Dashboard View -->
+            <div id="user-dashboard-view" class="content-view" style="display: none;">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                    <div class="card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 col-span-1 lg:col-span-3 flex flex-col md:flex-row justify-between items-center">
+                        <div>
+                            <h2 id="welcome-message" class="text-xl font-semibold mb-2"></h2>
+                            <p class="text-muted-text">အမှတ်ပိုရဖို့ အသင့်ပဲလား။ ဗီဒီယိုတွေ စကြည့်ကြစို့။</p>
+                        </div>
+                        <a href="#" class="nav-link user-link mt-4 md:mt-0 px-6 py-3 bg-primary hover:bg-indigo-600 text-white font-semibold rounded-lg transition-colors duration-300 whitespace-nowrap" data-target="watch-videos-view">
+                            အခုကြည့်ရန်
+                        </a>
                     </div>
-                    <!-- Gemini API Feature: Video Summary -->
-                    <div class="video-actions flex gap-4">
-                        <button id="get-summary-btn" class="action-btn btn-primary px-6 py-3 rounded-lg font-semibold flex items-center gap-2">
-                            Get Summary ✨
-                        </button>
+                    <div class="card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
+                        <h2 class="text-lg font-semibold mb-2 text-muted-text">စုစုပေါင်းအမှတ်</h2>
+                        <div class="text-4xl font-bold text-primary" id="total-points-value">0</div>
                     </div>
-                    <div id="summary-output" class="mt-6 p-4 rounded-lg bg-gray-800 border border-gray-700"></div>
+                    <div class="card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
+                        <h2 class="text-lg font-semibold mb-2 text-muted-text">ခန့်မှန်းဝင်ငွေ</h2>
+                        <div class="text-4xl font-bold text-accent-green" id="estimated-earnings-value">$0.00</div>
+                    </div>
+                    <div class="card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
+                        <h2 class="text-lg font-semibold mb-2 text-muted-text">ကြည့်ရှုပြီးသား ဗီဒီယိုများ</h2>
+                        <div class="text-4xl font-bold text-accent-purple" id="videos-watched-value">0</div>
+                    </div>
                 </div>
 
-                <!-- Points History View -->
-                <div id="points-history-view" class="content-view hidden">
-                    <div class="points-history">
-                        <h2 class="text-2xl font-semibold mb-2 text-white">Points History</h2>
-                        <p class="text-gray-400 mb-6">A record of all your earned points.</p>
-                        <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg border border-gray-700">
-                            <table class="w-full text-left table-auto">
-                                <thead class="bg-gray-700 text-gray-300 uppercase text-sm">
-                                    <tr>
-                                        <th class="p-4">Date</th>
-                                        <th class="p-4">Description</th>
-                                        <th class="p-4">Points</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="points-history-table" class="divide-y divide-gray-700">
-                                    <!-- Table rows will be dynamically rendered here by JS -->
-                                </tbody>
-                            </table>
-                        </div>
+                <div class="quick-actions mb-6">
+                    <h2 class="text-xl font-semibold mb-4">အမြန်ရွေးချယ်စရာများ</h2>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="#" class="nav-link user-link px-6 py-3 bg-card-bg border border-slate-700 rounded-lg text-text-color hover:bg-slate-700 transition-colors duration-200" data-target="watch-videos-view">
+                            ဗီဒီယိုများကြည့်ရန်
+                        </a>
+                        <a href="#" class="nav-link user-link px-6 py-3 bg-card-bg border border-slate-700 rounded-lg text-text-color hover:bg-slate-700 transition-colors duration-200" data-target="points-history-view">
+                            မှတ်တမ်းကြည့်ရန်
+                        </a>
                     </div>
                 </div>
+
+                <div class="card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 flex flex-col md:flex-row justify-between items-center">
+                    <div>
+                        <h2 class="text-xl font-semibold mb-2">အမှတ်များကို ငွေသားပြောင်းလဲခြင်း</h2>
+                        <p class="text-muted-text">5000 အမှတ် = $1.00</p>
+                        <p class="text-muted-text">ဝင်ငွေပိုများလာအောင် ဆက်ကြည့်ပါ။</p>
+                    </div>
+                    <button class="cashout-btn mt-4 md:mt-0 px-6 py-3 bg-primary hover:bg-indigo-600 text-white font-semibold rounded-lg transition-colors duration-300" id="cashout-button">
+                        ငွေထုတ်ရန်
+                    </button>
+                </div>
+            </div>
+
+            <!-- Watch Videos View -->
+            <div id="watch-videos-view" class="content-view" style="display: none;">
+                <div class="flex flex-col sm:flex-row gap-4 mb-6">
+                    <input type="text" id="search-bar" class="flex-grow px-4 py-2 rounded-full bg-card-bg border border-slate-700 focus:outline-none focus:ring-2 focus:ring-primary placeholder-muted-text" placeholder="ဗီဒီယိုရှာရန်...">
+                    <div class="flex flex-wrap justify-center sm:justify-end gap-2">
+                        <button class="filter-btn active px-4 py-2 rounded-full border border-primary bg-primary text-white text-sm hover:bg-primary/80 transition-colors duration-200" data-category="all">အားလုံး</button>
+                        <button class="filter-btn px-4 py-2 rounded-full border border-slate-700 bg-card-bg text-sm hover:bg-slate-700 transition-colors duration-200" data-category="Nature">သဘာဝ</button>
+                        <button class="filter-btn px-4 py-2 rounded-full border border-slate-700 bg-card-bg text-sm hover:bg-slate-700 transition-colors duration-200" data-category="Education">ပညာရေး</button>
+                        <button class="filter-btn px-4 py-2 rounded-full border border-slate-700 bg-card-bg text-sm hover:bg-slate-700 transition-colors duration-200" data-category="Travel">ခရီးသွား</button>
+                        <button class="filter-btn px-4 py-2 rounded-full border border-slate-700 bg-card-bg text-sm hover:bg-slate-700 transition-colors duration-200" data-category="Food">အစားအသောက်</button>
+                        <button class="filter-btn px-4 py-2 rounded-full border border-slate-700 bg-card-bg text-sm hover:bg-slate-700 transition-colors duration-200" data-category="Gaming">ဂိမ်း</button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="video-grid">
+                    <!-- Video cards will be dynamically rendered here by JS -->
+                </div>
+            </div>
             
-                <!-- Admin Dashboard View -->
-                <div id="admin-dashboard-view" class="content-view hidden">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="admin-dashboard-grid">
-                        <div class="card p-6 rounded-xl shadow-lg flex items-center bg-gray-800">
-                            <div class="bg-purple-900/20 p-4 rounded-full mr-4">
-                                <svg class="w-8 h-8 text-purple-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-semibold text-gray-400">Total Users</h3>
-                                <div class="text-3xl font-bold text-white" id="admin-total-users-value">0</div>
-                            </div>
-                        </div>
-                        <div class="card p-6 rounded-xl shadow-lg flex items-center bg-gray-800">
-                            <div class="bg-purple-900/20 p-4 rounded-full mr-4">
-                                <svg class="w-8 h-8 text-purple-400" fill="currentColor" viewBox="0 0 24 24"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-semibold text-gray-400">Total Videos</h3>
-                                <div class="text-3xl font-bold text-white" id="admin-total-videos-value">0</div>
-                            </div>
-                        </div>
-                        <div class="card p-6 rounded-xl shadow-lg flex items-center bg-gray-800">
-                            <div class="bg-green-900/20 p-4 rounded-full mr-4">
-                                <svg class="w-8 h-8 text-green-400" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4V8h16v10zm-12-7h4v2H8v-2zm-2-2v6h12V6H6z"/></svg>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-semibold text-gray-400">Total Points Earned</h3>
-                                <div class="text-3xl font-bold text-white" id="admin-total-points-earned-value">0</div>
-                            </div>
-                        </div>
-                        <div class="card p-6 rounded-xl shadow-lg flex items-center bg-gray-800">
-                            <div class="bg-orange-900/20 p-4 rounded-full mr-4">
-                                <svg class="w-8 h-8 text-orange-400" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4V8h16v10zm-12-7h4v2H8v-2zm-2-2v6h12V6H6z"/></svg>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-semibold text-gray-400">Total Payouts</h3>
-                                <div class="text-3xl font-bold text-white" id="admin-total-payouts-value">$0</div>
-                            </div>
-                        </div>
+            <!-- Video Player View (New) -->
+            <div id="video-player-view" class="content-view" style="display: none;">
+                <button id="video-player-back-btn" class="mb-4 flex items-center gap-2 px-4 py-2 bg-primary hover:bg-indigo-600 rounded-lg text-white font-semibold transition-colors duration-200">
+                    <svg class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                    ဗီဒီယိုများသို့ ပြန်သွားရန်
+                </button>
+                <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
+                    <h2 class="text-2xl font-semibold mb-2" id="video-player-title"></h2>
+                    <p class="text-muted-text mb-4" id="video-player-description"></p>
+                    <div class="aspect-video w-full rounded-xl overflow-hidden mb-4">
+                        <iframe id="video-iframe" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full h-full"></iframe>
                     </div>
-
-                    <div class="chart-container card p-6 rounded-xl shadow-lg mt-6">
-                        <h2 class="text-xl font-semibold mb-4">Weekly Watch Activity (Hours)</h2>
-                        <div class="bar-chart flex items-end h-64 relative border-l-2 border-b-2 border-gray-600 pb-8 pl-4">
-                            <div class="absolute top-0 left-0 -ml-4 text-gray-400 text-sm">8</div>
-                            <div class="absolute bottom-0 left-0 -ml-4 text-gray-400 text-sm">0</div>
-                            <div class="bar w-12 mx-2 bg-gradient-to-t from-purple-500 to-purple-700 relative transition-all duration-500" style="height: 50%;">
-                                <div class="bar-label absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-gray-400 text-xs">Mon</div>
-                            </div>
-                            <div class="bar w-12 mx-2 bg-gradient-to-t from-purple-500 to-purple-700 relative transition-all duration-500" style="height: 38%;">
-                                <div class="bar-label absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-gray-400 text-xs">Tue</div>
-                            </div>
-                            <div class="bar w-12 mx-2 bg-gradient-to-t from-purple-500 to-purple-700 relative transition-all duration-500" style="height: 60%;">
-                                <div class="bar-label absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-gray-400 text-xs">Wed</div>
-                            </div>
-                            <div class="bar w-12 mx-2 bg-gradient-to-t from-purple-500 to-purple-700 relative transition-all duration-500" style="height: 54%;">
-                                <div class="bar-label absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-gray-400 text-xs">Thu</div>
-                            </div>
-                            <div class="bar w-12 mx-2 bg-gradient-to-t from-purple-500 to-purple-700 relative transition-all duration-500" style="height: 70%;">
-                                <div class="bar-label absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-gray-400 text-xs">Fri</div>
-                            </div>
-                            <div class="bar w-12 mx-2 bg-gradient-to-t from-purple-500 to-purple-700 relative transition-all duration-500" style="height: 98%;">
-                                <div class="bar-label absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-gray-400 text-xs">Sat</div>
-                            </div>
-                            <div class="bar w-12 mx-2 bg-gradient-to-t from-purple-500 to-purple-700 relative transition-all duration-500" style="height: 85%;">
-                                <div class="bar-label absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-gray-400 text-xs">Sun</div>
-                            </div>
-                        </div>
+                    <div class="flex justify-between items-center">
+                        <button id="get-summary-btn" class="action-btn px-6 py-3 bg-secondary hover:bg-pink-500 text-white font-semibold rounded-lg transition-colors duration-200">
+                            အနှစ်ချုပ်ရယူရန် ✨
+                        </button>
+                        <div id="summary-output" class="text-sm text-muted-text"></div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Manage Videos View -->
-                <div id="manage-videos-view" class="content-view hidden">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-semibold text-white">Manage Videos</h2>
-                        <button id="add-video-btn" class="btn-primary px-6 py-3 rounded-lg font-semibold">Add Video</button>
-                    </div>
-                    <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg border border-gray-700">
+            <!-- Points History View -->
+            <div id="points-history-view" class="content-view" style="display: none;">
+                <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
+                    <h2 class="text-xl font-semibold mb-4">အမှတ်မှတ်တမ်း</h2>
+                    <p class="text-muted-text mb-6">သင်ရရှိထားသော အမှတ်အားလုံး၏ မှတ်တမ်းဖြစ်သည်။</p>
+                    <div class="overflow-x-auto rounded-lg">
                         <table class="w-full text-left table-auto">
-                            <thead class="bg-gray-700 text-gray-300 uppercase text-sm">
+                            <thead class="bg-slate-700 text-slate-400 uppercase text-xs">
                                 <tr>
-                                    <th class="p-4">Title</th>
-                                    <th class="p-4">Category</th>
-                                    <th class="p-4">Points</th>
-                                    <th class="p-4">Actions</th>
+                                    <th class="p-4 rounded-tl-lg">နေ့စွဲ</th>
+                                    <th class="p-4">အကြောင်းအရာ</th>
+                                    <th class="p-4 rounded-tr-lg">အမှတ်</th>
                                 </tr>
                             </thead>
-                            <tbody id="videos-table" class="divide-y divide-gray-700">
+                            <tbody id="points-history-table" class="divide-y divide-slate-700">
                                 <!-- Table rows will be dynamically rendered here by JS -->
                             </tbody>
                         </table>
                     </div>
                 </div>
+            </div>
+            
+            <!-- Admin Dashboard View -->
+            <div id="admin-dashboard-view" class="content-view" style="display: none;">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6" id="admin-dashboard-grid">
+                    <div class="stat-card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 flex items-center">
+                        <div class="flex-shrink-0 w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 fill-primary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="text-lg font-semibold text-muted-text">စုစုပေါင်း အသုံးပြုသူများ</h3>
+                            <div class="text-3xl font-bold" id="admin-total-users-value">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 flex items-center">
+                        <div class="flex-shrink-0 w-12 h-12 rounded-full bg-accent-purple/20 flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 fill-accent-purple" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="text-lg font-semibold text-muted-text">စုစုပေါင်း ဗီဒီယိုများ</h3>
+                            <div class="text-3xl font-bold" id="admin-total-videos-value">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 flex items-center">
+                        <div class="flex-shrink-0 w-12 h-12 rounded-full bg-accent-green/20 flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 fill-accent-green" xmlns="http://www.w3.org/2d00/svg" viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4V8h16v10zm-12-7h4v2H8v-2zm-2-2v6h12V6H6z"/></svg>
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="text-lg font-semibold text-muted-text">စုစုပေါင်း အမှတ်ရရှိမှု</h3>
+                            <div class="text-3xl font-bold" id="admin-total-points-earned-value">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 flex items-center">
+                        <div class="flex-shrink-0 w-12 h-12 rounded-full bg-accent-orange/20 flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 fill-accent-orange" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4V8h16v10zm-12-7h4v2H8v-2zm-2-2v6h12V6H6z"/></svg>
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="text-lg font-semibold text-muted-text">စုစုပေါင်း ငွေထုတ်မှုများ</h3>
+                            <div class="text-3xl font-bold" id="admin-total-payouts-value">$0</div>
+                        </div>
+                    </div>
+                </div>
 
-                <!-- Manage Users View -->
-                <div id="manage-users-view" class="content-view hidden">
-                    <div class="manage-users">
-                        <h2 class="text-2xl font-semibold mb-2 text-white">Manage Users</h2>
-                        <p class="text-gray-400 mb-6">View user details, manage status, and edit information.</p>
-                         <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg border border-gray-700">
-                            <table class="w-full text-left table-auto">
-                                <thead class="bg-gray-700 text-gray-300 uppercase text-sm">
-                                    <tr>
-                                        <th class="p-4">User ID</th>
-                                        <th class="p-4">Name</th>
-                                        <th class="p-4">Email</th>
-                                        <th class="p-4">Role</th>
-                                        <th class="p-4">Points</th>
-                                        <th class="p-4">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="users-table-body" class="divide-y divide-gray-700">
-                                    <!-- User rows will be dynamically rendered here by JS -->
-                                </tbody>
-                            </table>
-                         </div>
+                <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
+                    <h2 class="text-xl font-semibold mb-4">အပတ်စဉ် ကြည့်ရှုမှု မှတ်တမ်း (နာရီ)</h2>
+                    <div class="relative h-64 flex items-end pb-8 border-l-2 border-b-2 border-slate-600">
+                        <span class="absolute left-0 top-0 text-sm text-muted-text -ml-6 -mt-2">8</span>
+                        <span class="absolute left-0 bottom-0 text-sm text-muted-text -ml-6 -mb-4">0</span>
+                        <div class="bar-chart flex items-end h-full w-full" id="weekly-watch-chart">
+                            <!-- Bars will be dynamically updated by JS -->
+                            <div class="w-1/7 h-1/2 mx-1 bg-primary rounded-t-full transition-all duration-500 ease-in-out relative group" style="height: 50%;">
+                                <span class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-sm text-muted-text">Mon</span>
+                            </div>
+                            <div class="w-1/7 h-[38%] mx-1 bg-primary rounded-t-full transition-all duration-500 ease-in-out relative group" style="height: 38%;">
+                                <span class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-sm text-muted-text">Tue</span>
+                            </div>
+                            <div class="w-1/7 h-[60%] mx-1 bg-primary rounded-t-full transition-all duration-500 ease-in-out relative group" style="height: 60%;">
+                                <span class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-sm text-muted-text">Wed</span>
+                            </div>
+                            <div class="w-1/7 h-[54%] mx-1 bg-primary rounded-t-full transition-all duration-500 ease-in-out relative group" style="height: 54%;">
+                                <span class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-sm text-muted-text">Thu</span>
+                            </div>
+                            <div class="w-1/7 h-[70%] mx-1 bg-primary rounded-t-full transition-all duration-500 ease-in-out relative group" style="height: 70%;">
+                                <span class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-sm text-muted-text">Fri</span>
+                            </div>
+                            <div class="w-1/7 h-[98%] mx-1 bg-primary rounded-t-full transition-all duration-500 ease-in-out relative group" style="height: 98%;">
+                                <span class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-sm text-muted-text">Sat</span>
+                            </div>
+                            <div class="w-1/7 h-[85%] mx-1 bg-primary rounded-t-full transition-all duration-500 ease-in-out relative group" style="height: 85%;">
+                                <span class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-sm text-muted-text">Sun</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manage Videos View -->
+            <div id="manage-videos-view" class="content-view" style="display: none;">
+                <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-semibold">ဗီဒီယိုများ စီမံခန့်ခွဲရန်</h2>
+                        <button id="add-video-btn" class="px-4 py-2 bg-primary hover:bg-indigo-600 rounded-lg text-white font-semibold transition-colors duration-200">
+                            ဗီဒီယိုအသစ်ထည့်ရန်
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto rounded-lg">
+                        <table class="w-full text-left table-auto">
+                            <thead class="bg-slate-700 text-slate-400 uppercase text-xs">
+                                <tr>
+                                    <th class="p-4 rounded-tl-lg">ခေါင်းစဉ်</th>
+                                    <th class="p-4">အမျိုးအစား</th>
+                                    <th class="p-4">အမှတ်</th>
+                                    <th class="p-4 rounded-tr-lg">လုပ်ဆောင်ချက်</th>
+                                </tr>
+                            </thead>
+                            <tbody id="videos-table" class="divide-y divide-slate-700">
+                                <!-- Table rows will be dynamically rendered here by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manage Users View -->
+            <div id="manage-users-view" class="content-view" style="display: none;">
+                <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
+                    <h2 class="text-xl font-semibold mb-2">အသုံးပြုသူများ စီမံခန့်ခွဲရန်</h2>
+                    <p class="text-muted-text mb-6">အသုံးပြုသူအချက်အလက်များကို ကြည့်ရှုရန်၊ အခြေအနေ စီမံခန့်ခွဲရန်နှင့် အချက်အလက်များ တည်းဖြတ်ရန်။</p>
+                    <div class="overflow-x-auto rounded-lg">
+                        <table class="w-full text-left table-auto">
+                            <thead class="bg-slate-700 text-slate-400 uppercase text-xs">
+                                <tr>
+                                    <th class="p-4 rounded-tl-lg">User ID</th>
+                                    <th class="p-4">အမည်</th>
+                                    <th class="p-4">အီးမေးလ်</th>
+                                    <th class="p-4">အခန်းကဏ္ဍ</th>
+                                    <th class="p-4">အမှတ်</th>
+                                    <th class="p-4 rounded-tr-lg">လုပ်ဆောင်ချက်</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-table-body" class="divide-y divide-slate-700">
+                                <!-- User rows will be dynamically rendered here by JS -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    
-    <!-- Modal for Cash Out Confirmation Message -->
-    <div id="cashout-message-modal" class="modal-overlay fixed inset-0 flex items-center justify-center p-4 hidden">
-        <div class="modal-content bg-gray-800 p-8 rounded-xl w-full max-w-lg text-center border border-gray-700">
-            <h3 class="text-2xl font-semibold mb-4">Cash Out Request</h3>
-            <p id="cashout-message-text" class="text-gray-400 mb-6">You need 5000 points to cash out.</p>
-            <div class="flex justify-center gap-4">
-                <button type="button" class="btn-primary px-6 py-3 rounded-lg font-semibold" id="cashout-message-close-btn">Close</button>
+        
+        <!-- Modal for Cash Out Confirmation Message -->
+        <div id="cashout-message-modal" class="modal-overlay fixed inset-0 flex justify-center items-center z-[1000] hidden">
+            <div class="modal-content bg-card-bg p-8 rounded-xl w-11/12 max-w-lg shadow-2xl border border-slate-700">
+                <h3 class="text-xl font-semibold mb-4">ငွေထုတ်ရန် တောင်းဆိုမှု</h3>
+                <p id="cashout-message-text" class="text-muted-text mb-6">ငွေထုတ်ရန်အတွက် Point 5000 လိုအပ်ပါသည်။</p>
+                <div class="flex justify-end gap-2">
+                    <button type="button" class="px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg text-white font-semibold transition-colors duration-200" id="cashout-message-close-btn">ပိတ်ရန်</button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Modal for Delete Confirmation -->
-    <div id="delete-confirm-modal" class="modal-overlay fixed inset-0 flex items-center justify-center p-4 hidden">
-        <div class="modal-content bg-gray-800 p-8 rounded-xl w-full max-w-lg text-center border border-gray-700">
-            <h3 id="delete-modal-title" class="text-2xl font-semibold mb-4">Are you sure you want to delete this video?</h3>
-            <p class="text-gray-400 mb-6">Once deleted, this video cannot be recovered.</p>
-            <div class="flex justify-center gap-4">
-                <button type="button" class="bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-700 transition" id="delete-cancel-btn">Cancel</button>
-                <button type="button" class="bg-red-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-600 transition" id="confirm-delete-btn">Delete</button>
+        <!-- Modal for Delete Confirmation -->
+        <div id="delete-confirm-modal" class="modal-overlay fixed inset-0 flex justify-center items-center z-[1000] hidden">
+            <div class="modal-content bg-card-bg p-8 rounded-xl w-11/12 max-w-lg shadow-2xl border border-slate-700">
+                <h3 id="delete-modal-title" class="text-xl font-semibold mb-4">ဗီဒီယိုကို ဖျက်ရန် သေချာပါသလား။</h3>
+                <p class="text-muted-text mb-6">ဒီဗီဒီယိုကို ဖျက်လိုက်ရင် ပြန်ယူလို့ရမှာ မဟုတ်ပါဘူး။</p>
+                <div class="flex justify-end gap-2">
+                    <button type="button" class="px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg text-white font-semibold transition-colors duration-200">မလုပ်တော့ဘူး</button>
+                    <button type="button" class="px-4 py-2 bg-red-600 hover:bg-red-500 rounded-lg text-white font-semibold transition-colors duration-200" id="confirm-delete-btn">ဖျက်မယ်</button>
+                </div>
             </div>
         </div>
-    </div>
-    
-    <!-- Modal for Viewing User History -->
-    <div id="user-history-modal" class="modal-overlay fixed inset-0 flex items-center justify-center p-4 hidden">
-        <div class="modal-content bg-gray-800 p-8 rounded-xl w-full max-w-lg max-h-[80vh] overflow-y-auto border border-gray-700">
-            <h3 id="user-history-title" class="text-2xl font-semibold mb-4"></h3>
-            <div id="user-history-content">
-                 <table class="w-full text-left table-auto">
-                     <thead class="bg-gray-700 text-gray-300 uppercase text-sm">
-                         <tr>
-                             <th class="p-4">Date</th>
-                             <th class="p-4">Description</th>
-                             <th class="p-4">Points</th>
-                         </tr>
-                     </thead>
-                     <tbody id="user-history-table-body" class="divide-y divide-gray-700">
-                         <!-- History rows will be dynamically rendered here by JS -->
-                     </tbody>
-                 </table>
-            </div>
-            <div class="flex justify-end gap-4 mt-6">
-                <button type="button" class="btn-primary px-6 py-3 rounded-lg font-semibold" id="user-history-close-btn">Close</button>
+        
+        <!-- Modal for Viewing User History -->
+        <div id="user-history-modal" class="modal-overlay fixed inset-0 flex justify-center items-center z-[1000] hidden">
+            <div class="modal-content bg-card-bg p-8 rounded-xl w-11/12 max-w-3xl shadow-2xl border border-slate-700">
+                <h3 id="user-history-title" class="text-xl font-semibold mb-4"></h3>
+                <div id="user-history-content" class="overflow-x-auto">
+                     <table class="w-full text-left table-auto">
+                         <thead class="bg-slate-700 text-slate-400 uppercase text-xs">
+                             <tr>
+                                 <th class="p-4 rounded-tl-lg">နေ့စွဲ</th>
+                                 <th class="p-4">အကြောင်းအရာ</th>
+                                 <th class="p-4 rounded-tr-lg">အမှတ်</th>
+                             </tr>
+                         </thead>
+                         <tbody id="user-history-table-body" class="divide-y divide-slate-700">
+                             <!-- History rows will be dynamically rendered here by JS -->
+                         </tbody>
+                     </table>
+                </div>
+                <div class="flex justify-end gap-2 mt-6">
+                    <button type="button" class="px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg text-white font-semibold transition-colors duration-200" id="user-history-close-btn">ပိတ်ရန်</button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Modal for Adding/Editing Videos (Hidden by default) -->
-    <div id="add-video-modal" class="modal-overlay fixed inset-0 flex items-center justify-center p-4 hidden">
-        <div class="modal-content bg-gray-800 p-8 rounded-xl w-full max-w-lg border border-gray-700">
-            <h3 id="modal-title" class="text-2xl font-semibold mb-6">Add New Video</h3>
-            <form id="add-video-form" class="space-y-4">
-                <div>
-                    <label for="video-title" class="block text-gray-400 font-medium mb-1">Video Title</label>
-                    <input type="text" id="video-title" name="videoTitle" required class="w-full px-4 py-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                </div>
-                <div>
-                    <label for="video-description" class="block text-gray-400 font-medium mb-1">Description</label>
-                    <textarea id="video-description" name="videoDescription" rows="3" required class="w-full px-4 py-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500"></textarea>
-                </div>
-                <div>
-                    <label for="video-category" class="block text-gray-400 font-medium mb-1">Category</label>
-                    <select id="video-category" name="videoCategory" required class="w-full px-4 py-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                        <option value="YouTube">YouTube</option>
-                        <option value="TikTok">TikTok</option>
-                        <option value="Facebook">Facebook</option>
-                        <option value="Nature">Nature</option>
-                        <option value="Education">Education</option>
-                        <option value="Travel">Travel</option>
-                        <option value="Food">Food</option>
-                        <option value="Gaming">Gaming</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="video-url" class="block text-gray-400 font-medium mb-1">Video URL (YouTube Embed Link)</label>
-                    <input type="text" id="video-url" name="videoUrl" required class="w-full px-4 py-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                </div>
-                <div>
-                    <label for="video-points" class="block text-gray-400 font-medium mb-1">Points</label>
-                    <input type="number" id="video-points" name="videoPoints" required class="w-full px-4 py-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                </div>
-                <div>
-                    <label for="watch-duration" class="block text-gray-400 font-medium mb-1">Watch Duration (seconds)</label>
-                    <input type="number" id="watch-duration" name="watchDuration" required class="w-full px-4 py-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                </div>
-                <div class="flex justify-end gap-4 mt-6">
-                    <button type="button" class="bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-700 transition" id="add-video-cancel-btn">Cancel</button>
-                    <button type="submit" class="btn-primary px-6 py-3 rounded-lg font-semibold" id="add-video-save-btn">Save</button>
-                </div>
-            </form>
+        <!-- Modal for Adding/Editing Videos (Hidden by default) -->
+        <div id="add-video-modal" class="modal-overlay fixed inset-0 flex justify-center items-center z-[1000] hidden">
+            <div class="modal-content bg-card-bg p-8 rounded-xl w-11/12 max-w-lg shadow-2xl border border-slate-700">
+                <h3 id="modal-title" class="text-xl font-semibold mb-4">ဗီဒီယိုအသစ်ထည့်ရန်</h3>
+                <form id="add-video-form" class="modal-form space-y-4">
+                    <div>
+                        <label for="video-title" class="block text-sm font-medium mb-1">ဗီဒီယို ခေါင်းစဉ်</label>
+                        <input type="text" id="video-title" name="videoTitle" required class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    <div>
+                        <label for="video-description" class="block text-sm font-medium mb-1">အကြောင်းအရာ</label>
+                        <textarea id="video-description" name="videoDescription" rows="3" required class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
+                    </div>
+                    <div>
+                        <label for="video-category" class="block text-sm font-medium mb-1">အမျိုးအစား</label>
+                        <select id="video-category" name="videoCategory" required class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary">
+                            <option value="YouTube">YouTube</option>
+                            <option value="TikTok">TikTok</option>
+                            <option value="Facebook">Facebook</option>
+                            <option value="Nature">သဘာဝ</option>
+                            <option value="Education">ပညာရေး</option>
+                            <option value="Travel">ခရီးသွား</option>
+                            <option value="Food">အစားအသောက်</option>
+                            <option value="Gaming">ဂိမ်း</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="video-url" class="block text-sm font-medium mb-1">ဗီဒီယို URL (YouTube Embed Link)</label>
+                        <input type="text" id="video-url" name="videoUrl" required class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    <div>
+                        <label for="video-points" class="block text-sm font-medium mb-1">အမှတ်</label>
+                        <input type="number" id="video-points" name="videoPoints" required class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    <div>
+                        <label for="watch-duration" class="block text-sm font-medium mb-1">ကြည့်ရှုရမည့်အချိန် (စက္ကန့်)</label>
+                        <input type="number" id="watch-duration" name="watchDuration" required class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    <div class="flex justify-end gap-2 pt-4">
+                        <button type="button" class="cancel-btn px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg text-white font-semibold transition-colors duration-200">ဖျက်သိမ်းရန်</button>
+                        <button type="submit" class="save-btn px-4 py-2 bg-primary hover:bg-indigo-600 rounded-lg text-white font-semibold transition-colors duration-200">သိမ်းဆည်းရန်</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Cash Out Modal (New) -->
+        <div id="cashout-modal" class="modal-overlay fixed inset-0 flex justify-center items-center z-[1000] hidden">
+            <div class="modal-content bg-card-bg p-8 rounded-xl w-11/12 max-w-lg shadow-2xl border border-slate-700">
+                <h3 class="text-xl font-semibold mb-4">ငွေထုတ်ရန် တောင်းဆိုမှု</h3>
+                <form id="cashout-form" class="modal-form space-y-4">
+                    <p class="text-muted-text">ဝင်ငွေရရှိရန်အတွက် သင်၏ ငွေပေးချေမှုအချက်အလက်များကို ထည့်သွင်းပါ။</p>
+                    <div>
+                        <label for="payment-method" class="block text-sm font-medium mb-1">ငွေပေးချေမှု နည်းလမ်း</label>
+                        <select id="payment-method" name="paymentMethod" class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary">
+                            <option value="KBZ Pay">KBZ Pay</option>
+                            <option value="Wave Pay">Wave Pay</option>
+                            <option value="Binance Pay">Binance Pay</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="payout-amount" class="block text-sm font-medium mb-1">ငွေပမာဏ ($)</label>
+                        <input type="number" id="payout-amount" name="payoutAmount" value="0.00" readonly class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 text-muted-text cursor-not-allowed">
+                    </div>
+                    <div class="flex justify-end gap-2 pt-4">
+                        <button type="button" class="cancel-btn px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg text-white font-semibold transition-colors duration-200">ဖျက်သိမ်းရန်</button>
+                        <button type="submit" class="save-btn px-4 py-2 bg-primary hover:bg-indigo-600 rounded-lg text-white font-semibold transition-colors duration-200" id="cashout-submit-btn">တောင်းဆိုမှု တင်သွင်းရန်</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
     
-    <!-- Cash Out Modal (New) -->
-    <div id="cashout-modal" class="modal-overlay fixed inset-0 flex items-center justify-center p-4 hidden">
-        <div class="modal-content bg-gray-800 p-8 rounded-xl w-full max-w-lg border border-gray-700">
-            <h3 class="text-2xl font-semibold mb-6 text-center">Cash Out Request</h3>
-            <form id="cashout-form" class="space-y-4">
-                <p class="text-gray-400 mb-4 text-center">Enter your payment details to receive your earnings.</p>
-                <div>
-                    <label for="payment-method" class="block text-gray-400 font-medium mb-1">Payment Method</label>
-                    <select id="payment-method" name="paymentMethod" class="w-full px-4 py-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                        <option value="KBZ Pay">KBZ Pay</option>
-                        <option value="Wave Pay">Wave Pay</option>
-                        <option value="Binance Pay">Binance Pay</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="payout-amount" class="block text-gray-400 font-medium mb-1">Amount ($)</label>
-                    <input type="number" id="payout-amount" name="payoutAmount" value="0.26" readonly class="w-full px-4 py-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none cursor-not-allowed">
-                </div>
-                <div class="flex justify-end gap-4 mt-6">
-                    <button type="button" class="bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-700 transition" id="cashout-cancel-btn">Cancel</button>
-                    <button type="submit" class="btn-primary px-6 py-3 rounded-lg font-semibold" id="cashout-submit-btn">Submit Request</button>
-                </div>
-            </form>
-        </div>
-    </div>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut, signInAnonymously, GoogleAuthProvider, signInWithPopup, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, collection, query, where, addDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
         document.addEventListener('DOMContentLoaded', async () => {
-            // Firebase setup
             const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
             const firebaseConfig = {
               apiKey: "AIzaSyBKHF_6NIFD0-zrceg3BFJBdhJcFoXiKmA",
@@ -576,7 +569,6 @@
             let userId = null;
             let isAuthReady = false;
 
-            // UI elements
             const loginPage = document.getElementById('login-page');
             const appContainer = document.getElementById('app-container');
             const googleSignInBtn = document.getElementById('google-sign-in-btn');
@@ -604,7 +596,6 @@
 
             const addVideoBtn = document.getElementById('add-video-btn');
             const addVideoModal = document.getElementById('add-video-modal');
-            const addVideoModalCancelBtn = document.querySelector('#add-video-modal #add-video-cancel-btn');
             const addVideoForm = document.getElementById('add-video-form');
             const addModalTitle = document.getElementById('modal-title');
             const videoTableBody = document.querySelector('#videos-table');
@@ -613,7 +604,6 @@
 
             const cashoutBtn = document.getElementById('cashout-button');
             const cashoutModal = document.getElementById('cashout-modal');
-            const cashoutCancelBtn = document.querySelector('#cashout-modal #cashout-cancel-btn');
             const cashoutForm = document.getElementById('cashout-form');
             const totalPointsValue = document.getElementById('total-points-value');
             const estimatedEarningsValue = document.getElementById('estimated-earnings-value');
@@ -629,16 +619,13 @@
             
             const deleteConfirmModal = document.getElementById('delete-confirm-modal');
             const deleteConfirmBtn = document.getElementById('confirm-delete-btn');
-            const deleteCancelBtn = document.getElementById('delete-cancel-btn');
             
             const usersTableBody = document.getElementById('users-table-body');
             const userHistoryModal = document.getElementById('user-history-modal');
             const userHistoryTitle = document.getElementById('user-history-title');
             const userHistoryTableBody = document.getElementById('user-history-table-body');
-            const userHistoryCloseBtn = document.getElementById('user-history-close-btn');
-
+            
             const cashoutMessageModal = document.getElementById('cashout-message-modal');
-            const cashoutMessageCloseBtn = document.getElementById('cashout-message-close-btn');
             const cashoutMessageText = document.getElementById('cashout-message-text');
             
             let videos = [];
@@ -671,14 +658,6 @@
                 return 'https://placehold.co/400x225/1f3148/ffffff?text=Video';
             }
             
-            // Utility function to convert seconds to MM:SS format
-            function formatDuration(seconds) {
-                const minutes = Math.floor(seconds / 60);
-                const remainingSeconds = seconds % 60;
-                const formattedSeconds = remainingSeconds < 10 ? `0${remainingSeconds}` : remainingSeconds;
-                return `${minutes}:${formattedSeconds}`;
-            }
-
             async function seedInitialData(user) {
                 try {
                     if (!user) {
@@ -711,12 +690,11 @@
                         const videosSnapshot = await getDocs(videosCollectionRef);
                         if (videosSnapshot.empty) {
                             const initialVideos = [
-                                { id: 'vid1', title: "The Beauty of Nature", category: "Nature", points: 12, watchDuration: 10, duration: 90, description: "A breathtaking journey through mountains and forests.", videoUrl: "https://www.youtube.com/embed/g2J03u13kXg" },
-                                { id: 'vid2', title: "Learn React in 30 Seconds", category: "Education", points: 25, watchDuration: 15, duration: 150, description: "A quick overview of React hooks.", videoUrl: "https://www.youtube.com/embed/Ke90Tje7VS0" },
-                                { id: 'vid3', title: "City Life at Night", category: "Travel", points: 75, watchDuration: 20, duration: 120, description: "Explore the vibrant life of a metropolis after dark.", videoUrl: "https://www.youtube.com/embed/5a-H_gqM_9E" },
-                                { id: 'vid4', title: "Cooking a Perfect Steak", category: "Food", points: 60, watchDuration: 10, duration: 250, description: "A step by step guide to cooking steak.", videoUrl: "https://www.youtube.com/embed/H0d82C7YjA8" },
-                                { id: 'vid5', title: "Gaming Highlights of the Week", category: "Gaming", points: 40, watchDuration: 10, duration: 80, description: "The best moments in esports.", videoUrl: "https://www.youtube.com/embed/d-Yq36_9tQ0" },
-                                { id: 'vid6', title: "Calming Rain and Piano", category: "Nature", points: 30, watchDuration: 15, duration: 520, description: "Relaxing piano music with rain sounds.", videoUrl: "https://www.youtube.com/embed/Ke90Tje7VS0" }
+                                { id: 'vid1', title: "The Beauty of Nature", category: "Nature", points: 12, watchDuration: 10, description: "A breathtaking journey through mountains and forests.", videoUrl: "https://www.youtube.com/embed/g2J03u13kXg" },
+                                { id: 'vid2', title: "Learn React in 30 Seconds", category: "Education", points: 25, watchDuration: 15, description: "A quick overview of React hooks.", videoUrl: "https://www.youtube.com/embed/Ke90Tje7VS0" },
+                                { id: 'vid3', title: "City Life at Night", category: "Travel", points: 75, watchDuration: 20, description: "Explore the vibrant life of a metropolis after dark.", videoUrl: "https://www.youtube.com/embed/5a-H_gqM_9E" },
+                                { id: 'vid4', title: "Cooking a Perfect Steak", category: "Food", points: 60, watchDuration: 10, description: "A step by step guide to cooking steak.", videoUrl: "https://www.youtube.com/embed/H0d82C7YjA8" },
+                                { id: 'vid5', title: "Gaming Highlights of the Week", category: "Gaming", points: 40, watchDuration: 10, description: "The best moments in esports.", videoUrl: "https://www.youtube.com/embed/d-Yq36_9tQ0" }
                             ];
                             for (const video of initialVideos) {
                                 await setDoc(doc(videosCollectionRef, video.id), {
@@ -724,7 +702,6 @@
                                     category: video.category,
                                     points: video.points,
                                     watchDuration: video.watchDuration,
-                                    duration: video.duration,
                                     description: video.description,
                                     videoUrl: video.videoUrl
                                 });
@@ -777,7 +754,7 @@
             async function fetchAllUsers() {
                 showLoading();
                 if (!usersTableBody) return;
-                usersTableBody.innerHTML = `<tr><td colspan="6" class="text-center text-gray-400 py-4">Fetching users...</td></tr>`;
+                usersTableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-muted-text">အသုံးပြုသူများအား ဆွဲထုတ်နေပါသည်...</td></tr>`;
                 try {
                     const usersCollectionRef = collection(db, `/artifacts/${appId}/users`);
                     const querySnapshot = await getDocs(usersCollectionRef);
@@ -785,7 +762,7 @@
                     renderUsersTable(users);
                 } catch (e) {
                     console.error("Error fetching users:", e);
-                    usersTableBody.innerHTML = `<tr><td colspan="6" class="text-center text-red-500 py-4">Error fetching users.</td></tr>`;
+                    usersTableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-red-500">အသုံးပြုသူများ ဆွဲထုတ်ရာတွင် အမှားဖြစ်ပွားပါသည်။</td></tr>`;
                 } finally {
                     hideLoading();
                 }
@@ -809,7 +786,7 @@
                     const userDocRef = doc(db, `/artifacts/${appId}/users/${userId}`);
                     const newPoints = userData.points + pointsToAdd;
                     const newHistory = [...(userData.pointsHistory || []), {
-                        date: new Date().toLocaleDateString(),
+                        date: new Date().toLocaleDateString('my-MM'),
                         description: description,
                         points: pointsToAdd
                     }];
@@ -875,16 +852,23 @@
             }
 
             function showLoading() {
-                if (loadingOverlay) loadingOverlay.style.display = 'flex';
+                if (loadingOverlay) {
+                    loadingOverlay.style.display = 'flex';
+                    setTimeout(() => loadingOverlay.style.opacity = '1', 10);
+                }
             }
 
             function hideLoading() {
-                if (loadingOverlay) loadingOverlay.style.display = 'none';
+                if (loadingOverlay) {
+                    loadingOverlay.style.opacity = '0';
+                    setTimeout(() => loadingOverlay.style.display = 'none', 300);
+                }
             }
             
             async function fetchAdminDashboardData() {
                 showLoading();
                 try {
+                    // Fetch total users, points, and payouts using onSnapshot for real-time updates
                     const usersCollectionRef = collection(db, `/artifacts/${appId}/users`);
                     onSnapshot(usersCollectionRef, (usersSnapshot) => {
                         const totalUsers = usersSnapshot.docs.length;
@@ -908,6 +892,7 @@
                         console.error("Error fetching admin users data:", error);
                     });
 
+                    // Fetch total videos separately
                     const videosCollectionRef = collection(db, `/artifacts/${appId}/public/data/videos`);
                     onSnapshot(videosCollectionRef, (videosSnapshot) => {
                         const totalVideos = videosSnapshot.docs.length;
@@ -925,19 +910,16 @@
             function updateUI(role) {
                 if (!isAuthReady || !currentUser) return;
                 
-                // Ensure only one main view is shown
-                if (loginPage) loginPage.classList.add('hidden');
-                if (appContainer) appContainer.classList.remove('hidden');
-                
-                if (sidebar) sidebar.classList.remove('open');
-                if (document.body) document.body.classList.remove('sidebar-open');
+                views.forEach(view => { if(view) view.style.display = 'none'; });
+                if (loginPage) loginPage.style.display = 'none';
+                if (appContainer) appContainer.style.display = 'flex';
 
                 if (role === 'user') {
                     document.querySelectorAll('.admin-link').forEach(link => { if (link) link.style.display = 'none'; });
                     document.querySelectorAll('.user-link').forEach(link => { if (link) link.style.display = 'flex'; });
                     if (headerMeta) headerMeta.innerHTML = getUserHeaderHTML();
                     if (sidebarProfile) sidebarProfile.innerHTML = getUserProfileHTML();
-                    if (welcomeMessage) welcomeMessage.textContent = `Welcome back, ${currentUser.name}!`;
+                    if (welcomeMessage) welcomeMessage.textContent = `ပြန်လည်ကြိုဆိုပါတယ်၊ ${currentUser.name}!`;
                     showView('user-dashboard-view');
                     updatePointsDisplay();
                     renderPointsHistoryTable();
@@ -949,63 +931,66 @@
                     if (sidebarProfile) sidebarProfile.innerHTML = getUserProfileHTML();
                     showView('admin-dashboard-view');
                     fetchVideos().then(renderManageVideosTable);
-                    fetchAdminDashboardData();
+                    fetchAdminDashboardData(); // Call new function to fetch admin data dynamically
                 }
                 attachLogoutListeners(); 
             }
             
             function getUserProfileHTML() {
-                const nameText = currentUser?.name || 'Unknown';
-                const profileText = nameText.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
+                const nameText = currentUser?.name || 'အမည်မသိ';
+                const profileText = nameText.split(' ').map(n => n[0]).join('');
                 const roleText = currentUser?.role === 'admin' ? 'ADMINISTRATOR' : currentUser?.email || 'N/A';
                 return `
-                    <div class="user-profile flex items-center p-4 rounded-xl bg-[#3b4b6b] mt-4">
-                        <img src="https://placehold.co/40x40/9b59b6/ffffff?text=${profileText}" alt="${nameText}" class="w-10 h-10 rounded-full mr-4">
-                        <div class="user-info">
-                            <div class="font-semibold text-white">${nameText}</div>
-                            <div class="text-sm text-gray-400">${roleText}</div>
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center mr-4 font-semibold text-primary">
+                             ${profileText}
+                        </div>
+                        <div class="flex-grow">
+                            <div class="text-white font-semibold">${nameText}</div>
+                            <div class="text-sm text-muted-text">${roleText}</div>
                         </div>
                     </div>
                 `;
             }
             
             function getUserHeaderHTML() {
-                const nameText = currentUser?.name || 'Unknown';
-                const profileText = nameText.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
-                const roleText = currentUser?.role || 'user';
+                const nameText = currentUser?.name || 'အမည်မသိ';
+                const profileText = nameText.split(' ').map(n => n[0]).join('');
+                const roleText = currentUser?.role === 'admin' ? 'အုပ်ချုပ်သူ' : 'အသုံးပြုသူ';
                 return `
-                    <div class="user-meta hidden md:flex items-center space-x-4">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex flex-col items-end">
+                            <span id="user-points-display" class="font-bold text-lg">${(userData?.points || 0).toLocaleString()} PTS</span>
+                            <span class="text-sm text-muted-text">$${(userData?.points / 5000).toFixed(2)}</span>
+                        </div>
                         <div class="flex items-center space-x-2">
-                           <span id="user-points-display" class="font-bold text-lg text-yellow-400">${(userData?.points || 0).toLocaleString()} PTS</span>
-                           <span class="text-sm text-gray-400">$${(userData?.points / 5000).toFixed(2)}</span>
+                             <div class="text-right">
+                                <span class="block font-semibold">${nameText}</span>
+                                <span class="block text-xs text-muted-text">${roleText}</span>
+                             </div>
+                            <img src="https://placehold.co/32x32/6366f1/ffffff?text=${profileText}" alt="${nameText}" class="w-8 h-8 rounded-full border border-primary">
                         </div>
-                        <div class="flex items-center">
-                            <span class="font-semibold text-gray-300 mr-2">${nameText}</span>
-                            <img src="https://placehold.co/32x32/9b59b6/ffffff?text=${profileText}" alt="${nameText}" class="w-8 h-8 rounded-full">
-                        </div>
-                        <button class="logout-btn text-gray-400 hover:text-white transition">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+                        <button class="logout-btn p-2 rounded-full hover:bg-slate-700 transition-colors duration-200">
+                            <svg class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
                         </button>
                     </div>
                 `;
             }
             
             function getAdminHeaderHTML() {
-                 const nameText = currentUser?.name || 'Unknown';
-                 const profileText = nameText.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
+                 const nameText = currentUser?.name || 'အမည်မသိ';
+                 const profileText = nameText.split(' ').map(n => n[0]).join('');
                  return `
-                    <div class="admin-meta hidden md:flex items-center space-x-4">
+                    <div class="flex items-center space-x-4">
                         <div class="flex items-center space-x-2">
-                           <span class="font-bold text-lg text-yellow-400" id="admin-points-display">0 PTS</span>
-                           <span class="text-sm text-gray-400" id="admin-earnings-display">$0.00</span>
+                             <div class="text-right">
+                                <span class="block font-semibold">${nameText}</span>
+                                <span class="block text-xs text-muted-text">အုပ်ချုပ်သူ</span>
+                             </div>
+                            <img src="https://placehold.co/32x32/6366f1/ffffff?text=${profileText}" alt="${nameText}" class="w-8 h-8 rounded-full border border-primary">
                         </div>
-                        <div class="flex items-center">
-                            <span class="font-semibold text-gray-300 mr-2">${nameText}</span>
-                            <span class="text-sm text-gray-500 mr-2">Admin</span>
-                            <img src="https://placehold.co/32x32/9b59b6/ffffff?text=${profileText}" alt="${nameText}" class="w-8 h-8 rounded-full">
-                        </div>
-                        <button class="logout-btn text-gray-400 hover:text-white transition">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+                        <button class="logout-btn p-2 rounded-full hover:bg-slate-700 transition-colors duration-200">
+                            <svg class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
                         </button>
                     </div>
                  `;
@@ -1013,22 +998,26 @@
 
             function attachLogoutListeners() {
                 const logoutButtons = document.querySelectorAll('.logout-btn');
-                logoutButtons.forEach(btn => {
-                    btn.removeEventListener('click', handleLogout);
-                    btn.addEventListener('click', handleLogout);
-                });
-            }
-
-            async function handleLogout() {
-                try {
-                    await signOut(auth);
-                    if (loginPage) loginPage.classList.remove('hidden');
-                    if (appContainer) appContainer.classList.add('hidden');
-                    currentUser = null;
-                    userData = null;
-                    console.log("User signed out.");
-                } catch (error) {
-                    console.error("Error signing out:", error);
+                if (logoutButtons) {
+                    logoutButtons.forEach(btn => {
+                        const oldBtn = btn.cloneNode(true);
+                        btn.parentNode.replaceChild(oldBtn, btn);
+                    });
+                    const newLogoutButtons = document.querySelectorAll('.logout-btn');
+                    newLogoutButtons.forEach(btn => {
+                        btn.addEventListener('click', async () => {
+                            try {
+                                await signOut(auth);
+                                if (loginPage) loginPage.style.display = 'flex';
+                                if (appContainer) appContainer.style.display = 'none';
+                                currentUser = null;
+                                userData = null;
+                                console.log("User signed out.");
+                            } catch (error) {
+                                console.error("Error signing out:", error);
+                            }
+                        });
+                    });
                 }
             }
 
@@ -1039,11 +1028,11 @@
                     targetView.style.display = 'block';
                     updatePageTitle(targetId);
                     navLinks.forEach(nav => {
-                        if (nav) nav.classList.remove('active');
+                        if (nav) nav.classList.remove('active', 'bg-primary/20', 'text-white');
                     });
                     const activeLink = document.querySelector(`a[data-target="${targetId}"]`);
                     if (activeLink) {
-                        activeLink.classList.add('active');
+                        activeLink.classList.add('active', 'bg-primary/20', 'text-white');
                     }
                 }
             }
@@ -1052,17 +1041,19 @@
                 const titleElement = document.getElementById('page-title');
                 if (!titleElement) return;
 
-                const menuToggle = `<button id="menu-toggle" class="md:hidden mr-4 text-white"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></button>`;
+                const menuToggle = `<button id="menu-toggle" class="md:hidden p-2 -ml-2 rounded-md hover:bg-card-bg transition-colors duration-200">
+                                      <svg class="w-6 h-6 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+                                    </button>`;
                 let titleText = 'Ping Rewards';
 
                 switch (viewId) {
                     case 'user-dashboard-view': titleText = 'Dashboard'; break;
-                    case 'watch-videos-view': titleText = 'Watch Videos'; break;
-                    case 'points-history-view': titleText = 'Points History'; break;
+                    case 'watch-videos-view': titleText = 'ဗီဒီယိုကြည့်ရန်'; break;
+                    case 'points-history-view': titleText = 'အမှတ်မှတ်တမ်း'; break;
                     case 'admin-dashboard-view': titleText = 'Admin Dashboard'; break;
-                    case 'manage-videos-view': titleText = 'Manage Videos'; break;
-                    case 'manage-users-view': titleText = 'Manage Users'; break;
-                    case 'video-player-view': titleText = 'Video'; break;
+                    case 'manage-videos-view': titleText = 'ဗီဒီယိုများ စီမံခန့်ခွဲရန်'; break;
+                    case 'manage-users-view': titleText = 'အသုံးပြုသူများ စီမံခန့်ခွဲရန်'; break;
+                    case 'video-player-view': titleText = 'ဗီဒီယိုဖွင့်စက်'; break;
                 }
                 titleElement.innerHTML = `${menuToggle} ${titleText}`;
                 
@@ -1070,13 +1061,14 @@
                 if (toggleBtn) {
                      toggleBtn.addEventListener('click', () => {
                         if (sidebar) sidebar.classList.toggle('open');
-                        if (document.body) document.body.classList.toggle('sidebar-open');
+                        if (backdrop) backdrop.classList.toggle('open');
+                        document.body.classList.toggle('no-scroll');
                      });
                 }
             }
             
             function generateRandomChartData() {
-                const bars = document.querySelectorAll('.bar-chart .bar');
+                const bars = document.querySelectorAll('#weekly-watch-chart .w-1\\/7');
                 bars.forEach(bar => {
                     const randomHeight = Math.floor(Math.random() * 90) + 10;
                     bar.style.height = `${randomHeight}%`;
@@ -1090,14 +1082,8 @@
                     return;
                 }
                 videoGrid.innerHTML = '';
-
-                // Get IDs of videos the user has watched
-                const watchedVideoTitles = new Set((userData?.pointsHistory || [])
-                    .filter(h => h.description.includes('Watched'))
-                    .map(h => h.description.match(/"(.*?)"/)?.[1] || h.description.split(' ').pop()));
-
-                // Filter and sort videos
                 let filteredVideos = videos;
+
                 if (category !== 'all') {
                     filteredVideos = filteredVideos.filter(video => video.category === category);
                 }
@@ -1109,39 +1095,29 @@
                         video.description.toLowerCase().includes(query)
                     );
                 }
-                
-                // Separate watched and unwatched videos
-                const unwatchedVideos = filteredVideos.filter(video => !watchedVideoTitles.has(video.title));
-                const watchedVideos = filteredVideos.filter(video => watchedVideoTitles.has(video.title));
-                
-                // Concatenate unwatched videos first, then watched videos
-                const orderedVideos = [...unwatchedVideos, ...watchedVideos];
 
-                if (orderedVideos.length === 0) {
-                     videoGrid.innerHTML = `<p class="text-center text-gray-400 col-span-full">No videos found.</p>`;
+                if (filteredVideos.length === 0) {
+                     videoGrid.innerHTML = `<p class="col-span-full text-center text-muted-text py-12">ဗီဒီယိုများ ရှာမတွေ့ပါ။</p>`;
                      return;
                 }
 
-                orderedVideos.forEach(video => {
+                filteredVideos.forEach(video => {
+                    let thumbnailUrl;
                     const youtubeId = getYouTubeId(video.videoUrl);
-                    const thumbnailUrl = getYouTubeThumbnail(youtubeId);
+                    if (youtubeId) {
+                        thumbnailUrl = getYouTubeThumbnail(youtubeId);
+                    } else {
+                        thumbnailUrl = 'https://placehold.co/400x225/1f3148/ffffff?text=Video';
+                    }
 
                     const videoCardHtml = `
-                        <div class="video-card card rounded-xl overflow-hidden shadow-lg cursor-pointer transform hover:scale-105 transition-transform duration-300" data-category="${video.category}" data-video-url="${video.videoUrl}" data-video-id="${video.id}">
-                            <div class="relative w-full h-40 overflow-hidden">
-                                <img src="${thumbnailUrl}" alt="${video.title}" onerror="this.onerror=null; this.src='https://placehold.co/400x225/1f3148/ffffff?text=Video';" class="w-full h-full object-cover transition-transform duration-300">
-                                <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 opacity-0 hover:opacity-100 transition-opacity duration-300">
-                                    <div class="w-16 h-16 rounded-full bg-white bg-opacity-20 backdrop-blur-sm flex items-center justify-center border-2 border-white/50">
-                                        <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M10 16.5l6-4.5-6-4.5v9z"/></svg>
-                                    </div>
-                                </div>
-                                <span class="absolute bottom-2 right-2 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded-full font-semibold">${formatDuration(video.duration)}</span>
-                                <span class="absolute top-2 right-2 gradient-bg text-white text-xs px-3 py-1 rounded-full font-semibold">${video.points} PTS</span>
-                            </div>
+                        <div class="video-card bg-card-bg rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer border border-slate-700" data-category="${video.category}" data-video-url="${video.videoUrl}" data-video-id="${video.id}">
+                            <img src="${thumbnailUrl}" alt="${video.title}" class="w-full h-40 object-cover" onerror="this.onerror=null; this.src='https://placehold.co/400x225/1f3148/ffffff?text=Video';">
                             <div class="p-4">
-                                <div class="text-sm font-semibold text-gray-400 uppercase">${video.category}</div>
-                                <h3 class="text-lg font-semibold text-white mt-1 mb-2">${video.title}</h3>
-                                <p class="text-sm text-gray-500 line-clamp-2">${video.description}</p>
+                                <div class="text-xs text-secondary mb-1 uppercase">${video.category}</div>
+                                <h3 class="text-lg font-semibold truncate mb-1">${video.title}</h3>
+                                <p class="text-sm text-muted-text line-clamp-2">${video.description}</p>
+                                <span class="inline-block bg-primary text-white text-xs font-bold px-3 py-1 rounded-full mt-2">${video.points} PTS</span>
                             </div>
                         </div>
                     `;
@@ -1154,22 +1130,22 @@
                 if (!usersTableBody) return;
                 usersTableBody.innerHTML = '';
                 if (users.length === 0) {
-                     usersTableBody.innerHTML = `<tr><td colspan="6" class="text-center text-gray-400 py-4">No users found.</td></tr>`;
+                     usersTableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-muted-text">အသုံးပြုသူများ ရှာမတွေ့ပါ။</td></tr>`;
                      return;
                 }
                 
                 users.forEach(user => {
-                    const toggleRoleBtnText = user.role === 'admin' ? 'Demote to User' : 'Promote to Admin';
+                    const toggleRoleBtnText = user.role === 'admin' ? 'အသုံးပြုသူသို့ လျှော့ချရန်' : 'Admin သို့ တိုးမြှင့်ရန်';
                     const tableRowHtml = `
-                        <tr class="hover:bg-gray-700 transition" data-user-id="${user.id}">
-                            <td class="p-4">${user.id.substring(0, 8)}...</td>
+                        <tr data-user-id="${user.id}" class="hover:bg-slate-700 transition-colors duration-200">
+                            <td class="p-4 text-xs font-mono">${user.id.substring(0, 8)}...</td>
                             <td class="p-4">${user.name || 'N/A'}</td>
                             <td class="p-4">${user.email || 'N/A'}</td>
-                            <td class="p-4">${user.role}</td>
+                            <td class="p-4"><span class="capitalize px-2 py-1 rounded-full text-xs font-semibold ${user.role === 'admin' ? 'bg-orange-500 text-white' : 'bg-primary/20 text-primary'}">${user.role}</span></td>
                             <td class="p-4">${user.points || 0}</td>
-                            <td class="p-4 space-x-2">
-                                <button class="bg-green-500 text-white text-sm px-4 py-2 rounded-lg mr-2 hover:bg-green-600 transition view-history-btn" data-user-id="${user.id}">View History</button>
-                                ${user.id !== userId ? `<button class="bg-purple-500 text-white text-sm px-4 py-2 rounded-lg hover:bg-purple-600 transition toggle-role-btn" data-user-id="${user.id}" data-current-role="${user.role}">${toggleRoleBtnText}</button>` : ''}
+                            <td class="p-4 whitespace-nowrap">
+                                <button class="actions-btn view-history-btn px-3 py-1 bg-accent-green hover:bg-emerald-600 text-white text-sm rounded-lg transition-colors duration-200" data-user-id="${user.id}">မှတ်တမ်းကြည့်ရန်</button>
+                                ${user.id !== userId ? `<button class="actions-btn toggle-role-btn px-3 py-1 bg-accent-purple hover:bg-purple-600 text-white text-sm rounded-lg ml-2 transition-colors duration-200" data-user-id="${user.id}" data-current-role="${user.role}">${toggleRoleBtnText}</button>` : ''}
                             </td>
                         </tr>
                     `;
@@ -1179,6 +1155,7 @@
             }
 
             function renderManageVideosTable() {
+                const videoTableBody = document.querySelector('#videos-table');
                 if (!videoTableBody) {
                     console.error("Video table body element not found.");
                     return;
@@ -1186,13 +1163,13 @@
                 videoTableBody.innerHTML = '';
                 videos.forEach(video => {
                     const tableRowHtml = `
-                        <tr class="hover:bg-gray-700 transition" data-video-id="${video.id}">
+                        <tr class="hover:bg-slate-700 transition-colors duration-200" data-video-id="${video.id}">
                             <td class="p-4">${video.title}</td>
                             <td class="p-4">${video.category}</td>
                             <td class="p-4">${video.points}</td>
-                            <td class="p-4 space-x-2">
-                                <button class="bg-blue-500 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-600 transition edit-btn" data-video-id="${video.id}">Edit</button>
-                                <button class="bg-red-500 text-white text-sm px-4 py-2 rounded-lg hover:bg-red-600 transition delete-btn" data-video-id="${video.id}">Delete</button>
+                            <td class="p-4">
+                                <a href="#" class="actions-btn edit-btn text-primary hover:text-indigo-400 mr-4 transition-colors duration-200" data-video-id="${video.id}">တည်းဖြတ်ရန်</a>
+                                <a href="#" class="actions-btn delete-btn text-red-500 hover:text-red-400 transition-colors duration-200" data-video-id="${video.id}">ဖျက်ရန်</a>
                             </td>
                         </tr>
                     `;
@@ -1202,25 +1179,26 @@
             }
             
             function renderPointsHistoryTable() {
+                const pointsHistoryTableBody = document.querySelector('#points-history-table');
                 if (!pointsHistoryTableBody) {
                     console.error("Points history table body element not found.");
                     return;
                 }
                 pointsHistoryTableBody.innerHTML = '';
                 if (!userData || !userData.pointsHistory || userData.pointsHistory.length === 0) {
-                     pointsHistoryTableBody.innerHTML = `<tr><td colspan="3" class="text-center text-gray-400 py-4">No history yet. Watch videos to earn points!</td></tr>`;
+                     pointsHistoryTableBody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-muted-text">အမှတ်မှတ်တမ်း မရှိသေးပါ။ ဗီဒီယိုအချို့ကြည့်ပါ။</td></tr>`;
                      return;
                 }
                 const history = userData.pointsHistory;
                 history.forEach(item => {
                     const tableRowHtml = `
-                        <tr class="hover:bg-gray-700 transition">
+                        <tr class="hover:bg-slate-700 transition-colors duration-200">
                             <td class="p-4">${item.date}</td>
-                            <td class="p-4">
-                                <svg class="w-4 h-4 inline-block mr-1 text-green-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5l-5-5 1.41-1.41L10 13.67l7.59-7.59L19 7l-9 9.5z"/></svg>
+                            <td class="p-4 flex items-center">
+                                <svg class="w-5 h-5 mr-2 fill-accent-green flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5l-5-5 1.41-1.41L10 13.67l7.59-7.59L19 7l-9 9.5z"/></svg>
                                 ${item.description}
                             </td>
-                            <td class="p-4 text-green-400 font-semibold">+${item.points}</td>
+                            <td class="p-4 font-bold text-accent-green">+${item.points}</td>
                         </tr>
                     `;
                     pointsHistoryTableBody.innerHTML += tableRowHtml;
@@ -1234,25 +1212,35 @@
                 const videosWatchedValue = document.getElementById('videos-watched-value');
                 const userPointsDisplay = document.getElementById('user-points-display');
                 const cashoutBtn = document.getElementById('cashout-button');
+                const payoutAmountInput = document.getElementById('payout-amount');
 
                 if (totalPointsValue) totalPointsValue.textContent = userData.points.toLocaleString();
                 if (estimatedEarningsValue) estimatedEarningsValue.textContent = `$${(userData.points / 5000).toFixed(2)}`;
                 if (videosWatchedValue) videosWatchedValue.textContent = (userData.pointsHistory || []).filter(h => h.description.includes('Watched')).length;
                 if (userPointsDisplay) userPointsDisplay.textContent = `${userData.points.toLocaleString()} PTS`;
-
+                if (payoutAmountInput) payoutAmountInput.value = (userData.points / 5000).toFixed(2);
+                
                 if (cashoutBtn) {
-                     cashoutBtn.disabled = userData.points <= 0;
+                     cashoutBtn.disabled = userData.points < 5000;
+                     if (userData.points < 5000) {
+                        cashoutBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                        cashoutBtn.classList.remove('hover:bg-indigo-600');
+                     } else {
+                        cashoutBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                        cashoutBtn.classList.add('hover:bg-indigo-600');
+                     }
                 }
             }
 
             function animateCoins(startElement, endElement, points) {
-                const numberOfCoins = Math.min(points, 10);
+                const numberOfCoins = Math.min(Math.floor(points / 20), 10);
                 const startRect = startElement.getBoundingClientRect();
                 const endRect = endElement.getBoundingClientRect();
                 
                 for (let i = 0; i < numberOfCoins; i++) {
                     const coin = document.createElement('div');
-                    coin.className = 'absolute w-4 h-4 rounded-full bg-yellow-400 transition-all duration-1000 ease-in-out z-50';
+                    coin.className = 'absolute z-50 transition-all duration-1000 ease-out opacity-0 coin-icon';
+                    coin.innerHTML = `<svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 102 0V6zm-1 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg>`;
                     document.body.appendChild(coin);
 
                     coin.style.left = `${startRect.left + (startRect.width / 2) - 8}px`;
@@ -1261,176 +1249,164 @@
                     setTimeout(() => {
                         coin.style.left = `${endRect.left + (endRect.width / 2) - 8}px`;
                         coin.style.top = `${endRect.top + (endRect.height / 2) - 8}px`;
-                        coin.style.opacity = '0';
-                        coin.style.transform = 'scale(0.5)';
-                    }, 50 + i * 20);
+                        coin.style.opacity = '1';
+                        coin.style.transform = 'translateY(-100px) scale(0.5)';
+                    }, 50 + i * 50);
 
                     setTimeout(() => {
                         coin.remove();
-                    }, 1100 + i * 20);
+                    }, 1100 + i * 50);
                 }
             }
 
-            function attachVideoCardListeners() {
+            async function attachVideoCardListeners() {
                 const cards = document.querySelectorAll('.video-card');
                 cards.forEach(card => {
-                    card.removeEventListener('click', handleVideoCardClick);
-                    card.addEventListener('click', handleVideoCardClick);
+                    card.addEventListener('click', (e) => {
+                        const videoId = card.getAttribute('data-video-id');
+                        const video = videos.find(v => v.id === videoId);
+                        
+                        if (video) {
+                            videoCardToAnimate = card; // Store the card element for animation later
+                            if (videoIframe) videoIframe.src = video.videoUrl;
+                            if (videoPlayerTitle) videoPlayerTitle.textContent = video.title;
+                            if (videoPlayerDescription) videoPlayerDescription.textContent = video.description;
+                            showView('video-player-view');
+                            if (summaryOutput) summaryOutput.innerHTML = ''; // Clear previous summary
+
+                            let pointsEarnedInSession = false;
+                            clearTimeout(window.videoWatchTimer);
+                            window.videoWatchTimer = setTimeout(() => {
+                                pointsEarnedInSession = true;
+                                console.log(`ဗီဒီယိုကြည့်ချိန်ပြည့်ပါပြီ။ အမှတ်ရရှိရန် 'ဗီဒီယိုများသို့ ပြန်သွားရန်' ကိုနှိပ်ပါ`);
+                                window.currentWatchedVideoId = video.id; // Store ID for summary button
+                            }, video.watchDuration * 1000);
+                            
+                            if(videoPlayerBackBtn) {
+                                videoPlayerBackBtn.onclick = async () => {
+                                    clearTimeout(window.videoWatchTimer);
+                                    if (videoIframe) videoIframe.src = '';
+                                    if (pointsEarnedInSession) {
+                                        if (videoCardToAnimate) {
+                                            const endElement = document.getElementById('user-points-display');
+                                            animateCoins(videoCardToAnimate, endElement, video.points);
+                                            setTimeout(async () => {
+                                                await updatePointsInFirestore(video.points, `Watched "${video.title}"`);
+                                            }, 1000);
+                                        } else {
+                                            await updatePointsInFirestore(video.points, `Watched "${video.title}"`);
+                                        }
+                                        console.log("Points updated via Firebase.");
+                                    } else {
+                                        console.log(`You did not watch the video for the required duration. No points were awarded.`);
+                                    }
+                                    showView('watch-videos-view');
+                                };
+                            }
+                        }
+                    });
                 });
             }
-
-            async function handleVideoCardClick(e) {
-                const card = e.currentTarget;
-                const videoId = card.getAttribute('data-video-id');
-                const video = videos.find(v => v.id === videoId);
-                
-                if (video) {
-                    videoCardToAnimate = card;
-                    if (videoIframe) videoIframe.src = video.videoUrl;
-                    if (videoPlayerTitle) videoPlayerTitle.textContent = video.title;
-                    if (videoPlayerDescription) videoPlayerDescription.textContent = video.description;
-                    showView('video-player-view');
-                    if (summaryOutput) summaryOutput.innerHTML = '';
-                    
-                    clearTimeout(window.videoWatchTimer);
-                    window.pointsEarnedInSession = false;
-                    window.videoWatchTimer = setTimeout(() => {
-                        window.pointsEarnedInSession = true;
-                        console.log(`Watch duration met. Click 'Back to Videos' to earn points.`);
-                        window.currentWatchedVideoId = video.id;
-                    }, video.watchDuration * 1000);
-                }
-            }
-
-            if(videoPlayerBackBtn) {
-                videoPlayerBackBtn.removeEventListener('click', handleVideoBack);
-                videoPlayerBackBtn.addEventListener('click', handleVideoBack);
-            }
             
-            async function handleVideoBack() {
-                clearTimeout(window.videoWatchTimer);
-                if (videoIframe) videoIframe.src = '';
-                if (window.pointsEarnedInSession) {
-                    if (videoCardToAnimate) {
-                        const videoId = videoCardToAnimate.getAttribute('data-video-id');
-                        const video = videos.find(v => v.id === videoId);
-                        if (video) {
-                            const endElement = document.getElementById('user-points-display');
-                            animateCoins(videoCardToAnimate, endElement, video.points);
-                            setTimeout(async () => {
-                                await updatePointsInFirestore(video.points, `Watched "${video.title}"`);
-                            }, 1000);
-                        }
-                    } else {
-                        const videoId = window.currentWatchedVideoId;
-                        const video = videos.find(v => v.id === videoId);
-                        if(video) await updatePointsInFirestore(video.points, `Watched "${video.title}"`);
-                    }
-                    console.log("Points updated via Firebase.");
-                } else {
-                    console.log(`You did not watch the video for the required duration. No points were awarded.`);
-                }
-                showView('watch-videos-view');
-            }
-
             function showDeleteModal(videoId) {
                 if (deleteConfirmModal) {
-                    deleteConfirmModal.style.display = 'flex';
-                    const newConfirmBtn = deleteConfirmBtn.cloneNode(true);
-                    deleteConfirmBtn.parentNode.replaceChild(newConfirmBtn, deleteConfirmBtn);
+                    deleteConfirmModal.classList.remove('hidden');
+                    const oldConfirmBtn = deleteConfirmBtn.cloneNode(true);
+                    deleteConfirmBtn.parentNode.replaceChild(oldConfirmBtn, deleteConfirmBtn);
+                    const newConfirmBtn = document.getElementById('confirm-delete-btn');
                     newConfirmBtn.addEventListener('click', async () => {
-                        deleteConfirmModal.style.display = 'none';
+                        deleteConfirmModal.classList.add('hidden');
                         await deleteVideo(videoId);
                     });
-                    deleteCancelBtn.removeEventListener('click', () => { deleteConfirmModal.style.display = 'none'; });
-                    deleteCancelBtn.addEventListener('click', () => { deleteConfirmModal.style.display = 'none'; });
                 }
             }
+            
+            document.querySelectorAll('#delete-confirm-modal .cancel-btn, #delete-confirm-modal .save-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                     deleteConfirmModal.classList.add('hidden');
+                });
+            });
 
             function attachManageVideosListeners() {
                 const editBtns = document.querySelectorAll('.edit-btn');
                 editBtns.forEach(btn => {
-                    btn.removeEventListener('click', handleEditVideo);
-                    btn.addEventListener('click', handleEditVideo);
+                    const oldBtn = btn.cloneNode(true);
+                    btn.parentNode.replaceChild(oldBtn, btn);
+                });
+                const newEditBtns = document.querySelectorAll('.edit-btn');
+                newEditBtns.forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        e.preventDefault();
+                        const videoId = btn.getAttribute('data-video-id');
+                        const videoToEdit = videos.find(v => v.id === videoId);
+                        if (videoToEdit) {
+                            if (addModalTitle) addModalTitle.textContent = "ဗီဒီယို တည်းဖြတ်ရန်";
+                            if (document.getElementById('video-title')) document.getElementById('video-title').value = videoToEdit.title;
+                            if (document.getElementById('video-description')) document.getElementById('video-description').value = videoToEdit.description;
+                            if (document.getElementById('video-category')) document.getElementById('video-category').value = videoToEdit.category;
+                            if (document.getElementById('video-url')) document.getElementById('video-url').value = videoToEdit.videoUrl;
+                            if (document.getElementById('video-points')) document.getElementById('video-points').value = videoToEdit.points;
+                            if (document.getElementById('watch-duration')) document.getElementById('watch-duration').value = videoToEdit.watchDuration;
+                            if (addVideoModal) addVideoModal.classList.remove('hidden');
+                            if (addVideoForm) addVideoForm.setAttribute('data-editing-id', videoId);
+                        }
+                    });
                 });
 
                 const deleteBtns = document.querySelectorAll('.delete-btn');
                 deleteBtns.forEach(btn => {
-                    btn.removeEventListener('click', handleDeleteVideo);
-                    btn.addEventListener('click', handleDeleteVideo);
+                    const oldBtn = btn.cloneNode(true);
+                    btn.parentNode.replaceChild(oldBtn, btn);
                 });
-            }
-            
-            async function handleEditVideo(e) {
-                e.preventDefault();
-                const videoId = e.currentTarget.getAttribute('data-video-id');
-                const videoToEdit = videos.find(v => v.id === videoId);
-                if (videoToEdit) {
-                    if (addModalTitle) addModalTitle.textContent = "Edit Video";
-                    document.getElementById('video-title').value = videoToEdit.title;
-                    document.getElementById('video-description').value = videoToEdit.description;
-                    document.getElementById('video-category').value = videoToEdit.category;
-                    document.getElementById('video-url').value = videoToEdit.videoUrl;
-                    document.getElementById('video-points').value = videoToEdit.points;
-                    document.getElementById('watch-duration').value = videoToEdit.watchDuration;
-                    addVideoModal.style.display = 'flex';
-                    addVideoForm.setAttribute('data-editing-id', videoId);
-                }
-            }
-
-            function handleDeleteVideo(e) {
-                e.preventDefault();
-                const videoId = e.currentTarget.getAttribute('data-video-id');
-                showDeleteModal(videoId);
+                const newDeleteBtns = document.querySelectorAll('.delete-btn');
+                newDeleteBtns.forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        e.preventDefault();
+                        const videoId = btn.getAttribute('data-video-id');
+                        showDeleteModal(videoId);
+                    });
+                });
             }
             
             function attachManageUsersListeners(users) {
                 const viewHistoryBtns = document.querySelectorAll('.view-history-btn');
                 viewHistoryBtns.forEach(btn => {
-                    btn.removeEventListener('click', handleViewHistory);
-                    btn.addEventListener('click', handleViewHistory);
+                    btn.addEventListener('click', async () => {
+                        const userId = btn.getAttribute('data-user-id');
+                        const user = users.find(u => u.id === userId);
+                        if (user && userHistoryModal && userHistoryTitle && userHistoryTableBody) {
+                             userHistoryTitle.textContent = `${user.name || 'အသုံးပြုသူ'}'s အမှတ်မှတ်တမ်း`;
+                             userHistoryTableBody.innerHTML = '';
+                             
+                             if (user.pointsHistory && user.pointsHistory.length > 0) {
+                                 user.pointsHistory.forEach(item => {
+                                      const row = document.createElement('tr');
+                                      row.className = 'hover:bg-slate-700 transition-colors duration-200';
+                                      row.innerHTML = `<td class="p-4">${item.date}</td><td class="p-4">${item.description}</td><td class="p-4">${item.points}</td>`;
+                                      userHistoryTableBody.appendChild(row);
+                                 });
+                             } else {
+                                  userHistoryTableBody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-muted-text">မှတ်တမ်း ရှာမတွေ့ပါ။</td></tr>`;
+                             }
+                             userHistoryModal.classList.remove('hidden');
+                        }
+                    });
                 });
                 
-                if (userHistoryCloseBtn) {
-                     userHistoryCloseBtn.removeEventListener('click', () => { if(userHistoryModal) userHistoryModal.style.display = 'none'; });
-                     userHistoryCloseBtn.addEventListener('click', () => { if(userHistoryModal) userHistoryModal.style.display = 'none'; });
-                }
+                document.querySelectorAll('#user-history-modal .cancel-btn, #user-history-modal .save-btn').forEach(btn => {
+                     btn.addEventListener('click', () => {
+                          userHistoryModal.classList.add('hidden');
+                     });
+                });
                 
                 const toggleRoleBtns = document.querySelectorAll('.toggle-role-btn');
                 toggleRoleBtns.forEach(btn => {
-                     btn.removeEventListener('click', handleToggleRole);
-                     btn.addEventListener('click', handleToggleRole);
+                     btn.addEventListener('click', async () => {
+                         const targetUserId = btn.getAttribute('data-user-id');
+                         const currentRole = btn.getAttribute('data-current-role');
+                         await toggleUserRole(targetUserId, currentRole);
+                     });
                 });
-            }
-
-            async function handleViewHistory(e) {
-                const userId = e.currentTarget.getAttribute('data-user-id');
-                const userDocRef = doc(db, `/artifacts/${appId}/users/${userId}`);
-                const userDocSnap = await getDoc(userDocRef);
-                const user = userDocSnap.data();
-
-                if (user && userHistoryModal && userHistoryTitle && userHistoryTableBody) {
-                     userHistoryTitle.textContent = `${user.name || 'User'}'s Points History`;
-                     userHistoryTableBody.innerHTML = '';
-                     
-                     if (user.pointsHistory && user.pointsHistory.length > 0) {
-                         user.pointsHistory.forEach(item => {
-                              const row = document.createElement('tr');
-                              row.className = "hover:bg-gray-700 transition";
-                              row.innerHTML = `<td class="p-4">${item.date}</td><td class="p-4">${item.description}</td><td class="p-4 text-green-400 font-semibold">${item.points}</td>`;
-                              userHistoryTableBody.appendChild(row);
-                         });
-                     } else {
-                          userHistoryTableBody.innerHTML = `<tr><td colspan="3" class="text-center text-gray-400 py-4">No history found.</td></tr>`;
-                     }
-                     userHistoryModal.style.display = 'flex';
-                }
-            }
-
-            async function handleToggleRole(e) {
-                 const targetUserId = e.currentTarget.getAttribute('data-user-id');
-                 const currentRole = e.currentTarget.getAttribute('data-current-role');
-                 await toggleUserRole(targetUserId, currentRole);
             }
 
             if (googleSignInBtn) {
@@ -1458,13 +1434,14 @@
                 getSummaryBtn.addEventListener('click', async () => {
                     const currentVideo = videos.find(v => v.id === window.currentWatchedVideoId);
                     if (!currentVideo) {
-                        if (summaryOutput) summaryOutput.innerHTML = "Video not found.";
+                        if (summaryOutput) summaryOutput.innerHTML = `<p class="text-red-500">ဗီဒီယိုကို မတွေ့ပါ။</p>`;
                         return;
                     }
-                    if (summaryOutput) summaryOutput.innerHTML = `<p class="text-gray-400">Getting summary...</p>`;
+
+                    if (summaryOutput) summaryOutput.innerHTML = `<p class="text-primary">အနှစ်ချုပ် ဖော်ပြနေပါသည်...</p>`;
 
                     try {
-                        const prompt = `Video Title: "${currentVideo.title}". Description: "${currentVideo.description}". Provide a summary of this video.`;
+                        const prompt = `ဗီဒီယိုခေါင်းစဉ်: "${currentVideo.title}"။ ဖော်ပြချက်: "${currentVideo.description}" ကို မြန်မာဘာသာဖြင့် အနှစ်ချုပ်ဖော်ပြပေးပါ။`;
                         const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
                         const payload = { contents: chatHistory };
                         const apiKey = "";
@@ -1481,13 +1458,13 @@
                             result.candidates[0].content && result.candidates[0].content.parts &&
                             result.candidates[0].content.parts.length > 0) {
                             const summaryText = result.candidates[0].content.parts[0].text;
-                            if (summaryOutput) summaryOutput.innerHTML = `<h3 class="text-lg font-semibold text-white mb-2">Summary</h3><p class="text-gray-400">${summaryText}</p>`;
+                            if (summaryOutput) summaryOutput.innerHTML = `<h4 class="font-semibold mt-4">အနှစ်ချုပ်</h4><p class="text-sm">${summaryText}</p>`;
                         } else {
-                            if (summaryOutput) summaryOutput.innerHTML = "Summary not available.";
+                            if (summaryOutput) summaryOutput.innerHTML = `<p class="text-red-500">အနှစ်ချုပ်ဖော်ပြချက်ကို မရရှိပါ။</p>`;
                         }
                     } catch (error) {
                         console.error("Gemini API Error:", error);
-                        if (summaryOutput) summaryOutput.innerHTML = "Error getting summary.";
+                        if (summaryOutput) summaryOutput.innerHTML = `<p class="text-red-500">အနှစ်ချုပ်ဖော်ပြချက်ကို ရယူရာတွင် အမှားဖြစ်ပွားပါသည်။</p>`;
                     }
                 });
             }
@@ -1495,7 +1472,8 @@
             if (menuToggleBtn) {
                 menuToggleBtn.addEventListener('click', () => {
                     if (sidebar) sidebar.classList.toggle('open');
-                    if (document.body) document.body.classList.toggle('sidebar-open');
+                    if (backdrop) backdrop.classList.toggle('open');
+                    document.body.classList.toggle('no-scroll');
                 });
             }
             
@@ -1505,7 +1483,8 @@
                     const targetId = link.getAttribute('data-target');
                     showView(targetId);
                     if (sidebar) sidebar.classList.remove('open');
-                    if (document.body) document.body.classList.remove('sidebar-open');
+                    if (backdrop) backdrop.classList.remove('open');
+                    document.body.classList.remove('no-scroll');
                     if (targetId === 'watch-videos-view') {
                         renderVideoGrid('all');
                     } else if (targetId === 'manage-videos-view') {
@@ -1521,14 +1500,19 @@
             if (backdrop) {
                 backdrop.addEventListener('click', () => {
                     if (sidebar) sidebar.classList.remove('open');
-                    if (document.body) document.body.classList.remove('sidebar-open');
+                    if (backdrop) backdrop.classList.remove('open');
+                    document.body.classList.remove('no-scroll');
                 });
             }
 
             filterButtons.forEach(btn => {
                 btn.addEventListener('click', () => {
-                    filterButtons.forEach(b => { if(b) b.classList.remove('active'); });
-                    btn.classList.add('active');
+                    filterButtons.forEach(b => { 
+                         if(b) b.classList.remove('active', 'bg-primary', 'border-primary', 'text-white'); 
+                         if(b) b.classList.add('bg-card-bg', 'border-slate-700');
+                    });
+                    btn.classList.add('active', 'bg-primary', 'border-primary', 'text-white');
+                    btn.classList.remove('bg-card-bg', 'border-slate-700');
                     const category = btn.getAttribute('data-category');
                     renderVideoGrid(category);
                 });
@@ -1544,18 +1528,18 @@
 
             if (addVideoBtn) {
                 addVideoBtn.addEventListener('click', () => {
-                    if (addModalTitle) addModalTitle.textContent = "Add New Video";
+                    if (addModalTitle) addModalTitle.textContent = "ဗီဒီယိုအသစ်ထည့်ရန်";
                     if (addVideoForm) addVideoForm.reset();
                     if (addVideoForm) addVideoForm.removeAttribute('data-editing-id');
-                    if (addVideoModal) addVideoModal.style.display = 'flex';
+                    if (addVideoModal) addVideoModal.classList.remove('hidden');
                 });
             }
 
-            if (addVideoModalCancelBtn) {
-                addVideoModalCancelBtn.addEventListener('click', () => {
-                    if (addVideoModal) addVideoModal.style.display = 'none';
+            document.querySelectorAll('#add-video-modal .cancel-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (addVideoModal) addVideoModal.classList.add('hidden');
                 });
-            }
+            });
 
             if (addVideoForm) {
                 addVideoForm.addEventListener('submit', async (e) => {
@@ -1574,7 +1558,7 @@
                     const editingId = addVideoForm.getAttribute('data-editing-id');
                     await saveVideo(videoData, editingId);
                     
-                    if (addVideoModal) addVideoModal.style.display = 'none';
+                    if (addVideoModal) addVideoModal.classList.add('hidden');
                 });
             }
             
@@ -1582,11 +1566,11 @@
                 cashoutBtn.addEventListener('click', () => {
                     if (!userData || userData.points < 5000) {
                         if (cashoutMessageModal) {
-                            cashoutMessageText.textContent = `You need 5000 points to cash out. Your current points are ${userData?.points || 0}.`;
-                            cashoutMessageModal.style.display = 'flex';
+                            cashoutMessageText.textContent = `Cash Out လုပ်ရန်အတွက် Point 5000 လိုအပ်ပါသည်။ သင်၏ လက်ရှိ point မှာ ${(userData?.points || 0).toLocaleString()} ဖြစ်ပါသည်။`;
+                            cashoutMessageModal.classList.remove('hidden');
                         }
                     } else {
-                        if (cashoutModal) cashoutModal.style.display = 'flex';
+                        if (cashoutModal) cashoutModal.classList.remove('hidden');
                         if (userData) {
                             const payoutAmount = (userData.points / 5000).toFixed(2);
                             const payoutInput = document.getElementById('payout-amount');
@@ -1596,17 +1580,17 @@
                 });
             }
             
-            if(cashoutMessageCloseBtn) {
-                cashoutMessageCloseBtn.addEventListener('click', () => {
-                     if (cashoutMessageModal) cashoutMessageModal.style.display = 'none';
-                });
-            }
+            document.querySelectorAll('#cashout-message-modal button').forEach(btn => {
+                 btn.addEventListener('click', () => {
+                      cashoutMessageModal.classList.add('hidden');
+                 });
+            });
 
-            if (cashoutCancelBtn) {
-                cashoutCancelBtn.addEventListener('click', () => {
-                    if (cashoutModal) cashoutModal.style.display = 'none';
+            document.querySelectorAll('#cashout-modal .cancel-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (cashoutModal) cashoutModal.classList.add('hidden');
                 });
-            }
+            });
             
             if (cashoutForm) {
                 cashoutForm.addEventListener('submit', async (e) => {
@@ -1615,7 +1599,7 @@
                     const channelUrl = "https://t.me/MMMMOline";
                     
                     if (!userData || userData.points <= 0) {
-                        if (cashoutModal) cashoutModal.style.display = 'none';
+                        if (cashoutModal) cashoutModal.classList.add('hidden');
                         window.open(channelUrl, '_blank');
                         return;
                     }
@@ -1625,12 +1609,12 @@
                         const pointsCashedOut = userData.points;
                         const payoutAmount = (pointsCashedOut / 5000).toFixed(2);
                         const newHistoryEntry = {
-                            date: new Date().toLocaleDateString(),
-                            description: `Cashed out ${pointsCashedOut} points`,
+                            date: new Date().toLocaleDateString('my-MM'),
+                            description: `${pointsCashedOut} အမှတ် ငွေထုတ်ထားသည်`,
                             points: -pointsCashedOut
                         };
                         const newPayoutEntry = {
-                             date: new Date().toLocaleDateString(),
+                             date: new Date().toLocaleDateString('my-MM'),
                              amount: parseFloat(payoutAmount)
                         };
 
@@ -1641,7 +1625,7 @@
                         });
 
                         console.log('Cash out request submitted and points reset.');
-                        if (cashoutModal) cashoutModal.style.display = 'none';
+                        if (cashoutModal) cashoutModal.classList.add('hidden');
                         window.open(channelUrl, '_blank');
                     } catch (error) {
                         console.error("Error during cash out:", error);
@@ -1665,13 +1649,13 @@
                                   await signInWithCustomToken(auth, initialAuthToken);
                              } catch(e) {
                                   console.error("Error signing in with custom token:", e);
-                                  if (loginPage) loginPage.classList.remove('hidden');
-                                  if (appContainer) appContainer.classList.add('hidden');
+                                  if (loginPage) loginPage.style.display = 'flex';
+                                  if (appContainer) appContainer.style.display = 'none';
                                   hideLoading();
                              }
                          } else {
-                              if (loginPage) loginPage.classList.remove('hidden');
-                              if (appContainer) appContainer.classList.add('hidden');
+                              if (loginPage) loginPage.style.display = 'flex';
+                              if (appContainer) appContainer.style.display = 'none';
                               hideLoading();
                          }
                     } else {
@@ -1681,8 +1665,8 @@
                     }
                 } else {
                     console.log("No user is signed in. Showing login page.");
-                    if (loginPage) loginPage.classList.remove('hidden');
-                    if (appContainer) appContainer.classList.add('hidden');
+                    if (loginPage) loginPage.style.display = 'flex';
+                    if (appContainer) appContainer.style.display = 'none';
                     hideLoading();
                 }
             });
