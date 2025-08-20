@@ -3,8 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- SEO Meta Tags -->
+    <meta name="keywords" content="Ping Rewards, ဗီဒီယိုကြည့်ပြီး ငွေရှာ, အွန်လိုင်းအလုပ်, ငွေထုတ်, အွန်လိုင်းဝင်ငွေ, online money, watch and earn, online jobs, rewards">
+    <meta name="description" content="Ping Rewards တွင် ဗီဒီယိုများကြည့်ရှုခြင်းဖြင့် အမှတ်များစုဆောင်းပြီး ငွေသားထုတ်ယူလိုက်ပါ။ အွန်လိုင်းမှ အလွယ်တကူ ငွေရှာပါ။">
     <!-- NAMO TASSA BHAGAVATO ARAHATO SAMMA SAMBUDDHASSA -->
     <title>Ping Rewards</title>
+    <!-- Favicon - P logo as requested -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%236366f1' d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14h-2V8h2a3 3 0 010 6z'/></svg>" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -536,7 +541,7 @@
                     </div>
                     <div class="flex justify-end gap-2 pt-4">
                         <button type="button" class="cancel-btn px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg text-white font-semibold transition-colors duration-200">Cancel</button>
-                        <button type="submit" class="save-btn px-4 py-2 bg-primary hover:bg-indigo-600 rounded-lg text-white font-semibold transition-colors duration-200">Save</button>
+                        <button type="submit" class="save-btn px-4 py-2 bg-primary hover:bg-indigo-600 rounded-lg text-white font-semibold transition-colors duration-200" id="cashout-submit-btn">Submit Request</button>
                     </div>
                 </form>
             </div>
@@ -825,7 +830,7 @@
 
                          // We filter the array to remove the item
                          const updatedHistory = userData.pointsHistory.filter(item => 
-                            !(item.date === itemToRemove.date && item.description === itemToRemove.description && item.points === itemToRemove.points)
+                            JSON.stringify(item) !== JSON.stringify(itemToRemove)
                          );
 
                          await updateDoc(userDocRef, {
@@ -864,7 +869,7 @@
                          
                          // Filter out the item to be removed
                          const updatedHistory = userData.payoutHistory.filter(item => 
-                            !(item.date === itemToRemove.date && item.amount === itemToRemove.amount)
+                            JSON.stringify(item) !== JSON.stringify(itemToRemove)
                          );
 
                          await updateDoc(userDocRef, {
@@ -1276,9 +1281,12 @@
             
             function renderUserHistoryTables(user) {
                 if (!userHistoryTableBody || !userCashoutHistoryTableBody) return;
+                
+                // Clear existing content to prevent duplicates
+                userHistoryTableBody.innerHTML = '';
+                userCashoutHistoryTableBody.innerHTML = '';
 
                 // Render Points History
-                userHistoryTableBody.innerHTML = '';
                 const pointsHistory = user.pointsHistory || [];
                 if (pointsHistory.length > 0) {
                     pointsHistory.forEach((item, index) => {
@@ -1299,7 +1307,6 @@
                 }
 
                 // Render Cash Out History
-                userCashoutHistoryTableBody.innerHTML = '';
                 const cashoutHistory = user.payoutHistory || [];
                 if (cashoutHistory.length > 0) {
                     cashoutHistory.forEach((item, index) => {
@@ -1410,15 +1417,11 @@
                 if (userPointsDisplay) userPointsDisplay.textContent = `${userData.points.toLocaleString()} PTS`;
                 if (payoutAmountInput) payoutAmountInput.value = (userData.points / 5000).toFixed(2);
                 
+                // Cashout button is always enabled, but only triggers the modal
                 if (cashoutBtn) {
-                     cashoutBtn.disabled = userData.points < 5000;
-                     if (userData.points < 5000) {
-                        cashoutBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                        cashoutBtn.classList.remove('hover:bg-indigo-600');
-                     } else {
-                        cashoutBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                        cashoutBtn.classList.add('hover:bg-indigo-600');
-                     }
+                     cashoutBtn.disabled = false;
+                     cashoutBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                     cashoutBtn.classList.add('hover:bg-indigo-600');
                 }
             }
 
@@ -1503,7 +1506,7 @@
                 if (deleteConfirmModal) {
                     deleteConfirmModal.classList.remove('hidden');
                     const oldConfirmBtn = deleteConfirmBtn.cloneNode(true);
-                    deleteConfirmBtn.parentNode.replaceChild(oldConfirmBtn, deleteConfirmBtn);
+                    deleteConfirmBtn.parentNode.replaceChild(oldBtn, deleteConfirmBtn);
                     const newConfirmBtn = document.getElementById('confirm-delete-btn');
                     newConfirmBtn.addEventListener('click', async () => {
                         deleteConfirmModal.classList.add('hidden');
@@ -1743,17 +1746,30 @@
             
             if (cashoutBtn) {
                 cashoutBtn.addEventListener('click', () => {
+                    // Always show the modal when the cashout button is clicked
+                    if (cashoutModal) cashoutModal.classList.remove('hidden');
+                    
+                    // Check if user has enough points to cash out and update the UI accordingly inside the modal
                     if (!userData || userData.points < 5000) {
                         if (cashoutMessageModal) {
                             cashoutMessageText.textContent = `You need 5000 points to cash out. Your current points are ${(userData?.points || 0).toLocaleString()}.`;
                             cashoutMessageModal.classList.remove('hidden');
                         }
+                        if(document.getElementById('cashout-submit-btn')) {
+                            document.getElementById('cashout-submit-btn').disabled = true;
+                            document.getElementById('cashout-submit-btn').classList.add('opacity-50', 'cursor-not-allowed');
+                            document.getElementById('cashout-submit-btn').classList.remove('hover:bg-indigo-600');
+                        }
                     } else {
-                        if (cashoutModal) cashoutModal.classList.remove('hidden');
                         if (userData) {
                             const payoutAmount = (userData.points / 5000).toFixed(2);
                             const payoutInput = document.getElementById('payout-amount');
                             if (payoutInput) payoutInput.value = payoutAmount;
+                        }
+                        if(document.getElementById('cashout-submit-btn')) {
+                            document.getElementById('cashout-submit-btn').disabled = false;
+                            document.getElementById('cashout-submit-btn').classList.remove('opacity-50', 'cursor-not-allowed');
+                            document.getElementById('cashout-submit-btn').classList.add('hover:bg-indigo-600');
                         }
                     }
                 });
