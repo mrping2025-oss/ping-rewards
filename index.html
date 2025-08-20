@@ -546,6 +546,19 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal for Showing Points Earned (New) -->
+    <div id="points-earned-modal" class="modal-overlay fixed inset-0 flex justify-center items-center z-[1000] hidden">
+        <div class="modal-content bg-card-bg p-8 rounded-xl w-11/12 max-w-lg shadow-2xl border border-slate-700 text-center">
+            <h3 class="text-3xl font-bold text-accent-green mb-4">အမှတ်ရရှိပါပြီ!</h3>
+            <p class="text-lg text-muted-text" id="points-earned-text"></p>
+            <div class="mt-6">
+                <button type="button" class="px-6 py-3 bg-primary hover:bg-indigo-600 rounded-lg text-white font-semibold transition-colors duration-200" id="points-earned-close-btn">
+                    ဆက်ကြည့်ရန်
+                </button>
+            </div>
+        </div>
+    </div>
     
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -571,6 +584,7 @@
             
             let userId = null;
             let isAuthReady = false;
+            let hasPointsBeenAwarded = false;
 
             const loginPage = document.getElementById('login-page');
             const appContainer = document.getElementById('app-container');
@@ -630,6 +644,10 @@
             
             const cashoutMessageModal = document.getElementById('cashout-message-modal');
             const cashoutMessageText = document.getElementById('cashout-message-text');
+
+            const pointsEarnedModal = document.getElementById('points-earned-modal');
+            const pointsEarnedText = document.getElementById('points-earned-text');
+            const pointsEarnedCloseBtn = document.getElementById('points-earned-close-btn');
             
             // New element for coin animation
             const coinOrigin = document.getElementById('coin-origin');
@@ -788,7 +806,7 @@
 
             // Updated function to track watched videos
             async function updatePointsInFirestore(pointsToAdd, description, videoId) {
-                if (!userData || !userId) return;
+                if (!userData || !userId || hasPointsBeenAwarded) return;
                 showLoading();
                 try {
                     const userDocRef = doc(db, `/artifacts/${appId}/users/${userId}`);
@@ -804,6 +822,7 @@
                         pointsHistory: newHistory,
                         watchedVideos: arrayUnion(videoId) // Add the video ID to the watched list
                     });
+                    hasPointsBeenAwarded = true; // Set the flag to true after points are awarded
                     console.log("Points and history updated in Firestore.");
                 } catch (e) {
                     console.error("Error updating points:", e);
@@ -872,6 +891,19 @@
                     loadingOverlay.style.opacity = '0';
                     setTimeout(() => loadingOverlay.style.display = 'none', 300);
                 }
+            }
+            
+            function showPointsEarnedModal(points) {
+                if (pointsEarnedModal && pointsEarnedText) {
+                    pointsEarnedText.textContent = `သင်ဗီဒီယိုကြည့်ရှုမှုအတွက် အမှတ် ${points} မှတ် ရရှိခဲ့ပါသည်။`;
+                    pointsEarnedModal.classList.remove('hidden');
+                }
+            }
+            
+            function hidePointsEarnedModal() {
+                 if (pointsEarnedModal) {
+                     pointsEarnedModal.classList.add('hidden');
+                 }
             }
             
             async function fetchAdminDashboardData() {
@@ -1294,40 +1326,34 @@
                             if (videoPlayerDescription) videoPlayerDescription.textContent = video.description;
                             showView('video-player-view');
                             if (summaryOutput) summaryOutput.innerHTML = ''; // Clear previous summary
-
-                            let pointsEarnedInSession = false;
-                            clearTimeout(window.videoWatchTimer);
-                            window.videoWatchTimer = setTimeout(() => {
-                                pointsEarnedInSession = true;
-                                console.log(`ဗီဒီယိုကြည့်ချိန်ပြည့်ပါပြီ။ အမှတ်ရရှိရန် 'ဗီဒီယိုများသို့ ပြန်သွားရန်' ကိုနှိပ်ပါ`);
-                                window.currentWatchedVideoId = video.id; // Store ID for summary button
-                            }, video.watchDuration * 1000);
                             
-                            if(videoPlayerBackBtn) {
-                                videoPlayerBackBtn.onclick = async () => {
-                                    clearTimeout(window.videoWatchTimer);
-                                    if (videoIframe) videoIframe.src = '';
-                                    if (pointsEarnedInSession) {
-                                        // Use the coinOrigin div as the starting point for the animation
-                                        if (coinOrigin) {
-                                            const endElement = document.getElementById('user-points-display');
-                                            animateCoins(coinOrigin, endElement, video.points);
-                                            // Delay point update to coincide with the end of the animation
-                                            setTimeout(async () => {
-                                                await updatePointsInFirestore(video.points, `Watched "${video.title}"`, video.id);
-                                            }, 1000); // Match animation duration
-                                        } else {
+                            hasPointsBeenAwarded = false; // Reset the flag for the new video
+                            clearTimeout(window.videoWatchTimer);
+                            window.videoWatchTimer = setTimeout(async () => {
+                                // Trigger the animation and point update automatically
+                                if (!hasPointsBeenAwarded) {
+                                    if (coinOrigin) {
+                                        const endElement = document.getElementById('user-points-display');
+                                        animateCoins(coinOrigin, endElement, video.points);
+                                        setTimeout(async () => {
                                             await updatePointsInFirestore(video.points, `Watched "${video.title}"`, video.id);
-                                        }
-                                        console.log("Points updated via Firebase.");
+                                            showPointsEarnedModal(video.points);
+                                        }, 1000);
                                     } else {
-                                        console.log(`You did not watch the video for the required duration. No points were awarded.`);
+                                        await updatePointsInFirestore(video.points, `Watched "${video.title}"`, video.id);
+                                        showPointsEarnedModal(video.points);
                                     }
-                                    showView('watch-videos-view');
-                                };
-                            }
+                                    console.log("Points updated via Firebase.");
+                                }
+                            }, video.watchDuration * 1000);
                         }
                     });
+                });
+            }
+            
+            if (pointsEarnedCloseBtn) {
+                pointsEarnedCloseBtn.addEventListener('click', () => {
+                    hidePointsEarnedModal();
                 });
             }
             
@@ -1693,6 +1719,13 @@
                     hideLoading();
                 }
             });
+            
+            if (videoPlayerBackBtn) {
+                 videoPlayerBackBtn.onclick = () => {
+                     if (videoIframe) videoIframe.src = '';
+                     showView('watch-videos-view');
+                 };
+            }
 
             if (typeof __initial_auth_token === 'undefined') {
                  signInAnonymously(auth);
