@@ -122,7 +122,7 @@
         <div id="sidebar" class="sidebar fixed md:relative z-[100] md:z-0 top-0 left-0 w-64 h-full bg-card-bg shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out md:translate-x-0">
             <div class="p-6 pb-4 border-b border-slate-700 flex items-center">
                 <!-- New Logo SVG: A bold 'P' in a circle -->
-                <svg class="w-12 h-12 fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <svg class="w-12 h-12 fill-indigo-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14h-2V8h2a3 3 0 010 6z"/>
                 </svg>
                 <span class="text-xl font-bold ml-2">Ping Rewards</span>
@@ -475,9 +475,9 @@
 
                 <!-- Cash Out History Section -->
                 <h4 class="text-lg font-semibold mt-6 mb-2">Cash Out History</h4>
-                <div id="user-cashout-history-content" class="overflow-x-auto rounded-lg border border-slate-700">
+                <div id="user-cashout-history-content" class="overflow-y-auto max-h-[200px] rounded-lg border border-slate-700">
                     <table class="w-full text-left table-auto">
-                        <thead class="bg-slate-700 text-slate-400 uppercase text-xs">
+                        <thead class="bg-slate-700 text-slate-400 uppercase text-xs sticky top-0">
                             <tr>
                                 <th class="p-4 rounded-tl-lg">Date</th>
                                 <th class="p-4 rounded-tr-lg">Amount ($)</th>
@@ -489,8 +489,8 @@
                     </table>
                 </div>
                 
-                <div class="flex justify-end gap-2 mt-6">
-                    <button type="button" class="px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg text-white font-semibold transition-colors duration-200" id="user-history-close-btn">Close</button>
+                <div class="flex justify-end mt-6">
+                    <button type="button" class="px-6 py-3 bg-red-600 hover:bg-red-500 rounded-lg text-white font-semibold transition-colors duration-200" id="user-history-close-btn">Close</button>
                 </div>
             </div>
         </div>
@@ -808,37 +808,32 @@
             
             async function deletePointsHistoryItem(targetUserId, historyItem) {
                 if (!targetUserId || !historyItem) return;
-
-                // Create a temporary object to hold the data to be removed
-                const itemToRemove = {
-                    date: historyItem.date,
-                    description: historyItem.description,
-                    points: historyItem.points,
-                };
                 
                 showLoading();
                 try {
                     const userDocRef = doc(db, `/artifacts/${appId}/users/${targetUserId}`);
-                    await updateDoc(userDocRef, {
-                        pointsHistory: arrayRemove(itemToRemove)
-                    });
-
-                    // Update points after deleting the history item
                     const userDocSnap = await getDoc(userDocRef);
                     if (userDocSnap.exists()) {
-                         const updatedUser = userDocSnap.data();
+                         const userData = userDocSnap.data();
+                         let newHistory = userData.pointsHistory.filter(item => 
+                            !(item.date === historyItem.date && item.description === historyItem.description && item.points === historyItem.points)
+                         );
+
+                         // Calculate the new points total
+                         let newPoints = userData.points - historyItem.points;
+                         if (newPoints < 0) newPoints = 0; // Prevent negative points
+
                          await updateDoc(userDocRef, {
-                             points: updatedUser.points - itemToRemove.points
+                            pointsHistory: newHistory,
+                            points: newPoints
                          });
-                    }
-                    console.log("Points history item deleted and points updated.");
-                    // Re-render the user history modal to reflect the changes
-                    const user = cachedUsers.find(u => u.id === targetUserId);
-                    if (user) {
-                        const updatedUserDoc = await getDoc(doc(db, `/artifacts/${appId}/users/${targetUserId}`));
-                        user.pointsHistory = updatedUserDoc.data()?.pointsHistory || [];
-                        user.points = updatedUserDoc.data()?.points || 0;
-                        renderUserHistoryTables(user);
+
+                         console.log("Points history item deleted and points updated.");
+
+                         // Re-render the user history modal to reflect the changes
+                         const updatedUserDoc = await getDoc(userDocRef);
+                         const updatedUser = { id: targetUserId, ...updatedUserDoc.data() };
+                         renderUserHistoryTables(updatedUser);
                     }
                 } catch (e) {
                     console.error("Error deleting history item:", e);
