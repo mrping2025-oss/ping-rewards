@@ -823,8 +823,13 @@
                              points: historyItem.points
                          };
 
+                         // We use arrayUnion on the remaining items to ensure the array is completely rewritten without the removed item
+                         const remainingHistory = userData.pointsHistory.filter(item => 
+                            !(item.date === historyItem.date && item.description === historyItem.description && item.points === historyItem.points)
+                         );
+
                          await updateDoc(userDocRef, {
-                            pointsHistory: arrayRemove(itemToRemove),
+                            pointsHistory: remainingHistory,
                             points: userData.points - itemToRemove.points
                          });
 
@@ -856,9 +861,14 @@
                              date: historyItem.date,
                              amount: historyItem.amount
                          };
+                         
+                         // Filter out the item to be removed
+                         const remainingHistory = userData.payoutHistory.filter(item => 
+                            !(item.date === historyItem.date && item.amount === historyItem.amount)
+                         );
 
                          await updateDoc(userDocRef, {
-                            payoutHistory: arrayRemove(itemToRemove)
+                            payoutHistory: remainingHistory
                          });
 
                          console.log("Cash out history item deleted.");
