@@ -1746,30 +1746,20 @@
             
             if (cashoutBtn) {
                 cashoutBtn.addEventListener('click', () => {
-                    // Always show the modal when the cashout button is clicked
-                    if (cashoutModal) cashoutModal.classList.remove('hidden');
-                    
-                    // Check if user has enough points to cash out and update the UI accordingly inside the modal
+                    // Check if user has enough points
                     if (!userData || userData.points < 5000) {
+                        // If not enough, show only the message modal
                         if (cashoutMessageModal) {
                             cashoutMessageText.textContent = `You need 5000 points to cash out. Your current points are ${(userData?.points || 0).toLocaleString()}.`;
                             cashoutMessageModal.classList.remove('hidden');
                         }
-                        if(document.getElementById('cashout-submit-btn')) {
-                            document.getElementById('cashout-submit-btn').disabled = true;
-                            document.getElementById('cashout-submit-btn').classList.add('opacity-50', 'cursor-not-allowed');
-                            document.getElementById('cashout-submit-btn').classList.remove('hover:bg-indigo-600');
-                        }
                     } else {
-                        if (userData) {
-                            const payoutAmount = (userData.points / 5000).toFixed(2);
-                            const payoutInput = document.getElementById('payout-amount');
-                            if (payoutInput) payoutInput.value = payoutAmount;
-                        }
-                        if(document.getElementById('cashout-submit-btn')) {
-                            document.getElementById('cashout-submit-btn').disabled = false;
-                            document.getElementById('cashout-submit-btn').classList.remove('opacity-50', 'cursor-not-allowed');
-                            document.getElementById('cashout-submit-btn').classList.add('hover:bg-indigo-600');
+                        // If enough, show only the cashout form modal
+                        if (cashoutModal) {
+                             const payoutAmount = (userData.points / 5000).toFixed(2);
+                             const payoutInput = document.getElementById('payout-amount');
+                             if (payoutInput) payoutInput.value = payoutAmount;
+                             cashoutModal.classList.remove('hidden');
                         }
                     }
                 });
