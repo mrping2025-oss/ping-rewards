@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- SEO Meta Tags -->
-    <meta name="keywords" content="Ping Rewards, ဗီဒီယိုကြည့်ပြီး ငွေရှာ, အွန်လိုင်းအလုပ်, ငွေထုတ်, အွန်လိုင်းဝင်ငွေ, online money, watch and earn, online jobs, rewards">
-    <meta name="description" content="Ping Rewards တွင် ဗီဒီယိုများကြည့်ရှုခြင်းဖြင့် အမှတ်များစုဆောင်းပြီး ငွေသားထုတ်ယူလိုက်ပါ။ အွန်လိုင်းမှ အလွယ်တကူ ငွေရှာပါ။">
+    <meta name="keywords" content="Ping Rewards, ဗီဒီယိုကြည့်ပြီး ငွေရှာ, အွန်လိုင်းအလုပ်, ငွေထုတ်, အွန်လိုင်းဝင်ငွေ, online money, watch and earn, online jobs, rewards, tasks, offers">
+    <meta name="description" content="Ping Rewards တွင် ဗီဒီယိုများကြည့်ရှုခြင်း၊ Task များလုပ်ဆောင်ခြင်းဖြင့် အမှတ်များစုဆောင်းပြီး ငွေသားထုတ်ယူလိုက်ပါ။ အွန်လိုင်းမှ အလွယ်တကူ ငွေရှာပါ။">
     <!-- NAMO TASSA BHAGAVATO ARAHATO SAMMA SAMBUDDHASSA -->
     <title>Ping Rewards</title>
     <!-- Favicon - P logo as requested -->
@@ -83,9 +83,10 @@
             background-color: rgba(0, 0, 0, 0.7);
         }
     </style>
-    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"></script>
+    <!-- Firebase SDKs -->
+    <script type="module" src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"></script>
 </head>
 <body class="bg-background text-text-color">
 
@@ -103,7 +104,7 @@
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14h-2V8h2a3 3 0 010 6z"/>
                 </svg>
                 <div class="text-2xl font-bold mt-2">Ping Rewards</div>
-                <div class="text-muted-text mt-1">Get rewarded for watching videos.</div>
+                <div class="text-muted-text mt-1">Get rewarded for simple tasks.</div>
             </div>
             <div class="bg-card-bg p-8 rounded-xl shadow-lg border border-slate-700">
                 <h2 class="text-xl font-semibold mb-6">Welcome Back</h2>
@@ -126,17 +127,24 @@
         <!-- Sidebar -->
         <div id="sidebar" class="sidebar fixed md:relative z-[100] md:z-0 top-0 left-0 w-64 h-full bg-card-bg shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out md:translate-x-0">
             <div class="p-6 pb-4 border-b border-slate-700 flex items-center">
-                <!-- New Logo SVG: A bold 'P' in a circle -->
                 <svg class="w-12 h-12 fill-indigo-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14h-2V8h2a3 3 0 010 6z"/>
                 </svg>
                 <span class="text-xl font-bold ml-2">Ping Rewards</span>
             </div>
             <ul class="flex flex-col p-4 space-y-2">
+                <!-- User Links -->
                 <li>
                     <a href="#" class="nav-link user-link flex items-center p-3 rounded-lg hover:bg-primary/20 transition-colors duration-200" data-target="user-dashboard-view">
-                        <svg class="w-6 h-6 mr-3 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 13h11v-2H3v2zm0 4h11v-2H3v2zm0-8h11V7H3v2zm13 .01V7h5v2.01h-5zM16 17h5v-2h-5v2zm0-4h5v-2h-5v2z"/></svg>
+                        <svg class="w-6 h-6 mr-3 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8h5z"/></svg>
                         Dashboard
+                    </a>
+                </li>
+                <!-- NEW: Earn More / Tasks Link -->
+                <li>
+                    <a href="#" class="nav-link user-link flex items-center p-3 rounded-lg hover:bg-primary/20 transition-colors duration-200" data-target="tasks-view">
+                        <svg class="w-6 h-6 mr-3 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+                        Earn More
                     </a>
                 </li>
                 <li>
@@ -152,8 +160,8 @@
                     </a>
                 </li>
                 
+                <!-- Admin Links -->
                 <hr class="my-4 border-slate-700 admin-link">
-
                 <li>
                     <a href="#" class="nav-link admin-link flex items-center p-3 rounded-lg hover:bg-primary/20 transition-colors duration-200" data-target="admin-dashboard-view">
                         <svg class="w-6 h-6 mr-3 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 13h11v-2H3v2zm0 4h11v-2H3v2zm0-8h11V7H3v2zm13 .01V7h5v2.01h-5zM16 17h5v-2h-5v2zm0-4h5v-2h-5v2z"/></svg>
@@ -223,6 +231,10 @@
                 <div class="quick-actions mb-6">
                     <h2 class="text-xl font-semibold mb-4">Quick Actions</h2>
                     <div class="flex flex-wrap gap-4">
+                        <!-- NEW: Quick Action to Earn More -->
+                        <a href="#" class="nav-link user-link px-6 py-3 bg-card-bg border border-slate-700 rounded-lg text-text-color hover:bg-slate-700 transition-colors duration-200" data-target="tasks-view">
+                            Earn More Points
+                        </a>
                         <a href="#" class="nav-link user-link px-6 py-3 bg-card-bg border border-slate-700 rounded-lg text-text-color hover:bg-slate-700 transition-colors duration-200" data-target="watch-videos-view">
                             Watch Videos
                         </a>
@@ -241,6 +253,43 @@
                     <button class="cashout-btn mt-4 md:mt-0 px-6 py-3 bg-primary hover:bg-indigo-600 text-white font-semibold rounded-lg transition-colors duration-300 whitespace-nowrap" id="cashout-button">
                         Cash Out
                     </button>
+                </div>
+            </div>
+
+            <!-- NEW: Tasks View -->
+            <div id="tasks-view" class="content-view" style="display: none;">
+                <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 mb-6">
+                    <h2 class="text-xl font-semibold mb-2">Earn More Points with Offers</h2>
+                    <p class="text-muted-text">Complete simple tasks from our partners to earn a large number of points. This is the fastest way to reach your cash-out goal!</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="offerwall-grid">
+                    <!-- Offer Wall Card 1 (Example) -->
+                    <div class="offer-card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 flex flex-col text-center items-center">
+                        <img src="https://placehold.co/100x40/1e293b/ffffff?text=CPALead" alt="CPALead Logo" class="h-10 mb-4">
+                        <h3 class="text-lg font-semibold mb-2">CPALead Offers</h3>
+                        <p class="text-muted-text mb-4 flex-grow">Complete surveys, download apps, and sign up for services to earn points.</p>
+                        <button class="offerwall-btn w-full py-2 bg-primary hover:bg-indigo-600 text-white font-semibold rounded-lg transition-colors duration-300" data-provider="cpalead">
+                            Start Tasks
+                        </button>
+                    </div>
+                    <!-- Offer Wall Card 2 (Example) -->
+                    <div class="offer-card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 flex flex-col text-center items-center">
+                        <img src="https://placehold.co/100x40/1e293b/ffffff?text=OfferToro" alt="OfferToro Logo" class="h-10 mb-4">
+                        <h3 class="text-lg font-semibold mb-2">OfferToro Wall</h3>
+                        <p class="text-muted-text mb-4 flex-grow">Discover new games and apps. Get rewarded for playing and reaching new levels.</p>
+                        <button class="offerwall-btn w-full py-2 bg-primary hover:bg-indigo-600 text-white font-semibold rounded-lg transition-colors duration-300" data-provider="offertoro">
+                            Start Tasks
+                        </button>
+                    </div>
+                    <!-- Offer Wall Card 3 (Coming Soon) -->
+                    <div class="offer-card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 flex flex-col text-center items-center opacity-50">
+                        <img src="https://placehold.co/100x40/1e293b/ffffff?text=AdGem" alt="AdGem Logo" class="h-10 mb-4">
+                        <h3 class="text-lg font-semibold mb-2">AdGem Rewards</h3>
+                        <p class="text-muted-text mb-4 flex-grow">More exciting offers and tasks are coming soon to this section.</p>
+                        <button class="w-full py-2 bg-slate-600 text-white font-semibold rounded-lg cursor-not-allowed">
+                            Coming Soon
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -328,7 +377,7 @@
                     </div>
                     <div class="stat-card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 flex items-center">
                         <div class="flex-shrink-0 w-12 h-12 rounded-full bg-accent-green/20 flex items-center justify-center mr-4">
-                            <svg class="w-6 h-6 fill-accent-green" xmlns="http://www.w3.org/2d00/svg" viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4V8h16v10zm-12-7h4v2H8v-2zm-2-2v6h12V6H6z"/></svg>
+                            <svg class="w-6 h-6 fill-accent-green" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4V8h16v10zm-12-7h4v2H8v-2zm-2-2v6h12V6H6z"/></svg>
                         </div>
                         <div class="flex-grow">
                             <h3 class="text-lg font-semibold text-muted-text">Total Points Earned</h3>
@@ -449,7 +498,7 @@
                 <h3 id="delete-modal-title" class="text-xl font-semibold mb-4">Are you sure you want to delete this video?</h3>
                 <p class="text-muted-text mb-6">This action cannot be undone.</p>
                 <div class="flex justify-end gap-2">
-                    <button type="button" class="px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg text-white font-semibold transition-colors duration-200">Cancel</button>
+                    <button type="button" class="cancel-btn px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg text-white font-semibold transition-colors duration-200">Cancel</button>
                     <button type="button" class="px-4 py-2 bg-red-600 hover:bg-red-500 rounded-lg text-white font-semibold transition-colors duration-200" id="confirm-delete-btn">Delete</button>
                 </div>
             </div>
@@ -463,19 +512,19 @@
                 <!-- Points History Section -->
                 <h4 class="text-lg font-semibold mt-4 mb-2">Points History</h4>
                 <div id="user-points-history-content" class="overflow-y-auto max-h-[400px] rounded-lg border border-slate-700">
-                     <table class="w-full text-left table-auto">
-                         <thead class="bg-slate-700 text-slate-400 uppercase text-xs sticky top-0">
-                             <tr>
-                                 <th class="p-4 rounded-tl-lg">Date</th>
-                                 <th class="p-4">Description</th>
-                                 <th class="p-4">Points</th>
-                                 <th class="p-4 rounded-tr-lg">Actions</th>
-                             </tr>
-                         </thead>
-                         <tbody id="user-history-table-body" class="divide-y divide-slate-700">
-                             <!-- History rows will be dynamically rendered here by JS -->
-                         </tbody>
-                     </table>
+                       <table class="w-full text-left table-auto">
+                           <thead class="bg-slate-700 text-slate-400 uppercase text-xs sticky top-0">
+                               <tr>
+                                   <th class="p-4 rounded-tl-lg">Date</th>
+                                   <th class="p-4">Description</th>
+                                   <th class="p-4">Points</th>
+                                   <th class="p-4 rounded-tr-lg">Actions</th>
+                               </tr>
+                           </thead>
+                           <tbody id="user-history-table-body" class="divide-y divide-slate-700">
+                               <!-- History rows will be dynamically rendered here by JS -->
+                           </tbody>
+                       </table>
                 </div>
 
                 <!-- Cash Out History Section -->
@@ -541,7 +590,7 @@
                     </div>
                     <div class="flex justify-end gap-2 pt-4">
                         <button type="button" class="cancel-btn px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg text-white font-semibold transition-colors duration-200">Cancel</button>
-                        <button type="submit" class="save-btn px-4 py-2 bg-primary hover:bg-indigo-600 rounded-lg text-white font-semibold transition-colors duration-200" id="cashout-submit-btn">Submit Request</button>
+                        <button type="submit" class="save-btn px-4 py-2 bg-primary hover:bg-indigo-600 rounded-lg text-white font-semibold transition-colors duration-200">Save Video</button>
                     </div>
                 </form>
             </div>
@@ -577,7 +626,6 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut, signInAnonymously, GoogleAuthProvider, signInWithPopup, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        // Import arrayUnion for updating arrays in Firestore
         import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, collection, query, where, addDoc, getDocs, deleteDoc, arrayRemove, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
         document.addEventListener('DOMContentLoaded', async () => {
@@ -599,6 +647,7 @@
             let userId = null;
             let isAuthReady = false;
 
+            // --- DOM Element Selections ---
             const loginPage = document.getElementById('login-page');
             const appContainer = document.getElementById('app-container');
             const googleSignInBtn = document.getElementById('google-sign-in-btn');
@@ -658,6 +707,9 @@
             
             const cashoutMessageModal = document.getElementById('cashout-message-modal');
             const cashoutMessageText = document.getElementById('cashout-message-text');
+
+            // NEW: Offer Wall Buttons
+            const offerwallButtons = document.querySelectorAll('.offerwall-btn');
             
             let videos = [];
             let currentUser = null;
@@ -667,7 +719,7 @@
 
             const adminEmail = 'mr.ping2025@gmail.com';
             
-            // Utility function to extract YouTube video ID from a URL
+            // --- Utility Functions ---
             function getYouTubeId(url) {
                 try {
                     const urlObj = new URL(url);
@@ -682,7 +734,6 @@
                 return null;
             }
 
-            // Function to get a YouTube thumbnail
             function getYouTubeThumbnail(videoId) {
                 if (videoId) {
                     return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
@@ -690,32 +741,47 @@
                 return 'https://placehold.co/400x225/1f3148/ffffff?text=Video';
             }
             
+            function showLoading() {
+                if (loadingOverlay) {
+                    loadingOverlay.style.display = 'flex';
+                    setTimeout(() => loadingOverlay.style.opacity = '1', 10);
+                }
+            }
+
+            function hideLoading() {
+                if (loadingOverlay) {
+                    loadingOverlay.style.opacity = '0';
+                    setTimeout(() => loadingOverlay.style.display = 'none', 300);
+                }
+            }
+
+            // --- Firebase Functions ---
             async function seedInitialData(user) {
                 try {
                     if (!user) {
-                         console.log("No authenticated user to seed data for. Skipping user seed.");
-                         return;
+                        console.log("No authenticated user to seed data for. Skipping user seed.");
+                        return;
                     }
                     const userId = user.uid;
                     const userDocRef = doc(db, `/artifacts/${appId}/users/${userId}`);
                     const userDocSnap = await getDoc(userDocRef);
                     if (!userDocSnap.exists()) {
-                         let userRole = 'user';
-                         let userName = user.displayName || (user.email ? user.email.split('@')[0] : 'Ping User');
-                         if (user.email === adminEmail) {
-                             userRole = 'admin';
-                             userName = 'Mr. Ping';
-                         }
-                         await setDoc(userDocRef, {
+                        let userRole = 'user';
+                        let userName = user.displayName || (user.email ? user.email.split('@')[0] : 'Ping User');
+                        if (user.email === adminEmail) {
+                            userRole = 'admin';
+                            userName = 'Mr. Ping';
+                        }
+                        await setDoc(userDocRef, {
                             name: userName,
                             email: user.email || '',
                             role: userRole,
                             points: 0,
                             pointsHistory: [],
                             payoutHistory: [],
-                            watchedVideos: [] // New field to track watched videos
-                         });
-                         console.log("Seeding initial user data.");
+                            watchedVideos: []
+                        });
+                        console.log("Seeding initial user data.");
                     }
 
                     if (user.email === adminEmail) {
@@ -725,9 +791,6 @@
                             const initialVideos = [
                                 { id: 'vid1', title: "The Beauty of Nature", category: "Nature", points: 12, watchDuration: 10, description: "A breathtaking journey through mountains and forests.", videoUrl: "https://www.youtube.com/embed/g2J03u13kXg" },
                                 { id: 'vid2', title: "Learn React in 30 Seconds", category: "Education", points: 25, watchDuration: 15, description: "A quick overview of React hooks.", videoUrl: "https://www.youtube.com/embed/Ke90Tje7VS0" },
-                                { id: 'vid3', title: "City Life at Night", category: "Travel", points: 75, watchDuration: 20, description: "Explore the vibrant life of a metropolis after dark.", videoUrl: "https://www.youtube.com/embed/5a-H_gqM_9E" },
-                                { id: 'vid4', title: "Cooking a Perfect Steak", category: "Food", points: 60, watchDuration: 10, description: "A step by step guide to cooking steak.", videoUrl: "https://www.youtube.com/embed/H0d82C7YjA8" },
-                                { id: 'vid5', title: "Gaming Highlights of the Week", category: "Gaming", points: 40, watchDuration: 10, description: "The best moments in esports.", videoUrl: "https://www.youtube.com/embed/d-Yq36_9tQ0" }
                             ];
                             for (const video of initialVideos) {
                                 await setDoc(doc(videosCollectionRef, video.id), {
@@ -760,7 +823,7 @@
                         updateUI(currentUser.role);
                         console.log("User data updated:", userData);
                     } else {
-                        console.log("User data not found for a logged-in user. This should not happen if `seedInitialData` ran correctly.");
+                        console.log("User data not found for a logged-in user.");
                         hideLoading();
                     }
                 }, (error) => {
@@ -820,30 +883,27 @@
                     const userDocRef = doc(db, `/artifacts/${appId}/users/${targetUserId}`);
                     const userDocSnap = await getDoc(userDocRef);
                     if (userDocSnap.exists()) {
-                         const userData = userDocSnap.data();
-                         // Find the exact item to remove from the array
-                         const itemToRemove = {
-                             date: historyItem.date,
-                             description: historyItem.description,
-                             points: historyItem.points
-                         };
+                        const userData = userDocSnap.data();
+                        const itemToRemove = {
+                            date: historyItem.date,
+                            description: historyItem.description,
+                            points: historyItem.points
+                        };
 
-                         // We filter the array to remove the item
-                         const updatedHistory = userData.pointsHistory.filter(item => 
+                        const updatedHistory = userData.pointsHistory.filter(item => 
                             JSON.stringify(item) !== JSON.stringify(itemToRemove)
-                         );
+                        );
 
-                         await updateDoc(userDocRef, {
+                        await updateDoc(userDocRef, {
                             pointsHistory: updatedHistory,
                             points: userData.points - itemToRemove.points
-                         });
+                        });
 
-                         console.log("Points history item deleted and points updated.");
-                         
-                         // Re-render the user history modal to reflect the changes
-                         const updatedUserDoc = await getDoc(userDocRef);
-                         const updatedUser = { id: targetUserId, ...updatedUserDoc.data() };
-                         renderUserHistoryTables(updatedUser);
+                        console.log("Points history item deleted and points updated.");
+                        
+                        const updatedUserDoc = await getDoc(userDocRef);
+                        const updatedUser = { id: targetUserId, ...updatedUserDoc.data() };
+                        renderUserHistoryTables(updatedUser);
                     }
                 } catch (e) {
                     console.error("Error deleting points history item:", e);
@@ -860,28 +920,25 @@
                     const userDocRef = doc(db, `/artifacts/${appId}/users/${targetUserId}`);
                     const userDocSnap = await getDoc(userDocRef);
                     if (userDocSnap.exists()) {
-                         const userData = userDocSnap.data();
-                         // Find the exact item to remove from the array
-                         const itemToRemove = {
-                             date: historyItem.date,
-                             amount: historyItem.amount
-                         };
-                         
-                         // Filter out the item to be removed
-                         const updatedHistory = userData.payoutHistory.filter(item => 
+                        const userData = userDocSnap.data();
+                        const itemToRemove = {
+                            date: historyItem.date,
+                            amount: historyItem.amount
+                        };
+                        
+                        const updatedHistory = userData.payoutHistory.filter(item => 
                             JSON.stringify(item) !== JSON.stringify(itemToRemove)
-                         );
+                        );
 
-                         await updateDoc(userDocRef, {
+                        await updateDoc(userDocRef, {
                             payoutHistory: updatedHistory
-                         });
+                        });
 
-                         console.log("Cash out history item deleted.");
-                         
-                         // Re-render the user history modal to reflect the changes
-                         const updatedUserDoc = await getDoc(userDocRef);
-                         const updatedUser = { id: targetUserId, ...updatedUserDoc.data() };
-                         renderUserHistoryTables(updatedUser);
+                        console.log("Cash out history item deleted.");
+                        
+                        const updatedUserDoc = await getDoc(userDocRef);
+                        const updatedUser = { id: targetUserId, ...updatedUserDoc.data() };
+                        renderUserHistoryTables(updatedUser);
                     }
                 } catch (e) {
                     console.error("Error deleting cash out history item:", e);
@@ -890,7 +947,6 @@
                 }
             }
 
-            // Updated function to track watched videos
             async function updatePointsInFirestore(pointsToAdd, description, videoId) {
                 if (!userData || !userId) return;
                 showLoading();
@@ -906,7 +962,7 @@
                     await updateDoc(userDocRef, {
                         points: newPoints,
                         pointsHistory: newHistory,
-                        watchedVideos: arrayUnion(videoId) // Add the video ID to the watched list
+                        watchedVideos: arrayUnion(videoId)
                     });
                     console.log("Points and history updated in Firestore.");
                 } catch (e) {
@@ -937,9 +993,9 @@
                 renderManageVideosTable();
                 const activeFilterBtn = document.querySelector('.filter-btn.active');
                 if (activeFilterBtn) {
-                   renderVideoGrid(activeFilterBtn.getAttribute('data-category'));
+                    renderVideoGrid(activeFilterBtn.getAttribute('data-category'));
                 } else {
-                   renderVideoGrid('all');
+                    renderVideoGrid('all');
                 }
             }
 
@@ -958,30 +1014,15 @@
                 renderManageVideosTable();
                 const activeFilterBtn = document.querySelector('.filter-btn.active');
                 if (activeFilterBtn) {
-                     renderVideoGrid(activeFilterBtn.getAttribute('data-category'));
+                        renderVideoGrid(activeFilterBtn.getAttribute('data-category'));
                 } else {
                     renderVideoGrid('all');
-                }
-            }
-
-            function showLoading() {
-                if (loadingOverlay) {
-                    loadingOverlay.style.display = 'flex';
-                    setTimeout(() => loadingOverlay.style.opacity = '1', 10);
-                }
-            }
-
-            function hideLoading() {
-                if (loadingOverlay) {
-                    loadingOverlay.style.opacity = '0';
-                    setTimeout(() => loadingOverlay.style.display = 'none', 300);
                 }
             }
             
             async function fetchAdminDashboardData() {
                 showLoading();
                 try {
-                    // Fetch total users, points, and payouts using onSnapshot for real-time updates
                     const usersCollectionRef = collection(db, `/artifacts/${appId}/users`);
                     onSnapshot(usersCollectionRef, (usersSnapshot) => {
                         const totalUsers = usersSnapshot.docs.length;
@@ -1005,7 +1046,6 @@
                         console.error("Error fetching admin users data:", error);
                     });
 
-                    // Fetch total videos separately
                     const videosCollectionRef = collection(db, `/artifacts/${appId}/public/data/videos`);
                     onSnapshot(videosCollectionRef, (videosSnapshot) => {
                         const totalVideos = videosSnapshot.docs.length;
@@ -1020,6 +1060,7 @@
                 }
             }
             
+            // --- UI Rendering Functions ---
             function updateUI(role) {
                 if (!isAuthReady || !currentUser) return;
                 
@@ -1044,7 +1085,7 @@
                     if (sidebarProfile) sidebarProfile.innerHTML = getUserProfileHTML();
                     showView('admin-dashboard-view');
                     fetchVideos().then(renderManageVideosTable);
-                    fetchAdminDashboardData(); // Call new function to fetch admin data dynamically
+                    fetchAdminDashboardData();
                 }
                 attachLogoutListeners(); 
             }
@@ -1056,7 +1097,7 @@
                 return `
                     <div class="flex items-center">
                         <div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center mr-4 font-semibold text-primary">
-                             ${profileText}
+                            ${profileText}
                         </div>
                         <div class="flex-grow">
                             <div class="text-white font-semibold">${nameText}</div>
@@ -1074,13 +1115,13 @@
                     <div class="flex items-center space-x-4">
                         <div class="flex flex-col items-end">
                             <span id="user-points-display" class="font-bold text-lg">${(userData?.points || 0).toLocaleString()} PTS</span>
-                            <span class="text-sm text-muted-text">$${(userData?.points / 5000).toFixed(2)}</span>
+                            <span class="text-sm text-muted-text">$${((userData?.points || 0) / 5000).toFixed(2)}</span>
                         </div>
                         <div class="flex items-center space-x-2">
-                             <div class="text-right">
+                            <div class="text-right">
                                 <span class="block font-semibold">${nameText}</span>
                                 <span class="block text-xs text-muted-text">${roleText}</span>
-                             </div>
+                            </div>
                             <img src="https://placehold.co/32x32/6366f1/ffffff?text=${profileText}" alt="${nameText}" class="w-8 h-8 rounded-full border border-primary">
                         </div>
                         <button class="logout-btn p-2 rounded-full hover:bg-slate-700 transition-colors duration-200">
@@ -1091,47 +1132,22 @@
             }
             
             function getAdminHeaderHTML() {
-                 const nameText = currentUser?.name || 'Unknown';
-                 const profileText = nameText.split(' ').map(n => n[0]).join('');
-                 return `
+                const nameText = currentUser?.name || 'Unknown';
+                const profileText = nameText.split(' ').map(n => n[0]).join('');
+                return `
                     <div class="flex items-center space-x-4">
                         <div class="flex items-center space-x-2">
-                             <div class="text-right">
+                            <div class="text-right">
                                 <span class="block font-semibold">${nameText}</span>
                                 <span class="block text-xs text-muted-text">Admin</span>
-                             </div>
+                            </div>
                             <img src="https://placehold.co/32x32/6366f1/ffffff?text=${profileText}" alt="${nameText}" class="w-8 h-8 rounded-full border border-primary">
                         </div>
                         <button class="logout-btn p-2 rounded-full hover:bg-slate-700 transition-colors duration-200">
                             <svg class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
                         </button>
                     </div>
-                 `;
-            }
-
-            function attachLogoutListeners() {
-                const logoutButtons = document.querySelectorAll('.logout-btn');
-                if (logoutButtons) {
-                    logoutButtons.forEach(btn => {
-                        const oldBtn = btn.cloneNode(true);
-                        btn.parentNode.replaceChild(oldBtn, btn);
-                    });
-                    const newLogoutButtons = document.querySelectorAll('.logout-btn');
-                    newLogoutButtons.forEach(btn => {
-                        btn.addEventListener('click', async () => {
-                            try {
-                                await signOut(auth);
-                                if (loginPage) loginPage.style.display = 'flex';
-                                if (appContainer) appContainer.style.display = 'none';
-                                currentUser = null;
-                                userData = null;
-                                console.log("User signed out.");
-                            } catch (error) {
-                                console.error("Error signing out:", error);
-                            }
-                        });
-                    });
-                }
+                `;
             }
 
             function showView(targetId) {
@@ -1155,12 +1171,13 @@
                 if (!titleElement) return;
 
                 const menuToggle = `<button id="menu-toggle" class="md:hidden p-2 -ml-2 rounded-md hover:bg-card-bg transition-colors duration-200">
-                                      <svg class="w-6 h-6 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+                                        <svg class="w-6 h-6 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
                                     </button>`;
                 let titleText = 'Ping Rewards';
 
                 switch (viewId) {
                     case 'user-dashboard-view': titleText = 'Dashboard'; break;
+                    case 'tasks-view': titleText = 'Earn More'; break; // NEW
                     case 'watch-videos-view': titleText = 'Watch Videos'; break;
                     case 'points-history-view': titleText = 'Points History'; break;
                     case 'admin-dashboard-view': titleText = 'Admin Dashboard'; break;
@@ -1172,11 +1189,11 @@
                 
                 const toggleBtn = document.getElementById('menu-toggle');
                 if (toggleBtn) {
-                     toggleBtn.addEventListener('click', () => {
+                    toggleBtn.addEventListener('click', () => {
                         if (sidebar) sidebar.classList.toggle('open');
                         if (backdrop) backdrop.classList.toggle('open');
                         document.body.classList.toggle('no-scroll');
-                     });
+                    });
                 }
             }
             
@@ -1188,7 +1205,6 @@
                 });
             }
 
-            // Updated function to sort videos with watched ones at the bottom
             function renderVideoGrid(category, searchQuery = '') {
                 const videoGrid = document.getElementById('video-grid');
                 if (!videoGrid) {
@@ -1197,7 +1213,6 @@
                 }
                 videoGrid.innerHTML = '';
                 
-                // Filter videos based on category and search query
                 let filteredVideos = videos;
                 if (category !== 'all') {
                     filteredVideos = filteredVideos.filter(video => video.category === category);
@@ -1211,11 +1226,10 @@
                 }
 
                 if (filteredVideos.length === 0) {
-                     videoGrid.innerHTML = `<p class="col-span-full text-center text-muted-text py-12">No videos found.</p>`;
-                     return;
+                        videoGrid.innerHTML = `<p class="col-span-full text-center text-muted-text py-12">No videos found.</p>`;
+                        return;
                 }
                 
-                // Sort videos: unwatched first, then watched
                 const watchedVideoIds = userData?.watchedVideos || [];
                 const unwatchedVideos = filteredVideos.filter(video => !watchedVideoIds.includes(video.id));
                 const watchedVideos = filteredVideos.filter(video => watchedVideoIds.includes(video.id));
@@ -1230,7 +1244,6 @@
                         thumbnailUrl = 'https://placehold.co/400x225/1f3148/ffffff?text=Video';
                     }
 
-                    // Add a class for watched videos to style them differently
                     const isWatched = watchedVideoIds.includes(video.id);
                     const watchedClass = isWatched ? 'opacity-50 grayscale' : '';
 
@@ -1255,8 +1268,8 @@
                 if (!usersTableBody) return;
                 usersTableBody.innerHTML = '';
                 if (users.length === 0) {
-                     usersTableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-muted-text">No users found.</td></tr>`;
-                     return;
+                        usersTableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-muted-text">No users found.</td></tr>`;
+                        return;
                 }
                 
                 users.forEach(user => {
@@ -1282,7 +1295,6 @@
             function renderUserHistoryTables(user) {
                 if (!userHistoryTableBody || !userCashoutHistoryTableBody) return;
                 
-                // Clear existing content to prevent duplicates
                 userHistoryTableBody.innerHTML = '';
                 userCashoutHistoryTableBody.innerHTML = '';
 
@@ -1290,17 +1302,17 @@
                 const pointsHistory = user.pointsHistory || [];
                 if (pointsHistory.length > 0) {
                     pointsHistory.forEach((item, index) => {
-                         const row = document.createElement('tr');
-                         row.className = 'hover:bg-slate-700 transition-colors duration-200';
-                         row.innerHTML = `
+                        const row = document.createElement('tr');
+                        row.className = 'hover:bg-slate-700 transition-colors duration-200';
+                        row.innerHTML = `
                             <td class="p-4">${item.date}</td>
                             <td class="p-4">${item.description}</td>
                             <td class="p-4">${item.points}</td>
                             <td class="p-4">
                                <button class="delete-points-history-btn px-3 py-1 bg-red-600 hover:bg-red-500 text-white text-xs rounded-lg transition-colors duration-200" data-history-index="${index}" data-user-id="${user.id}">Delete</button>
                             </td>
-                         `;
-                         userHistoryTableBody.appendChild(row);
+                        `;
+                        userHistoryTableBody.appendChild(row);
                     });
                 } else {
                     userHistoryTableBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-muted-text">No points history found.</td></tr>`;
@@ -1325,7 +1337,6 @@
                     userCashoutHistoryTableBody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-muted-text">No cash out history found.</td></tr>`;
                 }
                 
-                // Attach new event listeners
                 document.querySelectorAll('.delete-points-history-btn').forEach(btn => {
                     btn.addEventListener('click', async () => {
                         const historyIndex = parseInt(btn.getAttribute('data-history-index'));
@@ -1383,8 +1394,8 @@
                 }
                 pointsHistoryTableBody.innerHTML = '';
                 if (!userData || !userData.pointsHistory || userData.pointsHistory.length === 0) {
-                     pointsHistoryTableBody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-muted-text">No points history yet. Watch some videos!</td></tr>`;
-                     return;
+                        pointsHistoryTableBody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-muted-text">No points history yet. Watch some videos!</td></tr>`;
+                        return;
                 }
                 const history = userData.pointsHistory;
                 history.forEach(item => {
@@ -1417,11 +1428,10 @@
                 if (userPointsDisplay) userPointsDisplay.textContent = `${userData.points.toLocaleString()} PTS`;
                 if (payoutAmountInput) payoutAmountInput.value = (userData.points / 5000).toFixed(2);
                 
-                // Cashout button is always enabled, but only triggers the modal
                 if (cashoutBtn) {
-                     cashoutBtn.disabled = false;
-                     cashoutBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                     cashoutBtn.classList.add('hover:bg-indigo-600');
+                        cashoutBtn.disabled = false;
+                        cashoutBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                        cashoutBtn.classList.add('hover:bg-indigo-600');
                 }
             }
 
@@ -1452,6 +1462,32 @@
                 }
             }
 
+            // --- Event Listener Attachment ---
+            function attachLogoutListeners() {
+                const logoutButtons = document.querySelectorAll('.logout-btn');
+                if (logoutButtons) {
+                    logoutButtons.forEach(btn => {
+                        const oldBtn = btn.cloneNode(true);
+                        btn.parentNode.replaceChild(oldBtn, btn);
+                    });
+                    const newLogoutButtons = document.querySelectorAll('.logout-btn');
+                    newLogoutButtons.forEach(btn => {
+                        btn.addEventListener('click', async () => {
+                            try {
+                                await signOut(auth);
+                                if (loginPage) loginPage.style.display = 'flex';
+                                if (appContainer) appContainer.style.display = 'none';
+                                currentUser = null;
+                                userData = null;
+                                console.log("User signed out.");
+                            } catch (error) {
+                                console.error("Error signing out:", error);
+                            }
+                        });
+                    });
+                }
+            }
+
             async function attachVideoCardListeners() {
                 const cards = document.querySelectorAll('.video-card');
                 cards.forEach(card => {
@@ -1460,19 +1496,19 @@
                         const video = videos.find(v => v.id === videoId);
                         
                         if (video) {
-                            videoCardToAnimate = card; // Store the card element for animation later
+                            videoCardToAnimate = card;
                             if (videoIframe) videoIframe.src = video.videoUrl;
                             if (videoPlayerTitle) videoPlayerTitle.textContent = video.title;
                             if (videoPlayerDescription) videoPlayerDescription.textContent = video.description;
                             showView('video-player-view');
-                            if (summaryOutput) summaryOutput.innerHTML = ''; // Clear previous summary
+                            if (summaryOutput) summaryOutput.innerHTML = '';
 
                             let pointsEarnedInSession = false;
                             clearTimeout(window.videoWatchTimer);
                             window.videoWatchTimer = setTimeout(() => {
                                 pointsEarnedInSession = true;
                                 console.log(`Video watched for required duration. Click 'Back to Videos' to earn points.`);
-                                window.currentWatchedVideoId = video.id; // Store ID for summary button
+                                window.currentWatchedVideoId = video.id;
                             }, video.watchDuration * 1000);
                             
                             if(videoPlayerBackBtn) {
@@ -1483,7 +1519,6 @@
                                         if (videoCardToAnimate) {
                                             const endElement = document.getElementById('user-points-display');
                                             animateCoins(videoCardToAnimate, endElement, video.points);
-                                            // Pass video ID to the function
                                             setTimeout(async () => {
                                                 await updatePointsInFirestore(video.points, `Watched "${video.title}"`, video.id);
                                             }, 1000);
@@ -1506,7 +1541,7 @@
                 if (deleteConfirmModal) {
                     deleteConfirmModal.classList.remove('hidden');
                     const oldConfirmBtn = deleteConfirmBtn.cloneNode(true);
-                    deleteConfirmBtn.parentNode.replaceChild(oldBtn, deleteConfirmBtn);
+                    deleteConfirmBtn.parentNode.replaceChild(oldConfirmBtn, deleteConfirmBtn);
                     const newConfirmBtn = document.getElementById('confirm-delete-btn');
                     newConfirmBtn.addEventListener('click', async () => {
                         deleteConfirmModal.classList.add('hidden');
@@ -1515,12 +1550,6 @@
                 }
             }
             
-            document.querySelectorAll('#delete-confirm-modal .cancel-btn, #delete-confirm-modal .save-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                     deleteConfirmModal.classList.add('hidden');
-                });
-            });
-
             function attachManageVideosListeners() {
                 const editBtns = document.querySelectorAll('.edit-btn');
                 editBtns.forEach(btn => {
@@ -1569,28 +1598,63 @@
                         const targetUserId = btn.getAttribute('data-user-id');
                         const user = users.find(u => u.id === targetUserId);
                         if (user && userHistoryModal && userHistoryTitle) {
-                             userHistoryTitle.textContent = `${user.name || 'User'}'s History`;
-                             renderUserHistoryTables(user);
-                             userHistoryModal.classList.remove('hidden');
+                                userHistoryTitle.textContent = `${user.name || 'User'}'s History`;
+                                renderUserHistoryTables(user);
+                                userHistoryModal.classList.remove('hidden');
                         }
                     });
                 });
                 
                 const toggleRoleBtns = document.querySelectorAll('.toggle-role-btn');
                 toggleRoleBtns.forEach(btn => {
-                     btn.addEventListener('click', async () => {
-                         const targetUserId = btn.getAttribute('data-user-id');
-                         const currentRole = btn.getAttribute('data-current-role');
-                         await toggleUserRole(targetUserId, currentRole);
-                     });
+                        btn.addEventListener('click', async () => {
+                            const targetUserId = btn.getAttribute('data-user-id');
+                            const currentRole = btn.getAttribute('data-current-role');
+                            await toggleUserRole(targetUserId, currentRole);
+                        });
                 });
             }
-            
-            document.getElementById('user-history-close-btn').addEventListener('click', () => {
-                 userHistoryModal.classList.add('hidden');
+
+            // --- Initial Setup ---
+            // Initial auth state check
+            showLoading();
+            onAuthStateChanged(auth, async (user) => {
+                isAuthReady = true;
+                if (user) {
+                    if (user.isAnonymous) {
+                        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+                        if (initialAuthToken) {
+                            try {
+                                await signInWithCustomToken(auth, initialAuthToken);
+                            } catch(e) {
+                                console.error("Error signing in with custom token:", e);
+                                if (loginPage) loginPage.style.display = 'flex';
+                                if (appContainer) appContainer.style.display = 'none';
+                                hideLoading();
+                            }
+                        } else {
+                            if (loginPage) loginPage.style.display = 'flex';
+                            if (appContainer) appContainer.style.display = 'none';
+                            hideLoading();
+                        }
+                    } else {
+                        userId = user.uid;
+                        await seedInitialData(user);
+                        await fetchUserData(userId);
+                    }
+                } else {
+                    console.log("No user is signed in. Showing login page.");
+                    if (loginPage) loginPage.style.display = 'flex';
+                    if (appContainer) appContainer.style.display = 'none';
+                    hideLoading();
+                }
             });
 
+            if (typeof __initial_auth_token === 'undefined') {
+                signInAnonymously(auth);
+            }
 
+            // Generic event listeners
             if (googleSignInBtn) {
                 googleSignInBtn.addEventListener('click', async (e) => {
                     e.preventDefault();
@@ -1651,14 +1715,6 @@
                 });
             }
 
-            if (menuToggleBtn) {
-                menuToggleBtn.addEventListener('click', () => {
-                    if (sidebar) sidebar.classList.toggle('open');
-                    if (backdrop) backdrop.classList.toggle('open');
-                    document.body.classList.toggle('no-scroll');
-                });
-            }
-            
             navLinks.forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -1690,8 +1746,8 @@
             filterButtons.forEach(btn => {
                 btn.addEventListener('click', () => {
                     filterButtons.forEach(b => { 
-                         if(b) b.classList.remove('active', 'bg-primary', 'border-primary', 'text-white'); 
-                         if(b) b.classList.add('bg-card-bg', 'border-slate-700');
+                        if(b) b.classList.remove('active', 'bg-primary', 'border-primary', 'text-white'); 
+                        if(b) b.classList.add('bg-card-bg', 'border-slate-700');
                     });
                     btn.classList.add('active', 'bg-primary', 'border-primary', 'text-white');
                     btn.classList.remove('bg-card-bg', 'border-slate-700');
@@ -1702,9 +1758,9 @@
 
             if(searchBar) {
                 searchBar.addEventListener('input', () => {
-                     const activeFilterBtn = document.querySelector('.filter-btn.active');
-                     const category = activeFilterBtn ? activeFilterBtn.getAttribute('data-category') : 'all';
-                     renderVideoGrid(category, searchBar.value);
+                    const activeFilterBtn = document.querySelector('.filter-btn.active');
+                    const category = activeFilterBtn ? activeFilterBtn.getAttribute('data-category') : 'all';
+                    renderVideoGrid(category, searchBar.value);
                 });
             }
 
@@ -1717,7 +1773,7 @@
                 });
             }
 
-            document.querySelectorAll('#add-video-modal .cancel-btn').forEach(btn => {
+            document.querySelectorAll('#add-video-modal .cancel-btn, #add-video-modal .save-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     if (addVideoModal) addVideoModal.classList.add('hidden');
                 });
@@ -1746,29 +1802,26 @@
             
             if (cashoutBtn) {
                 cashoutBtn.addEventListener('click', () => {
-                    // Check if user has enough points
                     if (!userData || userData.points < 5000) {
-                        // If not enough, show only the message modal
                         if (cashoutMessageModal) {
                             cashoutMessageText.textContent = `You need 5000 points to cash out. Your current points are ${(userData?.points || 0).toLocaleString()}.`;
                             cashoutMessageModal.classList.remove('hidden');
                         }
                     } else {
-                        // If enough, show only the cashout form modal
                         if (cashoutModal) {
-                             const payoutAmount = (userData.points / 5000).toFixed(2);
-                             const payoutInput = document.getElementById('payout-amount');
-                             if (payoutInput) payoutInput.value = payoutAmount;
-                             cashoutModal.classList.remove('hidden');
+                            const payoutAmount = (userData.points / 5000).toFixed(2);
+                            const payoutInput = document.getElementById('payout-amount');
+                            if (payoutInput) payoutInput.value = payoutAmount;
+                            cashoutModal.classList.remove('hidden');
                         }
                     }
                 });
             }
             
             document.querySelectorAll('#cashout-message-modal button').forEach(btn => {
-                 btn.addEventListener('click', () => {
-                      cashoutMessageModal.classList.add('hidden');
-                 });
+                btn.addEventListener('click', () => {
+                    cashoutMessageModal.classList.add('hidden');
+                });
             });
 
             document.querySelectorAll('#cashout-modal .cancel-btn').forEach(btn => {
@@ -1799,8 +1852,8 @@
                             points: -pointsCashedOut
                         };
                         const newPayoutEntry = {
-                             date: new Date().toLocaleDateString('en-US'),
-                             amount: parseFloat(payoutAmount)
+                                date: new Date().toLocaleDateString('en-US'),
+                                amount: parseFloat(payoutAmount)
                         };
 
                         await updateDoc(userDocRef, {
@@ -1820,45 +1873,39 @@
                     }
                 });
             }
+
+            // NEW: Offer Wall Logic
+            if (offerwallButtons) {
+                offerwallButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        if (!userId) {
+                            alert("Please log in to start tasks.");
+                            return;
+                        }
+
+                        const provider = button.dataset.provider;
+                        let baseUrl = '';
+
+                        // IMPORTANT: Replace these with your actual Offer Wall URLs
+                        if (provider === 'cpalead') {
+                            baseUrl = 'https://www.cpalead.com/my-offerwall/'; // Example URL
+                        } else if (provider === 'offertoro') {
+                            baseUrl = 'https://www.offertoro.com/ifr/show/'; // Example URL
+                        }
+
+                        if (baseUrl) {
+                            // Append the user's Firebase ID to the URL for tracking
+                            const finalUrl = `${baseUrl}?subid=${userId}`;
+                            console.log(`Opening Offer Wall: ${finalUrl}`);
+                            window.open(finalUrl, '_blank');
+                        } else {
+                            console.log(`No URL configured for provider: ${provider}`);
+                        }
+                    });
+                });
+            }
             
             generateRandomChartData();
-            showLoading();
-            
-            onAuthStateChanged(auth, async (user) => {
-                isAuthReady = true;
-                if (user) {
-                    if (user.isAnonymous) {
-                         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-                         if (initialAuthToken) {
-                             try {
-                                  await signInWithCustomToken(auth, initialAuthToken);
-                             } catch(e) {
-                                  console.error("Error signing in with custom token:", e);
-                                  if (loginPage) loginPage.style.display = 'flex';
-                                  if (appContainer) appContainer.style.display = 'none';
-                                  hideLoading();
-                             }
-                         } else {
-                              if (loginPage) loginPage.style.display = 'flex';
-                              if (appContainer) appContainer.style.display = 'none';
-                              hideLoading();
-                         }
-                    } else {
-                         userId = user.uid;
-                         await seedInitialData(user);
-                         await fetchUserData(userId);
-                    }
-                } else {
-                    console.log("No user is signed in. Showing login page.");
-                    if (loginPage) loginPage.style.display = 'flex';
-                    if (appContainer) appContainer.style.display = 'none';
-                    hideLoading();
-                }
-            });
-
-            if (typeof __initial_auth_token === 'undefined') {
-                 signInAnonymously(auth);
-            }
         });
     </script>
 </body>
