@@ -32,56 +32,17 @@
                     },
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
-                    },
-                    keyframes: {
-                        spin: {
-                            '0%': { transform: 'rotate(0deg)' },
-                            '100%': { transform: 'rotate(360deg)' },
-                        },
-                        coinFly: {
-                            '0%': { transform: 'translateY(0) scale(1)', opacity: '1' },
-                            '100%': { transform: 'translateY(-100px) scale(0.5)', opacity: '0' },
-                        }
-                    },
-                    animation: {
-                        spin: 'spin 1s linear infinite',
-                        coin: 'coinFly 1s ease-in-out forwards',
                     }
                 }
             }
         }
     </script>
     <style>
-        /* General Styles for the entire app */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0f172a; /* Tailwind: bg-slate-900 */
-            color: #e2e8f0; /* Tailwind: text-slate-200 */
-            margin: 0;
-            overflow-x: hidden;
-        }
-        
-        /* Utility for drawer/sidebar state */
-        .sidebar.open {
-            transform: translateX(0);
-        }
-
-        .backdrop.open {
-            display: block;
-        }
-
-        .no-scroll {
-            overflow: hidden;
-        }
-
-        /* Coin Animation Styles - Adjusted for Tailwind CSS */
-        .coin-icon {
-            animation: coinFly 1s ease-in-out forwards;
-        }
-
-        .modal-overlay {
-            background-color: rgba(0, 0, 0, 0.7);
-        }
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #e2e8f0; margin: 0; overflow-x: hidden; }
+        .sidebar.open { transform: translateX(0); }
+        .backdrop.open { display: block; }
+        .no-scroll { overflow: hidden; }
+        .modal-overlay { background-color: rgba(0, 0, 0, 0.7); }
     </style>
     <!-- Firebase SDKs -->
     <script type="module" src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js"></script>
@@ -99,9 +60,7 @@
     <div id="login-page" class="view flex justify-center items-center min-h-screen p-4" style="display: flex;">
         <div class="w-full max-w-sm text-center">
             <div class="mb-8">
-                <svg class="w-24 h-24 mx-auto fill-indigo-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14h-2V8h2a3 3 0 010 6z"/>
-                </svg>
+                <svg class="w-24 h-24 mx-auto fill-indigo-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14h-2V8h2a3 3 0 010 6z"/></svg>
                 <div class="text-2xl font-bold mt-2">Ping Rewards</div>
                 <div class="text-muted-text mt-1">Get rewarded for simple tasks.</div>
             </div>
@@ -109,12 +68,7 @@
                 <h2 class="text-xl font-semibold mb-6">Welcome Back</h2>
                 <p id="login-message" class="text-red-500 text-sm mb-4" style="display: none;"></p>
                 <button id="google-sign-in-btn" class="w-full py-3 bg-primary hover:bg-indigo-600 text-white font-semibold rounded-lg transition-colors duration-300 flex items-center justify-center gap-3">
-                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <path fill="#ffffff" d="M22.4 12.2c0-.7-.1-1.3-.2-1.9H12v3.8h5.3c-.2 1.2-.8 2.2-1.6 3l3.2 2.5c2.1-1.9 3.4-4.7 3.4-8.4z"/>
-                        <path fill="#ffffff" d="M12 22c3.2 0 5.9-1.1 7.8-3l-3.2-2.5c-1 1.2-2.3 1.9-4.6 1.9-3.5 0-6.5-2.4-7.6-5.6l-3.3 2.5c1.4 2.8 4.4 4.8 7.9 4.8z"/>
-                        <path fill="#ffffff" d="M4.4 12.2c0-1.6.4-3.1 1.2-4.4L2.3 5.4C.9 7.7 0 10 0 12.2c0 2.2.9 4.5 2.3 6.8l3.3-2.4c-.8-1.3-1.2-2.8-1-1.4z"/>
-                        <path fill="#ffffff" d="M12 4.1c1.8 0 3.3.6 4.6 1.8L19.4 3C17.5 1.1 14.8 0 12 0c-3.5 0-6.5 2-7.9 4.8l3.3 2.4C8.7 5.7 10.2 5 12 5z"/>
-                    </svg>
+                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#ffffff" d="M22.4 12.2c0-.7-.1-1.3-.2-1.9H12v3.8h5.3c-.2 1.2-.8 2.2-1.6 3l3.2 2.5c2.1-1.9 3.4-4.7 3.4-8.4z"/><path fill="#ffffff" d="M12 22c3.2 0 5.9-1.1 7.8-3l-3.2-2.5c-1 1.2-2.3 1.9-4.6 1.9-3.5 0-6.5-2.4-7.6-5.6l-3.3 2.5c1.4 2.8 4.4 4.8 7.9 4.8z"/><path fill="#ffffff" d="M4.4 12.2c0-1.6.4-3.1 1.2-4.4L2.3 5.4C.9 7.7 0 10 0 12.2c0 2.2.9 4.5 2.3 6.8l3.3-2.4c-.8-1.3-1.2-2.8-1-1.4z"/><path fill="#ffffff" d="M12 4.1c1.8 0 3.3.6 4.6 1.8L19.4 3C17.5 1.1 14.8 0 12 0c-3.5 0-6.5 2-7.9 4.8l3.3 2.4C8.7 5.7 10.2 5 12 5z"/></svg>
                     Sign in with Google
                 </button>
             </div>
@@ -126,58 +80,22 @@
         <!-- Sidebar -->
         <div id="sidebar" class="sidebar fixed md:relative z-[100] md:z-0 top-0 left-0 w-64 h-full bg-card-bg shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out md:translate-x-0">
             <div class="p-6 pb-4 border-b border-slate-700 flex items-center">
-                <svg class="w-12 h-12 fill-indigo-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14h-2V8h2a3 3 0 010 6z"/>
-                </svg>
+                <svg class="w-12 h-12 fill-indigo-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14h-2V8h2a3 3 0 010 6z"/></svg>
                 <span class="text-xl font-bold ml-2">Ping Rewards</span>
             </div>
             <ul class="flex flex-col p-4 space-y-2">
                 <!-- User Links -->
-                <li>
-                    <a href="#" class="nav-link user-link flex items-center p-3 rounded-lg hover:bg-primary/20" data-target="user-dashboard-view">
-                        <svg class="w-6 h-6 mr-3 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8h5z"/></svg>
-                        Dashboard
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="nav-link user-link flex items-center p-3 rounded-lg hover:bg-primary/20" data-target="tasks-view">
-                        <svg class="w-6 h-6 mr-3 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
-                        Earn More
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="nav-link user-link flex items-center p-3 rounded-lg hover:bg-primary/20" data-target="watch-videos-view">
-                        <svg class="w-6 h-6 mr-3 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
-                        Watch Videos
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="nav-link user-link flex items-center p-3 rounded-lg hover:bg-primary/20" data-target="points-history-view">
-                        <svg class="w-6 h-6 mr-3 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-                        Points History
-                    </a>
-                </li>
+                <li><a href="#" class="nav-link user-link flex items-center p-3 rounded-lg hover:bg-primary/20" data-target="user-dashboard-view"><svg class="w-6 h-6 mr-3 fill-current" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8h5z"/></svg>Dashboard</a></li>
+                <li><a href="#" class="nav-link user-link flex items-center p-3 rounded-lg hover:bg-primary/20" data-target="tasks-view"><svg class="w-6 h-6 mr-3 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>Earn More</a></li>
+                <li><a href="#" class="nav-link user-link flex items-center p-3 rounded-lg hover:bg-primary/20" data-target="watch-videos-view"><svg class="w-6 h-6 mr-3 fill-current" viewBox="0 0 24 24"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>Watch Videos</a></li>
+                <li><a href="#" class="nav-link user-link flex items-center p-3 rounded-lg hover:bg-primary/20" data-target="points-history-view"><svg class="w-6 h-6 mr-3 fill-current" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>Points History</a></li>
                 
                 <!-- Admin Links -->
                 <hr class="my-4 border-slate-700 admin-link">
-                <li>
-                    <a href="#" class="nav-link admin-link flex items-center p-3 rounded-lg hover:bg-primary/20" data-target="admin-dashboard-view">
-                        <svg class="w-6 h-6 mr-3 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 13h11v-2H3v2zm0 4h11v-2H3v2zm0-8h11V7H3v2zm13 .01V7h5v2.01h-5zM16 17h5v-2h-5v2zm0-4h5v-2h-5v2z"/></svg>
-                        Admin Dashboard
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="nav-link admin-link flex items-center p-3 rounded-lg hover:bg-primary/20" data-target="manage-videos-view">
-                        <svg class="w-6 h-6 mr-3 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
-                        Manage Videos
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="nav-link admin-link flex items-center p-3 rounded-lg hover:bg-primary/20" data-target="manage-users-view">
-                        <svg class="w-6 h-6 mr-3 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                        Manage Users
-                    </a>
-                </li>
+                <li><a href="#" class="nav-link admin-link flex items-center p-3 rounded-lg hover:bg-primary/20" data-target="admin-dashboard-view"><svg class="w-6 h-6 mr-3 fill-current" viewBox="0 0 24 24"><path d="M3 13h11v-2H3v2zm0 4h11v-2H3v2zm0-8h11V7H3v2zm13 .01V7h5v2.01h-5zM16 17h5v-2h-5v2zm0-4h5v-2h-5v2z"/></svg>Admin Dashboard</a></li>
+                <li><a href="#" class="nav-link admin-link flex items-center p-3 rounded-lg hover:bg-primary/20" data-target="manage-tasks-view"><svg class="w-6 h-6 mr-3 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.5 11H19V7c0-1.1-.9-2-2-2h-4V3.5C13 2.12 11.88 1 10.5 1S8 2.12 8 3.5V5H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h4v1.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V19h4c1.1 0 2-.9 2-2v-4h1.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5z"/></svg>Manage Tasks</a></li>
+                <li><a href="#" class="nav-link admin-link flex items-center p-3 rounded-lg hover:bg-primary/20" data-target="manage-videos-view"><svg class="w-6 h-6 mr-3 fill-current" viewBox="0 0 24 24"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>Manage Videos</a></li>
+                <li><a href="#" class="nav-link admin-link flex items-center p-3 rounded-lg hover:bg-primary/20" data-target="manage-users-view"><svg class="w-6 h-6 mr-3 fill-current" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>Manage Users</a></li>
             </ul>
             <div id="sidebar-profile" class="p-6 border-t border-slate-700 mt-auto"></div>
         </div>
@@ -188,9 +106,7 @@
         <div id="app-content" class="flex-grow p-4 md:p-6">
             <header class="flex justify-between items-center mb-6">
                 <h1 id="page-title" class="text-2xl md:text-3xl font-bold flex items-center">
-                    <button id="menu-toggle" class="md:hidden p-2 -ml-2 rounded-md hover:bg-card-bg">
-                        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
-                    </button>
+                    <button id="menu-toggle" class="md:hidden p-2 -ml-2 rounded-md hover:bg-card-bg"><svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></button>
                     Dashboard
                 </h1>
                 <div id="header-meta" class="hidden md:flex items-center space-x-4"></div>
@@ -204,9 +120,7 @@
                             <h2 id="welcome-message" class="text-xl font-semibold mb-2"></h2>
                             <p class="text-muted-text">Ready to earn more points? Let's start watching some videos.</p>
                         </div>
-                        <a href="#" class="nav-link user-link mt-4 md:mt-0 px-6 py-3 bg-primary hover:bg-indigo-600 text-white font-semibold rounded-lg" data-target="watch-videos-view">
-                            Watch Now
-                        </a>
+                        <a href="#" class="nav-link user-link mt-4 md:mt-0 px-6 py-3 bg-primary hover:bg-indigo-600 text-white font-semibold rounded-lg" data-target="watch-videos-view">Watch Now</a>
                     </div>
                     <div class="card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
                         <h2 class="text-lg font-semibold mb-2 text-muted-text">Total Points</h2>
@@ -221,66 +135,54 @@
                         <div class="text-4xl font-bold text-accent-purple" id="videos-watched-value">0</div>
                     </div>
                 </div>
-
                 <div class="quick-actions mb-6">
                     <h2 class="text-xl font-semibold mb-4">Quick Actions</h2>
                     <div class="flex flex-wrap gap-4">
-                        <a href="#" class="nav-link user-link px-6 py-3 bg-card-bg border border-slate-700 rounded-lg hover:bg-slate-700" data-target="tasks-view">
-                            Earn More Points
-                        </a>
-                        <a href="#" class="nav-link user-link px-6 py-3 bg-card-bg border border-slate-700 rounded-lg hover:bg-slate-700" data-target="watch-videos-view">
-                            Watch Videos
-                        </a>
-                        <a href="#" class="nav-link user-link px-6 py-3 bg-card-bg border border-slate-700 rounded-lg hover:bg-slate-700" data-target="points-history-view">
-                            View History
-                        </a>
+                        <a href="#" class="nav-link user-link px-6 py-3 bg-card-bg border border-slate-700 rounded-lg hover:bg-slate-700" data-target="tasks-view">Earn More Points</a>
+                        <a href="#" class="nav-link user-link px-6 py-3 bg-card-bg border border-slate-700 rounded-lg hover:bg-slate-700" data-target="watch-videos-view">Watch Videos</a>
+                        <a href="#" class="nav-link user-link px-6 py-3 bg-card-bg border border-slate-700 rounded-lg hover:bg-slate-700" data-target="points-history-view">View History</a>
                     </div>
                 </div>
-
                 <div class="card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 flex flex-col md:flex-row justify-between items-center">
                     <div>
                         <h2 class="text-xl font-semibold mb-2">Cash Out Points</h2>
                         <p class="text-muted-text">5000 Points = $1.00</p>
                     </div>
-                    <button class="cashout-btn mt-4 md:mt-0 px-6 py-3 bg-primary hover:bg-indigo-600 text-white font-semibold rounded-lg" id="cashout-button">
-                        Cash Out
-                    </button>
+                    <button class="cashout-btn mt-4 md:mt-0 px-6 py-3 bg-primary hover:bg-indigo-600 text-white font-semibold rounded-lg" id="cashout-button">Cash Out</button>
                 </div>
             </div>
 
             <!-- Tasks View -->
             <div id="tasks-view" class="content-view" style="display: none;">
-                <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 mb-6">
-                    <h2 class="text-xl font-semibold mb-2">Earn More Points with Offers</h2>
-                    <p class="text-muted-text">Complete simple tasks from our partners to earn a large number of points. This is the fastest way to reach your cash-out goal!</p>
+                <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 mb-8">
+                    <h2 class="text-xl font-semibold mb-2">Partner Offers</h2>
+                    <p class="text-muted-text">Complete simple tasks from our partners to earn a large number of points. These offers are currently under review and will be available soon!</p>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="offerwall-grid">
-                    <div class="offer-card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 flex flex-col text-center items-center">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8" id="offerwall-grid">
+                    <div class="offer-card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 flex flex-col text-center items-center opacity-50">
                         <img src="https://placehold.co/100x40/1e293b/ffffff?text=Torox" alt="Torox Logo" class="h-10 mb-4">
                         <h3 class="text-lg font-semibold mb-2">Torox Offers</h3>
                         <p class="text-muted-text mb-4 flex-grow">Complete surveys, download apps, and sign up for services to earn points.</p>
-                        <button class="offerwall-btn w-full py-2 bg-primary hover:bg-indigo-600 text-white font-semibold rounded-lg" data-provider="offertoro">
-                            Start Tasks
-                        </button>
+                        <button disabled class="w-full py-2 bg-slate-600 text-white font-semibold rounded-lg cursor-not-allowed">Coming Soon</button>
                     </div>
-                    <!-- UPDATED: CPALead is replaced with AdGem -->
-                    <div class="offer-card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 flex flex-col text-center items-center">
+                    <div class="offer-card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 flex flex-col text-center items-center opacity-50">
                         <img src="https://placehold.co/100x40/1e293b/ffffff?text=AdGem" alt="AdGem Logo" class="h-10 mb-4">
                         <h3 class="text-lg font-semibold mb-2">AdGem Rewards</h3>
                         <p class="text-muted-text mb-4 flex-grow">Discover new games and apps. Get rewarded for playing and reaching new levels.</p>
-                        <button class="offerwall-btn w-full py-2 bg-primary hover:bg-indigo-600 text-white font-semibold rounded-lg" data-provider="adgem">
-                            Start Tasks
-                        </button>
+                        <button disabled class="w-full py-2 bg-slate-600 text-white font-semibold rounded-lg cursor-not-allowed">Coming Soon</button>
                     </div>
-                    <div class="offer-card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 flex flex-col text-center items-center">
+                    <div class="offer-card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 flex flex-col text-center items-center opacity-50">
                         <img src="https://placehold.co/100x40/1e293b/ffffff?text=AdWorkMedia" alt="AdWork Media Logo" class="h-10 mb-4">
                         <h3 class="text-lg font-semibold mb-2">AdWork Media Offers</h3>
                         <p class="text-muted-text mb-4 flex-grow">A wide variety of high-paying offers from a trusted network.</p>
-                        <button class="offerwall-btn w-full py-2 bg-primary hover:bg-indigo-600 text-white font-semibold rounded-lg" data-provider="adworkmedia">
-                            Start Tasks
-                        </button>
+                        <button disabled class="w-full py-2 bg-slate-600 text-white font-semibold rounded-lg cursor-not-allowed">Coming Soon</button>
                     </div>
                 </div>
+                <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 mb-6">
+                    <h2 class="text-xl font-semibold mb-2">Community Tasks</h2>
+                    <p class="text-muted-text">Help our community creators grow and get rewarded!</p>
+                </div>
+                <div class="space-y-4" id="custom-tasks-grid"></div>
             </div>
 
             <!-- Watch Videos View -->
@@ -311,28 +213,17 @@
                     </div>
                     <h2 class="text-xl font-semibold mb-2" id="video-player-title"></h2>
                     <p class="text-muted-text mb-4" id="video-player-description"></p>
-                    
                     <div id="adsterra-native-banner-container" class="w-full mx-auto my-4">
                         <script async="async" data-cfasync="false" src="//pl27490142.profitableratecpm.com/5fae19ca63dcfa0b73c6e2395f27545a/invoke.js"></script>
                         <div id="container-5fae19ca63dcfa0b73c6e2395f27545a"></div>
                     </div>
-
                     <div class="flex justify-between items-center mb-4">
-                        <button id="get-summary-btn" class="action-btn px-4 py-2 bg-secondary hover:bg-pink-500 text-white font-semibold rounded-lg text-sm">
-                            Get Summary ✨
-                        </button>
+                        <button id="get-summary-btn" class="action-btn px-4 py-2 bg-secondary hover:bg-pink-500 text-white font-semibold rounded-lg text-sm">Get Summary ✨</button>
                         <div id="summary-output" class="text-sm text-muted-text"></div>
                     </div>
-
                     <div id="adsterra-banner-container" class="w-[300px] h-[250px] mx-auto my-4 bg-slate-700 flex items-center justify-center text-muted-text rounded-lg">
                         <script type="text/javascript">
-                            atOptions = {
-                                'key' : 'ab011a6fcf341e920b5fe999724cbf9f',
-                                'format' : 'iframe',
-                                'height' : 250,
-                                'width' : 300,
-                                'params' : {}
-                            };
+                            atOptions = { 'key' : 'ab011a6fcf341e920b5fe999724cbf9f', 'format' : 'iframe', 'height' : 250, 'width' : 300, 'params' : {} };
                         </script>
                         <script type="text/javascript" src="//www.highperformanceformat.com/ab011a6fcf341e920b5fe999724cbf9f/invoke.js"></script>
                     </div>
@@ -346,13 +237,7 @@
                     <p class="text-muted-text mb-6">A record of all the points you have earned.</p>
                     <div class="overflow-x-auto rounded-lg">
                         <table class="w-full text-left table-auto">
-                            <thead class="bg-slate-700 text-slate-400 uppercase text-xs">
-                                <tr>
-                                    <th class="p-4 rounded-tl-lg">Date</th>
-                                    <th class="p-4">Description</th>
-                                    <th class="p-4 rounded-tr-lg">Points</th>
-                                </tr>
-                            </thead>
+                            <thead class="bg-slate-700 text-slate-400 uppercase text-xs"><tr class="p-4 rounded-tl-lg"><th>Date</th><th class="p-4">Description</th><th class="p-4 rounded-tr-lg">Points</th></tr></thead>
                             <tbody id="points-history-table" class="divide-y divide-slate-700"></tbody>
                         </table>
                     </div>
@@ -361,42 +246,22 @@
             
             <!-- Admin Dashboard View -->
             <div id="admin-dashboard-view" class="content-view" style="display: none;">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6" id="admin-dashboard-grid">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
                     <div class="stat-card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 flex items-center">
-                        <div class="flex-shrink-0 w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center mr-4">
-                            <svg class="w-6 h-6 fill-primary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                        </div>
-                        <div>
-                            <h3 class="text-lg font-semibold text-muted-text">Total Users</h3>
-                            <div class="text-3xl font-bold" id="admin-total-users-value">0</div>
-                        </div>
+                        <div class="flex-shrink-0 w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center mr-4"><svg class="w-6 h-6 fill-primary" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>
+                        <div><h3 class="text-lg font-semibold text-muted-text">Total Users</h3><div class="text-3xl font-bold" id="admin-total-users-value">0</div></div>
                     </div>
                     <div class="stat-card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 flex items-center">
-                        <div class="flex-shrink-0 w-12 h-12 rounded-full bg-accent-purple/20 flex items-center justify-center mr-4">
-                            <svg class="w-6 h-6 fill-accent-purple" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
-                        </div>
-                        <div>
-                            <h3 class="text-lg font-semibold text-muted-text">Total Videos</h3>
-                            <div class="text-3xl font-bold" id="admin-total-videos-value">0</div>
-                        </div>
+                        <div class="flex-shrink-0 w-12 h-12 rounded-full bg-accent-purple/20 flex items-center justify-center mr-4"><svg class="w-6 h-6 fill-accent-purple" viewBox="0 0 24 24"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg></div>
+                        <div><h3 class="text-lg font-semibold text-muted-text">Total Videos</h3><div class="text-3xl font-bold" id="admin-total-videos-value">0</div></div>
                     </div>
                     <div class="stat-card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 flex items-center">
-                        <div class="flex-shrink-0 w-12 h-12 rounded-full bg-accent-green/20 flex items-center justify-center mr-4">
-                            <svg class="w-6 h-6 fill-accent-green" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4V8h16v10zm-12-7h4v2H8v-2zm-2-2v6h12V6H6z"/></svg>
-                        </div>
-                        <div>
-                            <h3 class="text-lg font-semibold text-muted-text">Total Points Earned</h3>
-                            <div class="text-3xl font-bold" id="admin-total-points-earned-value">0</div>
-                        </div>
+                        <div class="flex-shrink-0 w-12 h-12 rounded-full bg-accent-green/20 flex items-center justify-center mr-4"><svg class="w-6 h-6 fill-accent-green" viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4V8h16v10zm-12-7h4v2H8v-2zm-2-2v6h12V6H6z"/></svg></div>
+                        <div><h3 class="text-lg font-semibold text-muted-text">Total Points Earned</h3><div class="text-3xl font-bold" id="admin-total-points-earned-value">0</div></div>
                     </div>
                     <div class="stat-card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 flex items-center">
-                        <div class="flex-shrink-0 w-12 h-12 rounded-full bg-accent-orange/20 flex items-center justify-center mr-4">
-                            <svg class="w-6 h-6 fill-accent-orange" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4V8h16v10zm-12-7h4v2H8v-2zm-2-2v6h12V6H6z"/></svg>
-                        </div>
-                        <div>
-                            <h3 class="text-lg font-semibold text-muted-text">Total Payouts</h3>
-                            <div class="text-3xl font-bold" id="admin-total-payouts-value">$0</div>
-                        </div>
+                        <div class="flex-shrink-0 w-12 h-12 rounded-full bg-accent-orange/20 flex items-center justify-center mr-4"><svg class="w-6 h-6 fill-accent-orange" viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4V8h16v10zm-12-7h4v2H8v-2zm-2-2v6h12V6H6z"/></svg></div>
+                        <div><h3 class="text-lg font-semibold text-muted-text">Total Payouts</h3><div class="text-3xl font-bold" id="admin-total-payouts-value">$0</div></div>
                     </div>
                 </div>
                 <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
@@ -409,25 +274,32 @@
                 </div>
             </div>
 
+            <!-- Manage Tasks View -->
+            <div id="manage-tasks-view" class="content-view" style="display: none;">
+                <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-semibold">Manage Community Tasks</h2>
+                        <button id="add-task-btn" class="px-4 py-2 bg-primary hover:bg-indigo-600 rounded-lg text-white font-semibold">Add New Task</button>
+                    </div>
+                    <div class="overflow-x-auto rounded-lg">
+                        <table class="w-full text-left table-auto">
+                            <thead class="bg-slate-700 text-slate-400 uppercase text-xs"><tr><th class="p-4 rounded-tl-lg">Title</th><th class="p-4">Platform</th><th class="p-4">Points</th><th class="p-4 rounded-tr-lg">Actions</th></tr></thead>
+                            <tbody id="tasks-table-body" class="divide-y divide-slate-700"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
             <!-- Manage Videos View -->
             <div id="manage-videos-view" class="content-view" style="display: none;">
                 <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-xl font-semibold">Manage Videos</h2>
-                        <button id="add-video-btn" class="px-4 py-2 bg-primary hover:bg-indigo-600 rounded-lg text-white font-semibold">
-                            Add New Video
-                        </button>
+                        <button id="add-video-btn" class="px-4 py-2 bg-primary hover:bg-indigo-600 rounded-lg text-white font-semibold">Add New Video</button>
                     </div>
                     <div class="overflow-x-auto rounded-lg">
                         <table class="w-full text-left table-auto">
-                            <thead class="bg-slate-700 text-slate-400 uppercase text-xs">
-                                <tr>
-                                    <th class="p-4 rounded-tl-lg">Title</th>
-                                    <th class="p-4">Category</th>
-                                    <th class="p-4">Points</th>
-                                    <th class="p-4 rounded-tr-lg">Actions</th>
-                                </tr>
-                            </thead>
+                            <thead class="bg-slate-700 text-slate-400 uppercase text-xs"><tr><th class="p-4 rounded-tl-lg">Title</th><th class="p-4">Category</th><th class="p-4">Points</th><th class="p-4 rounded-tr-lg">Actions</th></tr></thead>
                             <tbody id="videos-table" class="divide-y divide-slate-700"></tbody>
                         </table>
                     </div>
@@ -441,16 +313,7 @@
                     <p class="text-muted-text mb-6">View user data, manage status, and edit information.</p>
                     <div class="overflow-x-auto rounded-lg">
                         <table class="w-full text-left table-auto">
-                            <thead class="bg-slate-700 text-slate-400 uppercase text-xs">
-                                <tr>
-                                    <th class="p-4 rounded-tl-lg">User ID</th>
-                                    <th class="p-4">Name</th>
-                                    <th class="p-4">Email</th>
-                                    <th class="p-4">Role</th>
-                                    <th class="p-4">Points</th>
-                                    <th class="p-4 rounded-tr-lg">Actions</th>
-                                </tr>
-                            </thead>
+                            <thead class="bg-slate-700 text-slate-400 uppercase text-xs"><tr><th class="p-4 rounded-tl-lg">User ID</th><th class="p-4">Name</th><th class="p-4">Email</th><th class="p-4">Role</th><th class="p-4">Points</th><th class="p-4 rounded-tr-lg">Actions</th></tr></thead>
                             <tbody id="users-table-body" class="divide-y divide-slate-700"></tbody>
                         </table>
                     </div>
@@ -459,129 +322,18 @@
         </div>
         
         <!-- Modals -->
-        <div id="cashout-message-modal" class="modal-overlay fixed inset-0 flex justify-center items-center z-[1000] hidden">
-            <div class="modal-content bg-card-bg p-8 rounded-xl w-11/12 max-w-lg shadow-2xl border border-slate-700">
-                <h3 class="text-xl font-semibold mb-4">Cash Out Request</h3>
-                <p id="cashout-message-text" class="text-muted-text mb-6"></p>
-                <div class="flex justify-end gap-2">
-                    <button type="button" class="px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg text-white font-semibold" id="cashout-message-close-btn">Close</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="delete-confirm-modal" class="modal-overlay fixed inset-0 flex justify-center items-center z-[1000] hidden">
-            <div class="modal-content bg-card-bg p-8 rounded-xl w-11/12 max-w-lg shadow-2xl border border-slate-700">
-                <h3 id="delete-modal-title" class="text-xl font-semibold mb-4"></h3>
-                <p class="text-muted-text mb-6">This action cannot be undone.</p>
-                <div class="flex justify-end gap-2">
-                    <button type="button" class="cancel-btn px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg text-white font-semibold">Cancel</button>
-                    <button type="button" class="px-4 py-2 bg-red-600 hover:bg-red-500 rounded-lg text-white font-semibold" id="confirm-delete-btn">Delete</button>
-                </div>
-            </div>
-        </div>
-        
-        <div id="user-history-modal" class="modal-overlay fixed inset-0 flex justify-center items-center z-[1000] hidden">
-            <div class="modal-content bg-card-bg p-8 rounded-xl w-11/12 max-w-3xl shadow-2xl border border-slate-700">
-                <h3 id="user-history-title" class="text-xl font-semibold mb-4"></h3>
-                <h4 class="text-lg font-semibold mt-4 mb-2">Points History</h4>
-                <div class="overflow-y-auto max-h-[400px] rounded-lg border border-slate-700">
-                       <table class="w-full text-left table-auto">
-                           <thead class="bg-slate-700 text-slate-400 uppercase text-xs sticky top-0">
-                               <tr>
-                                   <th class="p-4 rounded-tl-lg">Date</th>
-                                   <th class="p-4">Description</th>
-                                   <th class="p-4">Points</th>
-                                   <th class="p-4 rounded-tr-lg">Actions</th>
-                               </tr>
-                           </thead>
-                           <tbody id="user-history-table-body" class="divide-y divide-slate-700"></tbody>
-                       </table>
-                </div>
-                <h4 class="text-lg font-semibold mt-6 mb-2">Cash Out History</h4>
-                <div class="overflow-y-auto max-h-[200px] rounded-lg border border-slate-700">
-                    <table class="w-full text-left table-auto">
-                        <thead class="bg-slate-700 text-slate-400 uppercase text-xs sticky top-0">
-                            <tr>
-                                <th class="p-4 rounded-tl-lg">Date</th>
-                                <th class="p-4">Amount ($)</th>
-                                <th class="p-4 rounded-tr-lg">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="user-cashout-history-table-body" class="divide-y divide-slate-700"></tbody>
-                    </table>
-                </div>
-                <div class="flex justify-end mt-6">
-                    <button type="button" class="px-6 py-3 bg-red-600 hover:bg-red-500 rounded-lg text-white font-semibold" id="user-history-close-btn">Close</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="add-video-modal" class="modal-overlay fixed inset-0 flex justify-center items-center z-[1000] hidden">
-            <div class="modal-content bg-card-bg p-8 rounded-xl w-11/12 max-w-lg shadow-2xl border border-slate-700">
-                <h3 id="modal-title" class="text-xl font-semibold mb-4">Add New Video</h3>
-                <form id="add-video-form" class="modal-form space-y-4">
-                    <div>
-                        <label for="video-title" class="block text-sm font-medium mb-1">Video Title</label>
-                        <input type="text" id="video-title" name="videoTitle" required class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary">
-                    </div>
-                    <div>
-                        <label for="video-description" class="block text-sm font-medium mb-1">Description</label>
-                        <textarea id="video-description" name="videoDescription" rows="3" required class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
-                    </div>
-                    <div>
-                        <label for="video-category" class="block text-sm font-medium mb-1">Category</label>
-                        <select id="video-category" name="videoCategory" required class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary">
-                            <option value="YouTube">YouTube</option><option value="TikTok">TikTok</option><option value="Facebook">Facebook</option><option value="Nature">Nature</option><option value="Education">Education</option><option value="Travel">Travel</option><option value="Food">Food</option><option value="Gaming">Gaming</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="video-url" class="block text-sm font-medium mb-1">Video URL (YouTube Embed Link)</label>
-                        <input type="text" id="video-url" name="videoUrl" required class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary">
-                    </div>
-                    <div>
-                        <label for="video-points" class="block text-sm font-medium mb-1">Points</label>
-                        <input type="number" id="video-points" name="videoPoints" required class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary">
-                    </div>
-                    <div>
-                        <label for="watch-duration" class="block text-sm font-medium mb-1">Watch Duration (Seconds)</label>
-                        <input type="number" id="watch-duration" name="watchDuration" required class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary">
-                    </div>
-                    <div class="flex justify-end gap-2 pt-4">
-                        <button type="button" class="cancel-btn px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg text-white font-semibold">Cancel</button>
-                        <button type="submit" class="save-btn px-4 py-2 bg-primary hover:bg-indigo-600 rounded-lg text-white font-semibold">Save Video</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        
-        <div id="cashout-modal" class="modal-overlay fixed inset-0 flex justify-center items-center z-[1000] hidden">
-            <div class="modal-content bg-card-bg p-8 rounded-xl w-11/12 max-w-lg shadow-2xl border border-slate-700">
-                <h3 class="text-xl font-semibold mb-4">Cash Out Request</h3>
-                <form id="cashout-form" class="modal-form space-y-4">
-                    <p class="text-muted-text">Please enter your payment details to receive your earnings.</p>
-                    <div>
-                        <label for="payment-method" class="block text-sm font-medium mb-1">Payment Method</label>
-                        <select id="payment-method" name="paymentMethod" class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary">
-                            <option value="KBZ Pay">KBZ Pay</option><option value="Wave Pay">Wave Pay</option><option value="Binance Pay">Binance Pay</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="payout-amount" class="block text-sm font-medium mb-1">Amount ($)</label>
-                        <input type="number" id="payout-amount" name="payoutAmount" value="0.00" readonly class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 text-muted-text cursor-not-allowed">
-                    </div>
-                    <div class="flex justify-end gap-2 pt-4">
-                        <button type="button" class="cancel-btn px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg text-white font-semibold">Cancel</button>
-                        <button type="submit" class="save-btn px-4 py-2 bg-primary hover:bg-indigo-600 rounded-lg text-white font-semibold" id="cashout-submit-btn">Submit Request</button>
-                    </div>
-                </form>
-            </div>
-        </div>
+        <div id="cashout-message-modal" class="modal-overlay fixed inset-0 flex justify-center items-center z-[1000] hidden"><div class="modal-content bg-card-bg p-8 rounded-xl w-11/12 max-w-lg shadow-2xl border border-slate-700"><h3 class="text-xl font-semibold mb-4">Cash Out Request</h3><p id="cashout-message-text" class="text-muted-text mb-6"></p><div class="flex justify-end gap-2"><button type="button" class="px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg text-white font-semibold" id="cashout-message-close-btn">Close</button></div></div></div>
+        <div id="delete-confirm-modal" class="modal-overlay fixed inset-0 flex justify-center items-center z-[1000] hidden"><div class="modal-content bg-card-bg p-8 rounded-xl w-11/12 max-w-lg shadow-2xl border border-slate-700"><h3 id="delete-modal-title" class="text-xl font-semibold mb-4"></h3><p class="text-muted-text mb-6">This action cannot be undone.</p><div class="flex justify-end gap-2"><button type="button" class="cancel-btn px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg text-white font-semibold">Cancel</button><button type="button" class="px-4 py-2 bg-red-600 hover:bg-red-500 rounded-lg text-white font-semibold" id="confirm-delete-btn">Delete</button></div></div></div>
+        <div id="user-history-modal" class="modal-overlay fixed inset-0 flex justify-center items-center z-[1000] hidden"><div class="modal-content bg-card-bg p-8 rounded-xl w-11/12 max-w-3xl shadow-2xl border border-slate-700"><h3 id="user-history-title" class="text-xl font-semibold mb-4"></h3><h4 class="text-lg font-semibold mt-4 mb-2">Points History</h4><div class="overflow-y-auto max-h-[400px] rounded-lg border border-slate-700"><table class="w-full text-left table-auto"><thead class="bg-slate-700 text-slate-400 uppercase text-xs sticky top-0"><tr><th class="p-4 rounded-tl-lg">Date</th><th class="p-4">Description</th><th class="p-4">Points</th><th class="p-4 rounded-tr-lg">Actions</th></tr></thead><tbody id="user-history-table-body" class="divide-y divide-slate-700"></tbody></table></div><h4 class="text-lg font-semibold mt-6 mb-2">Cash Out History</h4><div class="overflow-y-auto max-h-[200px] rounded-lg border border-slate-700"><table class="w-full text-left table-auto"><thead class="bg-slate-700 text-slate-400 uppercase text-xs sticky top-0"><tr><th class="p-4 rounded-tl-lg">Date</th><th class="p-4">Amount ($)</th><th class="p-4 rounded-tr-lg">Actions</th></tr></thead><tbody id="user-cashout-history-table-body" class="divide-y divide-slate-700"></tbody></table></div><div class="flex justify-end mt-6"><button type="button" class="px-6 py-3 bg-red-600 hover:bg-red-500 rounded-lg text-white font-semibold" id="user-history-close-btn">Close</button></div></div></div>
+        <div id="add-video-modal" class="modal-overlay fixed inset-0 flex justify-center items-center z-[1000] hidden"><div class="modal-content bg-card-bg p-8 rounded-xl w-11/12 max-w-lg shadow-2xl border border-slate-700"><h3 id="modal-title" class="text-xl font-semibold mb-4">Add New Video</h3><form id="add-video-form" class="modal-form space-y-4"><div><label for="video-title" class="block text-sm font-medium mb-1">Video Title</label><input type="text" id="video-title" name="videoTitle" required class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary"></div><div><label for="video-description" class="block text-sm font-medium mb-1">Description</label><textarea id="video-description" name="videoDescription" rows="3" required class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary"></textarea></div><div><label for="video-category" class="block text-sm font-medium mb-1">Category</label><select id="video-category" name="videoCategory" required class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary"><option value="YouTube">YouTube</option><option value="TikTok">TikTok</option><option value="Facebook">Facebook</option><option value="Nature">Nature</option><option value="Education">Education</option><option value="Travel">Travel</option><option value="Food">Food</option><option value="Gaming">Gaming</option></select></div><div><label for="video-url" class="block text-sm font-medium mb-1">Video URL (YouTube Embed Link)</label><input type="text" id="video-url" name="videoUrl" required class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary"></div><div><label for="video-points" class="block text-sm font-medium mb-1">Points</label><input type="number" id="video-points" name="videoPoints" required class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary"></div><div><label for="watch-duration" class="block text-sm font-medium mb-1">Watch Duration (Seconds)</label><input type="number" id="watch-duration" name="watchDuration" required class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary"></div><div class="flex justify-end gap-2 pt-4"><button type="button" class="cancel-btn px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg text-white font-semibold">Cancel</button><button type="submit" class="save-btn px-4 py-2 bg-primary hover:bg-indigo-600 rounded-lg text-white font-semibold">Save Video</button></div></form></div></div>
+        <div id="cashout-modal" class="modal-overlay fixed inset-0 flex justify-center items-center z-[1000] hidden"><div class="modal-content bg-card-bg p-8 rounded-xl w-11/12 max-w-lg shadow-2xl border border-slate-700"><h3 class="text-xl font-semibold mb-4">Cash Out Request</h3><form id="cashout-form" class="modal-form space-y-4"><p class="text-muted-text">Please enter your payment details to receive your earnings.</p><div><label for="payment-method" class="block text-sm font-medium mb-1">Payment Method</label><select id="payment-method" name="paymentMethod" class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary"><option value="KBZ Pay">KBZ Pay</option><option value="Wave Pay">Wave Pay</option><option value="Binance Pay">Binance Pay</option></select></div><div><label for="payout-amount" class="block text-sm font-medium mb-1">Amount ($)</label><input type="number" id="payout-amount" name="payoutAmount" value="0.00" readonly class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 text-muted-text cursor-not-allowed"></div><div class="flex justify-end gap-2 pt-4"><button type="button" class="cancel-btn px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg text-white font-semibold">Cancel</button><button type="submit" class="save-btn px-4 py-2 bg-primary hover:bg-indigo-600 rounded-lg text-white font-semibold" id="cashout-submit-btn">Submit Request</button></div></form></div></div>
+        <div id="add-task-modal" class="modal-overlay fixed inset-0 flex justify-center items-center z-[1000] hidden"><div class="modal-content bg-card-bg p-8 rounded-xl w-11/12 max-w-lg shadow-2xl border border-slate-700"><h3 id="task-modal-title" class="text-xl font-semibold mb-4">Add New Task</h3><form id="add-task-form" class="modal-form space-y-4"><div><label for="task-title" class="block text-sm font-medium mb-1">Task Title (e.g., Follow our Page)</label><input type="text" id="task-title" name="taskTitle" required class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary"></div><div><label for="task-platform" class="block text-sm font-medium mb-1">Platform</label><select id="task-platform" name="taskPlatform" required class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary"><option value="Facebook">Facebook</option><option value="YouTube">YouTube</option><option value="TikTok">TikTok</option><option value="Telegram">Telegram</option><option value="Website">Website</option><option value="Other">Other</option></select></div><div><label for="task-url" class="block text-sm font-medium mb-1">Link URL</label><input type="url" id="task-url" name="taskUrl" required class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary"></div><div><label for="task-points" class="block text-sm font-medium mb-1">Points Reward</label><input type="number" id="task-points" name="taskPoints" required class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary"></div><div class="flex justify-end gap-2 pt-4"><button type="button" class="cancel-btn px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg text-white font-semibold">Cancel</button><button type="submit" class="save-btn px-4 py-2 bg-primary hover:bg-indigo-600 rounded-lg text-white font-semibold">Save Task</button></div></form></div></div>
     </div>
     
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut, signInAnonymously, GoogleAuthProvider, signInWithPopup, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, collection, query, where, addDoc, getDocs, deleteDoc, arrayRemove, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, collection, query, addDoc, getDocs, deleteDoc, arrayUnion, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
         document.addEventListener('DOMContentLoaded', async () => {
             const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
@@ -602,7 +354,6 @@
             let userId = null;
             let isAuthReady = false;
 
-            // --- DOM Element Selections ---
             const loginPage = document.getElementById('login-page');
             const appContainer = document.getElementById('app-container');
             const googleSignInBtn = document.getElementById('google-sign-in-btn');
@@ -642,7 +393,6 @@
             const adminTotalPayoutsValue = document.getElementById('admin-total-payouts-value');
             const welcomeMessage = document.getElementById('welcome-message');
             const deleteConfirmModal = document.getElementById('delete-confirm-modal');
-            const deleteConfirmBtn = document.getElementById('confirm-delete-btn');
             const usersTableBody = document.getElementById('users-table-body');
             const userHistoryModal = document.getElementById('user-history-modal');
             const userHistoryTitle = document.getElementById('user-history-title');
@@ -651,8 +401,15 @@
             const cashoutMessageModal = document.getElementById('cashout-message-modal');
             const cashoutMessageText = document.getElementById('cashout-message-text');
             const offerwallButtons = document.querySelectorAll('.offerwall-btn');
+            const addTaskBtn = document.getElementById('add-task-btn');
+            const addTaskModal = document.getElementById('add-task-modal');
+            const addTaskForm = document.getElementById('add-task-form');
+            const taskModalTitle = document.getElementById('task-modal-title');
+            const tasksTableBody = document.getElementById('tasks-table-body');
+            const customTasksGrid = document.getElementById('custom-tasks-grid');
             
             let videos = [];
+            let customTasks = [];
             let currentUser = null;
             let userData = null;
             let videoCardToAnimate = null;
@@ -696,7 +453,7 @@
                         let userRole = user.email === adminEmail ? 'admin' : 'user';
                         let userName = user.displayName || (user.email ? user.email.split('@')[0] : 'Ping User');
                         if (userRole === 'admin') userName = 'Mr. Ping';
-                        await setDoc(userDocRef, { name: userName, email: user.email || '', role: userRole, points: 0, pointsHistory: [], payoutHistory: [], watchedVideos: [] });
+                        await setDoc(userDocRef, { name: userName, email: user.email || '', role: userRole, points: 0, pointsHistory: [], payoutHistory: [], watchedVideos: [], completedTasks: [] });
                     }
                     if (user.email === adminEmail) {
                         const videosCollectionRef = collection(db, `/artifacts/${appId}/public/data/videos`);
@@ -730,6 +487,15 @@
                     const querySnapshot = await getDocs(query(videosCollectionRef));
                     videos = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 } catch (e) { console.error("Error fetching videos:", e); } finally { hideLoading(); }
+            }
+
+            async function fetchCustomTasks() {
+                const tasksCollectionRef = collection(db, `/artifacts/${appId}/public/data/customTasks`);
+                onSnapshot(query(tasksCollectionRef), (snapshot) => {
+                    customTasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    if (currentUser?.role === 'admin') renderManageTasksTable();
+                    if (currentUser?.role === 'user') renderCustomTasksForUser();
+                });
             }
             
             async function fetchAllUsers() {
@@ -784,16 +550,19 @@
                 } catch (e) { console.error("Error deleting cash out history item:", e); } finally { hideLoading(); }
             }
 
-            async function updatePointsInFirestore(pointsToAdd, description, videoId) {
+            async function updatePointsInFirestore(pointsToAdd, description, uniqueId) {
                 if (!userData || !userId) return;
                 showLoading();
                 try {
                     const userDocRef = doc(db, `/artifacts/${appId}/users/${userId}`);
-                    await updateDoc(userDocRef, {
-                        points: (userData.points || 0) + pointsToAdd,
-                        pointsHistory: arrayUnion({ date: new Date().toLocaleDateString('en-US'), description, points: pointsToAdd }),
-                        watchedVideos: arrayUnion(videoId)
-                    });
+                    const newPoints = (userData.points || 0) + pointsToAdd;
+                    const newHistory = { date: new Date().toLocaleDateString('en-US'), description, points: pointsToAdd };
+                    
+                    if (uniqueId.startsWith('task_')) {
+                         await updateDoc(userDocRef, { points: newPoints, pointsHistory: arrayUnion(newHistory), completedTasks: arrayUnion(uniqueId.replace('task_','')) });
+                    } else {
+                         await updateDoc(userDocRef, { points: newPoints, pointsHistory: arrayUnion(newHistory), watchedVideos: arrayUnion(uniqueId) });
+                    }
                 } catch (e) { console.error("Error updating points:", e); } finally { hideLoading(); }
             }
             
@@ -804,18 +573,27 @@
                     if (videoId) await setDoc(doc(videosCollectionRef, videoId), videoData, { merge: true });
                     else await addDoc(videosCollectionRef, videoData);
                 } catch (e) { console.error("Error saving video:", e); } finally { hideLoading(); }
-                await fetchVideos(); 
-                renderManageVideosTable();
-                renderVideoGrid(document.querySelector('.filter-btn.active')?.dataset.category || 'all');
             }
 
             async function deleteVideo(videoId) {
                 showLoading();
                 try { await deleteDoc(doc(db, `/artifacts/${appId}/public/data/videos`, videoId)); }
                 catch (e) { console.error("Error deleting video:", e); } finally { hideLoading(); }
-                await fetchVideos();
-                renderManageVideosTable();
-                renderVideoGrid(document.querySelector('.filter-btn.active')?.dataset.category || 'all');
+            }
+
+            async function saveCustomTask(taskData, taskId = null) {
+                showLoading();
+                try {
+                    const tasksCollectionRef = collection(db, `/artifacts/${appId}/public/data/customTasks`);
+                    if (taskId) await setDoc(doc(tasksCollectionRef, taskId), taskData, { merge: true });
+                    else await addDoc(tasksCollectionRef, { ...taskData, createdAt: serverTimestamp() });
+                } catch (e) { console.error("Error saving task:", e); } finally { hideLoading(); }
+            }
+
+            async function deleteCustomTask(taskId) {
+                showLoading();
+                try { await deleteDoc(doc(db, `/artifacts/${appId}/public/data/customTasks`, taskId)); }
+                catch (e) { console.error("Error deleting task:", e); } finally { hideLoading(); }
             }
             
             async function fetchAdminDashboardData() {
@@ -849,11 +627,9 @@
                     showView('user-dashboard-view');
                     updatePointsDisplay();
                     renderPointsHistoryTable();
-                    fetchVideos().then(() => renderVideoGrid('all'));
                 } else if (role === 'admin') {
                     headerMeta.innerHTML = getAdminHeaderHTML();
                     showView('admin-dashboard-view');
-                    fetchVideos().then(renderManageVideosTable);
                     fetchAdminDashboardData();
                 }
                 attachLogoutListeners(); 
@@ -890,7 +666,7 @@
             }
 
             function updatePageTitle(viewId) {
-                const titleMap = { 'user-dashboard-view': 'Dashboard', 'tasks-view': 'Earn More', 'watch-videos-view': 'Watch Videos', 'points-history-view': 'Points History', 'admin-dashboard-view': 'Admin Dashboard', 'manage-videos-view': 'Manage Videos', 'manage-users-view': 'Manage Users', 'video-player-view': 'Video Player' };
+                const titleMap = { 'user-dashboard-view': 'Dashboard', 'tasks-view': 'Earn More', 'watch-videos-view': 'Watch Videos', 'points-history-view': 'Points History', 'admin-dashboard-view': 'Admin Dashboard', 'manage-videos-view': 'Manage Videos', 'manage-users-view': 'Manage Users', 'video-player-view': 'Video Player', 'manage-tasks-view': 'Manage Tasks' };
                 pageTitle.innerHTML = `<button id="menu-toggle" class="md:hidden p-2 -ml-2 rounded-md hover:bg-card-bg"><svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></button> ${titleMap[viewId] || 'Ping Rewards'}`;
                 document.getElementById('menu-toggle').addEventListener('click', () => {
                     sidebar.classList.toggle('open');
@@ -917,6 +693,25 @@
                 }).join('') : `<p class="col-span-full text-center text-muted-text py-12">No videos found.</p>`;
                 attachVideoCardListeners();
             }
+
+            function renderCustomTasksForUser() {
+                if (!customTasksGrid || !userData) return;
+                const completedTaskIds = new Set(userData.completedTasks || []);
+                const availableTasks = customTasks.filter(task => !completedTaskIds.has(task.id));
+                if (availableTasks.length === 0) {
+                    customTasksGrid.innerHTML = `<div class="text-center text-muted-text py-8">No new community tasks available. Check back later!</div>`;
+                    return;
+                }
+                customTasksGrid.innerHTML = availableTasks.map(task => `
+                    <div class="bg-card-bg p-4 rounded-lg flex items-center justify-between border border-slate-700 hover:border-primary transition-colors">
+                        <div>
+                            <div class="text-xs text-secondary mb-1 uppercase">${task.platform}</div>
+                            <h4 class="font-semibold">${task.title}</h4>
+                        </div>
+                        <button class="complete-task-btn px-4 py-2 bg-primary hover:bg-indigo-600 text-white font-semibold rounded-lg text-sm whitespace-nowrap" data-task-id="${task.id}">+${task.points} Points</button>
+                    </div>`).join('');
+                attachCompleteTaskListeners();
+            }
             
             function renderUsersTable(users) {
                 if (!usersTableBody) return;
@@ -937,6 +732,22 @@
                 document.querySelectorAll('.delete-cashout-history-btn').forEach(btn => btn.addEventListener('click', () => deleteCashOutHistoryItem(btn.dataset.userId, cachedUsers.find(u=>u.id===btn.dataset.userId).payoutHistory[btn.dataset.historyIndex])));
             }
 
+            function renderManageTasksTable() {
+                if (!tasksTableBody) return;
+                tasksTableBody.innerHTML = customTasks.map(task => `
+                    <tr data-task-id="${task.id}">
+                        <td class="p-4">${task.title}</td>
+                        <td class="p-4">${task.platform}</td>
+                        <td class="p-4">${task.points}</td>
+                        <td class="p-4">
+                            <button class="edit-task-btn text-primary hover:text-indigo-400 mr-4" data-task-id="${task.id}">Edit</button>
+                            <button class="delete-task-btn text-red-500 hover:text-red-400" data-task-id="${task.id}">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+                attachManageTasksListeners();
+            }
+
             function renderPointsHistoryTable() {
                 if (!pointsHistoryTableBody) return;
                 const history = userData?.pointsHistory || [];
@@ -953,23 +764,6 @@
                 const userPointsDisplay = document.getElementById('user-points-display');
                 if (userPointsDisplay) userPointsDisplay.textContent = `${points.toLocaleString()} PTS`;
                 document.getElementById('payout-amount').value = earnings;
-            }
-
-            function animateCoins(startElement, endElement, points) {
-                const numCoins = Math.min(Math.floor(points / 20), 10);
-                const startRect = startElement.getBoundingClientRect();
-                const endRect = endElement.getBoundingClientRect();
-                for (let i = 0; i < numCoins; i++) {
-                    const coin = document.createElement('div');
-                    coin.className = 'absolute z-50 transition-all duration-1000 ease-out opacity-0';
-                    coin.innerHTML = `<svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9 5a1 1 0 011-1h.01a1 1 0 010 2H10a1 1 0 01-1-1zM9 9a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1zm1 5a1 1 0 100-2 1 1 0 000 2z"/></svg>`;
-                    document.body.appendChild(coin);
-                    Object.assign(coin.style, { left: `${startRect.left + startRect.width / 2}px`, top: `${startRect.top + startRect.height / 2}px` });
-                    setTimeout(() => {
-                        Object.assign(coin.style, { left: `${endRect.left + endRect.width / 2}px`, top: `${endRect.top + endRect.height / 2}px`, opacity: '1', transform: 'translateY(-80px) scale(0.5)' });
-                    }, 50 + i * 50);
-                    setTimeout(() => coin.remove(), 1100 + i * 50);
-                }
             }
 
             function attachLogoutListeners() {
@@ -1003,22 +797,11 @@
                             clearTimeout(window.videoWatchTimer);
                             videoIframe.src = '';
                             if (earned) {
-                                animateCoins(videoCardToAnimate, document.getElementById('user-points-display'), video.points);
                                 setTimeout(() => updatePointsInFirestore(video.points, `Watched "${video.title}"`, video.id), 1000);
                             }
                             showView('watch-videos-view');
                         };
                     });
-                });
-            }
-            
-            function showDeleteModal(videoId) {
-                deleteConfirmModal.classList.remove('hidden');
-                const newBtn = deleteConfirmBtn.cloneNode(true);
-                deleteConfirmBtn.parentNode.replaceChild(newBtn, deleteConfirmBtn);
-                newBtn.addEventListener('click', () => {
-                    deleteConfirmModal.classList.add('hidden');
-                    deleteVideo(videoId);
                 });
             }
             
@@ -1038,20 +821,53 @@
                 }));
                 document.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', e => {
                     e.preventDefault();
-                    showDeleteModal(btn.dataset.videoId);
+                    document.getElementById('delete-modal-title').textContent = 'Delete this video?';
+                    document.getElementById('confirm-delete-btn').onclick = () => {
+                        deleteConfirmModal.classList.add('hidden');
+                        deleteVideo(btn.dataset.videoId);
+                    };
+                    deleteConfirmModal.classList.remove('hidden');
                 }));
             }
             
-            function attachManageUsersListeners(users) {
-                document.querySelectorAll('.view-history-btn').forEach(btn => btn.addEventListener('click', () => {
-                    const user = users.find(u => u.id === btn.dataset.userId);
-                    if (user) {
-                        userHistoryTitle.textContent = `${user.name || 'User'}'s History`;
-                        renderUserHistoryTables(user);
-                        userHistoryModal.classList.remove('hidden');
+            function attachManageTasksListeners() {
+                document.querySelectorAll('.edit-task-btn').forEach(btn => btn.addEventListener('click', () => {
+                    const task = customTasks.find(t => t.id === btn.dataset.taskId);
+                    if (task) {
+                        taskModalTitle.textContent = "Edit Task";
+                        addTaskForm.elements.taskTitle.value = task.title;
+                        addTaskForm.elements.taskPlatform.value = task.platform;
+                        addTaskForm.elements.taskUrl.value = task.url;
+                        addTaskForm.elements.taskPoints.value = task.points;
+                        addTaskForm.dataset.editingId = task.id;
+                        addTaskModal.classList.remove('hidden');
                     }
                 }));
-                document.querySelectorAll('.toggle-role-btn').forEach(btn => btn.addEventListener('click', () => toggleUserRole(btn.dataset.userId, btn.dataset.currentRole)));
+                document.querySelectorAll('.delete-task-btn').forEach(btn => btn.addEventListener('click', () => {
+                    document.getElementById('delete-modal-title').textContent = 'Delete this task?';
+                    document.getElementById('confirm-delete-btn').onclick = () => {
+                        deleteConfirmModal.classList.add('hidden');
+                        deleteCustomTask(btn.dataset.taskId);
+                    };
+                    deleteConfirmModal.classList.remove('hidden');
+                }));
+            }
+
+            function attachCompleteTaskListeners() {
+                document.querySelectorAll('.complete-task-btn').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        const taskId = btn.dataset.taskId;
+                        const task = customTasks.find(t => t.id === taskId);
+                        if (task) {
+                            window.open(task.url, '_blank');
+                            btn.disabled = true;
+                            btn.textContent = 'Done!';
+                            btn.classList.remove('bg-primary', 'hover:bg-indigo-600');
+                            btn.classList.add('bg-accent-green', 'cursor-not-allowed');
+                            await updatePointsInFirestore(task.points, `Completed task: "${task.title}"`, `task_${taskId}`);
+                        }
+                    });
+                });
             }
 
             onAuthStateChanged(auth, async (user) => {
@@ -1075,6 +891,8 @@
                         userId = user.uid;
                         await seedInitialData(user);
                         await fetchUserData(userId);
+                        await fetchVideos();
+                        await fetchCustomTasks();
                     }
                 } else {
                     loginPage.style.display = 'flex';
@@ -1083,16 +901,13 @@
                 }
             });
 
-            if (typeof __initial_auth_token === 'undefined') {
-                signInAnonymously(auth);
-            }
+            if (typeof __initial_auth_token === 'undefined') signInAnonymously(auth);
 
             googleSignInBtn.addEventListener('click', async () => {
                 showLoading();
-                try {
-                    await signInWithPopup(auth, new GoogleAuthProvider());
-                } catch (error) {
-                    loginMessage.textContent = 'Google Sign-in failed. Please check your Authorized domains.';
+                try { await signInWithPopup(auth, new GoogleAuthProvider()); }
+                catch (error) {
+                    loginMessage.textContent = 'Google Sign-in failed. Please check your Network';
                     loginMessage.style.display = 'block';
                     hideLoading();
                 }
@@ -1111,9 +926,7 @@
                     const result = await response.json();
                     const summaryText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
                     summaryOutput.innerHTML = summaryText ? `<h4 class="font-semibold mt-4">Summary</h4><p class="text-sm">${summaryText}</p>` : `<p class="text-red-500">Could not retrieve summary.</p>`;
-                } catch (error) {
-                    summaryOutput.innerHTML = `<p class="text-red-500">Error fetching summary.</p>`;
-                }
+                } catch (error) { summaryOutput.innerHTML = `<p class="text-red-500">Error fetching summary.</p>`; }
             });
 
             navLinks.forEach(link => link.addEventListener('click', e => {
@@ -1124,6 +937,7 @@
                 backdrop.classList.remove('open');
                 document.body.classList.remove('no-scroll');
                 if (targetId === 'manage-users-view') fetchAllUsers();
+                if (targetId === 'manage-videos-view') fetchVideos().then(renderManageVideosTable);
             }));
             
             backdrop.addEventListener('click', () => {
@@ -1147,7 +961,7 @@
                 addVideoModal.classList.remove('hidden');
             });
 
-            document.querySelectorAll('#add-video-modal .cancel-btn, #delete-confirm-modal .cancel-btn').forEach(btn => btn.addEventListener('click', () => {
+            document.querySelectorAll('.modal-overlay .cancel-btn').forEach(btn => btn.addEventListener('click', () => {
                 btn.closest('.modal-overlay').classList.add('hidden');
             }));
 
@@ -1162,6 +976,24 @@
                 await saveVideo(videoData, addVideoForm.dataset.editingId);
                 addVideoModal.classList.add('hidden');
             });
+
+            addTaskBtn.addEventListener('click', () => {
+                taskModalTitle.textContent = "Add New Task";
+                addTaskForm.reset();
+                addTaskForm.removeAttribute('data-editing-id');
+                addTaskModal.classList.remove('hidden');
+            });
+
+            addTaskForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(addTaskForm);
+                const taskData = {
+                    title: formData.get('taskTitle'), platform: formData.get('taskPlatform'),
+                    url: formData.get('taskUrl'), points: parseInt(formData.get('taskPoints')),
+                };
+                await saveCustomTask(taskData, addTaskForm.dataset.editingId);
+                addTaskModal.classList.add('hidden');
+            });
             
             cashoutBtn.addEventListener('click', () => {
                 if (!userData || userData.points < 5000) {
@@ -1173,7 +1005,6 @@
             });
             
             document.getElementById('cashout-message-close-btn').addEventListener('click', () => cashoutMessageModal.classList.add('hidden'));
-            document.querySelector('#cashout-modal .cancel-btn').addEventListener('click', () => cashoutModal.classList.add('hidden'));
             
             cashoutForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
