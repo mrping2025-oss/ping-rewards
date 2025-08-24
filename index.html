@@ -3,36 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- SEO Meta Tags -->
     <meta name="keywords" content="Ping Rewards, ဗီဒီယိုကြည့်ပြီး ငွေရှာ, အွန်လိုင်းအလုပ်, ငွေထုတ်, အွန်လိုင်းဝင်ငွေ, online money, watch and earn, online jobs, rewards, tasks, offers">
     <meta name="description" content="Ping Rewards တွင် ဗီဒီယိုများကြည့်ရှုခြင်း၊ Task များလုပ်ဆောင်ခြင်းဖြင့် အမှတ်များစုဆောင်းပြီး ငွေသားထုတ်ယူလိုက်ပါ။ အွန်လိုင်းမှ အလွယ်တကူ ငွေရှာပါ။">
-    <!-- NAMO TASSA BHAGAVATO ARAHATO SAMMA SAMBUDDHASSA -->
     <title>Ping Rewards</title>
-    <!-- Favicon - P logo as requested -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%236366f1' d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14h-2V8h2a3 3 0 010 6z'/></svg>" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        'primary': '#6366f1',  /* Indigo */
-                        'secondary': '#f9a8d4', /* Pink */
-                        'background': '#0f172a', /* Slate 900 */
-                        'card-bg': '#1e293b', /* Slate 800 */
-                        'text-color': '#e2e8f0', /* Slate 200 */
-                        'muted-text': '#94a3b8', /* Slate 400 */
-                        'accent-green': '#10b981', /* Emerald */
-                        'accent-orange': '#f59e0b', /* Amber */
-                        'accent-purple': '#a855f7', /* Purple */
+                        'primary': '#6366f1', 'secondary': '#f9a8d4', 'background': '#0f172a',
+                        'card-bg': '#1e293b', 'text-color': '#e2e8f0', 'muted-text': '#94a3b8',
+                        'accent-green': '#10b981', 'accent-orange': '#f59e0b', 'accent-purple': '#a855f7',
                     },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    }
+                    fontFamily: { sans: ['Inter', 'sans-serif'], }
                 }
             }
         }
@@ -44,7 +32,6 @@
         .no-scroll { overflow: hidden; }
         .modal-overlay { background-color: rgba(0, 0, 0, 0.7); }
     </style>
-    <!-- Firebase SDKs -->
     <script type="module" src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"></script>
@@ -810,7 +797,7 @@
                 document.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', e => {
                     e.preventDefault();
                     document.getElementById('delete-modal-title').textContent = 'Delete this video?';
-                    document.getElementById('confirm-delete-btn').onclick = () => {
+                    deleteConfirmBtn.onclick = () => {
                         deleteConfirmModal.classList.add('hidden');
                         deleteVideo(btn.dataset.videoId);
                     };
@@ -833,7 +820,7 @@
                 }));
                 document.querySelectorAll('.delete-task-btn').forEach(btn => btn.addEventListener('click', () => {
                     document.getElementById('delete-modal-title').textContent = 'Delete this task?';
-                    document.getElementById('confirm-delete-btn').onclick = () => {
+                    deleteConfirmBtn.onclick = () => {
                         deleteConfirmModal.classList.add('hidden');
                         deleteCustomTask(btn.dataset.taskId);
                     };
