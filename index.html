@@ -509,7 +509,7 @@
                     renderUsersTable(cachedUsers);
                 } catch (e) {
                     console.error("Error fetching users:", e);
-                    usersTableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-red-500">Error fetching users.</td></tr>`;
+                    usersTableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-red-500">Error fetching users. This might be a Firestore security rule issue.</td></tr>`;
                 } finally { hideLoading(); }
             }
             
@@ -662,6 +662,11 @@
                     updatePageTitle(targetId);
                     navLinks.forEach(nav => nav.classList.remove('active', 'bg-primary/20', 'text-white'));
                     document.querySelector(`a[data-target="${targetId}"]`)?.classList.add('active', 'bg-primary/20', 'text-white');
+                    // FIX: Call data fetching functions when navigating to specific admin views
+                    if (targetId === 'admin-dashboard-view') generateRandomChartData();
+                    if (targetId === 'manage-users-view') fetchAllUsers();
+                    if (targetId === 'manage-videos-view') fetchVideos().then(renderManageVideosTable);
+                    if (targetId === 'manage-tasks-view') fetchCustomTasks().then(renderManageTasksTable);
                 }
             }
 
@@ -907,7 +912,7 @@
                 showLoading();
                 try { await signInWithPopup(auth, new GoogleAuthProvider()); }
                 catch (error) {
-                    loginMessage.textContent = 'Google Sign-in failed. Please check your Network';
+                    loginMessage.textContent = 'Google Sign-in failed. Please check your Authorized domains.';
                     loginMessage.style.display = 'block';
                     hideLoading();
                 }
@@ -936,8 +941,6 @@
                 sidebar.classList.remove('open');
                 backdrop.classList.remove('open');
                 document.body.classList.remove('no-scroll');
-                if (targetId === 'manage-users-view') fetchAllUsers();
-                if (targetId === 'manage-videos-view') fetchVideos().then(renderManageVideosTable);
             }));
             
             backdrop.addEventListener('click', () => {
