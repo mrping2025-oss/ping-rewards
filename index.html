@@ -937,6 +937,21 @@
                 }
             }
 
+            async function fetchPendingCommunityTasks() {
+                showLoading();
+                try {
+                    const tasksCollectionRef = collection(db, `/artifacts/${appId}/public/data/communityTasks`);
+                    const q = query(tasksCollectionRef, where("status", "==", "pending"));
+                    const querySnapshot = await getDocs(q);
+                    const pendingTasks = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    renderManageCommunityTasksTable(pendingTasks);
+                } catch (e) {
+                    console.error("Error fetching pending tasks:", e);
+                } finally {
+                    hideLoading();
+                }
+            }
+
             async function submitCommunityTask(taskData) {
                 showLoading();
                 try {
@@ -1013,11 +1028,15 @@
                 usersTableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-muted-text">Fetching users...</td></tr>`;
                 try {
                     const usersCollectionRef = collection(db, `/artifacts/${appId}/users`);
-                    const querySnapshot = await getDocs(usersCollectionRef);
-                    cachedUsers = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    renderUsersTable(cachedUsers);
+                    onSnapshot(usersCollectionRef, (querySnapshot) => {
+                         cachedUsers = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                         renderUsersTable(cachedUsers);
+                    }, (error) => {
+                         console.error("Error fetching users:", error);
+                         usersTableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-red-500">Error fetching users.</td></tr>`;
+                    });
                 } catch (e) {
-                    console.error("Error fetching users:", e);
+                    console.error("Error setting up user listener:", e);
                     usersTableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-red-500">Error fetching users.</td></tr>`;
                 } finally {
                     hideLoading();
@@ -1641,7 +1660,7 @@
                 });
             }
 
-            function renderManageCommunityTasks(tasks) {
+            function renderManageCommunityTasksTable(tasks) {
                  const tableBody = document.getElementById('manage-community-tasks-table-body');
                  if (!tableBody) return;
 
@@ -1662,7 +1681,7 @@
                             <td class="p-4">${task.taskTitle}</td>
                             <td class="p-4">${task.taskPlatform}</td>
                             <td class="p-4">${task.taskPoints}</td>
-                            <td class="p-4">${task.submittedBy}</td>
+                            <td class="p-4 text-xs font-mono">${(task.submittedBy || 'N/A').substring(0, 8)}...</td>
                             <td class="p-4"><span class="capitalize text-sm">${task.status}</span></td>
                             <td class="p-4">
                                 ${approveBtnHtml}
@@ -1690,264 +1709,43 @@
                  });
             }
 
-            function updatePointsDisplay() {
-                if (!userData) return;
-                const totalPointsValue = document.getElementById('total-points-value');
-                const estimatedEarningsValue = document.getElementById('estimated-earnings-value');
-                const videosWatchedValue = document.getElementById('videos-watched-value');
-                const userPointsDisplay = document.getElementById('user-points-display');
-                const cashoutBtn = document.getElementById('cashout-button');
-                const payoutAmountInput = document.getElementById('payout-amount');
-
-                if (totalPointsValue) totalPointsValue.textContent = userData.points.toLocaleString();
-                if (estimatedEarningsValue) estimatedEarningsValue.textContent = `$${(userData.points / 5000).toFixed(2)}`;
-                if (videosWatchedValue) videosWatchedValue.textContent = (userData.pointsHistory || []).filter(h => h.description.includes('Watched')).length;
-                if (userPointsDisplay) userPointsDisplay.textContent = `${userData.points.toLocaleString()} PTS`;
-                if (payoutAmountInput) payoutAmountInput.value = (userData.points / 5000).toFixed(2);
-                
-                if (cashoutBtn) {
-                        cashoutBtn.disabled = false;
-                        cashoutBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                        cashoutBtn.classList.add('hover:bg-indigo-600');
-                }
-            }
-
-            function animateCoins(startElement, endElement, points) {
-                const numberOfCoins = Math.min(Math.floor(points / 20), 10);
-                const startRect = startElement.getBoundingClientRect();
-                const endRect = endElement.getBoundingClientRect();
-                
-                for (let i = 0; i < numberOfCoins; i++) {
-                    const coin = document.createElement('div');
-                    coin.className = 'absolute z-50 transition-all duration-1000 ease-out opacity-0 coin-icon';
-                    coin.innerHTML = `<svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 102 0V6zm-1 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg>`;
-                    document.body.appendChild(coin);
-
-                    coin.style.left = `${startRect.left + (startRect.width / 2) - 8}px`;
-                    coin.style.top = `${startRect.top + (startRect.height / 2) - 8}px`;
-
-                    setTimeout(() => {
-                        coin.style.left = `${endRect.left + (endRect.width / 2) - 8}px`;
-                        coin.style.top = `${endRect.top + (endRect.height / 2) - 8}px`;
-                        coin.style.opacity = '1';
-                        coin.style.transform = 'translateY(-100px) scale(0.5)';
-                    }, 50 + i * 50);
-
-                    setTimeout(() => {
-                        coin.remove();
-                    }, 1100 + i * 50);
-                }
-            }
-
-            // --- Event Listener Attachment ---
-            function attachLogoutListeners() {
-                const logoutButtons = document.querySelectorAll('.logout-btn');
-                if (logoutButtons) {
-                    logoutButtons.forEach(btn => {
-                        const oldBtn = btn.cloneNode(true);
-                        btn.parentNode.replaceChild(oldBtn, btn);
-                    });
-                    const newLogoutButtons = document.querySelectorAll('.logout-btn');
-                    newLogoutButtons.forEach(btn => {
-                        btn.addEventListener('click', async () => {
-                            try {
-                                await signOut(auth);
-                                if (loginPage) loginPage.style.display = 'flex';
-                                if (appContainer) appContainer.style.display = 'none';
-                                currentUser = null;
-                                userData = null;
-                                console.log("User signed out.");
-                            } catch (error) {
-                                console.error("Error signing out:", error);
-                            }
-                        });
-                    });
-                }
-            }
-
-            async function attachVideoCardListeners() {
-                const cards = document.querySelectorAll('.video-card');
-                cards.forEach(card => {
-                    const oldCard = card.cloneNode(true);
-                    card.parentNode.replaceChild(oldCard, card);
-                });
-
-                const newCards = document.querySelectorAll('.video-card');
-                newCards.forEach(card => {
-                    card.addEventListener('click', (e) => {
-                        const videoId = card.getAttribute('data-video-id');
-                        const video = videos.find(v => v.id === videoId);
-                        
-                        if (video) {
-                            videoCardToAnimate = card;
-                            if (videoIframe) videoIframe.src = video.videoUrl;
-                            if (videoPlayerTitle) videoPlayerTitle.textContent = video.title;
-                            if (videoPlayerDescription) videoPlayerDescription.textContent = video.description;
-                            showView('video-player-view');
-                            if (summaryOutput) summaryOutput.innerHTML = '';
-
-                            let pointsEarnedInSession = false;
-                            clearTimeout(window.videoWatchTimer);
-                            window.videoWatchTimer = setTimeout(() => {
-                                pointsEarnedInSession = true;
-                                console.log(`Video watched for required duration. Click 'Back to Videos' to earn points.`);
-                                window.currentWatchedVideoId = video.id;
-                            }, video.watchDuration * 1000);
-                            
-                            if(videoPlayerBackBtn) {
-                                videoPlayerBackBtn.onclick = async () => {
-                                    clearTimeout(window.videoWatchTimer);
-                                    if (videoIframe) videoIframe.src = '';
-                                    if (pointsEarnedInSession) {
-                                        if (videoCardToAnimate) {
-                                            const endElement = document.getElementById('user-points-display');
-                                            animateCoins(videoCardToAnimate, endElement, video.points);
-                                            setTimeout(async () => {
-                                                await updatePointsInFirestore(video.points, `Watched "${video.title}"`, video.id);
-                                            }, 1000);
-                                        } else {
-                                            await updatePointsInFirestore(video.points, `Watched "${video.title}"`, video.id);
-                                        }
-                                        console.log("Points updated via Firebase.");
-                                    } else {
-                                        console.log(`You did not watch the video for the required duration. No points were awarded.`);
-                                    }
-                                    showView('watch-videos-view');
-                                };
-                            }
-                        }
-                    });
-                });
-            }
-            
-            function showDeleteModal(videoId) {
-                if (deleteConfirmModal) {
-                    deleteConfirmModal.classList.remove('hidden');
-                    const oldConfirmBtn = deleteConfirmBtn.cloneNode(true);
-                    deleteConfirmBtn.parentNode.replaceChild(oldConfirmBtn, deleteConfirmBtn);
-                    const newConfirmBtn = document.getElementById('confirm-delete-btn');
-                    newConfirmBtn.addEventListener('click', async () => {
-                        deleteConfirmModal.classList.add('hidden');
-                        await deleteVideo(videoId);
-                    });
-                }
-            }
-            
-            document.querySelectorAll('#delete-confirm-modal .cancel-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    deleteConfirmModal.classList.add('hidden');
-                });
-            });
-
-            function attachManageVideosListeners() {
-                const editBtns = document.querySelectorAll('.edit-btn');
-                editBtns.forEach(btn => {
-                    const oldBtn = btn.cloneNode(true);
-                    btn.parentNode.replaceChild(oldBtn, btn);
-                });
-                const newEditBtns = document.querySelectorAll('.edit-btn');
-                newEditBtns.forEach(btn => {
-                    btn.addEventListener('click', async (e) => {
-                        e.preventDefault();
-                        const videoId = btn.getAttribute('data-video-id');
-                        const videoToEdit = videos.find(v => v.id === videoId);
-                        if (videoToEdit) {
-                            if (addModalTitle) addModalTitle.textContent = "Edit Video";
-                            if (document.getElementById('video-title')) document.getElementById('video-title').value = videoToEdit.title;
-                            if (document.getElementById('video-description')) document.getElementById('video-description').value = videoToEdit.description;
-                            if (document.getElementById('video-category')) document.getElementById('video-category').value = videoToEdit.category;
-                            if (document.getElementById('video-url')) document.getElementById('video-url').value = videoToEdit.videoUrl;
-                            if (document.getElementById('video-points')) document.getElementById('video-points').value = videoToEdit.points;
-                            if (document.getElementById('watch-duration')) document.getElementById('watch-duration').value = videoToEdit.watchDuration;
-                            if (addVideoModal) addVideoModal.classList.remove('hidden');
-                            if (addVideoForm) addVideoForm.setAttribute('data-editing-id', videoId);
-                        }
-                    });
-                });
-
-                const deleteBtns = document.querySelectorAll('.delete-btn');
-                deleteBtns.forEach(btn => {
-                    const oldBtn = btn.cloneNode(true);
-                    btn.parentNode.replaceChild(oldBtn, btn);
-                });
-                const newDeleteBtns = document.querySelectorAll('.delete-btn');
-                newDeleteBtns.forEach(btn => {
-                    btn.addEventListener('click', async (e) => {
-                        e.preventDefault();
-                        const videoId = btn.getAttribute('data-video-id');
-                        showDeleteModal(videoId);
-                    });
-                });
-            }
-            
-            function attachManageUsersListeners(users) {
-                const viewHistoryBtns = document.querySelectorAll('.view-history-btn');
-                viewHistoryBtns.forEach(btn => {
-                    btn.addEventListener('click', async () => {
-                        const targetUserId = btn.getAttribute('data-user-id');
-                        const user = users.find(u => u.id === targetUserId);
-                        if (user && userHistoryModal && userHistoryTitle) {
-                                userHistoryTitle.textContent = `${user.name || 'User'}'s History`;
-                                renderUserHistoryTables(user);
-                                userHistoryModal.classList.remove('hidden');
-                        }
-                    });
-                });
-                
-                const toggleRoleBtns = document.querySelectorAll('.toggle-role-btn');
-                toggleRoleBtns.forEach(btn => {
-                        btn.addEventListener('click', async () => {
-                            const targetUserId = btn.getAttribute('data-user-id');
-                            const currentRole = btn.getAttribute('data-current-role');
-                            await toggleUserRole(targetUserId, currentRole);
-                        });
-                });
-            }
-            
-            document.querySelectorAll('#user-history-modal .cancel-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    userHistoryModal.classList.add('hidden');
-                });
-            });
-
-            // --- Initial Setup ---
-            showLoading();
+            // --- Main Setup ---
             onAuthStateChanged(auth, async (user) => {
                 isAuthReady = true;
                 if (user) {
                     if (user.isAnonymous) {
-                         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-                         if (initialAuthToken) {
-                             try {
-                                  await signInWithCustomToken(auth, initialAuthToken);
-                             } catch(e) {
-                                  console.error("Error signing in with custom token:", e);
-                                  if (loginPage) loginPage.style.display = 'flex';
-                                  if (appContainer) appContainer.style.display = 'none';
-                                  hideLoading();
-                             }
-                         } else {
-                              if (loginPage) loginPage.style.display = 'flex';
-                              if (appContainer) appContainer.style.display = 'none';
-                              hideLoading();
-                         }
+                        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+                        if (initialAuthToken) {
+                            try {
+                                await signInWithCustomToken(auth, initialAuthToken);
+                            } catch(e) {
+                                console.error("Error signing in with custom token:", e);
+                                loginPage.style.display = 'flex';
+                                appContainer.style.display = 'none';
+                                hideLoading();
+                            }
+                        } else {
+                            loginPage.style.display = 'flex';
+                            appContainer.style.display = 'none';
+                            hideLoading();
+                        }
                     } else {
-                         userId = user.uid;
-                         await seedInitialData(user);
-                         await fetchUserData(userId);
+                        userId = user.uid;
+                        await seedInitialData(user);
+                        await fetchUserData(userId);
                     }
                 } else {
                     console.log("No user is signed in. Showing login page.");
-                    if (loginPage) loginPage.style.display = 'flex';
-                    if (appContainer) appContainer.style.display = 'none';
+                    loginPage.style.display = 'flex';
+                    appContainer.style.display = 'none';
                     hideLoading();
                 }
             });
 
             if (typeof __initial_auth_token === 'undefined') {
-                 signInAnonymously(auth);
+                signInAnonymously(auth);
             }
-            
+
             // --- Event Listeners ---
             if (googleSignInBtn) {
                 googleSignInBtn.addEventListener('click', async (e) => {
@@ -1956,56 +1754,29 @@
                     const provider = new GoogleAuthProvider();
                     try {
                         const result = await signInWithPopup(auth, provider);
-                        if (result.user) {
-                           console.log("User signed in with Google successfully.");
-                        }
+                        console.log("User signed in with Google successfully.");
                     } catch (error) {
                         console.error("Google Sign-in failed:", error);
-                        if (loginMessage) {
-                            loginMessage.textContent = 'Google Sign-in failed. Please check your Authorized domains.';
-                            loginMessage.style.display = 'block';
-                        }
+                        loginMessage.textContent = 'Google Sign-in failed. Please check your Authorized domains.';
+                        loginMessage.style.display = 'block';
                         hideLoading();
                     }
                 });
             }
+
+            if(menuToggleBtn) {
+                menuToggleBtn.addEventListener('click', () => {
+                    sidebar.classList.toggle('open');
+                    backdrop.classList.toggle('open');
+                    document.body.classList.toggle('no-scroll');
+                });
+            }
             
-            if (getSummaryBtn) {
-                getSummaryBtn.addEventListener('click', async () => {
-                    const currentVideo = videos.find(v => v.id === window.currentWatchedVideoId);
-                    if (!currentVideo) {
-                        if (summaryOutput) summaryOutput.innerHTML = `<p class="text-red-500">Video not found.</p>`;
-                        return;
-                    }
-
-                    if (summaryOutput) summaryOutput.innerHTML = `<p class="text-primary">Fetching summary...</p>`;
-
-                    try {
-                        const prompt = `Video Title: "${currentVideo.title}". Description: "${currentVideo.description}". Provide a concise summary in English.`;
-                        const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
-                        const payload = { contents: chatHistory };
-                        const apiKey = "";
-                        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-                        
-                        const response = await fetch(apiUrl, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(payload)
-                        });
-                        
-                        const result = await response.json();
-                        if (result.candidates && result.candidates.length > 0 &&
-                            result.candidates[0].content && result.candidates[0].content.parts &&
-                            result.candidates[0].content.parts.length > 0) {
-                            const summaryText = result.candidates[0].content.parts[0].text;
-                            if (summaryOutput) summaryOutput.innerHTML = `<h4 class="font-semibold mt-4">Summary</h4><p class="text-sm">${summaryText}</p>`;
-                        } else {
-                            if (summaryOutput) summaryOutput.innerHTML = `<p class="text-red-500">Could not retrieve summary.</p>`;
-                        }
-                    } catch (error) {
-                        console.error("Gemini API Error:", error);
-                        if (summaryOutput) summaryOutput.innerHTML = `<p class="text-red-500">Error fetching summary.</p>`;
-                    }
+            if(backdrop) {
+                backdrop.addEventListener('click', () => {
+                    sidebar.classList.remove('open');
+                    backdrop.classList.remove('open');
+                    document.body.classList.remove('no-scroll');
                 });
             }
 
@@ -2014,9 +1785,10 @@
                     e.preventDefault();
                     const targetId = link.getAttribute('data-target');
                     showView(targetId);
-                    if (sidebar) sidebar.classList.remove('open');
-                    if (backdrop) backdrop.classList.remove('open');
+                    sidebar.classList.remove('open');
+                    backdrop.classList.remove('open');
                     document.body.classList.remove('no-scroll');
+                    
                     if (targetId === 'watch-videos-view') {
                         renderVideoGrid('all');
                     } else if (targetId === 'manage-videos-view') {
@@ -2025,23 +1797,19 @@
                         fetchAllUsers();
                     } else if (targetId === 'points-history-view') {
                         renderPointsHistoryTable();
+                    } else if (targetId === 'community-tasks-view') {
+                        fetchCommunityTasks().then(() => renderCommunityTasks(communityTasks));
+                    } else if (targetId === 'manage-community-tasks-view') {
+                        fetchPendingCommunityTasks();
                     }
                 });
             });
             
-            if (backdrop) {
-                backdrop.addEventListener('click', () => {
-                    if (sidebar) sidebar.classList.remove('open');
-                    if (backdrop) backdrop.classList.remove('open');
-                    document.body.classList.remove('no-scroll');
-                });
-            }
-
             filterButtons.forEach(btn => {
                 btn.addEventListener('click', () => {
                     filterButtons.forEach(b => { 
-                        if(b) b.classList.remove('active', 'bg-primary', 'border-primary', 'text-white'); 
-                        if(b) b.classList.add('bg-card-bg', 'border-slate-700');
+                        b.classList.remove('active', 'bg-primary', 'border-primary', 'text-white'); 
+                        b.classList.add('bg-card-bg', 'border-slate-700');
                     });
                     btn.classList.add('active', 'bg-primary', 'border-primary', 'text-white');
                     btn.classList.remove('bg-card-bg', 'border-slate-700');
@@ -2060,16 +1828,16 @@
 
             if (addVideoBtn) {
                 addVideoBtn.addEventListener('click', () => {
-                    if (addModalTitle) addModalTitle.textContent = "Add New Video";
-                    if (addVideoForm) addVideoForm.reset();
-                    if (addVideoForm) addVideoForm.removeAttribute('data-editing-id');
-                    if (addVideoModal) addVideoModal.classList.remove('hidden');
+                    addModalTitle.textContent = "Add New Video";
+                    addVideoForm.reset();
+                    addVideoForm.removeAttribute('data-editing-id');
+                    addVideoModal.classList.remove('hidden');
                 });
             }
 
             document.querySelectorAll('#add-video-modal .cancel-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    if (addVideoModal) addVideoModal.classList.add('hidden');
+                    addVideoModal.classList.add('hidden');
                 });
             });
 
@@ -2090,24 +1858,20 @@
                     const editingId = addVideoForm.getAttribute('data-editing-id');
                     await saveVideo(videoData, editingId);
                     
-                    if (addVideoModal) addVideoModal.classList.add('hidden');
+                    addVideoModal.classList.add('hidden');
                 });
             }
             
             if (cashoutBtn) {
                 cashoutBtn.addEventListener('click', () => {
                     if (!userData || userData.points < 5000) {
-                        if (cashoutMessageModal) {
-                            cashoutMessageText.textContent = `You need 5000 points to cash out. Your current points are ${(userData?.points || 0).toLocaleString()}.`;
-                            cashoutMessageModal.classList.remove('hidden');
-                        }
+                        cashoutMessageText.textContent = `Cash Out လုပ်ရန်အတွက် Point 5000 လိုအပ်ပါသည်။ သင်၏ လက်ရှိ point မှာ ${(userData?.points || 0).toLocaleString()} ဖြစ်ပါသည်။`;
+                        cashoutMessageModal.classList.remove('hidden');
                     } else {
-                        if (cashoutModal) {
-                            const payoutAmount = (userData.points / 5000).toFixed(2);
-                            const payoutInput = document.getElementById('payout-amount');
-                            if (payoutInput) payoutInput.value = payoutAmount;
-                            cashoutModal.classList.remove('hidden');
-                        }
+                        const payoutAmount = (userData.points / 5000).toFixed(2);
+                        const payoutInput = document.getElementById('payout-amount');
+                        payoutInput.value = payoutAmount;
+                        cashoutModal.classList.remove('hidden');
                     }
                 });
             }
@@ -2120,7 +1884,7 @@
 
             document.querySelectorAll('#cashout-modal .cancel-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    if (cashoutModal) cashoutModal.classList.add('hidden');
+                    cashoutModal.classList.add('hidden');
                 });
             });
             
@@ -2130,8 +1894,8 @@
                     
                     const channelUrl = "https://t.me/MMMMOline";
                     
-                    if (!userData || userData.points <= 0) {
-                        if (cashoutModal) cashoutModal.classList.add('hidden');
+                    if (!userData || userData.points < 5000) {
+                        cashoutModal.classList.add('hidden');
                         window.open(channelUrl, '_blank');
                         return;
                     }
@@ -2146,8 +1910,8 @@
                             points: -pointsCashedOut
                         };
                         const newPayoutEntry = {
-                                date: new Date().toLocaleDateString('en-US'),
-                                amount: parseFloat(payoutAmount)
+                            date: new Date().toLocaleDateString('en-US'),
+                            amount: parseFloat(payoutAmount)
                         };
 
                         await updateDoc(userDocRef, {
@@ -2157,7 +1921,7 @@
                         });
 
                         console.log('Cash out request submitted and points reset.');
-                        if (cashoutModal) cashoutModal.classList.add('hidden');
+                        cashoutModal.classList.add('hidden');
                         window.open(channelUrl, '_blank');
                     } catch (error) {
                         console.error("Error during cash out:", error);
@@ -2177,10 +1941,8 @@
                         }
                         const isCpaLead = button.dataset.provider === 'cpalead';
                         if (isCpaLead && userData && userData.points < 5000) {
-                            if (cashoutMessageModal) {
-                                cashoutMessageText.textContent = `You need 5000 points to access CPALead Offers. Your current points are ${(userData?.points || 0).toLocaleString()}.`;
-                                cashoutMessageModal.classList.remove('hidden');
-                            }
+                            cashoutMessageText.textContent = `You need 5000 points to access CPALead Offers. Your current points are ${(userData?.points || 0).toLocaleString()}.`;
+                            cashoutMessageModal.classList.remove('hidden');
                             return;
                         }
                         const provider = button.dataset.provider;
@@ -2201,7 +1963,6 @@
                 });
             }
 
-            // --- NEW: Community Task Modal Listeners ---
             if (createCommunityTaskBtn) {
                  createCommunityTaskBtn.addEventListener('click', () => {
                      createCommunityTaskModal.classList.remove('hidden');
@@ -2237,8 +1998,7 @@
                      paymentInstructionModal.classList.add('hidden');
                  });
             });
-            
-            // --- NEW: Admin Community Task Table Rendering and Listeners ---
+
             function renderManageCommunityTasksTable(tasks) {
                  const tableBody = document.getElementById('manage-community-tasks-table-body');
                  if (!tableBody) return;
@@ -2260,7 +2020,7 @@
                             <td class="p-4">${task.taskTitle}</td>
                             <td class="p-4">${task.taskPlatform}</td>
                             <td class="p-4">${task.taskPoints}</td>
-                            <td class="p-4 text-xs font-mono">${(task.submittedBy || 'N/A').substring(0, 8)}...</td>
+                            <td class="p-4 text-xs font-mono">${(task.submittedBy || 'N/A')}</td>
                             <td class="p-4"><span class="capitalize text-sm">${task.status}</span></td>
                             <td class="p-4">
                                 ${approveBtnHtml}
