@@ -354,7 +354,7 @@
                             <div class="text-3xl font-bold" id="admin-total-points-earned-value">0</div>
                         </div>
                     </div>
-                    <div class="stat-card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 flex items-center">
+                    <div class="stat-card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 flex items-center cursor-pointer" id="admin-payouts-card">
                         <div class="flex-shrink-0 w-12 h-12 rounded-full bg-accent-orange/20 flex items-center justify-center mr-4">
                             <svg class="w-6 h-6 fill-accent-orange" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4V8h16v10zm-12-7h4v2H8v-2zm-2-2v6h12V6H6z"/></svg>
                         </div>
@@ -502,26 +502,24 @@
             </div>
         </div>
         
-        <!-- Modal for Viewing User History -->
-        <div id="user-history-modal" class="modal-overlay fixed inset-0 flex justify-center items-center z-[1000] hidden">
+        <!-- Modal for Viewing User History / Payout History -->
+        <div id="history-modal" class="modal-overlay fixed inset-0 flex justify-center items-center z-[1000] hidden">
             <div class="modal-content bg-card-bg p-8 rounded-xl w-11/12 max-w-3xl shadow-2xl border border-slate-700">
-                <h3 id="user-history-title" class="text-xl font-semibold mb-4"></h3>
-                <div id="user-history-content" class="overflow-x-auto">
+                <h3 id="history-modal-title" class="text-xl font-semibold mb-4"></h3>
+                <div id="history-modal-content" class="overflow-y-auto max-h-[70vh] rounded-lg">
                      <table class="w-full text-left table-auto">
                          <thead class="bg-slate-700 text-slate-400 uppercase text-xs">
-                             <tr>
-                                 <th class="p-4 rounded-tl-lg">Date</th>
-                                 <th class="p-4">Description</th>
-                                 <th class="p-4 rounded-tr-lg">Points</th>
+                             <tr id="history-table-header">
+                                 <!-- Table headers will be dynamically rendered here -->
                              </tr>
                          </thead>
-                         <tbody id="user-history-table-body" class="divide-y divide-slate-700">
+                         <tbody id="history-table-body" class="divide-y divide-slate-700">
                              <!-- History rows will be dynamically rendered here by JS -->
                          </tbody>
                      </table>
                 </div>
                 <div class="flex justify-end gap-2 mt-6">
-                    <button type="button" class="px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg text-white font-semibold transition-colors duration-200" id="user-history-close-btn">Close</button>
+                    <button type="button" class="px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg text-white font-semibold transition-colors duration-200" id="history-modal-close-btn">Close</button>
                 </div>
             </div>
         </div>
@@ -698,7 +696,8 @@
             const addSocialTaskForm = document.getElementById('add-social-task-form');
             const socialTaskTableBody = document.querySelector('#social-tasks-table');
             const socialTaskModalTitle = document.getElementById('social-task-modal-title');
-
+            
+            // Cash out and history related elements
             const cashoutBtn = document.getElementById('cashout-button');
             const cashoutModal = document.getElementById('cashout-modal');
             const cashoutForm = document.getElementById('cashout-form');
@@ -706,11 +705,16 @@
             const estimatedEarningsValue = document.getElementById('estimated-earnings-value');
             const videosWatchedValue = document.getElementById('videos-watched-value');
             const pointsHistoryTableBody = document.querySelector('#points-history-table');
-            
+            const cashoutMessageModal = document.getElementById('cashout-message-modal');
+            const cashoutMessageText = document.getElementById('cashout-message-text');
+            const cashoutMessageCloseBtn = document.getElementById('cashout-message-close-btn');
+
+            // Admin related elements
             const adminTotalUsersValue = document.getElementById('admin-total-users-value');
             const adminTotalVideosValue = document.getElementById('admin-total-videos-value');
             const adminTotalPointsEarnedValue = document.getElementById('admin-total-points-earned-value');
             const adminTotalPayoutsValue = document.getElementById('admin-total-payouts-value');
+            const adminPayoutsCard = document.getElementById('admin-payouts-card');
             
             const welcomeMessage = document.getElementById('welcome-message');
             
@@ -718,12 +722,11 @@
             const deleteConfirmBtn = document.getElementById('confirm-delete-btn');
             
             const usersTableBody = document.getElementById('users-table-body');
-            const userHistoryModal = document.getElementById('user-history-modal');
-            const userHistoryTitle = document.getElementById('user-history-title');
-            const userHistoryTableBody = document.getElementById('user-history-table-body');
-            
-            const cashoutMessageModal = document.getElementById('cashout-message-modal');
-            const cashoutMessageText = document.getElementById('cashout-message-text');
+            const historyModal = document.getElementById('history-modal');
+            const historyModalTitle = document.getElementById('history-modal-title');
+            const historyTableBody = document.getElementById('history-table-body');
+            const historyModalCloseBtn = document.getElementById('history-modal-close-btn');
+            const historyTableHeader = document.getElementById('history-table-header');
             
             let videos = [];
             let socialTasks = []; // New array to hold social tasks
@@ -1362,7 +1365,7 @@
                              <h3 class="text-lg font-semibold mb-1">${task.title}</h3>
                              <p class="text-sm text-muted-text mb-2">${task.platform}</p>
                              <span class="inline-block bg-accent-green text-white text-xs font-bold px-3 py-1 rounded-full mb-4">${task.points} PTS</span>
-                             <button class="complete-task-btn w-full py-2 text-white font-semibold rounded-lg transition-colors duration-300 ${buttonClass}" data-task-id="${task.id}" ${isCompleted ? 'disabled' : ''}>
+                             <button class="complete-task-btn w-full py-2 text-white font-semibold rounded-lg transition-colors duration-300 ${buttonClass}" data-task-id="${task.id}" data-task-link="${task.link}" ${isCompleted ? 'disabled' : ''}>
                                  ${buttonText}
                              </button>
                          </div>
@@ -1470,6 +1473,26 @@
                         </tr>
                     `;
                     pointsHistoryTableBody.innerHTML += tableRowHtml;
+                });
+            }
+            
+            function renderPayoutHistoryTable(payouts) {
+                if (!historyTableBody) return;
+                historyTableBody.innerHTML = '';
+                if (!payouts || payouts.length === 0) {
+                    historyTableBody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-muted-text">No payout history yet.</td></tr>`;
+                    return;
+                }
+                
+                payouts.forEach(item => {
+                    const rowHtml = `
+                        <tr class="hover:bg-slate-700 transition-colors duration-200">
+                            <td class="p-4">${item.date}</td>
+                            <td class="p-4">Cash Out</td>
+                            <td class="p-4 font-bold text-accent-orange">-$${item.amount.toFixed(2)}</td>
+                        </tr>
+                    `;
+                    historyTableBody.innerHTML += rowHtml;
                 });
             }
 
@@ -1627,6 +1650,13 @@
                      deleteConfirmModal.classList.add('hidden');
                 });
             });
+            
+            // Close the main history modal
+            if (historyModalCloseBtn) {
+                historyModalCloseBtn.addEventListener('click', () => {
+                    historyModal.classList.add('hidden');
+                });
+            }
 
             function attachManageVideosListeners() {
                 const editBtns = document.querySelectorAll('.edit-btn');
@@ -1703,30 +1733,31 @@
                 const viewHistoryBtns = document.querySelectorAll('.view-history-btn');
                 viewHistoryBtns.forEach(btn => {
                     btn.addEventListener('click', async () => {
-                        const userId = btn.getAttribute('data-user-id');
-                        const user = users.find(u => u.id === userId);
-                        if (user && userHistoryModal && userHistoryTitle && userHistoryTableBody) {
-                             userHistoryTitle.textContent = `${user.name || 'User'}'s Points History`;
-                             userHistoryTableBody.innerHTML = '';
+                        const targetUserId = btn.getAttribute('data-user-id');
+                        const user = users.find(u => u.id === targetUserId);
+                        if (user && historyModal && historyModalTitle && historyTableBody) {
+                             historyModalTitle.textContent = `${user.name || 'User'}'s Points History`;
+                             historyTableHeader.innerHTML = `<th class="p-4 rounded-tl-lg">Date</th><th class="p-4">Description</th><th class="p-4 rounded-tr-lg">Points</th>`;
                              
                              if (user.pointsHistory && user.pointsHistory.length > 0) {
+                                 historyTableBody.innerHTML = ''; // Clear previous content
                                  user.pointsHistory.forEach(item => {
                                       const row = document.createElement('tr');
                                       row.className = 'hover:bg-slate-700 transition-colors duration-200';
                                       row.innerHTML = `<td class="p-4">${item.date}</td><td class="p-4">${item.description}</td><td class="p-4">${item.points}</td>`;
-                                      userHistoryTableBody.appendChild(row);
+                                      historyTableBody.appendChild(row);
                                  });
                              } else {
-                                  userHistoryTableBody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-muted-text">No history found.</td></tr>`;
+                                  historyTableBody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-muted-text">No history found.</td></tr>`;
                              }
-                             userHistoryModal.classList.remove('hidden');
+                             historyModal.classList.remove('hidden');
                         }
                     });
                 });
                 
-                document.querySelectorAll('#user-history-modal .cancel-btn, #user-history-modal .save-btn').forEach(btn => {
+                document.querySelectorAll('#history-modal .cancel-btn').forEach(btn => {
                      btn.addEventListener('click', () => {
-                          userHistoryModal.classList.add('hidden');
+                          historyModal.classList.add('hidden');
                      });
                 });
                 
@@ -1737,6 +1768,55 @@
                          const currentRole = btn.getAttribute('data-current-role');
                          await toggleUserRole(targetUserId, currentRole);
                      });
+                });
+            }
+            
+            if (adminPayoutsCard) {
+                adminPayoutsCard.addEventListener('click', async () => {
+                    if (!historyModal || !historyModalTitle || !historyTableBody) return;
+                    
+                    historyModalTitle.textContent = `All Payouts History`;
+                    historyTableHeader.innerHTML = `<th class="p-4 rounded-tl-lg">Date</th><th class="p-4">Amount ($)</th><th class="p-4 rounded-tr-lg">User ID</th>`;
+                    historyTableBody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-muted-text">Fetching data...</td></tr>`;
+                    
+                    showLoading();
+                    
+                    try {
+                        const usersCollectionRef = collection(db, `/artifacts/${appId}/users`);
+                        const querySnapshot = await getDocs(usersCollectionRef);
+                        let allPayouts = [];
+                        
+                        querySnapshot.forEach(doc => {
+                            const userData = doc.data();
+                            const payouts = userData.payoutHistory || [];
+                            const userId = doc.id;
+                            payouts.forEach(payout => {
+                                allPayouts.push({ ...payout, userId: userId });
+                            });
+                        });
+                        
+                        if (allPayouts.length > 0) {
+                            historyTableBody.innerHTML = '';
+                            allPayouts.forEach(payout => {
+                                const rowHtml = `
+                                    <tr class="hover:bg-slate-700 transition-colors duration-200">
+                                        <td class="p-4">${payout.date}</td>
+                                        <td class="p-4 font-bold text-accent-orange">-$${payout.amount.toFixed(2)}</td>
+                                        <td class="p-4 text-xs font-mono">${payout.userId.substring(0, 8)}...</td>
+                                    </tr>
+                                `;
+                                historyTableBody.innerHTML += rowHtml;
+                            });
+                        } else {
+                           historyTableBody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-muted-text">No payout history found.</td></tr>`;
+                        }
+                    } catch (e) {
+                         console.error("Error fetching payout history:", e);
+                         historyTableBody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-red-500">Error fetching payout history.</td></tr>`;
+                    } finally {
+                        hideLoading();
+                        historyModal.classList.remove('hidden');
+                    }
                 });
             }
 
@@ -1933,7 +2013,9 @@
             }
 
             if (cashoutBtn) {
-                cashoutBtn.addEventListener('click', () => {
+                cashoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    // Check if the user has enough points
                     if (!userData || userData.points < 5000) {
                         if (cashoutMessageModal) {
                             cashoutMessageText.textContent = `You need 5000 points to cash out. Your current points are ${(userData?.points || 0).toLocaleString()}.`;
@@ -1950,11 +2032,12 @@
                 });
             }
             
-            document.querySelectorAll('#cashout-message-modal button').forEach(btn => {
-                 btn.addEventListener('click', () => {
+            // Close cash out message modal
+            if (cashoutMessageCloseBtn) {
+                 cashoutMessageCloseBtn.addEventListener('click', () => {
                       cashoutMessageModal.classList.add('hidden');
                  });
-            });
+            }
 
             document.querySelectorAll('#cashout-modal .cancel-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
