@@ -763,6 +763,7 @@
             
             const deleteConfirmModal = document.getElementById('delete-confirm-modal');
             const deleteConfirmBtn = document.getElementById('confirm-delete-btn');
+            const deleteCancelBtn = document.querySelector('#delete-confirm-modal .cancel-btn');
             
             const usersTableBody = document.getElementById('users-table-body');
             const userHistoryModal = document.getElementById('user-history-modal');
@@ -789,6 +790,7 @@
             let userData = null;
             let videoCardToAnimate = null;
             let cachedUsers = [];
+            let itemToDelete = null;
 
             const adminEmail = 'mr.ping2025@gmail.com';
             const communityTaskFee = 5000;
@@ -1009,7 +1011,7 @@
                 showLoading();
                 try {
                     const userDocRef = doc(db, `/artifacts/${appId}/users/${userId}`);
-                    const newPoints = userData.points + points;
+                    const newPoints = (userData.points || 0) + points;
                     const newHistory = [...(userData.pointsHistory || []), {
                         date: new Date().toLocaleDateString('en-US'),
                         description: `Completed community task: ${taskId}`,
@@ -1144,7 +1146,7 @@
                 showLoading();
                 try {
                     const userDocRef = doc(db, `/artifacts/${appId}/users/${userId}`);
-                    const newPoints = userData.points + pointsToAdd;
+                    const newPoints = (userData.points || 0) + pointsToAdd;
                     const newHistory = [...(userData.pointsHistory || []), {
                         date: new Date().toLocaleDateString('en-US'),
                         description: description,
@@ -1708,9 +1710,10 @@
                  document.querySelectorAll('.delete-task-btn').forEach(btn => {
                     btn.addEventListener('click', async () => {
                         const taskId = btn.dataset.taskId;
-                        if (confirm('Are you sure you want to delete this task?')) {
-                             await deleteCommunityTask(taskId);
-                        }
+                         // Replace confirm() with a custom modal
+                        itemToDelete = { type: 'communityTask', id: taskId };
+                        document.getElementById('delete-modal-title').textContent = "Are you sure you want to delete this task?";
+                        deleteConfirmModal.classList.remove('hidden');
                     });
                  });
             }
@@ -2047,9 +2050,10 @@
                  document.querySelectorAll('.delete-task-btn').forEach(btn => {
                     btn.addEventListener('click', async () => {
                         const taskId = btn.dataset.taskId;
-                        if (confirm('Are you sure you want to delete this task?')) {
-                             await deleteCommunityTask(taskId);
-                        }
+                        // Replace confirm() with a custom modal
+                        itemToDelete = { type: 'communityTask', id: taskId };
+                        document.getElementById('delete-modal-title').textContent = "Are you sure you want to delete this task?";
+                        deleteConfirmModal.classList.remove('hidden');
                     });
                  });
             }
