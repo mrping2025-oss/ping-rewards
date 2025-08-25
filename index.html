@@ -927,11 +927,15 @@
                 try {
                     const tasksCollectionRef = collection(db, `/artifacts/${appId}/public/data/communityTasks`);
                     const q = query(tasksCollectionRef, where("status", "==", "approved"));
-                    const querySnapshot = await getDocs(q);
-                    communityTasks = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    console.log("Approved community tasks fetched:", communityTasks);
+                    onSnapshot(q, (querySnapshot) => {
+                         communityTasks = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                         renderCommunityTasks(communityTasks);
+                         console.log("Approved community tasks fetched:", communityTasks);
+                    }, (error) => {
+                         console.error("Error fetching community tasks:", error);
+                    });
                 } catch (e) {
-                    console.error("Error fetching community tasks:", e);
+                    console.error("Error setting up community tasks listener:", e);
                 } finally {
                     hideLoading();
                 }
@@ -942,11 +946,14 @@
                 try {
                     const tasksCollectionRef = collection(db, `/artifacts/${appId}/public/data/communityTasks`);
                     const q = query(tasksCollectionRef, where("status", "==", "pending"));
-                    const querySnapshot = await getDocs(q);
-                    const pendingTasks = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    renderManageCommunityTasksTable(pendingTasks);
+                    onSnapshot(q, (querySnapshot) => {
+                         const pendingTasks = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                         renderManageCommunityTasksTable(pendingTasks);
+                    }, (error) => {
+                         console.error("Error fetching pending tasks:", error);
+                    });
                 } catch (e) {
-                    console.error("Error fetching pending tasks:", e);
+                    console.error("Error setting up pending tasks listener:", e);
                 } finally {
                     hideLoading();
                 }
@@ -1129,7 +1136,6 @@
             async function updatePointsInFirestore(pointsToAdd, description, videoId) {
                 if (!userData || !userId) return;
                 
-                // Don't add points if video is already watched
                 if ((userData.watchedVideos || []).includes(videoId)) {
                     console.log("User has already watched this video. No points awarded.");
                     return;
@@ -1681,7 +1687,7 @@
                             <td class="p-4">${task.taskTitle}</td>
                             <td class="p-4">${task.taskPlatform}</td>
                             <td class="p-4">${task.taskPoints}</td>
-                            <td class="p-4 text-xs font-mono">${(task.submittedBy || 'N/A').substring(0, 8)}...</td>
+                            <td class="p-4 text-xs font-mono">${(task.submittedBy || 'N/A')}</td>
                             <td class="p-4"><span class="capitalize text-sm">${task.status}</span></td>
                             <td class="p-4">
                                 ${approveBtnHtml}
