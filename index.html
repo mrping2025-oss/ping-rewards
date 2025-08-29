@@ -78,9 +78,7 @@
             background-color: rgba(0, 0, 0, 0.7);
         }
     </style>
-    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"></script>
+    <!-- ဖယ်ထုတ်လိုက်သော Firebase script tag များ -->
 </head>
 <body class="bg-background text-text-color">
 
@@ -720,6 +718,7 @@
             
             // --- ပြင်ဆင်ပြီး ---
             // GitHub Pages အတွက် Firebase Configuration
+            // ဤအပိုင်းသည် မှန်ကန်နေပြီး ပြောင်းလဲရန်မလိုအပ်ပါ။
             const firebaseConfig = typeof __firebase_config !== 'undefined'
                 ? JSON.parse(__firebase_config)
                 : {
@@ -2227,6 +2226,4 @@
     </script>
 </body>
 </html>
-
-
 
