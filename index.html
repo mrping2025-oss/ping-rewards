@@ -174,7 +174,7 @@
                         Help
                     </a>
                 </li>
-<!--                 <li>
+<!--                <li>
                     <a href="https://t.me/Mr_PingGP" target="_blank" class="nav-link user-link flex items-center p-3 rounded-lg hover:bg-primary/20 transition-colors duration-200">
                         <svg class="w-6 h-6 mr-3 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg>
                         Help
@@ -312,7 +312,7 @@
                 </button>
                 <!-- Ad Placement under the 'Back to Videos' button -->
                 <div class="my-4">
-                    <script type="text/javascript">  
+                    <script type="text/javascript">    
                         atOptions = {  
                             'key' : 'c6affa5f0ae4df4d56203646aa9bf458',  
                             'format' : 'iframe',  
@@ -320,7 +320,7 @@
                             'width' : 320,  
                             'params' : {}  
                         };  
-                    </script>   
+                    </script>   
                     <script type="text/javascript" src="//www.highperformanceformat.com/c6affa5f0ae4df4d56203646aa9bf458/invoke.js"></script>
                 </div>
                 <div class="bg-card-bg p-0 rounded-xl shadow-md border border-slate-700">
@@ -378,7 +378,7 @@
             <div id="about-view" class="content-view" style="display: none;">
                  <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
                     <h2 class="text-xl font-semibold mb-4">Ping Rewards အကြောင်း</h2>
-                    <p class="text-muted-text mb-6">Ping Rewards ကို အသုံးပြုပုံ၊ စည်းကမ်းချက်များ နှင့် အခြား သိသင့်သည့် အချက်အလက်များ။</p>
+                    <p class="text-muted-text mb-6">Ping Rewards ကို အသုံးပြုပုံ၊ စည်းကမ်းချက်များ နှင့် အခြား သိသင့်သည့် အချက်အလက်များ။</p>
                     <div class="prose max-w-none text-text-color space-y-4">
                         <h3 class="text-lg font-bold text-white">၁။ Web App အသုံးပြုနည်း</h3>
                         <p>Ping Rewards သည် ဗီဒီယိုများကို ကြည့်ရှုခြင်း၊ Social Media Tasks များကို လုပ်ဆောင်ခြင်းဖြင့် အမှတ်များ စုဆောင်းနိုင်သော Web App တစ်ခုဖြစ်သည်။</p>
@@ -717,15 +717,20 @@
         
         document.addEventListener('DOMContentLoaded', async () => {
             const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-            const firebaseConfig = {
-              apiKey: "AIzaSyBKHF_6NIFD0-zrceg3BFJBdhJcFoXiKmA",
-              authDomain: "ping-rewards.firebaseapp.com",
-              projectId: "ping-rewards",
-              storageBucket: "ping-rewards.firebasestorage.app",
-              messagingSenderId: "1001465713586",
-              appId: "1:1001465713586:web:07b8e1a2fb685614ac8aab",
-              measurementId: "G-RJD7MPSSWF"
-            };
+            // ပြဿနာ၏ အဓိက အကြောင်းအရင်းဖြစ်နိုင်သော နေရာ- Firebase config ကို တိုက်ရိုက်ရေးသွင်းထားခြင်း။
+            // Canvas ပေါ်တွင် run သည့်အခါ __firebase_config variable ကို အသုံးပြုပြီး dynamic ဖြစ်အောင် ပြောင်းလဲလိုက်ပါသည်။
+            // အောက်ပါ object သည် local တွင် စမ်းသပ်ရန်အတွက်သာ ဖြစ်ပါသည်။
+            const firebaseConfig = typeof __firebase_config !== 'undefined'
+                ? JSON.parse(__firebase_config)
+                : {
+                    apiKey: "AIzaSyBKHF_6NIFD0-zrceg3BFJBdhJcFoXiKmA", // လုံခြုံရေးအတွက် သင်၏ local API key အစစ်အမှန်ဖြင့်အစားထိုးပါ
+                    authDomain: "ping-rewards.firebaseapp.com",
+                    projectId: "ping-rewards",
+                    storageBucket: "ping-rewards.appspot.com",
+                    messagingSenderId: "1001465713586",
+                    appId: "1:1001465713586:web:07b8e1a2fb685614ac8aab",
+                    measurementId: "G-RJD7MPSSWF"
+                };
 
             const app = initializeApp(firebaseConfig);
             const db = getFirestore(app);
@@ -1244,8 +1249,8 @@
                         </div>
                         <div class="flex items-center space-x-2">
                              <div class="text-right">
-                                <span class="block font-semibold">${nameText}</span>
-                                <span class="block text-xs text-muted-text">${roleText}</span>
+                                 <span class="block font-semibold">${nameText}</span>
+                                 <span class="block text-xs text-muted-text">${roleText}</span>
                              </div>
                             <img src="https://placehold.co/32x32/6366f1/ffffff?text=${profileText}" alt="${nameText}" class="w-8 h-8 rounded-full border border-primary">
                         </div>
@@ -1263,8 +1268,8 @@
                     <div class="flex items-center space-x-4">
                         <div class="flex items-center space-x-2">
                              <div class="text-right">
-                                <span class="block font-semibold">${nameText}</span>
-                                <span class="block text-xs text-muted-text">Admin</span>
+                                 <span class="block font-semibold">${nameText}</span>
+                                 <span class="block text-xs text-muted-text">Admin</span>
                              </div>
                             <img src="https://placehold.co/32x32/6366f1/ffffff?text=${profileText}" alt="${nameText}" class="w-8 h-8 rounded-full border border-primary">
                         </div>
@@ -1321,8 +1326,8 @@
                 if (!titleElement) return;
 
                 const menuToggle = `<button id="menu-toggle" class="md:hidden p-2 -ml-2 rounded-md hover:bg-card-bg transition-colors duration-200">
-                                      <svg class="w-6 h-6 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
-                                    </button>`;
+                                          <svg class="w-6 h-6 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+                                      </button>`;
                 let titleText = 'Ping Rewards';
 
                 switch (viewId) {
@@ -1342,9 +1347,9 @@
                 const toggleBtn = document.getElementById('menu-toggle');
                 if (toggleBtn) {
                      toggleBtn.addEventListener('click', () => {
-                        if (sidebar) sidebar.classList.toggle('open');
-                        if (backdrop) backdrop.classList.toggle('open');
-                        document.body.classList.toggle('no-scroll');
+                         if (sidebar) sidebar.classList.toggle('open');
+                         if (backdrop) backdrop.classList.toggle('open');
+                         document.body.classList.toggle('no-scroll');
                      });
                 }
             }
@@ -1605,11 +1610,11 @@
                 if (cashoutBtn) {
                      cashoutBtn.disabled = userData.points < 5000;
                      if (userData.points < 5000) {
-                        cashoutBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                        cashoutBtn.classList.remove('hover:bg-indigo-600');
+                         cashoutBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                         cashoutBtn.classList.remove('hover:bg-indigo-600');
                      } else {
-                        cashoutBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                        cashoutBtn.classList.add('hover:bg-indigo-600');
+                         cashoutBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                         cashoutBtn.classList.add('hover:bg-indigo-600');
                      }
                 }
             }
@@ -1794,29 +1799,29 @@
             function attachManageSocialTasksListeners() {
                  const editBtns = document.querySelectorAll('.edit-social-task-btn');
                  editBtns.forEach(btn => {
-                      btn.addEventListener('click', (e) => {
-                           e.preventDefault();
-                           const taskId = btn.getAttribute('data-task-id');
-                           const taskToEdit = socialTasks.find(t => t.id === taskId);
-                           if (taskToEdit) {
-                               socialTaskModalTitle.textContent = "Edit Social Task";
-                               document.getElementById('social-task-title').value = taskToEdit.title;
-                               document.getElementById('social-task-platform').value = taskToEdit.platform;
-                               document.getElementById('social-task-link').value = taskToEdit.link;
-                               document.getElementById('social-task-points').value = taskToEdit.points;
-                               addSocialTaskModal.classList.remove('hidden');
-                               addSocialTaskForm.setAttribute('data-editing-id', taskId);
-                           }
-                      });
+                     btn.addEventListener('click', (e) => {
+                         e.preventDefault();
+                         const taskId = btn.getAttribute('data-task-id');
+                         const taskToEdit = socialTasks.find(t => t.id === taskId);
+                         if (taskToEdit) {
+                             socialTaskModalTitle.textContent = "Edit Social Task";
+                             document.getElementById('social-task-title').value = taskToEdit.title;
+                             document.getElementById('social-task-platform').value = taskToEdit.platform;
+                             document.getElementById('social-task-link').value = taskToEdit.link;
+                             document.getElementById('social-task-points').value = taskToEdit.points;
+                             addSocialTaskModal.classList.remove('hidden');
+                             addSocialTaskForm.setAttribute('data-editing-id', taskId);
+                         }
+                     });
                  });
                  
                  const deleteBtns = document.querySelectorAll('.delete-social-task-btn');
                  deleteBtns.forEach(btn => {
-                      btn.addEventListener('click', (e) => {
-                           e.preventDefault();
-                           const taskId = btn.getAttribute('data-task-id');
-                           showDeleteModal(taskId, 'social');
-                      });
+                     btn.addEventListener('click', (e) => {
+                         e.preventDefault();
+                         const taskId = btn.getAttribute('data-task-id');
+                         showDeleteModal(taskId, 'social');
+                     });
                  });
             }
             
@@ -1833,13 +1838,13 @@
                              if (user.pointsHistory && user.pointsHistory.length > 0) {
                                  historyTableBody.innerHTML = ''; // Clear previous content
                                  user.pointsHistory.forEach(item => {
-                                      const row = document.createElement('tr');
-                                      row.className = 'hover:bg-slate-700 transition-colors duration-200';
-                                      row.innerHTML = `<td class="p-4">${item.date}</td><td class="p-4">${item.description}</td><td class="p-4">${item.points}</td>`;
-                                      historyTableBody.appendChild(row);
+                                     const row = document.createElement('tr');
+                                     row.className = 'hover:bg-slate-700 transition-colors duration-200';
+                                     row.innerHTML = `<td class="p-4">${item.date}</td><td class="p-4">${item.description}</td><td class="p-4">${item.points}</td>`;
+                                     historyTableBody.appendChild(row);
                                  });
                              } else {
-                                  historyTableBody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-muted-text">No history found.</td></tr>`;
+                                 historyTableBody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-muted-text">No history found.</td></tr>`;
                              }
                              historyModal.classList.remove('hidden');
                         }
@@ -1848,7 +1853,7 @@
                 
                 document.querySelectorAll('#history-modal .cancel-btn').forEach(btn => {
                      btn.addEventListener('click', () => {
-                          historyModal.classList.add('hidden');
+                         historyModal.classList.add('hidden');
                      });
                 });
                 
@@ -2014,8 +2019,8 @@
             filterButtons.forEach(btn => {
                 btn.addEventListener('click', () => {
                     filterButtons.forEach(b => { 
-                         if(b) b.classList.remove('active', 'bg-primary', 'border-primary', 'text-white'); 
-                         if(b) b.classList.add('bg-card-bg', 'border-slate-700');
+                        if(b) b.classList.remove('active', 'bg-primary', 'border-primary', 'text-white'); 
+                        if(b) b.classList.add('bg-card-bg', 'border-slate-700');
                     });
                     btn.classList.add('active', 'bg-primary', 'border-primary', 'text-white');
                     btn.classList.remove('bg-card-bg', 'border-slate-700');
@@ -2071,35 +2076,35 @@
             // New social task form handlers
             if (addSocialTaskBtn) {
                  addSocialTaskBtn.addEventListener('click', () => {
-                      socialTaskModalTitle.textContent = "Add New Social Task";
-                      addSocialTaskForm.reset();
-                      addSocialTaskForm.removeAttribute('data-editing-id');
-                      addSocialTaskModal.classList.remove('hidden');
+                     socialTaskModalTitle.textContent = "Add New Social Task";
+                     addSocialTaskForm.reset();
+                     addSocialTaskForm.removeAttribute('data-editing-id');
+                     addSocialTaskModal.classList.remove('hidden');
                  });
             }
 
             document.querySelectorAll('#add-social-task-modal .cancel-btn').forEach(btn => {
                  btn.addEventListener('click', () => {
-                      addSocialTaskModal.classList.add('hidden');
+                     addSocialTaskModal.classList.add('hidden');
                  });
             });
 
             if (addSocialTaskForm) {
                  addSocialTaskForm.addEventListener('submit', async (e) => {
-                      e.preventDefault();
+                     e.preventDefault();
 
-                      const formData = new FormData(addSocialTaskForm);
-                      const taskData = {
-                          title: formData.get('taskTitle'),
-                          platform: formData.get('taskPlatform'),
-                          link: formData.get('taskLink'),
-                          points: parseInt(formData.get('taskPoints')),
-                      };
+                     const formData = new FormData(addSocialTaskForm);
+                     const taskData = {
+                         title: formData.get('taskTitle'),
+                         platform: formData.get('taskPlatform'),
+                         link: formData.get('taskLink'),
+                         points: parseInt(formData.get('taskPoints')),
+                     };
 
-                      const editingId = addSocialTaskForm.getAttribute('data-editing-id');
-                      await saveSocialTask(taskData, editingId);
+                     const editingId = addSocialTaskForm.getAttribute('data-editing-id');
+                     await saveSocialTask(taskData, editingId);
 
-                      addSocialTaskModal.classList.add('hidden');
+                     addSocialTaskModal.classList.add('hidden');
                  });
             }
 
@@ -2126,7 +2131,7 @@
             // Close cash out message modal
             if (cashoutMessageCloseBtn) {
                  cashoutMessageCloseBtn.addEventListener('click', () => {
-                      cashoutMessageModal.classList.add('hidden');
+                     cashoutMessageModal.classList.add('hidden');
                  });
             }
 
@@ -2190,22 +2195,22 @@
                          const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
                          if (initialAuthToken) {
                              try {
-                                  await signInWithCustomToken(auth, initialAuthToken);
+                                 await signInWithCustomToken(auth, initialAuthToken);
                              } catch(e) {
-                                  console.error("Error signing in with custom token:", e);
-                                  if (loginPage) loginPage.style.display = 'flex';
-                                  if (appContainer) appContainer.style.display = 'none';
-                                  hideLoading();
+                                 console.error("Error signing in with custom token:", e);
+                                 if (loginPage) loginPage.style.display = 'flex';
+                                 if (appContainer) appContainer.style.display = 'none';
+                                 hideLoading();
                              }
                          } else {
-                              if (loginPage) loginPage.style.display = 'flex';
-                              if (appContainer) appContainer.style.display = 'none';
-                              hideLoading();
+                             if (loginPage) loginPage.style.display = 'flex';
+                             if (appContainer) appContainer.style.display = 'none';
+                             hideLoading();
                          }
                     } else {
-                         userId = user.uid;
-                         await seedInitialData(user);
-                         await fetchUserData(userId);
+                        userId = user.uid;
+                        await seedInitialData(user);
+                        await fetchUserData(userId);
                     }
                 } else {
                     console.log("No user is signed in. Showing login page.");
@@ -2222,3 +2227,4 @@
     </script>
 </body>
 </html>
+
