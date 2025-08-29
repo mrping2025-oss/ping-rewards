@@ -717,16 +717,16 @@
         
         document.addEventListener('DOMContentLoaded', async () => {
             const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-            // ပြဿနာ၏ အဓိက အကြောင်းအရင်းဖြစ်နိုင်သော နေရာ- Firebase config ကို တိုက်ရိုက်ရေးသွင်းထားခြင်း။
-            // Canvas ပေါ်တွင် run သည့်အခါ __firebase_config variable ကို အသုံးပြုပြီး dynamic ဖြစ်အောင် ပြောင်းလဲလိုက်ပါသည်။
-            // အောက်ပါ object သည် local တွင် စမ်းသပ်ရန်အတွက်သာ ဖြစ်ပါသည်။
+            
+            // --- ပြင်ဆင်ပြီး ---
+            // GitHub Pages အတွက် Firebase Configuration
             const firebaseConfig = typeof __firebase_config !== 'undefined'
                 ? JSON.parse(__firebase_config)
                 : {
-                    apiKey: "AIzaSyBKHF_6NIFD0-zrceg3BFJBdhJcFoXiKmA", // လုံခြုံရေးအတွက် သင်၏ local API key အစစ်အမှန်ဖြင့်အစားထိုးပါ
+                    apiKey: "AIzaSyBKHF_6NIFD0-zrceg3BFJBdhJcFoXiKmA",
                     authDomain: "ping-rewards.firebaseapp.com",
                     projectId: "ping-rewards",
-                    storageBucket: "ping-rewards.appspot.com",
+                    storageBucket: "ping-rewards.firebasestorage.app",
                     messagingSenderId: "1001465713586",
                     appId: "1:1001465713586:web:07b8e1a2fb685614ac8aab",
                     measurementId: "G-RJD7MPSSWF"
@@ -2227,4 +2227,6 @@
     </script>
 </body>
 </html>
+
+
 
