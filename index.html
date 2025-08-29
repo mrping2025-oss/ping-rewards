@@ -3,8 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="Ping Rewards, ဗီဒီယိုကြည့်ပြီး ငွေရှာ, အွန်လိုင်းအလုပ်, ငွေထုတ်, အွန်လိုင်းဝင်ငွေ, online money, watch and earn, online jobs, rewards, tasks, offers">
+    <meta name="description" content="Ping Rewards တွင် ဗီဒီယိုများကြည့်ရှုခြင်း၊ Task များလုပ်ဆောင်ခြင်းဖြင့် အမှတ်များစုဆောင်းပြီး ငွေသားထုတ်ယူလိုက်ပါ။ အွန်လိုင်းမှ အလွယ်တကူ ငွေရှာပါ။">
     <!-- NAMO TASSA BHAGAVATO ARAHATO SAMMA SAMBUDDHASSA -->
+    <!-- Favicon - P logo as requested -->
     <title>Ping Rewards</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%236366f1' d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14h-2V8h2a3 3 0 010 6z'/></svg>" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -101,7 +105,7 @@
                 <div class="text-muted-text mt-1">Get rewarded for watching videos.</div>
             </div>
             <div class="bg-card-bg p-8 rounded-xl shadow-lg border border-slate-700">
-                <h2 class="text-xl font-semibold mb-6">Welcome to Ping Rewards</h2>
+                <h2 class="text-xl font-semibold mb-6">Welcome Back</h2>
                 <p id="login-message" class="text-red-500 text-sm mb-4" style="display: none;"></p>
                 <button id="google-sign-in-btn" class="w-full py-3 bg-primary hover:bg-indigo-600 text-white font-semibold rounded-lg transition-colors duration-300 flex items-center justify-center gap-3">
                     <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -152,34 +156,6 @@
                         Points History
                     </a>
                 </li>
-                <li>
-                    <a href="#" class="nav-link user-link flex items-center p-3 rounded-lg hover:bg-primary/20 transition-colors duration-200" data-target="about-view">
-                        <svg class="w-6 h-6 mr-3 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg>
-                        About
-                    </a>
-                </li>
-                <li
-                    style="padding:1rem 0;font-size:1.15rem;cursor:pointer;border-bottom:1px solid #ffe0e9;color:#ff69b4;transition:background 0.2s, color 0.2s;">
-                </li>
-                <li>
-                    <a href="https://t.me/Mr_PingGP" target="_blank"
-                        style="display:flex;align-items:center;text-decoration:none;color:#ff69b4;">
-                        <span style="display:inline-block;width:24px;height:24px;margin-right:20px;">
-                            <svg style="width:100%;height:100%;fill:currentColor;" xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24">
-                                <path
-                                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z" />
-                            </svg>
-                        </span>
-                        Help
-                    </a>
-                </li>
-<!--                <li>
-                    <a href="https://t.me/Mr_PingGP" target="_blank" class="nav-link user-link flex items-center p-3 rounded-lg hover:bg-primary/20 transition-colors duration-200">
-                        <svg class="w-6 h-6 mr-3 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg>
-                        Help
-                    </a>
-                </li> -->
                 
                 <hr class="my-4 border-slate-700 admin-link">
 
@@ -295,10 +271,6 @@
                         <button class="filter-btn px-4 py-2 rounded-full border border-slate-700 bg-card-bg text-sm hover:bg-slate-700 transition-colors duration-200" data-category="Gaming">Gaming</button>
                     </div>
                 </div>
-                <!-- Ad Placement -->
-                <div class="flex justify-center mb-4">
-                    <script type='text/javascript' src='//pl27506647.profitableratecpm.com/25/d1/54/25d154cfe2cdfcc85914d10a0b4a6eae.js'></script>
-                </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="video-grid">
                     <!-- Video cards will be dynamically rendered here by JS -->
                 </div>
@@ -306,37 +278,37 @@
             
             <!-- Video Player View (New) -->
             <div id="video-player-view" class="content-view" style="display: none;">
-                <button id="video-player-back-btn" class="mb-0 flex items-center gap-2 px-4 py-2 bg-primary hover:bg-indigo-600 rounded-lg text-white font-semibold transition-colors duration-200">
+                <button id="video-player-back-btn" class="mb-4 flex items-center gap-2 px-0 py-2 bg-primary hover:bg-indigo-600 rounded-lg text-white font-semibold transition-colors duration-200">
                     <svg class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
                     Back to Videos
                 </button>
-                <!-- Ad Placement under the 'Back to Videos' button -->
-                <div class="my-4">
-                    <script type="text/javascript">    
-                        atOptions = {  
-                            'key' : 'c6affa5f0ae4df4d56203646aa9bf458',  
-                            'format' : 'iframe',  
-                            'height' : 50,  
-                            'width' : 320,  
-                            'params' : {}  
-                        };  
-                    </script>   
-                    <script type="text/javascript" src="//www.highperformanceformat.com/c6affa5f0ae4df4d56203646aa9bf458/invoke.js"></script>
-                </div>
-                <div class="bg-card-bg p-0 rounded-xl shadow-md border border-slate-700">
-                    <div class="aspect-video w-full rounded-xl overflow-hidden mb-0">
+                <div class="bg-card-bg p-2 rounded-xl shadow-md border border-slate-700">
+                    <!-- Ad 1 Placement (Above Video) -->
+                    <div class="flex justify-center mb-4">
+                        <script type="text/javascript">
+                            atOptions = {
+                                'key' : 'c6affa5f0ae4df4d56203646aa9bf458',
+                                'format' : 'iframe',
+                                'height' : 50,
+                                'width' : 320,
+                                'params' : {}
+                            };
+                        </script>
+                        <script type="text/javascript" src="//www.highperformanceformat.com/c6affa5f0ae4df4d56203646aa9bf458/invoke.js"></script>
+                    </div>
+                    <div class="aspect-video w-full rounded-xl overflow-hidden mb-4">
                         <iframe id="video-iframe" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full h-full"></iframe>
                     </div>
-                    <h2 class="text-2xl font-semibold mb-0" id="video-player-title"></h2>
-                    <p class="text-muted-text mb-2" id="video-player-description"></p>
+                    <h2 class="text-2xl font-semibold mb-2" id="video-player-title"></h2>
+                    <p class="text-muted-text mb-4" id="video-player-description"></p>
                     <div class="flex justify-between items-center">
-                        <button id="get-summary-btn" class="action-btn px-4 py-2 bg-secondary hover:bg-pink-500 text-white font-semibold rounded-lg transition-colors duration-200 text-sm">
+                        <button id="get-summary-btn" class="action-btn px-0 py-2 bg-secondary hover:bg-pink-500 text-white font-semibold rounded-lg transition-colors duration-200 text-sm">
                             Get Summary ✨
                         </button>
                         <div id="summary-output" class="text-sm text-muted-text"></div>
                     </div>
                     <!-- Ad 2 Placement (Below Get Summary Button) -->
-                    <div class="mt-0">
+                    <div class="mt-4">
                          <script async="async" data-cfasync="false" src="//pl27490142.profitableratecpm.com/5fae19ca63dcfa0b73c6e2395f27545a/invoke.js"></script>
                          <div id="container-5fae19ca63dcfa0b73c6e2395f27545a"></div>
                     </div>
@@ -346,8 +318,13 @@
             <!-- Social Tasks View (New) -->
             <div id="social-tasks-view" class="content-view" style="display: none;">
                 <h2 class="text-xl font-semibold mb-4">Complete Social Tasks</h2>
+                <div>
+                      <script async="async" data-cfasync="false" src="//pl27490142.profitableratecpm.com/5fae19ca63dcfa0b73c6e2395f27545a/invoke.js"></script>
+                      <div id="container-5fae19ca63dcfa0b73c6e2395f27545a"></div>
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="social-tasks-grid">
                     <!-- Social task cards will be dynamically rendered here by JS -->
+
                     <div class="col-span-full text-center text-muted-text p-6">Loading tasks...</div>
                 </div>
             </div>
@@ -372,32 +349,6 @@
                         </table>
                     </div>
                 </div>
-            </div>
-
-            <!-- About View (New) -->
-            <div id="about-view" class="content-view" style="display: none;">
-                 <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
-                    <h2 class="text-xl font-semibold mb-4">Ping Rewards အကြောင်း</h2>
-                    <p class="text-muted-text mb-6">Ping Rewards ကို အသုံးပြုပုံ၊ စည်းကမ်းချက်များ နှင့် အခြား သိသင့်သည့် အချက်အလက်များ။</p>
-                    <div class="prose max-w-none text-text-color space-y-4">
-                        <h3 class="text-lg font-bold text-white">၁။ Web App အသုံးပြုနည်း</h3>
-                        <p>Ping Rewards သည် ဗီဒီယိုများကို ကြည့်ရှုခြင်း၊ Social Media Tasks များကို လုပ်ဆောင်ခြင်းဖြင့် အမှတ်များ စုဆောင်းနိုင်သော Web App တစ်ခုဖြစ်သည်။</p>
-                        <ul class="list-disc list-inside space-y-1">
-                            <li>**Login:** Google Account ဖြင့် အလွယ်တကူ ဝင်ရောက်နိုင်ပါသည်။</li>
-                            <li>**Watch Videos:** "Watch Videos" tab တွင် ဗီဒီယိုများ ရွေးချယ်ကြည့်ရှုခြင်းဖြင့် အမှတ်များ ရယူပါ။</li>
-                            <li>**Social Tasks:** "Social Tasks" tab တွင် ဖော်ပြထားသော Social Media Task များကို တစ်ကြိမ်လုပ်ဆောင်ခြင်းဖြင့် အမှတ်များ ရယူနိုင်ပါသည်။</li>
-                            <li>**Cash Out:** အမှတ်ပေါင်း 5000 ပြည့်ပါက</li>
-                            <li>**WavePay, KBZ Pay , Binance များဖြင့်  Cash Out ပြုလုပ်နိုင်ပါသည်။</li>
-                        </ul>
-                        <h3 class="text-lg font-bold text-white">၂။ စည်းကမ်းချက်များ</h3>
-                        <ul class="list-disc list-inside space-y-1">
-                            <li>တစ်ဦးလျှင် Account တစ်ခုသာ အသုံးပြုရမည်။ Account အတုများဖြင့် အလွဲသုံးစားပြုလုပ်ပါက အကောင့်ကို ပိတ်သိမ်းမည်။</li>
-                            <li>Fake View, Bot များကို အသုံးပြုခြင်း ခွင့်မပြုပါ။ တွေ့ရှိပါက အရေးယူဆောင်ရွက်မည်။</li>
-                            <li>Cash Out ပြုလုပ်ရာတွင် သင်၏ Payment Information ကို မှန်ကန်စွာ ဖြည့်သွင်းရမည်။</li>
-                            <li>စည်းကမ်းများကို မလိုက်နာပါက၊ အမှတ်များကို သိမ်းဆည်းခြင်း သို့မဟုတ် အကောင့်ကို ပိတ်သိမ်းခြင်း ပြုလုပ်ပါမည်။</li>
-                        </ul>
-                    </div>
-                 </div>
             </div>
             
             <!-- Admin Dashboard View -->
@@ -658,12 +609,10 @@
                     <div>
                         <label for="social-task-platform" class="block text-sm font-medium mb-1">Platform</label>
                         <select id="social-task-platform" name="taskPlatform" required class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary">
-                            <option value="YouTube">YouTube</option>
                             <option value="Facebook">Facebook</option>
                             <option value="TikTok">TikTok</option>
                             <option value="Telegram">Telegram</option>
                             <option value="Twitter">Twitter</option>
-                            <option value="Web">Web</option>
                         </select>
                     </div>
                     <div>
@@ -717,20 +666,15 @@
         
         document.addEventListener('DOMContentLoaded', async () => {
             const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-            
-            // --- ပြင်ဆင်ပြီး ---
-            // GitHub Pages အတွက် Firebase Configuration
-            const firebaseConfig = typeof __firebase_config !== 'undefined'
-                ? JSON.parse(__firebase_config)
-                : {
-                    apiKey: "AIzaSyBKHF_6NIFD0-zrceg3BFJBdhJcFoXiKmA",
-                    authDomain: "ping-rewards.firebaseapp.com",
-                    projectId: "ping-rewards",
-                    storageBucket: "ping-rewards.firebasestorage.app",
-                    messagingSenderId: "1001465713586",
-                    appId: "1:1001465713586:web:07b8e1a2fb685614ac8aab",
-                    measurementId: "G-RJD7MPSSWF"
-                };
+            const firebaseConfig = {
+              apiKey: "AIzaSyBKHF_6NIFD0-zrceg3BFJBdhJcFoXiKmA",
+              authDomain: "ping-rewards.firebaseapp.com",
+              projectId: "ping-rewards",
+              storageBucket: "ping-rewards.firebasestorage.app",
+              messagingSenderId: "1001465713586",
+              appId: "1:1001465713586:web:07b8e1a2fb685614ac8aab",
+              measurementId: "G-RJD7MPSSWF"
+            };
 
             const app = initializeApp(firebaseConfig);
             const db = getFirestore(app);
@@ -826,8 +770,6 @@
                     case 'TikTok': return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-black dark:fill-white"><path d="M12.758 2.043l-.158.012c-1.42 0-2.585 1.164-2.585 2.585v15.728l-.16.012h-.008c-.768.04-1.455.334-2.02.825-1.127.994-1.82 2.766-1.82 4.697 0 3.242 2.632 5.875 5.875 5.875 3.243 0 5.875-2.633 5.875-5.875 0-1.93-.693-3.703-1.82-4.696-.564-.49-1.25-.785-2.018-.825h-.008L12.758 2.043zM12 24c-6.627 0-12-5.373-12-12s5.373-12 12-12c6.627 0 12 5.373 12 12s-5.373 12-12 12zm-3-19c0 .552-.448 1-1 1s-1-.448-1-1v-2c0-.552.448-1 1-1s1 .448 1 1v2zm0 17c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5zm9-11c0-.552-.448-1-1-1s-1 .448-1 1v2c0 .552.448 1 1 1s1-.448 1-1v-2zm-9 9c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3z"/></svg>`;
                     case 'Telegram': return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-blue-500"><path d="M18.3 5.4c-.6-.3-1.2-.5-1.9-.5c-.8 0-1.5.2-2.1.6c-.6.4-1 .9-1.3 1.5c-.3.6-.4 1.3-.4 2s.1 1.4.4 2.1c.3.6.7 1.1 1.3 1.5c.6.4 1.2.6 2.1.6c.7 0 1.4-.2 1.9-.5c.6-.3 1.1-.8 1.4-1.4c.3-.6.4-1.2.4-1.9s-.1-1.3-.4-1.9c-.3-.6-.8-1.1-1.4-1.4zM22 6.5l-3.3 12c-.2.9-.8 1.4-1.8 1.4c-.6 0-1.2-.2-1.6-.4l-5.6-3.8c-.5-.3-.9-.6-1.1-.9c-.2-.3-.3-.7-.3-1.1c0-.4.1-.8.3-1.1s.5-.6 1.1-.9l8.6-4.9c.2-.1.4-.2.6-.2c.2 0 .4.1.6.2s.2.4.2.6zM2 12c0 2.2 1.3 4.2 3.3 5.3L4 20l3.8-1.1c.9.2 1.8.3 2.7.3c1.7 0 3.3-.6 4.6-1.7l.7-.6c-.2-.4-.3-.8-.3-1.2c0-1.3.6-2.5 1.7-3.3c1.1-.8 2.5-1.2 4-1.2c-.4-3.1-2.2-5.4-4.8-6.5c-2.4-1-5.1-1.2-7.8-.6c-3 .7-5.3 3.3-5.3 6.6z"/></svg>`;
                     case 'Twitter': return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-blue-400"><path d="M22.46 6c-.77.34-1.6.57-2.46.69.88-.53 1.55-1.37 1.87-2.36-.83.49-1.74.85-2.72 1.05-2.02-2.15-5.35-2.07-7.29.17-1.18 1.32-1.65 3.12-1.36 4.95C5.83 10.66 2.92 8.75 1.12 5.92c-.37.64-.58 1.39-.58 2.19 0 1.52.77 2.87 1.94 3.66-2.01-.06-3.89-.6-5.54-1.52v.04c0 1.92 1.37 3.51 3.19 3.87-.33.09-.67.14-1.02.14-.25 0-.5-.02-.74-.07.5 1.63 2.07 2.81 3.89 2.84-1.4 1.1-3.17 1.75-5.09 1.75-.33 0-.66-.02-.98-.06 1.8 1.15 3.93 1.81 6.22 1.81 7.52 0 11.63-6.22 11.63-11.62 0-.17-.0-.35-.01-.52.8-.57 1.49-1.28 2.04-2.07z"/></svg>`;
-                    case 'YouTube': return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-red-600"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm3 10l-6 4V8l6 4z"/></svg>`;
-                    case 'Web': return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-gray-400"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h2v-2h-2v2zm0-4h2V7h-2v6z"/></svg>`;
                     default: return '';
                 }
             }
@@ -917,7 +859,6 @@
                                  { id: 'task1', title: 'Follow us on Facebook', platform: 'Facebook', link: 'https://facebook.com/pingrewards', points: 100 },
                                  { id: 'task2', title: 'Follow us on Telegram', platform: 'Telegram', link: 'https://t.me/pingrewards', points: 150 },
                                  { id: 'task3', title: 'Follow us on TikTok', platform: 'TikTok', link: 'https://tiktok.com/@pingrewards', points: 120 },
-                                 { id: 'task4', title: 'Subscribe to our YouTube', platform: 'YouTube', link: 'https://www.youtube.com/@pingrewards', points: 200 },
                              ];
                              for (const task of initialSocialTasks) {
                                  await setDoc(doc(socialTasksCollectionRef, task.id), task);
@@ -1249,8 +1190,8 @@
                         </div>
                         <div class="flex items-center space-x-2">
                              <div class="text-right">
-                                 <span class="block font-semibold">${nameText}</span>
-                                 <span class="block text-xs text-muted-text">${roleText}</span>
+                                <span class="block font-semibold">${nameText}</span>
+                                <span class="block text-xs text-muted-text">${roleText}</span>
                              </div>
                             <img src="https://placehold.co/32x32/6366f1/ffffff?text=${profileText}" alt="${nameText}" class="w-8 h-8 rounded-full border border-primary">
                         </div>
@@ -1268,8 +1209,8 @@
                     <div class="flex items-center space-x-4">
                         <div class="flex items-center space-x-2">
                              <div class="text-right">
-                                 <span class="block font-semibold">${nameText}</span>
-                                 <span class="block text-xs text-muted-text">Admin</span>
+                                <span class="block font-semibold">${nameText}</span>
+                                <span class="block text-xs text-muted-text">Admin</span>
                              </div>
                             <img src="https://placehold.co/32x32/6366f1/ffffff?text=${profileText}" alt="${nameText}" class="w-8 h-8 rounded-full border border-primary">
                         </div>
@@ -1326,8 +1267,8 @@
                 if (!titleElement) return;
 
                 const menuToggle = `<button id="menu-toggle" class="md:hidden p-2 -ml-2 rounded-md hover:bg-card-bg transition-colors duration-200">
-                                          <svg class="w-6 h-6 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
-                                      </button>`;
+                                      <svg class="w-6 h-6 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+                                    </button>`;
                 let titleText = 'Ping Rewards';
 
                 switch (viewId) {
@@ -1335,7 +1276,6 @@
                     case 'watch-videos-view': titleText = 'Watch Videos'; break;
                     case 'social-tasks-view': titleText = 'Social Tasks'; break;
                     case 'points-history-view': titleText = 'Points History'; break;
-                    case 'about-view': titleText = 'About'; break;
                     case 'admin-dashboard-view': titleText = 'Admin Dashboard'; break;
                     case 'manage-videos-view': titleText = 'Manage Videos'; break;
                     case 'manage-social-tasks-view': titleText = 'Manage Social Tasks'; break;
@@ -1347,9 +1287,9 @@
                 const toggleBtn = document.getElementById('menu-toggle');
                 if (toggleBtn) {
                      toggleBtn.addEventListener('click', () => {
-                         if (sidebar) sidebar.classList.toggle('open');
-                         if (backdrop) backdrop.classList.toggle('open');
-                         document.body.classList.toggle('no-scroll');
+                        if (sidebar) sidebar.classList.toggle('open');
+                        if (backdrop) backdrop.classList.toggle('open');
+                        document.body.classList.toggle('no-scroll');
                      });
                 }
             }
@@ -1444,16 +1384,7 @@
                      const cardClass = isCompleted ? 'opacity-50 grayscale cursor-not-allowed' : '';
                      const buttonText = isCompleted ? 'Completed' : 'Complete Task';
                      const buttonClass = isCompleted ? 'bg-accent-green/50' : 'bg-primary hover:bg-indigo-600';
-                     let icon;
-                     switch(task.platform) {
-                         case 'Facebook': icon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-blue-600"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c5.29 0 9.77-4.14 10-9.43.14-2.85-2.06-5.26-4.91-5.74v2.02c1.78.4 3.12 1.93 3.12 3.82 0 2.11-1.79 3.82-3.99 3.82H12v-6.93l-3 3v2.93h-1v-6h-2v6.93l1.85-1.85c.19-.19.45-.3.72-.3s.53.11.72.3L12 14.07V12h3.99c1.66 0 3-1.34 3-3s-1.34-3-3-3h-3c-1.1 0-2 .9-2 2v1H9v2h2v1H8c-2.21 0-4-1.79-4-4s1.79-4 4-4h4V2z"/></svg>`; break;
-                         case 'TikTok': icon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-black dark:fill-white"><path d="M12.758 2.043l-.158.012c-1.42 0-2.585 1.164-2.585 2.585v15.728l-.16.012h-.008c-.768.04-1.455.334-2.02.825-1.127.994-1.82 2.766-1.82 4.697 0 3.242 2.632 5.875 5.875 5.875 3.243 0 5.875-2.633 5.875-5.875 0-1.93-.693-3.703-1.82-4.696-.564-.49-1.25-.785-2.018-.825h-.008L12.758 2.043zM12 24c-6.627 0-12-5.373-12-12s5.373-12 12-12c6.627 0 12 5.373 12 12s-5.373 12-12 12zm-3-19c0 .552-.448 1-1 1s-1-.448-1-1v-2c0-.552.448-1 1-1s1 .448 1 1v2zm0 17c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5zm9-11c0-.552-.448-1-1-1s-1 .448-1 1v2c0 .552.448 1 1 1s1-.448 1-1v-2zm-9 9c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3z"/></svg>`;
-                         case 'Telegram': icon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-blue-500"><path d="M18.3 5.4c-.6-.3-1.2-.5-1.9-.5c-.8 0-1.5.2-2.1.6c-.6.4-1 .9-1.3 1.5c-.3.6-.4 1.3-.4 2s.1 1.4.4 2.1c.3.6.7 1.1 1.3 1.5c.6.4 1.2.6 2.1.6c.7 0 1.4-.2 1.9-.5c.6-.3 1.1-.8 1.4-1.4c.3-.6.4-1.2.4-1.9s-.1-1.3-.4-1.9c-.3-.6-.8-1.1-1.4-1.4zM22 6.5l-3.3 12c-.2.9-.8 1.4-1.8 1.4c-.6 0-1.2-.2-1.6-.4l-5.6-3.8c-.5-.3-.9-.6-1.1-.9c-.2-.3-.3-.7-.3-1.1c0-.4.1-.8.3-1.1s.5-.6 1.1-.9l8.6-4.9c.2-.1.4-.2.6-.2c.2 0 .4.1.6.2s.2.4.2.6zM2 12c0 2.2 1.3 4.2 3.3 5.3L4 20l3.8-1.1c.9.2 1.8.3 2.7.3c1.7 0 3.3-.6 4.6-1.7l.7-.6c-.2-.4-.3-.8-.3-1.2c0-1.3.6-2.5 1.7-3.3c1.1-.8 2.5-1.2 4-1.2c-.4-3.1-2.2-5.4-4.8-6.5c-2.4-1-5.1-1.2-7.8-.6c-3 .7-5.3 3.3-5.3 6.6z"/></svg>`; break;
-                         case 'Twitter': icon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-blue-400"><path d="M22.46 6c-.77.34-1.6.57-2.46.69.88-.53 1.55-1.37 1.87-2.36-.83.49-1.74.85-2.72 1.05-2.02-2.15-5.35-2.07-7.29.17-1.18 1.32-1.65 3.12-1.36 4.95C5.83 10.66 2.92 8.75 1.12 5.92c-.37.64-.58 1.39-.58 2.19 0 1.52.77 2.87 1.94 3.66-2.01-.06-3.89-.6-5.54-1.52v.04c0 1.92 1.37 3.51 3.19 3.87-.33.09-.67.14-1.02.14-.25 0-.5-.02-.74-.07.5 1.63 2.07 2.81 3.89 2.84-1.4 1.1-3.17 1.75-5.09 1.75-.33 0-.66-.02-.98-.06 1.8 1.15 3.93 1.81 6.22 1.81 7.52 0 11.63-6.22 11.63-11.62 0-.17-.0-.35-.01-.52.8-.57 1.49-1.28 2.04-2.07z"/></svg>`;
-                         case 'YouTube': icon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-red-600"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm3 10l-6 4V8l6 4z"/></svg>`;
-                         case 'Web': icon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-gray-400"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h2v-2h-2v2zm0-4h2V7h-2v6z"/></svg>`;
-                         default: icon = '';
-                     }
+                     const icon = getSocialIcon(task.platform);
 
                      const taskCardHtml = `
                          <div class="social-task-card bg-card-bg rounded-xl shadow-lg border border-slate-700 p-6 flex flex-col items-center text-center transition-shadow duration-300 ${cardClass}">
@@ -1610,11 +1541,11 @@
                 if (cashoutBtn) {
                      cashoutBtn.disabled = userData.points < 5000;
                      if (userData.points < 5000) {
-                         cashoutBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                         cashoutBtn.classList.remove('hover:bg-indigo-600');
+                        cashoutBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                        cashoutBtn.classList.remove('hover:bg-indigo-600');
                      } else {
-                         cashoutBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                         cashoutBtn.classList.add('hover:bg-indigo-600');
+                        cashoutBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                        cashoutBtn.classList.add('hover:bg-indigo-600');
                      }
                 }
             }
@@ -1799,29 +1730,29 @@
             function attachManageSocialTasksListeners() {
                  const editBtns = document.querySelectorAll('.edit-social-task-btn');
                  editBtns.forEach(btn => {
-                     btn.addEventListener('click', (e) => {
-                         e.preventDefault();
-                         const taskId = btn.getAttribute('data-task-id');
-                         const taskToEdit = socialTasks.find(t => t.id === taskId);
-                         if (taskToEdit) {
-                             socialTaskModalTitle.textContent = "Edit Social Task";
-                             document.getElementById('social-task-title').value = taskToEdit.title;
-                             document.getElementById('social-task-platform').value = taskToEdit.platform;
-                             document.getElementById('social-task-link').value = taskToEdit.link;
-                             document.getElementById('social-task-points').value = taskToEdit.points;
-                             addSocialTaskModal.classList.remove('hidden');
-                             addSocialTaskForm.setAttribute('data-editing-id', taskId);
-                         }
-                     });
+                      btn.addEventListener('click', (e) => {
+                           e.preventDefault();
+                           const taskId = btn.getAttribute('data-task-id');
+                           const taskToEdit = socialTasks.find(t => t.id === taskId);
+                           if (taskToEdit) {
+                               socialTaskModalTitle.textContent = "Edit Social Task";
+                               document.getElementById('social-task-title').value = taskToEdit.title;
+                               document.getElementById('social-task-platform').value = taskToEdit.platform;
+                               document.getElementById('social-task-link').value = taskToEdit.link;
+                               document.getElementById('social-task-points').value = taskToEdit.points;
+                               addSocialTaskModal.classList.remove('hidden');
+                               addSocialTaskForm.setAttribute('data-editing-id', taskId);
+                           }
+                      });
                  });
                  
                  const deleteBtns = document.querySelectorAll('.delete-social-task-btn');
                  deleteBtns.forEach(btn => {
-                     btn.addEventListener('click', (e) => {
-                         e.preventDefault();
-                         const taskId = btn.getAttribute('data-task-id');
-                         showDeleteModal(taskId, 'social');
-                     });
+                      btn.addEventListener('click', (e) => {
+                           e.preventDefault();
+                           const taskId = btn.getAttribute('data-task-id');
+                           showDeleteModal(taskId, 'social');
+                      });
                  });
             }
             
@@ -1838,13 +1769,13 @@
                              if (user.pointsHistory && user.pointsHistory.length > 0) {
                                  historyTableBody.innerHTML = ''; // Clear previous content
                                  user.pointsHistory.forEach(item => {
-                                     const row = document.createElement('tr');
-                                     row.className = 'hover:bg-slate-700 transition-colors duration-200';
-                                     row.innerHTML = `<td class="p-4">${item.date}</td><td class="p-4">${item.description}</td><td class="p-4">${item.points}</td>`;
-                                     historyTableBody.appendChild(row);
+                                      const row = document.createElement('tr');
+                                      row.className = 'hover:bg-slate-700 transition-colors duration-200';
+                                      row.innerHTML = `<td class="p-4">${item.date}</td><td class="p-4">${item.description}</td><td class="p-4">${item.points}</td>`;
+                                      historyTableBody.appendChild(row);
                                  });
                              } else {
-                                 historyTableBody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-muted-text">No history found.</td></tr>`;
+                                  historyTableBody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-muted-text">No history found.</td></tr>`;
                              }
                              historyModal.classList.remove('hidden');
                         }
@@ -1853,7 +1784,7 @@
                 
                 document.querySelectorAll('#history-modal .cancel-btn').forEach(btn => {
                      btn.addEventListener('click', () => {
-                         historyModal.classList.add('hidden');
+                          historyModal.classList.add('hidden');
                      });
                 });
                 
@@ -1929,7 +1860,7 @@
                     } catch (error) {
                         console.error("Google Sign-in failed:", error);
                         if (loginMessage) {
-                            loginMessage.textContent = 'Google Sign-in failed. Please check your internet connection.';
+                            loginMessage.textContent = 'Google Sign-in failed. Please check your Authorized domains.';
                             loginMessage.style.display = 'block';
                         }
                         hideLoading();
@@ -2011,16 +1942,16 @@
             if (backdrop) {
                 backdrop.addEventListener('click', () => {
                     if (sidebar) sidebar.classList.remove('open');
-                    if (backdrop) backdrop.classList.toggle('open');
-                    document.body.classList.toggle('no-scroll');
+                    if (backdrop) backdrop.classList.remove('open');
+                    document.body.classList.remove('no-scroll');
                 });
             }
 
             filterButtons.forEach(btn => {
                 btn.addEventListener('click', () => {
                     filterButtons.forEach(b => { 
-                        if(b) b.classList.remove('active', 'bg-primary', 'border-primary', 'text-white'); 
-                        if(b) b.classList.add('bg-card-bg', 'border-slate-700');
+                         if(b) b.classList.remove('active', 'bg-primary', 'border-primary', 'text-white'); 
+                         if(b) b.classList.add('bg-card-bg', 'border-slate-700');
                     });
                     btn.classList.add('active', 'bg-primary', 'border-primary', 'text-white');
                     btn.classList.remove('bg-card-bg', 'border-slate-700');
@@ -2076,35 +2007,35 @@
             // New social task form handlers
             if (addSocialTaskBtn) {
                  addSocialTaskBtn.addEventListener('click', () => {
-                     socialTaskModalTitle.textContent = "Add New Social Task";
-                     addSocialTaskForm.reset();
-                     addSocialTaskForm.removeAttribute('data-editing-id');
-                     addSocialTaskModal.classList.remove('hidden');
+                      socialTaskModalTitle.textContent = "Add New Social Task";
+                      addSocialTaskForm.reset();
+                      addSocialTaskForm.removeAttribute('data-editing-id');
+                      addSocialTaskModal.classList.remove('hidden');
                  });
             }
 
             document.querySelectorAll('#add-social-task-modal .cancel-btn').forEach(btn => {
                  btn.addEventListener('click', () => {
-                     addSocialTaskModal.classList.add('hidden');
+                      addSocialTaskModal.classList.add('hidden');
                  });
             });
 
             if (addSocialTaskForm) {
                  addSocialTaskForm.addEventListener('submit', async (e) => {
-                     e.preventDefault();
+                      e.preventDefault();
 
-                     const formData = new FormData(addSocialTaskForm);
-                     const taskData = {
-                         title: formData.get('taskTitle'),
-                         platform: formData.get('taskPlatform'),
-                         link: formData.get('taskLink'),
-                         points: parseInt(formData.get('taskPoints')),
-                     };
+                      const formData = new FormData(addSocialTaskForm);
+                      const taskData = {
+                          title: formData.get('taskTitle'),
+                          platform: formData.get('taskPlatform'),
+                          link: formData.get('taskLink'),
+                          points: parseInt(formData.get('taskPoints')),
+                      };
 
-                     const editingId = addSocialTaskForm.getAttribute('data-editing-id');
-                     await saveSocialTask(taskData, editingId);
+                      const editingId = addSocialTaskForm.getAttribute('data-editing-id');
+                      await saveSocialTask(taskData, editingId);
 
-                     addSocialTaskModal.classList.add('hidden');
+                      addSocialTaskModal.classList.add('hidden');
                  });
             }
 
@@ -2131,7 +2062,7 @@
             // Close cash out message modal
             if (cashoutMessageCloseBtn) {
                  cashoutMessageCloseBtn.addEventListener('click', () => {
-                     cashoutMessageModal.classList.add('hidden');
+                      cashoutMessageModal.classList.add('hidden');
                  });
             }
 
@@ -2195,22 +2126,22 @@
                          const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
                          if (initialAuthToken) {
                              try {
-                                 await signInWithCustomToken(auth, initialAuthToken);
+                                  await signInWithCustomToken(auth, initialAuthToken);
                              } catch(e) {
-                                 console.error("Error signing in with custom token:", e);
-                                 if (loginPage) loginPage.style.display = 'flex';
-                                 if (appContainer) appContainer.style.display = 'none';
-                                 hideLoading();
+                                  console.error("Error signing in with custom token:", e);
+                                  if (loginPage) loginPage.style.display = 'flex';
+                                  if (appContainer) appContainer.style.display = 'none';
+                                  hideLoading();
                              }
                          } else {
-                             if (loginPage) loginPage.style.display = 'flex';
-                             if (appContainer) appContainer.style.display = 'none';
-                             hideLoading();
+                              if (loginPage) loginPage.style.display = 'flex';
+                              if (appContainer) appContainer.style.display = 'none';
+                              hideLoading();
                          }
                     } else {
-                        userId = user.uid;
-                        await seedInitialData(user);
-                        await fetchUserData(userId);
+                         userId = user.uid;
+                         await seedInitialData(user);
+                         await fetchUserData(userId);
                     }
                 } else {
                     console.log("No user is signed in. Showing login page.");
@@ -2227,6 +2158,3 @@
     </script>
 </body>
 </html>
-
-
-
