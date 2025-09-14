@@ -357,38 +357,13 @@
 
             <!-- Watch Videos View -->
             <div id="watch-videos-view" class="content-view" style="display: none;">
-                <div class="flex flex-col sm:flex-row gap-4 mb-6">
-                    <input type="text" id="search-bar"
-                        class="flex-grow px-4 py-2 rounded-full bg-card-bg border border-slate-700 focus:outline-none focus:ring-2 focus:ring-primary placeholder-muted-text"
-                        placeholder="Search videos...">
-                    <div class="flex flex-wrap justify-center sm:justify-end gap-2">
-                        <button
-                            class="filter-btn active px-4 py-2 rounded-full border border-primary bg-primary text-white text-sm hover:bg-primary/80 transition-colors duration-200"
-                            data-category="all">All</button>
-                        <button
-                            class="filter-btn px-4 py-2 rounded-full border border-slate-700 bg-card-bg text-sm hover:bg-slate-700 transition-colors duration-200"
-                            data-category="Nature">Nature</button>
-                        <button
-                            class="filter-btn px-4 py-2 rounded-full border border-slate-700 bg-card-bg text-sm hover:bg-slate-700 transition-colors duration-200"
-                            data-category="Education">Education</button>
-                        <button
-                            class="filter-btn px-4 py-2 rounded-full border border-slate-700 bg-card-bg text-sm hover:bg-slate-700 transition-colors duration-200"
-                            data-category="Travel">Travel</button>
-                        <button
-                            class="filter-btn px-4 py-2 rounded-full border border-slate-700 bg-card-bg text-sm hover:bg-slate-700 transition-colors duration-200"
-                            data-category="Food">Food</button>
-                        <button
-                            class="filter-btn px-4 py-2 rounded-full border border-slate-700 bg-card-bg text-sm hover:bg-slate-700 transition-colors duration-200"
-                            data-category="Gaming">Gaming</button>
-                    </div>
-                </div>
                 <!-- Ad Placement -->
                 <div class="flex justify-center mb-4">
                     <script type='text/javascript'
                         src='//pl27506647.profitableratecpm.com/25/d1/54/25d154cfe2cdfcc85914d10a0b4a6eae.js'></script>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="video-grid">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8" id="video-grid">
                     <!-- Video cards will be dynamically rendered here by JS -->
                 </div>
             </div>
@@ -541,7 +516,7 @@
                         class="stat-card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 flex items-center">
                         <div
                             class="flex-shrink-0 w-12 h-12 rounded-full bg-accent-green/20 flex items-center justify-center mr-4">
-                            <svg class="w-6 h-6 fill-accent-green" xmlns="http://www.w3.org/2d00/svg"
+                            <svg class="w-6 h-6 fill-accent-green" xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 24 24">
                                 <path
                                     d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4V8h16v10zm-12-7h4v2H8v-2zm-2-2v6h12V6H6z" />
@@ -925,8 +900,6 @@
             const sidebarProfile = document.getElementById('sidebar-profile');
 
             const videoGrid = document.getElementById('video-grid');
-            const searchBar = document.getElementById('search-bar');
-            const filterButtons = document.querySelectorAll('.filter-btn');
             const videoPlayerView = document.getElementById('video-player-view');
             const videoIframe = document.getElementById('video-iframe');
             const videoPlayerBackBtn = document.getElementById('video-player-back-btn');
@@ -992,6 +965,13 @@
             let videoCardToAnimate = null;
 
             const adminEmail = 'mr.ping2025@gmail.com';
+
+            // Utility function to format seconds into M:SS format
+            function formatDuration(seconds) {
+                const minutes = Math.floor(seconds / 60);
+                const remainingSeconds = seconds % 60;
+                return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+            }
 
             // Utility function to get social media icons
             function getSocialIcon(platform) {
@@ -1291,12 +1271,7 @@
                 }
                 await fetchVideos();
                 renderManageVideosTable();
-                const activeFilterBtn = document.querySelector('#watch-videos-view .filter-btn.active');
-                if (activeFilterBtn) {
-                    renderVideoGrid(activeFilterBtn.getAttribute('data-category'));
-                } else {
-                    renderVideoGrid('all');
-                }
+                renderVideoGrid();
             }
 
             // Function to save or update a social task
@@ -1335,12 +1310,7 @@
                 }
                 await fetchVideos();
                 renderManageVideosTable();
-                const activeFilterBtn = document.querySelector('#watch-videos-view .filter-btn.active');
-                if (activeFilterBtn) {
-                    renderVideoGrid(activeFilterBtn.getAttribute('data-category'));
-                } else {
-                    renderVideoGrid('all');
-                }
+                renderVideoGrid();
             }
 
             // Function to delete a social task
@@ -1432,7 +1402,7 @@
                     showView('user-dashboard-view');
                     updatePointsDisplay();
                     renderPointsHistoryTable();
-                    fetchVideos().then(() => renderVideoGrid('all'));
+                    fetchVideos().then(() => renderVideoGrid());
                     fetchSocialTasks().then(renderSocialTasksGrid);
                 } else if (role === 'admin') {
                     document.querySelectorAll('.user-link').forEach(link => { if (link) link.style.display = 'none'; });
@@ -1590,8 +1560,7 @@
                 });
             }
 
-            // Updated function to sort videos with watched ones at the bottom
-            function renderVideoGrid(category, searchQuery = '') {
+            function renderVideoGrid() {
                 const videoGrid = document.getElementById('video-grid');
                 if (!videoGrid) {
                     console.error("Video grid element not found.");
@@ -1599,18 +1568,7 @@
                 }
                 videoGrid.innerHTML = '';
 
-                // Filter videos based on category and search query
                 let filteredVideos = videos;
-                if (category !== 'all') {
-                    filteredVideos = filteredVideos.filter(video => video.category === category);
-                }
-                if (searchQuery) {
-                    const query = searchQuery.toLowerCase();
-                    filteredVideos = filteredVideos.filter(video =>
-                        video.title.toLowerCase().includes(query) ||
-                        video.description.toLowerCase().includes(query)
-                    );
-                }
 
                 if (filteredVideos.length === 0) {
                     videoGrid.innerHTML = `<p class="col-span-full text-center text-muted-text py-12">No videos found.</p>`;
@@ -1631,20 +1589,35 @@
                     } else {
                         thumbnailUrl = 'https://placehold.co/400x225/1f3148/ffffff?text=Video';
                     }
-
-                    // Add a class for watched videos to style them differently
+                    
                     const isWatched = watchedVideoIds.includes(video.id);
-                    const watchedClass = isWatched ? 'opacity-50 grayscale' : '';
+                    const watchedClass = isWatched ? 'opacity-50' : '';
+
+                    // Mock data for new UI elements for demonstration
+                    const mockChannelName = "Ping Rewards Channel";
+                    const mockViews = `${(video.points * 1000).toLocaleString()} views`;
+                    const mockUploadDate = `${video.watchDuration} days ago`;
+                    const formattedDuration = formatDuration(video.watchDuration);
 
                     const videoCardHtml = `
-                        <div class="video-card bg-card-bg rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer border border-slate-700 ${watchedClass}" data-category="${video.category}" data-video-url="${video.videoUrl}" data-video-id="${video.id}">
-                            <img src="${thumbnailUrl}" alt="${video.title}" class="w-full h-40 object-cover" onerror="this.onerror=null; this.src='https://placehold.co/400x225/1f3148/ffffff?text=Video';">
-                            <div class="p-4">
-                                <div class="text-xs text-secondary mb-1 uppercase">${video.category}</div>
-                                <h3 class="text-lg font-semibold truncate mb-1">${video.title}</h3>
-                                <p class="text-sm text-muted-text line-clamp-2">${video.description}</p>
-                                <span class="inline-block bg-primary text-white text-xs font-bold px-3 py-1 rounded-full mt-2">${video.points} PTS</span>
-                                ${isWatched ? '<span class="text-xs text-accent-green font-semibold ml-2">Watched</span>' : ''}
+                        <div class="video-card group cursor-pointer ${watchedClass}" data-video-url="${video.videoUrl}" data-video-id="${video.id}">
+                            <div class="relative mb-2">
+                                <img src="${thumbnailUrl}" alt="${video.title}" class="w-full h-auto object-cover rounded-xl group-hover:rounded-none transition-all duration-200" onerror="this.onerror=null; this.src='https://placehold.co/400x225/1f3148/ffffff?text=Video';">
+                                <span class="absolute bottom-1.5 right-1.5 bg-black bg-opacity-75 text-white text-xs font-semibold px-1.5 py-0.5 rounded-md">${formattedDuration}</span>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <div class="flex-shrink-0">
+                                    <img src="https://placehold.co/36x36/6366f1/ffffff?text=P" alt="${mockChannelName}" class="w-9 h-9 rounded-full">
+                                </div>
+                                <div class="flex-grow">
+                                    <h3 class="text-base font-medium text-text-color line-clamp-2 leading-tight">${video.title}</h3>
+                                    <p class="text-sm text-muted-text mt-1">${mockChannelName}</p>
+                                    <div class="text-sm text-muted-text flex items-center space-x-2">
+                                        <span>${mockViews}</span>
+                                        <span>•</span>
+                                        <span>${mockUploadDate}</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     `;
@@ -1652,6 +1625,7 @@
                 });
                 attachVideoCardListeners();
             }
+
 
             // Function to render social tasks for the user
             function renderSocialTasksGrid() {
@@ -2230,7 +2204,7 @@
                     if (backdrop) backdrop.classList.remove('open');
                     document.body.classList.remove('no-scroll');
                     if (targetId === 'watch-videos-view') {
-                        renderVideoGrid('all');
+                        renderVideoGrid();
                     } else if (targetId === 'social-tasks-view') {
                         renderSocialTasksGrid();
                     } else if (targetId === 'manage-videos-view') {
@@ -2249,28 +2223,7 @@
                 backdrop.addEventListener('click', () => {
                     if (sidebar) sidebar.classList.remove('open');
                     if (backdrop) backdrop.classList.toggle('open');
-                    document.body.classList.toggle('no-scroll');
-                });
-            }
-
-            filterButtons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    filterButtons.forEach(b => {
-                        if (b) b.classList.remove('active', 'bg-primary', 'border-primary', 'text-white');
-                        if (b) b.classList.add('bg-card-bg', 'border-slate-700');
-                    });
-                    btn.classList.add('active', 'bg-primary', 'border-primary', 'text-white');
-                    btn.classList.remove('bg-card-bg', 'border-slate-700');
-                    const category = btn.getAttribute('data-category');
-                    renderVideoGrid(category);
-                });
-            });
-
-            if (searchBar) {
-                searchBar.addEventListener('input', () => {
-                    const activeFilterBtn = document.querySelector('.filter-btn.active');
-                    const category = activeFilterBtn ? activeFilterBtn.getAttribute('data-category') : 'all';
-                    renderVideoGrid(category, searchBar.value);
+                    document.body.classList.remove('no-scroll');
                 });
             }
 
@@ -2465,3 +2418,4 @@
 </body>
 
 </html>
+
