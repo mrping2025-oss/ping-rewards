@@ -990,6 +990,7 @@
             let currentUser = null;
             let userData = null;
             let videoCardToAnimate = null;
+            let isInitialUILoad = true;
 
             const adminEmail = 'mr.ping2025@gmail.com';
 
@@ -1430,30 +1431,43 @@
             function updateUI(role) {
                 if (!isAuthReady || !currentUser) return;
 
-                views.forEach(view => { if (view) view.style.display = 'none'; });
-                if (loginPage) loginPage.style.display = 'none';
-                if (appContainer) appContainer.style.display = 'flex';
+                // This block runs only on the very first load for a user session
+                if (isInitialUILoad) {
+                    views.forEach(view => { if (view) view.style.display = 'none'; });
+                    if (loginPage) loginPage.style.display = 'none';
+                    if (appContainer) appContainer.style.display = 'flex';
 
+                    if (role === 'user') {
+                        document.querySelectorAll('.admin-link').forEach(link => { if (link) link.style.display = 'none'; });
+                        document.querySelectorAll('.user-link').forEach(link => { if (link) link.style.display = 'flex'; });
+                        showView('user-dashboard-view');
+                        fetchVideos().then(() => renderVideoGrid('all'));
+                        fetchSocialTasks().then(renderSocialTasksGrid);
+                    } else if (role === 'admin') {
+                        document.querySelectorAll('.user-link').forEach(link => { if (link) link.style.display = 'none'; });
+                        document.querySelectorAll('.admin-link').forEach(link => { if (link) link.style.display = 'flex'; });
+                        showView('admin-dashboard-view');
+                        fetchVideos().then(renderManageVideosTable);
+                        fetchSocialTasks().then(renderManageSocialTasksTable);
+                        fetchAdminDashboardData();
+                    }
+                    isInitialUILoad = false; // Important: set flag to false
+                }
+
+                // This block runs on every data update (initial and subsequent)
                 if (role === 'user') {
-                    document.querySelectorAll('.admin-link').forEach(link => { if (link) link.style.display = 'none'; });
-                    document.querySelectorAll('.user-link').forEach(link => { if (link) link.style.display = 'flex'; });
                     if (headerMeta) headerMeta.innerHTML = getUserHeaderHTML();
                     if (sidebarProfile) sidebarProfile.innerHTML = getUserProfileHTML();
                     if (welcomeMessage) welcomeMessage.textContent = `Welcome back, ${currentUser.name}!`;
-                    showView('user-dashboard-view');
                     updatePointsDisplay();
-                    renderPointsHistoryTable();
-                    fetchVideos().then(() => renderVideoGrid('all'));
-                    fetchSocialTasks().then(renderSocialTasksGrid);
+                    // Only re-render history if the view is active, to save performance
+                    if (document.getElementById('points-history-view').style.display === 'block') {
+                        renderPointsHistoryTable();
+                    }
                 } else if (role === 'admin') {
-                    document.querySelectorAll('.user-link').forEach(link => { if (link) link.style.display = 'none'; });
-                    document.querySelectorAll('.admin-link').forEach(link => { if (link) link.style.display = 'flex'; });
                     if (headerMeta) headerMeta.innerHTML = getAdminHeaderHTML();
                     if (sidebarProfile) sidebarProfile.innerHTML = getUserProfileHTML();
-                    showView('admin-dashboard-view');
-                    fetchVideos().then(renderManageVideosTable);
-                    fetchSocialTasks().then(renderManageSocialTasksTable);
-                    fetchAdminDashboardData(); // Call new function to fetch admin data dynamically
+                    // Admin dashboard data is real-time via its own snapshot, so no need to call it here.
                 }
                 attachLogoutListeners();
                 fetchAndRenderLeaderboard();
@@ -2477,6 +2491,7 @@
                         }
                     } else {
                         userId = user.uid;
+                        isInitialUILoad = true; // Reset the flag on login
                         await seedInitialData(user);
                         await fetchUserData(userId);
                     }
