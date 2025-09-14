@@ -1253,7 +1253,7 @@
             // Updates user points in Firestore and adds a new history entry
             async function updatePointsInFirestore(pointsToAdd, description, id, type = 'video') {
                 if (!userData || !userId) return;
-                showLoading();
+                // showLoading(); // REMOVED to make UI feel faster
                 try {
                     const userDocRef = doc(db, `/artifacts/${appId}/users/${userId}`);
                     const newPoints = userData.points + pointsToAdd;
@@ -1279,9 +1279,8 @@
                     console.log("Points and history updated in Firestore.");
                 } catch (e) {
                     console.error("Error updating points:", e);
-                } finally {
-                    hideLoading();
-                }
+                } 
+                // finally { hideLoading(); } // REMOVED
             }
 
             async function saveVideo(videoData, videoId = null) {
@@ -1930,22 +1929,26 @@
                                 videoPlayerBackBtn.onclick = async () => {
                                     clearTimeout(window.videoWatchTimer);
                                     if (videoIframe) videoIframe.src = '';
+                                    
+                                    // Switch view immediately for a faster feel
+                                    showView('watch-videos-view');
+
                                     if (pointsEarnedInSession) {
                                         if (videoCardToAnimate) {
                                             const endElement = document.getElementById('user-points-display');
                                             animateCoins(videoCardToAnimate, endElement, video.points);
                                             // Pass video ID to the function
+                                            // Update points in the background without showing loading spinner
                                             setTimeout(async () => {
                                                 await updatePointsInFirestore(video.points, `Watched "${video.title}"`, video.id, 'video');
                                             }, 1000);
                                         } else {
-                                            await updatePointsInFirestore(video.points, `Watched "${video.title}"`, video.id, 'video');
+                                             await updatePointsInFirestore(video.points, `Watched "${video.title}"`, video.id, 'video');
                                         }
                                         console.log("Points updated via Firebase.");
                                     } else {
                                         console.log(`You did not watch the video for the required duration. No points were awarded.`);
                                     }
-                                    showView('watch-videos-view');
                                 };
                             }
                         }
@@ -1983,8 +1986,8 @@
 
             function showDeleteModal(id, type) {
                 if (deleteConfirmModal) {
-                    // --- ပြင်ဆင်မှု ၁ ---
-                    // Modal ခေါင်းစဉ်ကို dynamic ဖြစ်အောင်ပြောင်းခြင်း
+                    
+                    // Modal ခေါင်းစဉ်ကို dynamic ဖြစ်အောင်ပြောင်းထားတာ
                     if (deleteModalTitle) {
                         deleteModalTitle.textContent = `Are you sure you want to delete this ${type}?`;
                     }
@@ -2005,7 +2008,7 @@
             }
 
             // --- ပြင်ဆင်မှု ၁ ---
-            // Delete modal ထဲက cancel button အတွက် event listener ကို သီးသန့်ထားခြင်း
+            // Delete modal ထဲက cancel button အတွက် event listener ကို သီးသန့်ထားတာ
             document.querySelectorAll('#delete-confirm-modal .cancel-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     deleteConfirmModal.classList.add('hidden');
@@ -2493,5 +2496,4 @@
 </body>
 
 </html>
-
 
