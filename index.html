@@ -357,6 +357,31 @@
 
             <!-- Watch Videos View -->
             <div id="watch-videos-view" class="content-view" style="display: none;">
+                 <div class="flex flex-col sm:flex-row gap-4 mb-6">
+                    <input type="text" id="search-bar"
+                        class="flex-grow px-4 py-2 rounded-full bg-card-bg border border-slate-700 focus:outline-none focus:ring-2 focus:ring-primary placeholder-muted-text"
+                        placeholder="Search videos...">
+                    <div class="flex flex-wrap justify-center sm:justify-end gap-2">
+                        <button
+                            class="filter-btn active px-4 py-2 rounded-full border border-primary bg-primary text-white text-sm hover:bg-primary/80 transition-colors duration-200"
+                            data-category="all">All</button>
+                        <button
+                            class="filter-btn px-4 py-2 rounded-full border border-slate-700 bg-card-bg text-sm hover:bg-slate-700 transition-colors duration-200"
+                            data-category="Nature">Nature</button>
+                        <button
+                            class="filter-btn px-4 py-2 rounded-full border border-slate-700 bg-card-bg text-sm hover:bg-slate-700 transition-colors duration-200"
+                            data-category="Education">Education</button>
+                        <button
+                            class="filter-btn px-4 py-2 rounded-full border border-slate-700 bg-card-bg text-sm hover:bg-slate-700 transition-colors duration-200"
+                            data-category="Travel">Travel</button>
+                        <button
+                            class="filter-btn px-4 py-2 rounded-full border border-slate-700 bg-card-bg text-sm hover:bg-slate-700 transition-colors duration-200"
+                            data-category="Food">Food</button>
+                        <button
+                            class="filter-btn px-4 py-2 rounded-full border border-slate-700 bg-card-bg text-sm hover:bg-slate-700 transition-colors duration-200"
+                            data-category="Gaming">Gaming</button>
+                    </div>
+                </div>
                 <!-- Ad Placement -->
                 <div class="flex justify-center mb-4">
                     <script type='text/javascript'
@@ -900,6 +925,8 @@
             const sidebarProfile = document.getElementById('sidebar-profile');
 
             const videoGrid = document.getElementById('video-grid');
+            const searchBar = document.getElementById('search-bar');
+            const filterButtons = document.querySelectorAll('.filter-btn');
             const videoPlayerView = document.getElementById('video-player-view');
             const videoIframe = document.getElementById('video-iframe');
             const videoPlayerBackBtn = document.getElementById('video-player-back-btn');
@@ -988,17 +1015,29 @@
 
             // Utility function to extract YouTube video ID from a URL
             function getYouTubeId(url) {
+                let videoId = null;
                 try {
                     const urlObj = new URL(url);
-                    if (urlObj.hostname.includes('youtube.com')) {
-                        return urlObj.searchParams.get('v');
-                    } else if (urlObj.hostname.includes('youtu.be')) {
-                        return urlObj.pathname.substring(1);
+                    const hostname = urlObj.hostname;
+                    const pathname = urlObj.pathname;
+                    if (hostname.includes('youtube.com')) {
+                        if (pathname.includes('/embed/')) {
+                            videoId = pathname.split('/embed/')[1].split('?')[0];
+                        } else {
+                            videoId = urlObj.searchParams.get('v');
+                        }
+                    } else if (hostname.includes('youtu.be')) {
+                        videoId = pathname.substring(1);
                     }
                 } catch (e) {
-                    console.error("Invalid URL:", url);
+                     console.error("Could not parse URL, trying regex:", url, e);
+                     const regex = /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/ ]{11})/;
+                     const match = url.match(regex);
+                     if (match && match[1]) {
+                        videoId = match[1];
+                     }
                 }
-                return null;
+                return videoId;
             }
 
             // Function to get a YouTube thumbnail
@@ -1271,7 +1310,12 @@
                 }
                 await fetchVideos();
                 renderManageVideosTable();
-                renderVideoGrid();
+                const activeFilterBtn = document.querySelector('#watch-videos-view .filter-btn.active');
+                if (activeFilterBtn) {
+                    renderVideoGrid(activeFilterBtn.getAttribute('data-category'));
+                } else {
+                    renderVideoGrid('all');
+                }
             }
 
             // Function to save or update a social task
@@ -1310,7 +1354,12 @@
                 }
                 await fetchVideos();
                 renderManageVideosTable();
-                renderVideoGrid();
+                const activeFilterBtn = document.querySelector('#watch-videos-view .filter-btn.active');
+                if (activeFilterBtn) {
+                    renderVideoGrid(activeFilterBtn.getAttribute('data-category'));
+                } else {
+                    renderVideoGrid('all');
+                }
             }
 
             // Function to delete a social task
@@ -1402,7 +1451,7 @@
                     showView('user-dashboard-view');
                     updatePointsDisplay();
                     renderPointsHistoryTable();
-                    fetchVideos().then(() => renderVideoGrid());
+                    fetchVideos().then(() => renderVideoGrid('all'));
                     fetchSocialTasks().then(renderSocialTasksGrid);
                 } else if (role === 'admin') {
                     document.querySelectorAll('.user-link').forEach(link => { if (link) link.style.display = 'none'; });
@@ -1560,7 +1609,7 @@
                 });
             }
 
-            function renderVideoGrid() {
+            function renderVideoGrid(category = 'all', searchQuery = '') {
                 const videoGrid = document.getElementById('video-grid');
                 if (!videoGrid) {
                     console.error("Video grid element not found.");
@@ -1569,6 +1618,16 @@
                 videoGrid.innerHTML = '';
 
                 let filteredVideos = videos;
+                if (category !== 'all') {
+                    filteredVideos = filteredVideos.filter(video => video.category === category);
+                }
+                if (searchQuery) {
+                    const query = searchQuery.toLowerCase();
+                    filteredVideos = filteredVideos.filter(video =>
+                        video.title.toLowerCase().includes(query) ||
+                        video.description.toLowerCase().includes(query)
+                    );
+                }
 
                 if (filteredVideos.length === 0) {
                     videoGrid.innerHTML = `<p class="col-span-full text-center text-muted-text py-12">No videos found.</p>`;
@@ -2204,7 +2263,7 @@
                     if (backdrop) backdrop.classList.remove('open');
                     document.body.classList.remove('no-scroll');
                     if (targetId === 'watch-videos-view') {
-                        renderVideoGrid();
+                        renderVideoGrid('all');
                     } else if (targetId === 'social-tasks-view') {
                         renderSocialTasksGrid();
                     } else if (targetId === 'manage-videos-view') {
@@ -2224,6 +2283,27 @@
                     if (sidebar) sidebar.classList.remove('open');
                     if (backdrop) backdrop.classList.toggle('open');
                     document.body.classList.remove('no-scroll');
+                });
+            }
+
+             filterButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterButtons.forEach(b => {
+                        if (b) b.classList.remove('active', 'bg-primary', 'border-primary', 'text-white');
+                        if (b) b.classList.add('bg-card-bg', 'border-slate-700');
+                    });
+                    btn.classList.add('active', 'bg-primary', 'border-primary', 'text-white');
+                    btn.classList.remove('bg-card-bg', 'border-slate-700');
+                    const category = btn.getAttribute('data-category');
+                    renderVideoGrid(category);
+                });
+            });
+
+            if (searchBar) {
+                searchBar.addEventListener('input', () => {
+                    const activeFilterBtn = document.querySelector('.filter-btn.active');
+                    const category = activeFilterBtn ? activeFilterBtn.getAttribute('data-category') : 'all';
+                    renderVideoGrid(category, searchBar.value);
                 });
             }
 
