@@ -1657,7 +1657,13 @@
                     }
                     
                     const isWatched = watchedVideoIds.includes(video.id);
-                    const watchedClass = isWatched ? 'opacity-50' : '';
+                    const stateClasses = isWatched ? 'opacity-50 pointer-events-none' : 'cursor-pointer';
+
+                    const watchedOverlay = isWatched
+                        ? `<div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center rounded-xl">
+                               <svg class="w-12 h-12 text-accent-green" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                           </div>`
+                        : '';
 
                     // Mock data for new UI elements for demonstration
                     const mockChannelName = "Ping Rewards Channel";
@@ -1665,9 +1671,10 @@
                     const mockUploadDate = `${video.watchDuration} days ago`;
 
                     const videoCardHtml = `
-                        <div class="video-card group cursor-pointer ${watchedClass}" data-video-url="${video.videoUrl}" data-video-id="${video.id}">
+                        <div class="video-card group ${stateClasses}" data-video-url="${video.videoUrl}" data-video-id="${video.id}">
                             <div class="relative mb-2">
                                 <img src="${thumbnailUrl}" alt="${video.title}" class="w-full h-auto object-cover rounded-xl group-hover:rounded-none transition-all duration-200" onerror="this.onerror=null; this.src='https://placehold.co/400x225/1f3148/ffffff?text=Video';">
+                                ${watchedOverlay}
                                 <div class="absolute bottom-1.5 right-1.5 flex items-center space-x-1">
                                      <span class="bg-primary bg-opacity-90 text-white text-xs font-bold px-2 py-1 rounded-md">${video.points} PTS</span>
                                      <span class="bg-black bg-opacity-75 text-white text-xs font-semibold px-2 py-1 rounded-md">${video.watchDuration} SEC</span>
