@@ -277,6 +277,9 @@
                     </button>
                     Dashboard
                 </h1>
+                 <div id="mobile-points-display" class="md:hidden">
+                    <!-- Points will be injected here by JS -->
+                </div>
                 <div id="header-meta" class="hidden md:flex items-center space-x-4">
                     <!-- Header meta info will be updated by JS -->
                 </div>
@@ -357,7 +360,6 @@
 
             <!-- Watch Videos View -->
             <div id="watch-videos-view" class="content-view" style="display: none;">
-               
                  <div class="flex flex-col sm:flex-row gap-4 mb-6">
                     <input type="text" id="search-bar"
                         class="flex-grow px-4 py-2 rounded-full bg-card-bg border border-slate-700 focus:outline-none focus:ring-2 focus:ring-primary placeholder-muted-text"
@@ -394,7 +396,7 @@
                 </div>
             </div>
 
-            <!-- Video Player View -->
+            <!-- Video Player View (New) -->
             <div id="video-player-view" class="content-view" style="display: none;">
                 <button id="video-player-back-btn"
                     class="mb-0 flex items-center gap-2 px-4 py-2 bg-primary hover:bg-indigo-600 rounded-lg text-white font-semibold transition-colors duration-200">
@@ -474,7 +476,7 @@
                 </div>
             </div>
 
-            <!-- About View  -->
+            <!-- About View (New) -->
             <div id="about-view" class="content-view" style="display: none;">
                 <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
                     <h2 class="text-xl font-semibold mb-4">Ping Rewards အကြောင်း</h2>
@@ -888,7 +890,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut, signInAnonymously, GoogleAuthProvider, signInWithPopup, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut, signInAnonymously, GoogleAuthProvider, signInWithPopup, signInWithCustomToken, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, collection, query, where, addDoc, getDocs, deleteDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         document.addEventListener('DOMContentLoaded', async () => {
@@ -909,6 +911,12 @@
             const app = initializeApp(firebaseConfig);
             const db = getFirestore(app);
             const auth = getAuth(app);
+            
+            try {
+                await setPersistence(auth, browserLocalPersistence);
+            } catch (error) {
+                console.error("Error setting auth persistence: ", error);
+            }
 
             let userId = null;
             let isAuthReady = false;
@@ -991,7 +999,6 @@
             let currentUser = null;
             let userData = null;
             let videoCardToAnimate = null;
-            let isInitialUILoad = true;
 
             const adminEmail = 'mr.ping2025@gmail.com';
 
@@ -1562,6 +1569,8 @@
             function showView(targetId) {
                 views.forEach(view => { if (view) view.style.display = 'none'; });
                 const targetView = document.getElementById(targetId);
+                const mobilePointsDisplay = document.getElementById('mobile-points-display');
+
                 if (targetView) {
                     targetView.style.display = 'block';
                     updatePageTitle(targetId);
@@ -1571,6 +1580,13 @@
                     const activeLink = document.querySelector(`a[data-target="${targetId}"]`);
                     if (activeLink) {
                         activeLink.classList.add('active', 'bg-primary/20', 'text-white');
+                    }
+                }
+                 if (mobilePointsDisplay) {
+                    if (targetId === 'watch-videos-view' || targetId === 'video-player-view') {
+                        mobilePointsDisplay.style.display = 'block';
+                    } else {
+                        mobilePointsDisplay.style.display = 'none';
                     }
                 }
             }
@@ -1657,7 +1673,7 @@
                     }
                     
                     const isWatched = watchedVideoIds.includes(video.id);
-                    const watchedClass = isWatched ? 'opacity-50' : '';
+                    const watchedClass = isWatched ? 'opacity-50 pointer-events-none' : '';
 
                     // Mock data for new UI elements for demonstration
                     const mockChannelName = "Ping Rewards Channel";
@@ -1871,12 +1887,16 @@
                 const userPointsDisplay = document.getElementById('user-points-display');
                 const cashoutBtn = document.getElementById('cashout-button');
                 const payoutAmountInput = document.getElementById('payout-amount');
+                const mobilePointsDisplay = document.getElementById('mobile-points-display');
 
                 if (totalPointsValue) totalPointsValue.textContent = userData.points.toLocaleString();
                 if (estimatedEarningsValue) estimatedEarningsValue.textContent = `$${(userData.points / 5000).toFixed(2)}`;
                 if (videosWatchedValue) videosWatchedValue.textContent = (userData.watchedVideos || []).length;
                 if (userPointsDisplay) userPointsDisplay.textContent = `${userData.points.toLocaleString()} PTS`;
                 if (payoutAmountInput) payoutAmountInput.value = (userData.points / 5000).toFixed(2);
+                if (mobilePointsDisplay) {
+                     mobilePointsDisplay.innerHTML = `<span class="font-bold text-lg text-primary">${(userData.points || 0).toLocaleString()} PTS</span>`;
+                }
 
                 if (cashoutBtn) {
                     
@@ -1922,6 +1942,13 @@
                 cards.forEach(card => {
                     card.addEventListener('click', (e) => {
                         const videoId = card.getAttribute('data-video-id');
+                         // Check if the video is already watched
+                        const isWatched = (userData?.watchedVideos || []).includes(videoId);
+                        if(isWatched) {
+                            console.log("This video has already been watched.");
+                            return; // Do nothing if already watched
+                        }
+                        
                         const video = videos.find(v => v.id === videoId);
 
                         if (video) {
