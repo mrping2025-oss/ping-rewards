@@ -1461,9 +1461,15 @@
                     if (sidebarProfile) sidebarProfile.innerHTML = getUserProfileHTML();
                     if (welcomeMessage) welcomeMessage.textContent = `Welcome back, ${currentUser.name}!`;
                     updatePointsDisplay();
-                    // Only re-render history if the view is active, to save performance
+                    // Re-render active view content if necessary
                     if (document.getElementById('points-history-view').style.display === 'block') {
                         renderPointsHistoryTable();
+                    }
+                    if (document.getElementById('watch-videos-view').style.display === 'block' && !isInitialUILoad) {
+                         const activeFilterBtn = document.querySelector('#watch-videos-view .filter-btn.active');
+                         const category = activeFilterBtn ? activeFilterBtn.dataset.category : 'all';
+                         const searchQuery = searchBar ? searchBar.value : '';
+                         renderVideoGrid(category, searchQuery);
                     }
                 } else if (role === 'admin') {
                     if (headerMeta) headerMeta.innerHTML = getAdminHeaderHTML();
@@ -2519,4 +2525,5 @@
 </body>
 
 </html>
+
 
