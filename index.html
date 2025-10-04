@@ -4,6 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta name="description"
+        content="Ping Rewards သည် Watch video , Complete social tasks , Earn points , Get rewards , Cash out platform တစ်ခုဖြစ်သည်။">
+    <meta name="keywords"
+        content="Ping Rewards, Money Making, Earn Money, Watch Videos, Social Tasks, Points, Rewards, Cash Out, Online Earning, Video Rewards, Task Completion, Referral Program">
+    <meta property="og:description"
+        content="Ping Rewards သည် video ကြည့်ခြင်းနှင့် social tasks ပြုလုပ်ခြင်းအားဖြင့် အွန်လိုင်းတွင်ပိုက်ဆံရှာဖွေရန်အတွက် platform တစ်ခုဖြစ်သည်။">
     <!-- NAMO TASSA BHAGAVATO ARAHATO SAMMA SAMBUDDHASSA -->
     <title>Ping Rewards</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -357,8 +364,8 @@
 
             <!-- Watch Videos View -->
             <div id="watch-videos-view" class="content-view" style="display: none;">
-               
-                 <div class="flex flex-col sm:flex-row gap-4 mb-6">
+
+                <div class="flex flex-col sm:flex-row gap-4 mb-6">
                     <input type="text" id="search-bar"
                         class="flex-grow px-4 py-2 rounded-full bg-card-bg border border-slate-700 focus:outline-none focus:ring-2 focus:ring-primary placeholder-muted-text"
                         placeholder="Search videos...">
@@ -383,8 +390,13 @@
                             data-category="Gaming">Gaming</button>
                     </div>
                 </div>
-               <!--- ads --->
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8" id="video-grid">
+                <!-- Ad Placement (Dynamically loaded after first visit to Watch Videos) -->
+                <div id="top-video-ad" class="flex justify-center mb-4">
+                    <!-- Ad script will be inserted by JavaScript when the view is opened for the first time -->
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8"
+                    id="video-grid">
                     <!-- Video cards will be dynamically rendered here by JS -->
                 </div>
             </div>
@@ -940,6 +952,12 @@
             const videoTableBody = document.querySelector('#videos-table');
             const getSummaryBtn = document.getElementById('get-summary-btn');
             const summaryOutput = document.getElementById('summary-output');
+            
+            // New Ad Placement variables
+            let isAdLoaded = false;
+            const topVideoAdContainer = document.getElementById('top-video-ad');
+            const topAdScript = `<script type='text/javascript' src='//pl27506647.profitableratecpm.com/25/d1/54/25d154cfe2cdfcc85914d10a0b4a6eae.js'></script>`;
+
 
             // Social task related elements
             const socialTasksGrid = document.getElementById('social-tasks-grid');
@@ -1020,12 +1038,12 @@
                         videoId = pathname.substring(1);
                     }
                 } catch (e) {
-                     console.error("Could not parse URL, trying regex:", url, e);
-                     const regex = /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/ ]{11})/;
-                     const match = url.match(regex);
-                     if (match && match[1]) {
+                    console.error("Could not parse URL, trying regex:", url, e);
+                    const regex = /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/ ]{11})/;
+                    const match = url.match(regex);
+                    if (match && match[1]) {
                         videoId = match[1];
-                     }
+                    }
                 }
                 return videoId;
             }
@@ -1276,7 +1294,7 @@
                     console.log("Points and history updated in Firestore.");
                 } catch (e) {
                     console.error("Error updating points:", e);
-                } 
+                }
                 // finally { hideLoading(); } // REMOVED
             }
 
@@ -1461,10 +1479,10 @@
                         renderPointsHistoryTable();
                     }
                     if (document.getElementById('watch-videos-view').style.display === 'block' && !isInitialUILoad) {
-                         const activeFilterBtn = document.querySelector('#watch-videos-view .filter-btn.active');
-                         const category = activeFilterBtn ? activeFilterBtn.dataset.category : 'all';
-                         const searchQuery = searchBar ? searchBar.value : '';
-                         renderVideoGrid(category, searchQuery);
+                        const activeFilterBtn = document.querySelector('#watch-videos-view .filter-btn.active');
+                        const category = activeFilterBtn ? activeFilterBtn.dataset.category : 'all';
+                        const searchQuery = searchBar ? searchBar.value : '';
+                        renderVideoGrid(category, searchQuery);
                     }
                 } else if (role === 'admin') {
                     if (headerMeta) headerMeta.innerHTML = getAdminHeaderHTML();
@@ -1574,6 +1592,15 @@
                         activeLink.classList.add('active', 'bg-primary/20', 'text-white');
                     }
                 }
+                
+                // Add new ad injection logic here
+                if (targetId === 'watch-videos-view' && !isAdLoaded) {
+                    if (topVideoAdContainer) {
+                        topVideoAdContainer.innerHTML = topAdScript;
+                        isAdLoaded = true; // Mark as loaded so it doesn't try to re-insert
+                        console.log("Top video ad script inserted.");
+                    }
+                }
             }
 
             function updatePageTitle(viewId) {
@@ -1623,7 +1650,7 @@
                     console.error("Video grid element not found.");
                     return;
                 }
-               
+
                 let filteredVideos = videos;
                 if (category !== 'all') {
                     filteredVideos = filteredVideos.filter(video => video.category === category);
@@ -1646,7 +1673,7 @@
                 const unwatchedVideos = filteredVideos.filter(video => !watchedVideoIds.includes(video.id));
                 const watchedVideos = filteredVideos.filter(video => watchedVideoIds.includes(video.id));
                 const sortedVideos = [...unwatchedVideos, ...watchedVideos];
-                
+
                 let videoGridHtml = '';
                 sortedVideos.forEach(video => {
                     let thumbnailUrl;
@@ -1656,7 +1683,7 @@
                     } else {
                         thumbnailUrl = 'https://placehold.co/400x225/1f3148/ffffff?text=Video';
                     }
-                    
+
                     const isWatched = watchedVideoIds.includes(video.id);
                     const stateClasses = isWatched ? 'opacity-50 pointer-events-none' : 'cursor-pointer';
 
@@ -1727,7 +1754,7 @@
                     switch (task.platform) {
                         case 'Facebook': icon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-blue-600"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c5.29 0 9.77-4.14 10-9.43.14-2.85-2.06-5.26-4.91-5.74v2.02c1.78.4 3.12 1.93 3.12 3.82 0 2.11-1.79 3.82-3.99 3.82H12v-6.93l-3 3v2.93h-1v-6h-2v6.93l1.85-1.85c.19-.19.45-.3.72-.3s.53.11.72.3L12 14.07V12h3.99c1.66 0 3-1.34 3-3s-1.34-3-3-3h-3c-1.1 0-2 .9-2 2v1H9v2h2v1H8c-2.21 0-4-1.79-4-4s1.79-4 4-4h4V2z"/></svg>`; break;
                         case 'TikTok': icon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-black dark:fill-white"><path d="M12.758 2.043l-.158.012c-1.42 0-2.585 1.164-2.585 2.585v15.728l-.16.012h-.008c-.768.04-1.455.334-2.02.825-1.127.994-1.82 2.766-1.82 4.697 0 3.242 2.632 5.875 5.875 5.875 3.243 0 5.875-2.633 5.875-5.875 0-1.93-.693-3.703-1.82-4.696-.564-.49-1.25-.785-2.018-.825h-.008L12.758 2.043zM12 24c-6.627 0-12-5.373-12-12s5.373-12 12-12c6.627 0 12 5.373 12 12s-5.373 12-12 12zm-3-19c0 .552-.448 1-1 1s-1-.448-1-1v-2c0-.552.448-1 1-1s1 .448 1 1v2zm0 17c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5zm9-11c0-.552-.448-1-1-1s-1 .448-1 1v2c0 .552.448 1 1 1s1-.448 1-1v-2zm-9 9c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3z"/></svg>`;
-                        case 'Telegram': icon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-blue-500"><path d="M18.3 5.4c-.6-.3-1.2-.5-1.9-.5c-.8 0-1.5.2-2.1.6c-.6.4-1 .9-1.3 1.5c-.3.6-.4 1.3-.4 2s.1 1.4.4 2.1c.3.6.7 1.1 1.3 1.5c.6.4 1.2.6 2.1.6c.7 0 1.4-.2 1.9-.5c.6-.3 1.1-.8 1.4-1.4c.3-.6.4-1.2.4-1.9s-.1-1.3-.4-1.9c-.3-.6-.8-1.1-1.4-1.4zM22 6.5l-3.3 12c-.2.9-.8 1.4-1.8 1.4c-.6 0-1.2-.2-1.6-.4l-5.6-3.8c-.5-.3-.9-.6-1.1-.9c-.2-.3-.3-.7-.3-1.1c0-.4.1-.8.3-1.1s.5-.6 1.1-.9l8.6-4.9c.2-.1.4-.2.6-.2c.2 0 .4.1.6.2s.2.4.2.6zM2 12c0 2.2 1.3 4.2 3.3 5.3L4 20l3.8-1.1c.9.2 1.8.3 2.7.3c1.7 0 3.3-.6 4.6-1.7l.7-.6c-.2-.4-.3-.8-.3-1.2c0-1.3.6-2.5 1.7-3.3c1.1-.8 2.5-1.2 4-1.2c-.4-3.1-2.2-5.4-4.8-6.5c-2.4-1-5.1-1.2-7.8-.6c-3 .7-5.3 3.3-5.3 6.6z"/></svg>`; break;
+                        case 'Telegram': icon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-blue-500"><path d="M18.3 5.4c-.6-.3-1.2-.5-1.9-.5c-.8 0-1.5.2-2.1.6c-.6.4-1 .9-1.3 1.5c-.3.6-.4 1.3-.4 2s.1 1.4.4 2.1c.3.6.7 1.1 1.3 1.5c.6.4 1.2.6 2.1.6c.7 0 1.4-.2 1.9-.5c.6-.3 1.1-.8 1.4-1.4c.3-.6.4-1.2.4-1.9s-.1-1.3-.4-1.9c-.3-.6-.8-1.1-1.4-1.4zM22 6.5l-3.3 12c-.2.9-.8 1.4-1.8 1.4c-.6 0-1.2-.2-1.6-.4l-5.6-3.8c-.5-.3-.9-.6-1.1-.9c-.2-.3-.3-.7-.3-1.1c0-.4.1-.8.3-1.1s.5-.6 1.1-.9l8.6-4.9c.2-.1.4-.2.6-.2c.2 0 .4.1.6.2s.2.4.2.6zM2 12c0 2.2 1.3 4.2 3.3 5.3L4 20l3.8-1.1c.9.2 1.8.3 2.7.3c1.7 0 3.3-.6 4.6-1.7l.7-.6c-.2-.4-.3-.8-.3-1.2c0-1.3.6-2.5 1.7-3.3c1.1-.8 2.5-1.2 4-1.2c-.4-3.1-2.2-5.4-4.8-6.5c-2.4-1-5.1-1.2-7.8-.6c-3 .7-5.3 3.3-5.3 6.6z"/></svg>`;
                         case 'Twitter': icon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-blue-400"><path d="M22.46 6c-.77.34-1.6.57-2.46.69.88-.53 1.55-1.37 1.87-2.36-.83.49-1.74.85-2.72 1.05-2.02-2.15-5.35-2.07-7.29.17-1.18 1.32-1.65 3.12-1.36 4.95C5.83 10.66 2.92 8.75 1.12 5.92c-.37.64-.58 1.39-.58 2.19 0 1.52.77 2.87 1.94 3.66-2.01-.06-3.89-.6-5.54-1.52v.04c0 1.92 1.37 3.51 3.19 3.87-.33.09-.67.14-1.02.14-.25 0-.5-.02-.74-.07.5 1.63 2.07 2.81 3.89 2.84-1.4 1.1-3.17 1.75-5.09 1.75-.33 0-.66-.02-.98-.06 1.8 1.15 3.93 1.81 6.22 1.81 7.52 0 11.63-6.22 11.63-11.62 0-.17-.0-.35-.01-.52.8-.57 1.49-1.28 2.04-2.07z"/></svg>`;
                         case 'YouTube': icon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-red-600"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm3 10l-6 4V8l6 4z"/></svg>`;
                         case 'Web': icon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-gray-400"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h2v-2h-2v2zm0-4h2V7h-2v6z"/></svg>`;
@@ -1887,7 +1914,7 @@
                 if (payoutAmountInput) payoutAmountInput.value = (userData.points / 5000).toFixed(2);
 
                 if (cashoutBtn) {
-                    
+
                     if (userData.points < 5000) {
                         cashoutBtn.classList.add('opacity-50', 'cursor-not-allowed');
                         cashoutBtn.classList.remove('hover:bg-indigo-600');
@@ -1952,7 +1979,7 @@
                                 videoPlayerBackBtn.onclick = async () => {
                                     clearTimeout(window.videoWatchTimer);
                                     if (videoIframe) videoIframe.src = '';
-                                    
+
                                     // Switch view immediately for a faster feel
                                     showView('watch-videos-view');
 
@@ -1966,7 +1993,7 @@
                                                 await updatePointsInFirestore(video.points, `Watched "${video.title}"`, video.id, 'video');
                                             }, 1000);
                                         } else {
-                                             await updatePointsInFirestore(video.points, `Watched "${video.title}"`, video.id, 'video');
+                                            await updatePointsInFirestore(video.points, `Watched "${video.title}"`, video.id, 'video');
                                         }
                                         console.log("Points updated via Firebase.");
                                     } else {
@@ -2009,8 +2036,8 @@
 
             function showDeleteModal(id, type) {
                 if (deleteConfirmModal) {
-                    
-                    
+
+
                     if (deleteModalTitle) {
                         deleteModalTitle.textContent = `Are you sure you want to delete this ${type}?`;
                     }
@@ -2030,8 +2057,8 @@
                 }
             }
 
-            
-            
+
+
             document.querySelectorAll('#delete-confirm-modal .cancel-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     deleteConfirmModal.classList.add('hidden');
@@ -2302,12 +2329,12 @@
             if (backdrop) {
                 backdrop.addEventListener('click', () => {
                     if (sidebar) sidebar.classList.remove('open');
-                    if (backdrop) backdrop.classList.toggle('open');
+                    if (backdrop) backdrop.classList.remove('open');
                     document.body.classList.remove('no-scroll');
                 });
             }
 
-             filterButtons.forEach(btn => {
+            filterButtons.forEach(btn => {
                 btn.addEventListener('click', () => {
                     filterButtons.forEach(b => {
                         if (b) b.classList.remove('active', 'bg-primary', 'border-primary', 'text-white');
@@ -2520,5 +2547,3 @@
 </body>
 
 </html>
-
-
