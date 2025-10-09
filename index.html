@@ -549,6 +549,7 @@
                 <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 mb-6">
                     <h2 class="text-xl font-semibold mb-4 text-primary">သူငယ်ချင်းများကို ဖိတ်ခေါ်ပြီး အမှတ်များရယူပါ (Invite & Earn)</h2>
                     <p class="text-muted-text mb-6">သင်၏ ကိုယ်ပိုင်ဖိတ်ခေါ်ကုဒ် (Referral Code) ကို အသုံးပြု၍ သူငယ်ချင်းများကို ဖိတ်ခေါ်ပါ။ သူငယ်ချင်းတစ်ဦး အကောင့်ဖွင့်တိုင်း အမှတ် **50** ရရှိမည်။</p>
+                    <!-- ^^^ UPDATED TEXT HERE: Changed 500 to 50 ^^^ -->
 
                     <div class="space-y-4">
                         <div>
@@ -1119,7 +1120,8 @@
             const copyLinkBtn = document.getElementById('copy-link-btn');
             const copyStatus = document.getElementById('copy-status');
             const invitedUsersTable = document.getElementById('invited-users-table');
-            const referralBonus = 50; // Define the referral bonus
+            const referralBonus = 50; // <--- CHANGE 1: Referral bonus set to 50 PTS
+            // const referralBonus = 500; // Original value
 
             let videos = [];
             let socialTasks = []; // New array to hold social tasks
@@ -1197,7 +1199,7 @@
                         const newHistory = [...(referrerData.pointsHistory || []), {
                             date: new Date().toLocaleDateString('en-US'),
                             description: `Referral bonus from ${newUserName}`,
-                            points: referralBonus
+                            points: referralBonus // Uses the new variable (50)
                         }];
                         
                         const newInvitedUser = {
