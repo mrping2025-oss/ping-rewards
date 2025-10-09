@@ -54,8 +54,10 @@
                 }
             }
         }
+        
     </script>
     <style>
+        
         /* General Styles for the entire app */
         body {
             font-family: 'Inter', sans-serif;
@@ -88,6 +90,21 @@
         .modal-overlay {
             background-color: rgba(0, 0, 0, 0.7);
         }
+        /* Animation */
+         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        
+        .animate-scroll {
+            animation: scroll 12s linear infinite; 
+        }
+
+        .animate-scroll:hover {
+            animation-play-state: paused;
+        }
+        /* Animation */
     </style>
 </head>
 
@@ -296,6 +313,20 @@
                     <div
                         class="card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 col-span-1 lg:col-span-3 flex flex-col md:flex-row justify-between items-center">
                         <div>
+                            
+                                    <!-- စာသား ရွေ့လျား Container -->
+                                    <div class="w-full max-w-7xl overflow-hidden bg-yellow-400 border-y-8 border-yellow-600 py-3 shadow-2xl rounded-xl">
+                                        <div class="flex animate-scroll min-w-max">
+                                            <span class="text-3xl sm:text-4xl font-extrabold text-gray-900 uppercase tracking-wide whitespace-nowrap px-8">
+                                                🎉 အရေးကြီးသည် About ကို နိပ်ပြီး စည်းကမ်းချက်ကို အရင်ဖတ်ပေးပါ 🎉 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            </span>
+                                            <span class="text-3xl sm:text-4xl font-extrabold text-gray-900 uppercase tracking-wide whitespace-nowrap px-8">
+                                                🎉 Important: Please click 'About' and read the rules first. 🎉 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            </span>
+                                            
+                                        </div>
+                                    </div>
+                            <!-- စာသား ရွေ့လျား Container -->
                             <h2 id="welcome-message" class="text-xl font-semibold mb-2"></h2>
                             <p class="text-muted-text">Ready to earn more points? Let's start watching some videos.</p>
                         </div>
