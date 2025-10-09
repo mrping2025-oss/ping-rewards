@@ -1214,9 +1214,9 @@
                             pointsHistory: newHistory,
                             invitedUsers: arrayUnion(newInvitedUser)
                         });
-                        console.log(`Referral bonus of ${referralBonus} points awarded to referrer ${referrerId}.`);
+                        console.log(`Referral bonus of ${referralBonus} points awarded to referrer ${referrerId}. User: ${newUserName}`); // IMPROVED LOG
                     } else {
-                        console.warn(`Referrer ID ${referrerId} not found. Skipping bonus.`);
+                        console.warn(`Referrer ID ${referrerId} not found or user ${newUserUid} already credited. Skipping bonus.`); // IMPROVED LOG
                     }
                 } catch (e) {
                     console.error("Error awarding referrer bonus:", e);
@@ -2074,6 +2074,7 @@
                 // Render invited users table
                 if (invitedUsersTable) {
                     const invitedUsers = userData.invitedUsers || [];
+                    console.log(`[Referral UI] Rendering Invite History: ${invitedUsers.length} invited users found.`); // ADDED LOG
                     if (invitedUsers.length === 0) {
                         invitedUsersTable.innerHTML = `<tr><td colspan="2" class="p-2 text-center text-muted-text">သူငယ်ချင်းများ ဖိတ်ခေါ်ခြင်း မရှိသေးပါ။</td></tr>`;
                     } else {
