@@ -207,17 +207,6 @@
                         Points History
                     </a>
                 </li>
-                <!-- NEW REFERRAL LINK -->
-                <li>
-                    <a href="#"
-                        class="nav-link user-link flex items-center p-3 rounded-lg hover:bg-primary/20 transition-colors duration-200"
-                        data-target="referral-view">
-                        <svg class="w-6 h-6 mr-3 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                            <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-4 0h1v2h-1c-2.76 0-5 2.24-5 5v2h16v-2c0-2.76-2.24-5-5-5h-1v-2c0-2.76-2.24-5-5-5s-5 2.24-5 5v2H2v-2c0-2.21 1.79-4 4-4s4 1.79 4 4v.5h-2v-.5c0-1.66 1.34-3 3-3s3 1.34 3 3z"/>
-                        </svg>
-                        Invite Friends
-                    </a>
-                </li>
                 <li>
                     <a href="#"
                         class="nav-link user-link flex items-center p-3 rounded-lg hover:bg-primary/20 transition-colors duration-200"
@@ -543,46 +532,6 @@
                 </div>
             </div>
 
-            <!-- Invite/Referral View (New) -->
-            <div id="referral-view" class="content-view" style="display: none;">
-                <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
-                    <h2 class="text-xl font-semibold mb-4">Invite Friends & Earn Points!</h2>
-                    <p class="text-muted-text mb-6">Share your unique referral link to invite new users. You will earn 
-                        <span class="font-bold text-accent-green">50 Points</span> for every successful referral who signs up.</p>
-                    
-                    <div class="space-y-4">
-                        <div class="bg-slate-700 p-4 rounded-lg flex flex-col sm:flex-row items-center justify-between">
-                            <p class="text-sm font-medium mb-2 sm:mb-0">Your Referral Link:</p>
-                            <input type="text" readonly id="referral-link-input" 
-                                class="w-full sm:w-auto flex-grow bg-transparent border-none text-text-color font-mono overflow-auto whitespace-nowrap px-3 py-1 rounded-md text-sm"
-                                value="Loading...">
-                            <button id="copy-referral-link" 
-                                class="mt-3 sm:mt-0 px-4 py-2 bg-primary hover:bg-indigo-600 text-white font-semibold rounded-lg transition-colors duration-200 flex items-center justify-center text-sm">
-                                <svg class="w-4 h-4 mr-1 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-                                Copy Link
-                            </button>
-                        </div>
-                        <p id="copy-message" class="text-xs text-accent-green opacity-0 transition-opacity duration-300"></p>
-                    </div>
-
-                    <h3 class="text-lg font-semibold mt-8 mb-4">Referral History</h3>
-                    <div class="overflow-x-auto rounded-lg">
-                        <table class="w-full text-left table-auto">
-                            <thead class="bg-slate-700 text-slate-400 uppercase text-xs">
-                                <tr>
-                                    <th class="p-4 rounded-tl-lg">Referral Date</th>
-                                    <th class="p-4">Referred User (Email)</th>
-                                    <th class="p-4 rounded-tr-lg">Points Earned</th>
-                                </tr>
-                            </thead>
-                            <tbody id="referral-history-table" class="divide-y divide-slate-700">
-                                <tr><td colspan="3" class="p-4 text-center text-muted-text">Invite your first friend!</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
             <!-- About View  -->
             <div id="about-view" class="content-view" style="display: none;">
                 <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
@@ -641,7 +590,7 @@
                                 viewBox="0 0 24 24">
                                 <path
                                     d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
-                        </svg>
+                            </svg>
                         </div>
                         <div class="flex-grow">
                             <h3 class="text-lg font-semibold text-muted-text">Total Videos</h3>
@@ -1023,18 +972,6 @@
             let userId = null;
             let isAuthReady = false;
 
-            const REFERRAL_BONUS_POINTS = 50; // New Constant
-
-            // New Utility function to get URL parameters
-            function getUrlParameter(name) {
-                name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-                const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-                const results = regex.exec(location.search);
-                return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-            }
-
-            let pendingReferrerId = getUrlParameter('ref');
-            
             const loginPage = document.getElementById('login-page');
             const appContainer = document.getElementById('app-container');
             const googleSignInBtn = document.getElementById('google-sign-in-btn');
@@ -1087,11 +1024,6 @@
             const cashoutMessageModal = document.getElementById('cashout-message-modal');
             const cashoutMessageText = document.getElementById('cashout-message-text');
             const cashoutMessageCloseBtn = document.getElementById('cashout-message-close-btn');
-            
-            // Referral related elements (NEW)
-            const referralLinkInput = document.getElementById('referral-link-input');
-            const copyReferralLinkBtn = document.getElementById('copy-referral-link');
-            const copyMessage = document.getElementById('copy-message');
 
             // Admin related elements
             const adminTotalUsersValue = document.getElementById('admin-total-users-value');
@@ -1135,45 +1067,40 @@
                 }
             }
 
-            // NEW: Function to award referral points to the referrer
-            async function awardReferralPoints(referrerId, referredUserIdentifier) {
-                if (!referrerId) return;
-
-                const referrerDocRef = doc(db, `/artifacts/${appId}/users/${referrerId}`);
-
+            // Utility function to extract YouTube video ID from a URL
+            function getYouTubeId(url) {
+                let videoId = null;
                 try {
-                    // 1. Get the referrer's current data (Important for optimistic updates to avoid array corruption)
-                    const referrerDoc = await getDoc(referrerDocRef);
-                    if (!referrerDoc.exists()) {
-                        console.error("Referrer ID not found:", referrerId);
-                        return;
+                    const urlObj = new URL(url);
+                    const hostname = urlObj.hostname;
+                    const pathname = urlObj.pathname;
+                    if (hostname.includes('youtube.com')) {
+                        if (pathname.includes('/embed/')) {
+                            videoId = pathname.split('/embed/')[1].split('?')[0];
+                        } else {
+                            videoId = urlObj.searchParams.get('v');
+                        }
+                    } else if (hostname.includes('youtu.be')) {
+                        videoId = pathname.substring(1);
                     }
-                    
-                    const historyEntry = {
-                        date: new Date().toLocaleDateString('en-US'),
-                        description: `Referral Bonus: ${referredUserIdentifier} signed up.`,
-                        points: REFERRAL_BONUS_POINTS
-                    };
-                    const referralEntry = {
-                        date: new Date().toLocaleDateString('en-US'),
-                        referredUser: referredUserIdentifier,
-                        points: REFERRAL_BONUS_POINTS
-                    };
-                    
-                    // 2. Update the referrer's data using atomic updates
-                    await updateDoc(referrerDocRef, {
-                        // FIX: Change arrayUnion to direct assignment for the integer 'points' field
-                        points: referrerDoc.data().points + REFERRAL_BONUS_POINTS, 
-                        pointsHistory: arrayUnion(historyEntry),
-                        referrals: arrayUnion(referralEntry)
-                    });
-                    console.log(`Awarded ${REFERRAL_BONUS_POINTS} points to referrer ${referrerId}`);
-
                 } catch (e) {
-                    console.error("Error awarding referral points:", e);
+                    console.error("Could not parse URL, trying regex:", url, e);
+                    const regex = /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/ ]{11})/;
+                    const match = url.match(regex);
+                    if (match && match[1]) {
+                        videoId = match[1];
+                    }
                 }
+                return videoId;
             }
 
+            // Function to get a YouTube thumbnail
+            function getYouTubeThumbnail(videoId) {
+                if (videoId) {
+                    return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+                }
+                return 'https://placehold.co/400x225/1f3148/ffffff?text=Video';
+            }
 
             async function seedInitialData(user) {
                 try {
@@ -1191,8 +1118,7 @@
                             userRole = 'admin';
                             userName = 'Mr. Ping';
                         }
-                        
-                        const newUserDoc = {
+                        await setDoc(userDocRef, {
                             name: userName,
                             email: user.email || '',
                             role: userRole,
@@ -1200,22 +1126,9 @@
                             pointsHistory: [],
                             payoutHistory: [],
                             watchedVideos: [], // New field to track watched videos
-                            completedSocialTasks: [], // New field to track completed social tasks
-                            referrals: [], // NEW: To track who the user has successfully referred
-                        };
-                        
-                        // NEW: Check if there's a pending referral and it's not the user inviting themselves
-                        if (pendingReferrerId && pendingReferrerId !== userId) {
-                            newUserDoc.referrerId = pendingReferrerId; // Store who referred this new user
-                        }
-                        
-                        await setDoc(userDocRef, newUserDoc);
+                            completedSocialTasks: [] // New field to track completed social tasks
+                        });
                         console.log("Seeding initial user data.");
-
-                        // NEW: Award referrer points immediately upon successful sign up
-                        if (newUserDoc.referrerId) {
-                            await awardReferralPoints(newUserDoc.referrerId, user.email || userId);
-                        }
                     }
 
                     if (user.email === adminEmail) {
@@ -1611,9 +1524,6 @@
                     if (document.getElementById('points-history-view').style.display === 'block') {
                         renderPointsHistoryTable();
                     }
-                    if (document.getElementById('referral-view').style.display === 'block') {
-                        renderReferralView();
-                    }
                     if (document.getElementById('watch-videos-view').style.display === 'block' && !isInitialUILoad) {
                         const activeFilterBtn = document.querySelector('#watch-videos-view .filter-btn.active');
                         const category = activeFilterBtn ? activeFilterBtn.dataset.category : 'all';
@@ -1744,7 +1654,6 @@
                     case 'watch-videos-view': titleText = 'Watch Videos'; break;
                     case 'social-tasks-view': titleText = 'Social Tasks'; break;
                     case 'points-history-view': titleText = 'Points History'; break;
-                    case 'referral-view': titleText = 'Invite Friends'; break; // NEW
                     case 'about-view': titleText = 'About'; break;
                     case 'admin-dashboard-view': titleText = 'Admin Dashboard'; break;
                     case 'manage-videos-view': titleText = 'Manage Videos'; break;
@@ -1882,7 +1791,7 @@
                     switch (task.platform) {
                         case 'Facebook': icon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-blue-600"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c5.29 0 9.77-4.14 10-9.43.14-2.85-2.06-5.26-4.91-5.74v2.02c1.78.4 3.12 1.93 3.12 3.82 0 2.11-1.79 3.82-3.99 3.82H12v-6.93l-3 3v2.93h-1v-6h-2v6.93l1.85-1.85c.19-.19.45-.3.72-.3s.53.11.72.3L12 14.07V12h3.99c1.66 0 3-1.34 3-3s-1.34-3-3-3h-3c-1.1 0-2 .9-2 2v1H9v2h2v1H8c-2.21 0-4-1.79-4-4s1.79-4 4-4h4V2z"/></svg>`; break;
                         case 'TikTok': icon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-black dark:fill-white"><path d="M12.758 2.043l-.158.012c-1.42 0-2.585 1.164-2.585 2.585v15.728l-.16.012h-.008c-.768.04-1.455.334-2.02.825-1.127.994-1.82 2.766-1.82 4.697 0 3.242 2.632 5.875 5.875 5.875 3.243 0 5.875-2.633 5.875-5.875 0-1.93-.693-3.703-1.82-4.696-.564-.49-1.25-.785-2.018-.825h-.008L12.758 2.043zM12 24c-6.627 0-12-5.373-12-12s5.373-12 12-12c6.627 0 12 5.373 12 12s-5.373 12-12 12zm-3-19c0 .552-.448 1-1 1s-1-.448-1-1v-2c0-.552.448-1 1-1s1 .448 1 1v2zm0 17c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5zm9-11c0-.552-.448-1-1-1s-1 .448-1 1v2c0 .552.448 1 1 1s1-.448 1-1v-2zm-9 9c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3z"/></svg>`;
-                        case 'Telegram': icon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-blue-500"><path d="M18.3 5.4c-.6-.3-1.2-.5-1.9-.5c-.8 0-1.5.2-2.1.6c-.6.4-1 .9-1.3 1.5c-.3.6-.4 1.3-.4 2s.1 1.4.4 2.1c.3.6.7 1.1 1.3 1.5c.6.4 1.2.6 2.1.6c.7 0 1.4-.2 1.9-.5c.6-.3 1.1-.8 1.4-1.4c.3-.6.4-1.2.4-1.9s-.1-1.3-.4-1.9c-.3-.6-.8-1.1-1.4-1.4zM22 6.5l-3.3 12c-.2.9-.8 1.4-1.8 1.4c-.6 0-1.2-.2-1.6-.4l-5.6-3.8c-.5-.3-.9-.6-1.1-.9c-.2-.3-.3-.7-.3-1.1c0-.4.1-.8.3-1.1s.5-.6 1.1-.9l8.6-4.9c.2-.1.4-.2.6-.2c.2 0 .4.1.6.2s.2.4.2.6zM2 12c0 2.2 1.3 4.2 3.3 5.3L4 20l3.8-1.1c.9.2 1.8.3 2.7.3c1.7 0 3.3-.6 4.6-1.7l.7-.6c-.2-.4-.3-.8-.3-1.2c0-1.3.6-2.5 1.7-3.3c1.1-.8 2.5-1.2 4-1.2c-.4-3.1-2.2-5.4-4.8-6.5c-2.4-1-5.1-1.2-7.8-.6c-3 .7-5.3 3.3-5.3 6.6z"/></svg>`;
+                        case 'Telegram': icon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-blue-500"><path d="M18.3 5.4c-.6-.3-1.2-.5-1.9-.5c-.8 0-1.5.2-2.1.6c-.6.4-1 .9-1.3 1.5c-.3.6-.4 1.3-.4 2s.1 1.4.4 2.1c.3.6.7 1.1 1.3 1.5c.6.4 1.2.6 2.1.6c.7 0 1.4-.2 1.9-.5c.6-.3 1.1-.8 1.4-1.4c.3-.6.4-1.2.4-1.9s-.1-1.3-.4-1.9c-.3-.6-.8-1.1-1.4-1.4zM22 6.5l-3.3 12c-.2.9-.8 1.4-1.8 1.4c-.6 0-1.2-.2-1.6-.4l-5.6-3.8c-.5-.3-.9-.6-1.1-.9c-.2-.3-.3-.7-.3-1.1c0-.4.1-.8.3-1.1s.5-.6 1.1-.9l8.6-4.9c.2-.1.4-.2.6-.2c.2 0 .4.1.6.2s.2.4.2.6zM2 12c0 2.2 1.3 4.2 3.3 5.3L4 20l3.8-1.1c.9.2 1.8.3 2.7.3c1.7 0 3.3-.6 4.6-1.7l.7-.6c-.2-.4-.3-.8-.3-1.2c0-1.3.6-2.5 1.7-3.3c1.1-.8 2.5-1.2 4-1.2c-.4-3.1-2.2-5.4-4.8-6.5c-2.4-1-5.1-1.2-7.8-.6c-3 .7-5.3 3.3-5.3 6.6z"/></svg>`; break;
                         case 'Twitter': icon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-blue-400"><path d="M22.46 6c-.77.34-1.6.57-2.46.69.88-.53 1.55-1.37 1.87-2.36-.83.49-1.74.85-2.72 1.05-2.02-2.15-5.35-2.07-7.29.17-1.18 1.32-1.65 3.12-1.36 4.95C5.83 10.66 2.92 8.75 1.12 5.92c-.37.64-.58 1.39-.58 2.19 0 1.52.77 2.87 1.94 3.66-2.01-.06-3.89-.6-5.54-1.52v.04c0 1.92 1.37 3.51 3.19 3.87-.33.09-.67.14-1.02.14-.25 0-.5-.02-.74-.07.5 1.63 2.07 2.81 3.89 2.84-1.4 1.1-3.17 1.75-5.09 1.75-.33 0-.66-.02-.98-.06 1.8 1.15 3.93 1.81 6.22 1.81 7.52 0 11.63-6.22 11.63-11.62 0-.17-.0-.35-.01-.52.8-.57 1.49-1.28 2.04-2.07z"/></svg>`;
                         case 'YouTube': icon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-red-600"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm3 10l-6 4V8l6 4z"/></svg>`;
                         case 'Web': icon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-gray-400"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h2v-2h-2v2zm0-4h2V7h-2v6z"/></svg>`;
@@ -1905,168 +1814,180 @@
                 attachSocialTaskListeners();
             }
 
-            function renderReferralView() {
-                if (!userId || !referralLinkInput) return;
-                
-                const currentUrl = window.location.origin + window.location.pathname;
-                const referralLink = `${currentUrl}?ref=${userId}`;
-                referralLinkInput.value = referralLink;
-
-                const referralHistoryTable = document.getElementById('referral-history-table');
-                if (!referralHistoryTable) return;
-                
-                referralHistoryTable.innerHTML = '';
-                
-                const referrals = userData?.referrals || [];
-
-                if (referrals.length === 0) {
-                    referralHistoryTable.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-muted-text">Invite your first friend!</td></tr>`;
+            function renderUsersTable(users) {
+                if (!usersTableBody) return;
+                usersTableBody.innerHTML = '';
+                if (users.length === 0) {
+                    usersTableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-muted-text">No users found.</td></tr>`;
                     return;
                 }
-                
-                referrals.forEach(ref => {
-                    const referredUserDisplay = ref.referredUser.includes('@') 
-                                                ? ref.referredUser.split('@')[0] + '***@***' + ref.referredUser.split('@')[1]
-                                                : ref.referredUser;
 
-                    const rowHtml = `
-                        <tr class="hover:bg-slate-700 transition-colors duration-200">
-                            <td class="p-4">${ref.date}</td>
-                            <td class="p-4">${referredUserDisplay}</td>
-                            <td class="p-4 font-bold text-accent-green">+${ref.points}</td>
+                users.forEach(user => {
+                    const toggleRoleBtnText = user.role === 'admin' ? 'Demote to User' : 'Promote to Admin';
+                    const tableRowHtml = `
+                        <tr data-user-id="${user.id}" class="hover:bg-slate-700 transition-colors duration-200">
+                            <td class="p-4 text-xs font-mono">${user.id.substring(0, 8)}...</td>
+                            <td class="p-4">${user.name || 'N/A'}</td>
+                            <td class="p-4">${user.email || 'N/A'}</td>
+                            <td class="p-4"><span class="capitalize px-2 py-1 rounded-full text-xs font-semibold ${user.role === 'admin' ? 'bg-orange-500 text-white' : 'bg-primary/20 text-primary'}">${user.role}</span></td>
+                            <td class="p-4">${user.points || 0}</td>
+                            <td class="p-4 whitespace-nowrap">
+                                <button class="actions-btn view-history-btn px-3 py-1 bg-accent-green hover:bg-emerald-600 text-white text-sm rounded-lg transition-colors duration-200" data-user-id="${user.id}">View History</button>
+                                ${user.id !== userId ? `<button class="actions-btn toggle-role-btn px-3 py-1 bg-accent-purple hover:bg-purple-600 text-white text-sm rounded-lg ml-2 transition-colors duration-200" data-user-id="${user.id}" data-current-role="${user.role}">${toggleRoleBtnText}</button>` : ''}
+                            </td>
                         </tr>
                     `;
-                    referralHistoryTable.innerHTML += rowHtml;
+                    usersTableBody.innerHTML += tableRowHtml;
+                });
+                attachManageUsersListeners(users);
+            }
+
+            function renderManageVideosTable() {
+                const videoTableBody = document.querySelector('#videos-table');
+                if (!videoTableBody) {
+                    console.error("Video table body element not found.");
+                    return;
+                }
+                videoTableBody.innerHTML = '';
+                videos.forEach(video => {
+                    const tableRowHtml = `
+                        <tr class="hover:bg-slate-700 transition-colors duration-200" data-video-id="${video.id}">
+                            <td class="p-4">${video.title}</td>
+                            <td class="p-4">${video.category}</td>
+                            <td class="p-4">${video.points}</td>
+                            <td class="p-4">
+                                <a href="#" class="actions-btn edit-btn text-primary hover:text-indigo-400 mr-4 transition-colors duration-200" data-video-id="${video.id}">Edit</a>
+                                <a href="#" class="actions-btn delete-btn text-red-500 hover:text-red-400 transition-colors duration-200" data-video-id="${video.id}">Delete</a>
+                            </td>
+                        </tr>
+                    `;
+                    videoTableBody.innerHTML += tableRowHtml;
+                });
+                attachManageVideosListeners();
+            }
+
+            // Renders the manage social tasks table for admin view
+            function renderManageSocialTasksTable() {
+                if (!socialTaskTableBody) return;
+                socialTaskTableBody.innerHTML = '';
+                socialTasks.forEach(task => {
+                    const tableRowHtml = `
+                        <tr class="hover:bg-slate-700 transition-colors duration-200" data-task-id="${task.id}">
+                            <td class="p-4">${task.title}</td>
+                            <td class="p-4">${task.platform}</td>
+                            <td class="p-4">${task.link}</td>
+                            <td class="p-4">${task.points}</td>
+                            <td class="p-4">
+                                <a href="#" class="actions-btn edit-social-task-btn text-primary hover:text-indigo-400 mr-4 transition-colors duration-200" data-task-id="${task.id}">Edit</a>
+                                <a href="#" class="actions-btn delete-social-task-btn text-red-500 hover:text-red-400 transition-colors duration-200" data-task-id="${task.id}">Delete</a>
+                            </td>
+                        </tr>
+                    `;
+                    socialTaskTableBody.innerHTML += tableRowHtml;
+                });
+                attachManageSocialTasksListeners();
+            }
+
+            function renderPointsHistoryTable() {
+                const pointsHistoryTableBody = document.querySelector('#points-history-table');
+                if (!pointsHistoryTableBody) {
+                    console.error("Points history table body element not found.");
+                    return;
+                }
+                pointsHistoryTableBody.innerHTML = '';
+                if (!userData || !userData.pointsHistory || userData.pointsHistory.length === 0) {
+                    pointsHistoryTableBody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-muted-text">No points history yet. Watch some videos!</td></tr>`;
+                    return;
+                }
+                const history = userData.pointsHistory;
+                history.forEach(item => {
+                    const tableRowHtml = `
+                        <tr class="hover:bg-slate-700 transition-colors duration-200">
+                            <td class="p-4">${item.date}</td>
+                            <td class="p-4 flex items-center">
+                                <svg class="w-5 h-5 mr-2 fill-accent-green flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5l-5-5 1.41-1.41L10 13.67l7.59-7.59L19 7l-9 9.5z"/></svg>
+                                ${item.description}
+                            </td>
+                            <td class="p-4 font-bold text-accent-green">+${item.points}</td>
+                        </tr>
+                    `;
+                    pointsHistoryTableBody.innerHTML += tableRowHtml;
                 });
             }
 
-            if (copyReferralLinkBtn) {
-                copyReferralLinkBtn.addEventListener('click', () => {
-                    const linkInput = document.getElementById('referral-link-input');
-                    const link = linkInput.value;
-                    
-                    // Fallback for older browsers or environments where execCommand works better
-                    let isSuccessful = false;
-                    try {
-                        const tempInput = document.createElement('textarea');
-                        tempInput.value = link;
-                        document.body.appendChild(tempInput);
-                        tempInput.select();
-                        isSuccessful = document.execCommand('copy');
-                        document.body.removeChild(tempInput);
-                    } catch (err) {
-                        console.error('Fallback: Oops, unable to copy', err);
-                    }
-                    
-                    if (copyMessage) {
-                        if (isSuccessful) {
-                            copyMessage.textContent = 'Link copied to clipboard successfully!';
-                            copyMessage.classList.remove('opacity-0', 'text-red-500');
-                            copyMessage.classList.add('opacity-100', 'text-accent-green');
-                        } else {
-                            copyMessage.textContent = 'Failed to copy link. Please manually copy the link from the field.';
-                            copyMessage.classList.remove('opacity-0', 'text-accent-green');
-                            copyMessage.classList.add('opacity-100', 'text-red-500');
-                        }
-                        
-                        setTimeout(() => {
-                            copyMessage.classList.remove('opacity-100');
-                            copyMessage.classList.add('opacity-0');
-                        }, 3000);
-                    }
+            function renderPayoutHistoryTable(payouts) {
+                if (!historyTableBody) return;
+                historyTableBody.innerHTML = '';
+                if (!payouts || payouts.length === 0) {
+                    historyTableBody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-muted-text">No payout history yet.</td></tr>`;
+                    return;
+                }
+
+                payouts.forEach(item => {
+                    const rowHtml = `
+                        <tr class="hover:bg-slate-700 transition-colors duration-200">
+                            <td class="p-4">${item.date}</td>
+                            <td class="p-4">Cash Out</td>
+                            <td class="p-4 font-bold text-accent-orange">-$${item.amount.toFixed(2)}</td>
+                        </tr>
+                    `;
+                    historyTableBody.innerHTML += rowHtml;
                 });
             }
 
-            // Utility function to extract YouTube video ID from a URL
-            function getYouTubeId(url) {
-                let videoId = null;
-                try {
-                    const urlObj = new URL(url);
-                    const hostname = urlObj.hostname;
-                    const pathname = urlObj.pathname;
-                    if (hostname.includes('youtube.com')) {
-                        if (pathname.includes('/embed/')) {
-                            videoId = pathname.split('/embed/')[1].split('?')[0];
-                        } else {
-                            videoId = urlObj.searchParams.get('v');
-                        }
-                    } else if (hostname.includes('youtu.be')) {
-                        videoId = pathname.substring(1);
-                    }
-                } catch (e) {
-                    console.error("Could not parse URL, trying regex:", url, e);
-                    const regex = /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/ ]{11})/;
-                    const match = url.match(regex);
-                    if (match && match[1]) {
-                        videoId = match[1];
+            function updatePointsDisplay() {
+                if (!userData) return;
+                const totalPointsValue = document.getElementById('total-points-value');
+                const estimatedEarningsValue = document.getElementById('estimated-earnings-value');
+                const videosWatchedValue = document.getElementById('videos-watched-value');
+                const userPointsDisplay = document.getElementById('user-points-display');
+                const cashoutBtn = document.getElementById('cashout-button');
+                const payoutAmountInput = document.getElementById('payout-amount');
+
+                if (totalPointsValue) totalPointsValue.textContent = userData.points.toLocaleString();
+                if (estimatedEarningsValue) estimatedEarningsValue.textContent = `$${(userData.points / 5000).toFixed(2)}`;
+                if (videosWatchedValue) videosWatchedValue.textContent = (userData.watchedVideos || []).length;
+                if (userPointsDisplay) userPointsDisplay.textContent = `${userData.points.toLocaleString()} PTS`;
+                if (payoutAmountInput) payoutAmountInput.value = (userData.points / 5000).toFixed(2);
+
+                if (cashoutBtn) {
+
+                    if (userData.points < 5000) {
+                        cashoutBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                        cashoutBtn.classList.remove('hover:bg-indigo-600');
+                    } else {
+                        cashoutBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                        cashoutBtn.classList.add('hover:bg-indigo-600');
                     }
                 }
-                return videoId;
             }
 
-            // Function to get a YouTube thumbnail
-            function getYouTubeThumbnail(videoId) {
-                if (videoId) {
-                    return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-                }
-                return 'https://placehold.co/400x225/1f3148/ffffff?text=Video';
-            }
-            
-            // ... (Rest of existing functions)
-            // ... (The rest of the code is unchanged but included below for completeness)
+            function animateCoins(startElement, endElement, points) {
+                const numberOfCoins = Math.min(Math.floor(points / 20), 10);
+                const startRect = startElement.getBoundingClientRect();
+                const endRect = endElement.getBoundingClientRect();
 
-            async function fetchAndRenderLeaderboard() {
-                const leaderboardContainer = document.getElementById('leaderboard-container');
-                if (!leaderboardContainer) return;
+                for (let i = 0; i < numberOfCoins; i++) {
+                    const coin = document.createElement('div');
+                    coin.className = 'absolute z-50 transition-all duration-1000 ease-out opacity-0 coin-icon';
+                    coin.innerHTML = `<svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 102 0V6zm-1 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg>`;
+                    document.body.appendChild(coin);
 
-                leaderboardContainer.innerHTML = `<div class="text-center text-muted-text p-4">Loading leaderboard...</div>`;
+                    coin.style.left = `${startRect.left + (startRect.width / 2) - 8}px`;
+                    coin.style.top = `${startRect.top + (startRect.height / 2) - 8}px`;
 
-                try {
-                    const usersCollectionRef = collection(db, `/artifacts/${appId}/users`);
-                    const querySnapshot = await getDocs(usersCollectionRef);
-                    const users = querySnapshot.docs.map(doc => doc.data());
+                    setTimeout(() => {
+                        coin.style.left = `${endRect.left + (endRect.width / 2) - 8}px`;
+                        coin.style.top = `${endRect.top + (endRect.height / 2) - 8}px`;
+                        coin.style.opacity = '1';
+                        coin.style.transform = 'translateY(-100px) scale(0.5)';
+                    }, 50 + i * 50);
 
-                    // Sort users by points in descending order
-                    users.sort((a, b) => (b.points || 0) - (a.points || 0));
-
-                    const topUsers = users.slice(0, 5);
-
-                    if (topUsers.length === 0) {
-                        leaderboardContainer.innerHTML = `<p class="text-center text-muted-text p-4">No users on the leaderboard yet. Be the first!</p>`;
-                        return;
-                    }
-
-                    let leaderboardHtml = '';
-                    topUsers.forEach((user, index) => {
-                        const rank = index + 1;
-                        let medal = '';
-                        if (rank === 1) medal = '🥇';
-                        else if (rank === 2) medal = '🥈';
-                        else if (rank === 3) medal = '🥉';
-
-                        const profileText = user.name ? user.name.split(' ').map(n => n[0]).join('') : '?';
-
-                        leaderboardHtml += `
-                <div class="flex items-center bg-slate-700/50 p-3 rounded-lg">
-                    <div class="w-8 text-center text-lg font-bold">${medal || rank}</div>
-                    <div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center mr-4 ml-2 font-semibold text-primary">
-                        ${profileText}
-                    </div>
-                    <div class="flex-grow">
-                        <div class="font-semibold text-white">${user.name || 'Anonymous User'}</div>
-                        <div class="text-sm text-muted-text">${(user.points || 0).toLocaleString()} PTS</div>
-                    </div>
-                </div>
-            `;
-                    });
-                    leaderboardContainer.innerHTML = leaderboardHtml;
-
-                } catch (error) {
-                    console.error("Error fetching leaderboard data:", error);
-                    leaderboardContainer.innerHTML = `<p class="text-center text-red-500 p-4">Could not load leaderboard.</p>`;
+                    setTimeout(() => {
+                        coin.remove();
+                    }, 1100 + i * 50);
                 }
             }
-            // ... (Rest of existing functions are unchanged)
 
             async function attachVideoCardListeners() {
                 const cards = document.querySelectorAll('.video-card');
@@ -2438,8 +2359,6 @@
                         fetchAllUsers();
                     } else if (targetId === 'points-history-view') {
                         renderPointsHistoryTable();
-                    } else if (targetId === 'referral-view') {
-                        renderReferralView();
                     }
                 });
             });
@@ -2665,3 +2584,5 @@
 </body>
 
 </html>
+
+
