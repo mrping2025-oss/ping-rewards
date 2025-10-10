@@ -2764,44 +2764,52 @@
 
             generateRandomChartData();
             showLoading();
-
-            onAuthStateChanged(auth, async (user) => {
+                 onAuthStateChanged(auth, async (user) => {
                 isAuthReady = true;
                 if (user) {
-                    if (user.isAnonymous) {
-                        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-                        if (initialAuthToken) {
-                            try {
-                                await signInWithCustomToken(auth, initialAuthToken);
-                            } catch (e) {
-                                console.error("Error signing in with custom token:", e);
-                                if (loginPage) loginPage.style.display = 'flex';
-                                if (appContainer) appContainer.style.display = 'none';
-                                hideLoading();
-                            }
-                        } else {
-                            if (loginPage) loginPage.style.display = 'flex';
-                            if (appContainer) appContainer.style.display = 'none';
-                            hideLoading();
-                        }
-                    } else {
+                    
+                    // 1. Canvas မှ ပေးသော Custom Auth Token ဖြင့် ဝင်ရောက်ရန် ကြိုးစားခြင်း
+                    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+                    if (initialAuthToken) {
+                         try {
+                             // Custom Token ဖြင့် ဝင်ရောက်ခြင်း (user.isAnonymous ဖြစ်နေလျှင် ၎င်းကို Google User အဖြစ် ပြောင်းလဲသွားမည်)
+                             await signInWithCustomToken(auth, initialAuthToken);
+                         } catch (e) {
+                             console.error("Error signing in with custom token:", e);
+                             // Sign-in မအောင်မြင်ပါက Login Page ပြန်ပြရန်
+                             if (loginPage) loginPage.style.display = 'flex';
+                             if (appContainer) appContainer.style.display = 'none';
+                             hideLoading();
+                             return;
+                         }
+                    }
+
+                    // 2. Google Account (သို့) Custom Token ဖြင့် ဝင်ရောက်အောင်မြင်သည့်အခါ
+                    // ဤနေရာတွင် Anonymous user များကို လုံးဝလျစ်လျူရှုထားပါသည်။
+                    if (!user.isAnonymous) {
                         userId = user.uid;
                         isInitialUILoad = true; // Reset the flag on login
                         await seedInitialData(user);
                         await fetchUserData(userId);
+                    } else {
+                        // user object ရှိနေသော်လည်း Anonymous ဖြစ်နေပါက (Custom Token မပါဝင်သည့်အခါ) Login Page သို့ ပို့မည်။
+                        if (loginPage) loginPage.style.display = 'flex';
+                        if (appContainer) appContainer.style.display = 'none';
+                        hideLoading();
                     }
+
                 } else {
+                    // User မရှိပါက Login Page ပြပါမည်။
                     console.log("No user is signed in. Showing login page.");
                     if (loginPage) loginPage.style.display = 'flex';
                     if (appContainer) appContainer.style.display = 'none';
                     hideLoading();
                 }
             });
-
-            if (typeof __initial_auth_token === 'undefined') {
-                signInAnonymously(auth);
-            }
         });
+           
+       
     </script>
 </body>
 
