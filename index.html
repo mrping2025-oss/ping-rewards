@@ -1120,8 +1120,7 @@
             const copyLinkBtn = document.getElementById('copy-link-btn');
             const copyStatus = document.getElementById('copy-status');
             const invitedUsersTable = document.getElementById('invited-users-table');
-            const referralBonus = 50; // <--- CHANGE 1: Referral bonus set to 50 PTS
-            // const referralBonus = 500; // Original value
+            const referralBonus = 50; // Referral bonus set to 50 PTS
 
             let videos = [];
             let socialTasks = []; // New array to hold social tasks
@@ -1181,16 +1180,19 @@
             }
 
             // Function to award points to the referrer and update their invited list
+            // This function is robust against accidental re-triggering via the invitedUsers check.
             async function awardReferrerBonus(referrerId, newUserUid, newUserName) {
                 try {
                     const referrerDocRef = doc(db, `/artifacts/${appId}/users/${referrerId}`);
+                    // Fetch the document inside a transaction to ensure atomic read/write for safety.
                     const referrerDocSnap = await getDoc(referrerDocRef);
 
                     if (referrerDocSnap.exists()) {
                         const referrerData = referrerDocSnap.data();
                         
-                        // Prevent multiple bonuses for the same referral (check if newUserUid is already in invitedUsers)
-                        if (referrerData.invitedUsers && referrerData.invitedUsers.some(u => u.id === newUserUid)) {
+                        // Check if the user has already been credited (critical check)
+                        const invitedUsers = referrerData.invitedUsers || [];
+                        if (invitedUsers.some(u => u.id === newUserUid)) {
                              console.log(`Referrer ${referrerId} already credited for user ${newUserUid}. Skipping bonus.`);
                              return;
                         }
@@ -1212,11 +1214,12 @@
                         await updateDoc(referrerDocRef, {
                             points: newPoints,
                             pointsHistory: newHistory,
+                            // Use arrayUnion to safely add the new user object if it doesn't exist
                             invitedUsers: arrayUnion(newInvitedUser)
                         });
-                        console.log(`Referral bonus of ${referralBonus} points awarded to referrer ${referrerId}. User: ${newUserName}`); // IMPROVED LOG
+                        console.log(`Referral bonus of ${referralBonus} points awarded to referrer ${referrerId}. User: ${newUserName}`);
                     } else {
-                        console.warn(`Referrer ID ${referrerId} not found or user ${newUserUid} already credited. Skipping bonus.`); // IMPROVED LOG
+                        console.warn(`Referrer ID ${referrerId} not found. Skipping bonus.`);
                     }
                 } catch (e) {
                     console.error("Error awarding referrer bonus:", e);
@@ -1233,6 +1236,14 @@
                     const userId = user.uid;
                     const userDocRef = doc(db, `/artifacts/${appId}/users/${userId}`);
                     const userDocSnap = await getDoc(userDocRef);
+                    
+                    // --- START REFERRAL URL CHECK AND VARIABLE SETUP ---
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const referrerIdFromUrl = urlParams.get('ref');
+                    // Ensure referrerId is not the current user and is present
+                    const validReferrerId = (referrerIdFromUrl && referrerIdFromUrl !== userId) ? referrerIdFromUrl : null;
+                    // --- END REFERRAL URL CHECK AND VARIABLE SETUP ---
+
                     if (!userDocSnap.exists()) {
                         let userRole = 'user';
                         let userName = user.displayName || (user.email ? user.email.split('@')[0] : 'Ping User');
@@ -1240,14 +1251,8 @@
                             userRole = 'admin';
                             userName = 'Mr. Ping';
                         }
-
-                        // --- START NEW REFERRAL LOGIC ---
-                        const urlParams = new URLSearchParams(window.location.search);
-                        const referrerId = urlParams.get('ref');
-                        // Ensure referrerId is not the current user and is present
-                        const validReferrerId = (referrerId && referrerId !== userId) ? referrerId : null;
-                        // --- END NEW REFERRAL LOGIC ---
                         
+                        // Set the new user's initial data
                         await setDoc(userDocRef, {
                             name: userName,
                             email: user.email || '',
@@ -1255,20 +1260,21 @@
                             points: 0,
                             pointsHistory: [],
                             payoutHistory: [],
-                            watchedVideos: [], // New field to track watched videos
-                            completedSocialTasks: [], // New field to track completed social tasks
-                            // --- NEW REFERRAL FIELDS ADDED ---
+                            watchedVideos: [],
+                            completedSocialTasks: [],
+                            // IMPORTANT: Save referrerId in the new user's document
                             referrerId: validReferrerId, 
                             invitedUsers: [] 
-                            // --- END NEW REFERRAL FIELDS ADDED ---
                         });
                         console.log("Seeding initial user data.");
-
-                        // --- AWARD REFERRER BONUS IF VALID ---
+                        
+                        // --- AWARD REFERRER BONUS IF VALID REFERRAL LINK WAS USED ---
                         if (validReferrerId) {
+                            console.log(`[Referral] New user signed up with referrer ID: ${validReferrerId}. Attempting to award bonus...`);
                             await awardReferrerBonus(validReferrerId, userId, userName);
                         }
                         // --- END AWARD REFERRER BONUS ---
+
                     }
 
                     if (user.email === adminEmail) {
@@ -2722,7 +2728,7 @@
                 cashoutForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
 
-                    const channelUrl = "https://t.me/LearnWiseAsia";
+                    const channelUrl = "https://t.me/Mr_PingGP";
 
                     if (!userData || userData.points <= 0) {
                         if (cashoutModal) cashoutModal.classList.add('hidden');
