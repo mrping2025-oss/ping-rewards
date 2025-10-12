@@ -62,14 +62,10 @@
         body {
             font-family: 'Inter', sans-serif;
             background-color: #0f172a;
-            /* Tailwind: bg-slate-900 */
             color: #e2e8f0;
-            /* Tailwind: text-slate-200 */
             margin: 0;
             overflow-x: hidden;
         }
-
-        /* Utility for drawer/sidebar state */
         .sidebar.open {
             transform: translateX(0);
         }
@@ -82,7 +78,6 @@
             overflow: hidden;
         }
 
-        /* Coin Animation Styles - Adjusted for Tailwind CSS */
         .coin-icon {
             animation: coinFly 1s ease-in-out forwards;
         }
@@ -295,7 +290,7 @@
                 </li>
             </ul>
             <div id="sidebar-profile" class="p-6 border-t border-slate-700 mt-auto">
-                <!-- Profile info will be updated by JS -->
+                <!-- Profile info  -->
             </div>
         </div>
 
@@ -315,7 +310,7 @@
                     Dashboard
                 </h1>
                 <div id="header-meta" class="hidden md:flex items-center space-x-4">
-                    <!-- Header meta info will be updated by JS -->
+                    <!-- Header meta info -->
                 </div>
             </header>
 
@@ -324,7 +319,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
                     <div
                         class="card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 col-span-1 lg:col-span-3 flex flex-col md:flex-row justify-between items-center">
-                         <!-- စာသား ရွေ့လျား Container -->
+                         <!-- Container -->
                                     <div class="w-full max-w-7xl overflow-hidden bg-yellow-400 border-y-0 border-yellow-600 py-0 shadow-2xl rounded-4">
                                         <div class="flex animate-scroll min-w-max">
                                             <span class="text-sm sm:text-sm font-extrabold text-gray-900 uppercase tracking-wide whitespace-nowrap px-0">
@@ -336,7 +331,7 @@
                                             
                                         </div>
                                     </div>
-                            <!-- စာသား ရွေ့လျား Container -->
+                            <!-- Container -->
                         <div>
                             
                                    
@@ -460,7 +455,7 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8"
                     id="video-grid">
-                    <!-- Video cards will be dynamically rendered here by JS -->
+                    <!-- Video cards  -->
                 </div>
             </div>
 
@@ -513,11 +508,11 @@
                 </div>
             </div>
 
-            <!-- Social Tasks View (New) -->
+            <!-- Social Tasks View -->
             <div id="social-tasks-view" class="content-view" style="display: none;">
                 <h2 class="text-xl font-semibold mb-4">Complete Social Tasks</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="social-tasks-grid">
-                    <!-- Social task cards will be dynamically rendered here by JS -->
+                    <!-- Social task cards  -->
                     <div class="col-span-full text-center text-muted-text p-6">Loading tasks...</div>
                 </div>
             </div>
@@ -537,24 +532,24 @@
                                 </tr>
                             </thead>
                             <tbody id="points-history-table" class="divide-y divide-slate-700">
-                                <!-- Table rows will be dynamically rendered here by JS -->
+                                <!-- Table rows -->
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- Invite & Earn View (New) -->
+            <!-- Invite & Earn View  -->
             <div id="invite-and-earn-view" class="content-view" style="display: none;">
                 <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 mb-6">
                     <h2 class="text-xl font-semibold mb-4 text-primary">သူငယ်ချင်းများကို ဖိတ်ခေါ်ပြီး အမှတ်များရယူပါ (Invite & Earn)</h2>
                     <p class="text-muted-text mb-6">သင်၏ ကိုယ်ပိုင်ဖိတ်ခေါ်ကုဒ် (Referral Code) ကို အသုံးပြု၍ သူငယ်ချင်းများကို ဖိတ်ခေါ်ပါ။ သူငယ်ချင်းတစ်ဦး အကောင့်ဖွင့်တိုင်း အမှတ် **50** ရရှိမည်။</p>
-                    <!-- ^^^ UPDATED TEXT HERE: Changed 500 to 50 ^^^ -->
+                    <!-- ^^^ UPDATED  to 50 ^^^ -->
 
                     <div class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium mb-2">သင့်ရဲ့ ဖိတ်ခေါ်ကုဒ် (Your Referral Code)</label>
-                            <div class="flex">
+                            <div class="flex w-full"> <!-- Added w-full here for better constraint -->
                                 <input type="text" id="referral-code-input" value="Loading..." readonly
                                     class="flex-grow px-4 py-3 rounded-l-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary text-text-color font-mono tracking-wider">
                                 <button id="copy-referral-btn"
@@ -568,7 +563,7 @@
                         
                         <div>
                             <label class="block text-sm font-medium mb-2">သင့်ရဲ့ ဖိတ်ခေါ်လင့် (Your Referral Link)</label>
-                            <div class="flex">
+                            <div class="flex w-full"> <!-- Added w-full here for better constraint -->
                                 <input type="text" id="referral-link-input" value="Loading..." readonly
                                     class="flex-grow px-4 py-3 rounded-l-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary text-text-color text-sm">
                                 <button id="copy-link-btn"
@@ -598,7 +593,7 @@
                     </div>
                 </div>
             </div>
-            <!-- End Invite & Earn View (New) -->
+            <!-- End Invite & Earn View-->
 
             <!-- About View  -->
             <div id="about-view" class="content-view" style="display: none;">
@@ -703,7 +698,7 @@
                         <span class="absolute left-0 top-0 text-sm text-muted-text -ml-6 -mt-2">8</span>
                         <span class="absolute left-0 bottom-0 text-sm text-muted-text -ml-6 -mb-4">0</span>
                         <div class="bar-chart flex items-end h-full w-full" id="weekly-watch-chart">
-                            <!-- Bars will be dynamically updated by JS -->
+                            <!-- Bars -->
                             <div class="w-1/7 h-1/2 mx-1 bg-primary rounded-t-full transition-all duration-500 ease-in-out relative group"
                                 style="height: 50%;">
                                 <span
@@ -765,14 +760,14 @@
                                 </tr>
                             </thead>
                             <tbody id="videos-table" class="divide-y divide-slate-700">
-                                <!-- Table rows will be dynamically rendered here by JS -->
+                                <!-- Table rows -->
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- Manage Social Tasks View (New) -->
+            <!-- Manage Social Tasks View -->
             <div id="manage-social-tasks-view" class="content-view" style="display: none;">
                 <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
                     <div class="flex justify-between items-center mb-6">
@@ -794,7 +789,7 @@
                                 </tr>
                             </thead>
                             <tbody id="social-tasks-table" class="divide-y divide-slate-700">
-                                <!-- Table rows will be dynamically rendered here by JS -->
+                                <!-- Table rows  -->
                             </tbody>
                         </table>
                     </div>
@@ -819,7 +814,7 @@
                                 </tr>
                             </thead>
                             <tbody id="users-table-body" class="divide-y divide-slate-700">
-                                <!-- User rows will be dynamically rendered here by JS -->
+                                <!-- User rows  -->
                             </tbody>
                         </table>
                     </div>
@@ -866,11 +861,11 @@
                     <table class="w-full text-left table-auto">
                         <thead class="bg-slate-700 text-slate-400 uppercase text-xs">
                             <tr id="history-table-header">
-                                <!-- Table headers will be dynamically rendered here -->
+                                <!-- Table headers  -->
                             </tr>
                         </thead>
                         <tbody id="history-table-body" class="divide-y divide-slate-700">
-                            <!-- History rows will be dynamically rendered here by JS -->
+                            <!-- History rows  -->
                         </tbody>
                     </table>
                 </div>
@@ -882,7 +877,7 @@
             </div>
         </div>
 
-        <!-- Modal for Adding/Editing Videos (Hidden by default) -->
+        <!-- Modal for Adding/Editing Videos  -->
         <div id="add-video-modal" class="modal-overlay fixed inset-0 flex justify-center items-center z-[1000] hidden">
             <div class="modal-content bg-card-bg p-8 rounded-xl w-11/12 max-w-lg shadow-2xl border border-slate-700">
                 <h3 id="modal-title" class="text-xl font-semibold mb-4">Add New Video</h3>
@@ -938,7 +933,7 @@
             </div>
         </div>
 
-        <!-- Modal for Adding/Editing Social Tasks (New) -->
+        <!-- Modal for Adding/Editing Social Tasks -->
         <div id="add-social-task-modal"
             class="modal-overlay fixed inset-0 flex justify-center items-center z-[1000] hidden">
             <div class="modal-content bg-card-bg p-8 rounded-xl w-11/12 max-w-lg shadow-2xl border border-slate-700">
@@ -981,7 +976,7 @@
             </div>
         </div>
 
-        <!-- Cash Out Modal (New) -->
+        <!-- Cash Out Modal  -->
         <div id="cashout-modal" class="modal-overlay fixed inset-0 flex justify-center items-center z-[1000] hidden">
             <div class="modal-content bg-card-bg p-8 rounded-xl w-11/12 max-w-lg shadow-2xl border border-slate-700">
                 <h3 class="text-xl font-semibold mb-4">Cash Out Request</h3>
@@ -1123,7 +1118,7 @@
             const referralBonus = 50; // Referral bonus set to 50 PTS
 
             let videos = [];
-            let socialTasks = []; // New array to hold social tasks
+            let socialTasks = []; //  array to hold social tasks
             let currentUser = null;
             let userData = null;
             let videoCardToAnimate = null;
@@ -1180,17 +1175,13 @@
             }
 
             // Function to award points to the referrer and update their invited list
-            // This function is robust against accidental re-triggering via the invitedUsers check.
             async function awardReferrerBonus(referrerId, newUserUid, newUserName) {
                 try {
                     const referrerDocRef = doc(db, `/artifacts/${appId}/users/${referrerId}`);
-                    // Fetch the document inside a transaction to ensure atomic read/write for safety.
                     const referrerDocSnap = await getDoc(referrerDocRef);
 
                     if (referrerDocSnap.exists()) {
                         const referrerData = referrerDocSnap.data();
-                        
-                        // Check if the user has already been credited (critical check)
                         const invitedUsers = referrerData.invitedUsers || [];
                         if (invitedUsers.some(u => u.id === newUserUid)) {
                              console.log(`Referrer ${referrerId} already credited for user ${newUserUid}. Skipping bonus.`);
