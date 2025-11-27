@@ -129,6 +129,11 @@
             font-weight: 700;
             color: #f59e0b; /* Amber */
         }
+        /* Make app-content scrollable on small screens */
+        #app-content {
+            overflow-y: auto;
+            height: 100vh;
+        }
     </style>
 </head>
 
@@ -484,15 +489,6 @@
                     <!-- Video cards  -->
                 </div>
                 
-                <!-- NEW: Floating Scroll-to-Top Rocket Button (Hidden by default) -->
-                <button id="scroll-to-top-btn"
-                    class="hidden fixed bottom-6 right-6 z-50 p-4 bg-accent-orange hover:bg-amber-600 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-110 active:scale-95">
-                    <!-- Rocket/Up Arrow SVG -->
-                    <svg class="w-6 h-6 text-white transform rotate-315" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2l-5 5h3v7h4V7h3l-5-5zM4 20h16v2H4z"/>
-                    </svg>
-                </button>
-                <!-- END NEW: Floating Scroll-to-Top Rocket Button -->
             </div>
 
             <!-- Video Player View (Updated) -->
@@ -790,12 +786,8 @@
             <!-- Manage Videos View -->
             <div id="manage-videos-view" class="content-view" style="display: none;">
                 <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
-                    <!-- NEW: Search bar added here -->
-                    <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+                    <div class="flex justify-between items-center mb-6">
                         <h2 class="text-xl font-semibold">Manage Videos</h2>
-                        <input type="text" id="manage-videos-search"
-                            class="flex-grow sm:flex-grow-0 min-w-[200px] px-4 py-2 rounded-full bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary placeholder-muted-text"
-                            placeholder="Search videos...">
                         <button id="add-video-btn"
                             class="px-4 py-2 bg-primary hover:bg-indigo-600 rounded-lg text-white font-semibold transition-colors duration-200">
                             Add New Video
@@ -822,12 +814,8 @@
             <!-- Manage Social Tasks View -->
             <div id="manage-social-tasks-view" class="content-view" style="display: none;">
                 <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
-                    <!-- NEW: Search bar added here -->
-                    <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+                    <div class="flex justify-between items-center mb-6">
                         <h2 class="text-xl font-semibold">Manage Social Tasks</h2>
-                        <input type="text" id="manage-social-tasks-search"
-                            class="flex-grow sm:flex-grow-0 min-w-[200px] px-4 py-2 rounded-full bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary placeholder-muted-text"
-                            placeholder="Search tasks...">
                         <button id="add-social-task-btn"
                             class="px-4 py-2 bg-primary hover:bg-indigo-600 rounded-lg text-white font-semibold transition-colors duration-200">
                             Add New Task
@@ -855,13 +843,7 @@
             <!-- Manage Users View -->
             <div id="manage-users-view" class="content-view" style="display: none;">
                 <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
-                    <!-- NEW: Search bar added here -->
-                    <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-                        <h2 class="text-xl font-semibold">Manage Users</h2>
-                        <input type="text" id="manage-users-search"
-                            class="flex-grow sm:flex-grow-0 min-w-[200px] px-4 py-2 rounded-full bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary placeholder-muted-text"
-                            placeholder="Search users...">
-                    </div>
+                    <h2 class="text-xl font-semibold mb-2">Manage Users</h2>
                     <p class="text-muted-text mb-6">View user data, manage status, and edit information.</p>
                     <div class="overflow-x-auto rounded-lg">
                         <table class="w-full text-left table-auto">
@@ -882,6 +864,16 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- NEW: Floating Scroll-to-Top Rocket Button (Hidden by default) -->
+            <button id="scroll-to-top-btn"
+                class="hidden fixed bottom-6 right-6 z-50 p-4 bg-accent-orange hover:bg-amber-600 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-110 active:scale-95">
+                <!-- Rocket/Up Arrow SVG -->
+                <svg class="w-6 h-6 text-white transform rotate-315" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2l-5 5h3v7h4V7h3l-5-5zM4 20h16v2H4z"/>
+                </svg>
+            </button>
+            <!-- END NEW: Floating Scroll-to-Top Rocket Button -->
         </div>
 
         <!-- Modal for Cash Out Confirmation Message -->
@@ -974,7 +966,6 @@
                         <input type="text" id="video-url" name="videoUrl" required
                             class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary">
                     </div>
-                    <!-- START: Updated Video Points and Duration fields for clarity -->
                     <div>
                         <label for="video-points" class="block text-sm font-medium mb-1">Points (Legacy Field - Not used for earning rate)</label>
                         <input type="number" id="video-points" name="videoPoints"
@@ -987,7 +978,6 @@
                             class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary"
                             placeholder="Required. Sets the maximum time (in seconds) to earn points.">
                     </div>
-                    <!-- END: Updated Video Points and Duration fields for clarity -->
                     <div class="flex justify-end gap-2 pt-4">
                         <button type="button"
                             class="cancel-btn px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg text-white font-semibold transition-colors duration-200">Cancel</button>
@@ -1125,6 +1115,10 @@
             const circularPointsTracker = document.getElementById('circular-points-tracker');
             const progressCircle = document.getElementById('progress-circle');
             const progressTimeRemaining = document.getElementById('progress-time-remaining');
+            
+            // NEW: Scroll to Top Button
+            const scrollToTopBtn = document.getElementById('scroll-to-top-btn');
+            const appContent = document.getElementById('app-content');
 
             const sidebar = document.getElementById('sidebar');
             const menuToggleBtn = document.getElementById('menu-toggle');
@@ -1186,15 +1180,6 @@
             const copyStatus = document.getElementById('copy-status');
             const invitedUsersTable = document.getElementById('invited-users-table');
             const referralBonus = 50; // Referral bonus set to 50 PTS
-            
-            // NEW: Scroll to Top Button
-            const scrollToTopBtn = document.getElementById('scroll-to-top-btn');
-            const appContent = document.getElementById('app-content');
-            
-            // NEW: Admin Search Elements
-            const manageVideosSearch = document.getElementById('manage-videos-search');
-            const manageSocialTasksSearch = document.getElementById('manage-social-tasks-search');
-            const manageUsersSearch = document.getElementById('manage-users-search');
 
             let videos = [];
             let socialTasks = []; //  array to hold social tasks
@@ -1211,7 +1196,7 @@
             let sessionWatchTime = 0;
             let sessionPoints = 0;
             const POINTS_PER_SECOND = 1 / 60; // 1 point per 60 seconds (1 minute)
-
+            
             // NEW: Core function to handle exiting the video player view, 
             // including stopping the timer and applying cooldown if necessary.
             const handlePlayerExit = (isAutoExit = false) => {
@@ -1226,17 +1211,18 @@
                 if (circularPointsTracker) circularPointsTracker.classList.add('hidden');
 
                 // 2. Apply Cooldown if minimum watch time (60s = 1 point) was met
+                // Note: Points are already accrued in updatePointsInFirestore during the interval.
                 if (currentVideoId && sessionWatchTime >= 60) {
                     console.log(`[EXIT] Cooldown triggered: ${isAutoExit ? 'Auto' : 'Manual'} exit after ${sessionWatchTime}s.`);
                     
-                    // Force full watch/cooldown logic if minimum time reached, regardless of full duration.
-                    // Use 0 points as points are already recorded minute-by-minute.
+                    // We only update the cooldown status here. Points were already logged.
+                    // Pass 0 points, but flag as a full watch/cooldown update.
                     updatePointsInFirestore(
                         0, 
-                        isAutoExit ? `Video completed/max duration reached: "${currentVideo.title}"` : `Cooldown applied on manual exit: "${currentVideo.title}"`, 
+                        isAutoExit ? `Video max duration reached: "${currentVideo.title}"` : `Cooldown applied on manual exit: "${currentVideo.title}"`, 
                         currentVideoId, 
                         'video', 
-                        true, // isFullWatch = true triggers cooldown update (as requested by user)
+                        true, // isFullWatch = true triggers cooldown update
                         videoMaxDuration
                     );
                 } else if (currentVideoId && sessionWatchTime > 0) {
@@ -1255,19 +1241,6 @@
                 const category = activeFilterBtn ? activeFilterBtn.getAttribute('data-category') : 'all';
                 renderVideoGrid(category);
             };
-
-            // Utility function to get social media icons
-            function getSocialIcon(platform) {
-                switch (platform) {
-                    case 'Facebook': return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-blue-600"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c5.29 0 9.77-4.14 10-9.43.14-2.85-2.06-5.26-4.91-5.74v2.02c1.78.4 3.12 1.93 3.12 3.82 0 2.11-1.79 3.82-3.99 3.82H12v-6.93l-3 3v2.93h-1v-6h-2v6.93l1.85-1.85c.19-.19.45-.3.72-.3s.53.11.72.3L12 14.07V12h3.99c1.66 0 3-1.34 3-3s-1.34-3-3-3h-3c-1.1 0-2 .9-2 2v1H9v2h2v1H8c-2.21 0-4-1.79-4-4s1.79-4 4-4h4V2z"/></svg>`;
-                    case 'TikTok': return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-black dark:fill-white"><path d="M12.758 2.043l-.158.012c-1.42 0-2.585 1.164-2.585 2.585v15.728l-.16.012h-.008c-.768.04-1.455.334-2.02.825-1.127.994-1.82 2.766-1.82 4.697 0 3.242 2.632 5.875 5.875 5.875 3.243 0 5.875-2.633 5.875-5.875 0-1.93-.693-3.703-1.82-4.696-.564-.49-1.25-.785-2.018-.825h-.008L12.758 2.043zM12 24c-6.627 0-12-5.373-12-12s5.373-12 12-12c6.627 0 12 5.373 12 12s-5.373 12-12 12zm-3-19c0 .552-.448 1-1 1s-1-.448-1-1v-2c0-.552.448-1 1-1s1 .448 1 1v2zm0 17c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5zm9-11c0-.552-.448-1-1-1s-1 .448-1 1v2c0 .552.448 1 1 1s1-.448 1-1v-2zm-9 9c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3z"/></svg>`;
-                    case 'Telegram': return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-blue-500"><path d="M18.3 5.4c-.6-.3-1.2-.5-1.9-.5c-.8 0-1.5.2-2.1.6c-.6.4-1 .9-1.3 1.5c-.3.6-.4 1.3-.4 2s.1 1.4.4 2.1c.3.6.7 1.1 1.3 1.5c.6.4 1.2.6 2.1.6c.7 0 1.4-.2 1.9-.5c.6-.3 1.1-.8 1.4-1.4c.3-.6.4-1.2.4-1.9s-.1-1.3-.4-1.9c-.3-.6-.8-1.1-1.4-1.4zM22 6.5l-3.3 12c-.2.9-.8 1.4-1.8 1.4c-.6 0-1.2-.2-1.6-.4l-5.6-3.8c-.5-.3-.9-.6-1.1-.9c-.2-.3-.3-.7-.3-1.1c0-.4.1-.8.3-1.1s.5-.6 1.1-.9l8.6-4.9c.2-.1.4-.2.6-.2c.2 0 .4.1.6.2s.2.4.2.6zM2 12c0 2.2 1.3 4.2 3.3 5.3L4 20l3.8-1.1c.9.2 1.8.3 2.7.3c1.7 0 3.3-.6 4.6-1.7l.7-.6c-.2-.4-.3-.8-.3-1.2c0-1.3.6-2.5 1.7-3.3c1.1-.8 2.5-1.2 4-1.2c-.4-3.1-2.2-5.4-4.8-6.5c-2.4-1-5.1-1.2-7.8-.6c-3 .7-5.3 3.3-5.3 6.6z"/></svg>`;
-                    case 'Twitter': return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-blue-400"><path d="M22.46 6c-.77.34-1.6.57-2.46.69.88-.53 1.55-1.37 1.87-2.36-.83.49-1.74.85-2.72 1.05-2.02-2.15-5.35-2.07-7.29.17-1.18 1.32-1.65 3.12-1.36 4.95C5.83 10.66 2.92 8.75 1.12 5.92c-.37.64-.58 1.39-.58 2.19 0 1.52.77 2.87 1.94 3.66-2.01-.06-3.89-.6-5.54-1.52v.04c0 1.92 1.37 3.51 3.19 3.87-.33.09-.67.14-1.02.14-.25 0-.5-.02-.74-.07.5 1.63 2.07 2.81 3.89 2.84-1.4 1.1-3.17 1.75-5.09 1.75-.33 0-.66-.02-.98-.06 1.8 1.15 3.93 1.81 6.22 1.81 7.52 0 11.63-6.22 11.63-11.62 0-.17-.0-.35-.01-.52.8-.57 1.49-1.28 2.04-2.07z"/></svg>`;
-                    case 'YouTube': return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-red-600"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm3 10l-6 4V8l6 4z"/></svg>`;
-                    case 'Web': return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-gray-400"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h2v-2h-2v2zm0-4h2V7h-2v6z"/></svg>`;
-                    default: return '';
-                }
-            }
 
             // Utility function to extract YouTube video ID and append autoplay=1
             function getYouTubeId(url) {
@@ -1297,6 +1270,7 @@
                 }
 
                 if (videoId) {
+                    // Added &autoplay=1 to the embed URL
                     embedUrl = `https://www.youtube.com/embed/${videoId}?rel=0&autoplay=1&mute=0&enablejsapi=1`;
                 }
 
@@ -1559,7 +1533,7 @@
                 }
             }
 
-            async function fetchAllUsers(query = '') { // ADDED query parameter
+            async function fetchAllUsers() {
                 showLoading();
                 if (!usersTableBody) return;
                 usersTableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-muted-text">Fetching users...</td></tr>`;
@@ -1567,7 +1541,7 @@
                     const usersCollectionRef = collection(db, `/artifacts/${appId}/users`);
                     const querySnapshot = await getDocs(usersCollectionRef);
                     const users = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    renderUsersTable(users, query); // Pass query to render function
+                    renderUsersTable(users);
                 } catch (e) {
                     console.error("Error fetching users:", e);
                     usersTableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-red-500">Error fetching users.</td></tr>`;
@@ -1593,11 +1567,11 @@
                 try {
                     const userDocRef = doc(db, `/artifacts/${appId}/users/${userId}`);
                     const newPoints = userData.points + pointsToAdd;
-                    const newHistory = [...(userData.pointsHistory || []), {
+                    const newHistory = pointsToAdd > 0 ? [...(userData.pointsHistory || []), {
                         date: new Date().toLocaleDateString('en-US'),
                         description: description,
                         points: pointsToAdd
-                    }];
+                    }] : userData.pointsHistory || [];
 
                     const updateData = {
                         points: newPoints,
@@ -2064,7 +2038,7 @@
 
                 let videoGridHtml = '';
                 sortedVideos.forEach(video => {
-                    const { videoId, embedUrl } = getYouTubeId(video.videoUrl);
+                    const { videoId } = getYouTubeId(video.videoUrl);
                     let thumbnailUrl = getYouTubeThumbnail(videoId);
                     
                     const status = getCooldownStatus(video.id);
@@ -2093,7 +2067,7 @@
                     
                     // Calculation for Points/Min and Max Duration display
                     const watchDuration = video.watchDuration || 60;
-                    const pointsPerMin = Math.round(60 * POINTS_PER_SECOND); // 1 point per min
+                    const pointsPerMin = 1; // Always 1 point per min
                     const maxDurationMin = Math.max(1, Math.ceil(watchDuration / 60) || 1);
                     const mockChannelName = "Ping Channel";
 
@@ -2176,27 +2150,15 @@
                 attachSocialTaskListeners();
             }
 
-            function renderUsersTable(users, query = '') { // ADDED query parameter
+            function renderUsersTable(users) {
                 if (!usersTableBody) return;
-                
-                let filteredUsers = users;
-                if (query) {
-                    const lowerQuery = query.toLowerCase();
-                    filteredUsers = users.filter(user =>
-                        user.id.toLowerCase().includes(lowerQuery) ||
-                        (user.name && user.name.toLowerCase().includes(lowerQuery)) ||
-                        (user.email && user.email.toLowerCase().includes(lowerQuery)) ||
-                        (user.role && user.role.toLowerCase().includes(lowerQuery))
-                    );
-                }
-
                 usersTableBody.innerHTML = '';
-                if (filteredUsers.length === 0) {
+                if (users.length === 0) {
                     usersTableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-muted-text">No users found.</td></tr>`;
                     return;
                 }
 
-                filteredUsers.forEach(user => {
+                users.forEach(user => {
                     const toggleRoleBtnText = user.role === 'admin' ? 'Demote to User' : 'Promote to Admin';
                     const tableRowHtml = `
                         <tr data-user-id="${user.id}" class="hover:bg-slate-700 transition-colors duration-200">
@@ -2213,33 +2175,21 @@
                     `;
                     usersTableBody.innerHTML += tableRowHtml;
                 });
-                attachManageUsersListeners(filteredUsers);
+                attachManageUsersListeners(users);
             }
 
-            function renderManageVideosTable(query = '') { // ADDED query parameter
+            function renderManageVideosTable() {
                 const videoTableBody = document.querySelector('#videos-table');
                 if (!videoTableBody) {
                     console.error("Video table body element not found.");
                     return;
                 }
-                
-                let filteredVideos = videos;
-                if (query) {
-                    const lowerQuery = query.toLowerCase();
-                    filteredVideos = videos.filter(video =>
-                        video.title.toLowerCase().includes(lowerQuery) ||
-                        video.category.toLowerCase().includes(lowerQuery) ||
-                        video.description.toLowerCase().includes(lowerQuery)
-                    );
-                }
-                
                 videoTableBody.innerHTML = '';
-                if (filteredVideos.length === 0) {
-                    videoTableBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-muted-text">No videos found.</td></tr>`;
+                if (videos.length === 0) {
+                     videoTableBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-muted-text">No videos found.</td></tr>`;
                     return;
                 }
-                
-                filteredVideos.forEach(video => {
+                videos.forEach(video => {
                     const tableRowHtml = `
                         <tr class="hover:bg-slate-700 transition-colors duration-200" data-video-id="${video.id}">
                             <td class="p-4">${video.title}</td>
@@ -2257,26 +2207,15 @@
             }
 
             // Renders the manage social tasks table for admin view
-            function renderManageSocialTasksTable(query = '') { // ADDED query parameter
+            function renderManageSocialTasksTable() {
                 if (!socialTaskTableBody) return;
-                
-                let filteredTasks = socialTasks;
-                if (query) {
-                    const lowerQuery = query.toLowerCase();
-                    filteredTasks = socialTasks.filter(task =>
-                        task.title.toLowerCase().includes(lowerQuery) ||
-                        task.platform.toLowerCase().includes(lowerQuery) ||
-                        task.link.toLowerCase().includes(lowerQuery)
-                    );
-                }
-                
                 socialTaskTableBody.innerHTML = '';
-                if (filteredTasks.length === 0) {
-                    socialTaskTableBody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-muted-text">No social tasks found.</td></tr>`;
+                console.log(`[Admin Tasks] Rendering ${socialTasks.length} tasks.`); // LOGGING ADDED FOR DEBUGGING
+                if (socialTasks.length === 0) {
+                    socialTaskTableBody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-muted-text">No social tasks found. Click 'Add New Task' to create one.</td></tr>`;
                     return;
                 }
-                
-                filteredTasks.forEach(task => {
+                socialTasks.forEach(task => {
                     const tableRowHtml = `
                         <tr class="hover:bg-slate-700 transition-colors duration-200" data-task-id="${task.id}">
                             <td class="p-4">${task.title}</td>
@@ -2289,7 +2228,7 @@
                             </td>
                         </tr>
                     `;
-                    socialTaskTableBody.innerHTML += taskRowHtml;
+                    socialTaskTableBody.innerHTML += tableRowHtml;
                 });
                 attachManageSocialTasksListeners();
             }
@@ -2407,27 +2346,25 @@
                     coin.innerHTML = `<svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 102 0V6zm-1 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg>`;
                     document.body.appendChild(coin);
 
-                    coin.style.left = `${startRect.left + (startRect.width / 2) - 8}px`;
-                    coin.style.top = `${startRect.top + (startRect.height / 2) - 8}px`;
+                    // Add slight random offset to start position for visual effect
+                    const offsetX = (Math.random() - 0.5) * 10;
+                    const offsetY = (Math.random() - 0.5) * 10;
+                    
+                    coin.style.left = `${startRect.left + (startRect.width / 2) - 8 + offsetX}px`;
+                    coin.style.top = `${startRect.top + (startRect.height / 2) - 8 + offsetY}px`;
 
                     setTimeout(() => {
                         coin.style.left = `${endRect.left + (endRect.width / 2) - 8}px`;
                         coin.style.top = `${endRect.top + (endRect.height / 2) - 8}px`;
                         coin.style.opacity = '1';
-                        coin.style.transform = 'translateY(-100px) scale(0.5)';
+                        // The actual animation is handled by the CSS keyframes `coinFly`
+                        coin.classList.remove('opacity-0');
                     }, 50 + i * 50);
 
                     setTimeout(() => {
                         coin.remove();
                     }, 1100 + i * 50);
                 }
-            }
-
-            // Function to format seconds into MM:SS
-            function formatTime(totalSeconds) {
-                const minutes = Math.floor(totalSeconds / 60);
-                const seconds = totalSeconds % 60;
-                return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
             }
 
             async function attachVideoCardListeners() {
@@ -2466,7 +2403,7 @@
 
                             // Update progress bar state
                             if (progressCircle) progressCircle.style.background = `conic-gradient(#f59e0b 0deg, #1e293b 0deg)`;
-                            if (progressTimeRemaining) progressTimeRemaining.textContent = `${60}s`;
+                            if (progressTimeRemaining) progressTimeRemaining.textContent = `60s`;
 
                             // Set up the back button function for manual exit
                             // This button calls the shared exit logic
@@ -2497,7 +2434,8 @@
                                     animateCoins(startElement, endElement, 1);
 
                                     // Update Firestore with the immediate point gain (1 point for 1 minute)
-                                    await updatePointsInFirestore(1, `Watched video: "${video.title}" (1 min)`, currentVideoId, 'video', false);
+                                    // isFullWatch: false here, as this is an incremental update, not the final cooldown marker.
+                                    await updatePointsInFirestore(1, `Watched video: "${video.title}" (+1 min)`, currentVideoId, 'video', false);
                                 }
                                 
                                 // --- 3. Circular Progress Update ---
@@ -2767,6 +2705,7 @@
 
             if (getSummaryBtn) {
                 getSummaryBtn.addEventListener('click', async () => {
+                    // Check if currentVideoId is set
                     const currentVideo = videos.find(v => v.id === currentVideoId);
                     if (!currentVideo) {
                         if (summaryOutput) summaryOutput.innerHTML = `<p class="text-red-500">Video not found.</p>`;
@@ -2780,7 +2719,7 @@
                         const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
                         const payload = { contents: chatHistory };
                         const apiKey = "";
-                        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
 
                         const response = await fetch(apiUrl, {
                             method: 'POST',
@@ -2829,17 +2768,16 @@
                     if (sidebar) sidebar.classList.remove('open');
                     if (backdrop) backdrop.classList.remove('open');
                     document.body.classList.remove('no-scroll');
-                    if (targetId === 'social-tasks-view') {
+                    if (targetId === 'watch-videos-view') {
+                        renderVideoGrid('all');
+                    } else if (targetId === 'social-tasks-view') {
                         renderSocialTasksGrid();
                     } else if (targetId === 'manage-videos-view') {
-                        // Pass current search query
-                        renderManageVideosTable(manageVideosSearch ? manageVideosSearch.value : '');
+                        renderManageVideosTable();
                     } else if (targetId === 'manage-social-tasks-view') {
-                        // Pass current search query & fix display issue
-                        renderManageSocialTasksTable(manageSocialTasksSearch ? manageSocialTasksSearch.value : '');
+                        renderManageSocialTasksTable(); // ADDED: Ensure task table renders on click
                     } else if (targetId === 'manage-users-view') {
-                        // Pass current search query
-                        fetchAllUsers(manageUsersSearch ? manageUsersSearch.value : '');
+                        fetchAllUsers();
                     } else if (targetId === 'points-history-view') {
                         renderPointsHistoryTable();
                     } else if (targetId === 'invite-and-earn-view') {
@@ -2851,7 +2789,7 @@
             if (backdrop) {
                 backdrop.addEventListener('click', () => {
                     if (sidebar) sidebar.classList.remove('open');
-                    if (backdrop) backdrop.classList.toggle('open');
+                    if (backdrop) backdrop.classList.remove('open');
                     document.body.classList.remove('no-scroll');
                 });
             }
@@ -2902,15 +2840,13 @@
                         description: formData.get('videoDescription'),
                         category: formData.get('videoCategory'),
                         videoUrl: formData.get('videoUrl'),
-                        // Points and duration are not used for user earning anymore, 
-                        // but keep them in the admin form/db for data structure and future use
-                        points: parseInt(formData.get('videoPoints') || 0), // Use 0 if optional field is empty
+                        // Points and duration are now optional for earning logic, but required for data integrity
+                        points: parseInt(formData.get('videoPoints') || 0), 
                         watchDuration: parseInt(formData.get('watchDuration'))
                     };
-
-                    // Basic validation for required fields
-                    if (!videoData.title || !videoData.description || !videoData.videoUrl || !videoData.watchDuration) {
-                        console.error("Missing required video fields.");
+                    
+                    if (!videoData.watchDuration || videoData.watchDuration <= 0) {
+                        alert("Watch Duration (Seconds) is required and must be greater than zero.");
                         return;
                     }
 
@@ -3080,7 +3016,7 @@
                     }
                 });
             }
-
+            
             // --- START NEW: Scroll To Top Logic ---
             if (scrollToTopBtn && appContent) {
                 // Handle scroll to top on button click
@@ -3103,26 +3039,6 @@
                 });
             }
             // --- END NEW: Scroll To Top Logic ---
-            
-            // Admin Search Bar Listeners
-            if (manageVideosSearch) {
-                manageVideosSearch.addEventListener('input', () => {
-                    renderManageVideosTable(manageVideosSearch.value);
-                });
-            }
-
-            if (manageSocialTasksSearch) {
-                manageSocialTasksSearch.addEventListener('input', () => {
-                    renderManageSocialTasksTable(manageSocialTasksSearch.value);
-                });
-            }
-
-            if (manageUsersSearch) {
-                manageUsersSearch.addEventListener('input', () => {
-                    // Fetch all users again and apply filter client-side
-                    fetchAllUsers(manageUsersSearch.value);
-                });
-            }
 
             generateRandomChartData();
             showLoading();
