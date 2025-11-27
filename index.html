@@ -974,16 +974,20 @@
                         <input type="text" id="video-url" name="videoUrl" required
                             class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary">
                     </div>
+                    <!-- START: Updated Video Points and Duration fields for clarity -->
                     <div>
-                        <label for="video-points" class="block text-sm font-medium mb-1">Points (No longer relevant for 1pt/60s system)</label>
-                        <input type="number" id="video-points" name="videoPoints" required
-                            class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary">
+                        <label for="video-points" class="block text-sm font-medium mb-1">Points (Legacy Field - Not used for earning rate)</label>
+                        <input type="number" id="video-points" name="videoPoints"
+                            class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary"
+                            placeholder="Optional. Earning is 1pt/60s.">
                     </div>
                     <div>
-                        <label for="watch-duration" class="block text-sm font-medium mb-1">Watch Duration (Seconds - Max earning duration)</label>
+                        <label for="watch-duration" class="block text-sm font-medium mb-1">Watch Duration (Seconds - MAX Earning Time)</label>
                         <input type="number" id="watch-duration" name="watchDuration" required
-                            class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary">
+                            class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary"
+                            placeholder="Required. Sets the maximum time (in seconds) to earn points.">
                     </div>
+                    <!-- END: Updated Video Points and Duration fields for clarity -->
                     <div class="flex justify-end gap-2 pt-4">
                         <button type="button"
                             class="cancel-btn px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg text-white font-semibold transition-colors duration-200">Cancel</button>
@@ -2900,9 +2904,16 @@
                         videoUrl: formData.get('videoUrl'),
                         // Points and duration are not used for user earning anymore, 
                         // but keep them in the admin form/db for data structure and future use
-                        points: parseInt(formData.get('videoPoints')),
+                        points: parseInt(formData.get('videoPoints') || 0), // Use 0 if optional field is empty
                         watchDuration: parseInt(formData.get('watchDuration'))
                     };
+
+                    // Basic validation for required fields
+                    if (!videoData.title || !videoData.description || !videoData.videoUrl || !videoData.watchDuration) {
+                        console.error("Missing required video fields.");
+                        return;
+                    }
+
 
                     const editingId = addVideoForm.getAttribute('data-editing-id');
                     await saveVideo(videoData, editingId);
