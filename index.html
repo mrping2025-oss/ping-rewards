@@ -456,16 +456,17 @@
                 </div>
             </div>
 
-            <!-- Video Player View -->
+            <!-- Video Player View (Updated) -->
             <div id="video-player-view" class="content-view" style="display: none;">
                 <button id="video-player-back-btn"
-                    class="mb-0 flex items-center gap-2 px-4 py-2 bg-primary hover:bg-indigo-600 rounded-lg text-white font-semibold transition-colors duration-200">
+                    class="mb-4 flex items-center gap-2 px-4 py-2 bg-primary hover:bg-indigo-600 rounded-lg text-white font-semibold transition-colors duration-200">
                     <svg class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                         viewBox="0 0 24 24">
                         <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
                     </svg>
                     Back to Videos
                 </button>
+                
                 <!-- Ad Placement under the 'Back to Videos' button -->
                 <div class="my-4">
                       <script type="text/javascript">
@@ -479,14 +480,37 @@
                     </script>
                     <script type="text/javascript" src="//institutionnounreverend.com/c6affa5f0ae4df4d56203646aa9bf458/invoke.js"></script>
                 </div>
-                <div class="bg-card-bg p-0 rounded-xl shadow-md border border-slate-700">
-                    <div class="aspect-video w-full rounded-xl overflow-hidden mb-0">
+                
+                <!-- NEW: Points Tracker UI -->
+                <div class="bg-card-bg p-4 rounded-xl shadow-lg border border-slate-700 mb-4">
+                    <h3 class="text-lg font-semibold mb-3 text-primary">Points Tracker (အမှတ် စုဆောင်းမှု)</h3>
+                    <div class="flex justify-between items-center flex-wrap gap-2">
+                        <div>
+                            <span class="text-sm text-muted-text block">Time Watched This Session:</span>
+                            <span id="session-time" class="text-xl font-bold block">0 seconds</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-sm text-muted-text block">Points Earned This Session:</span>
+                            <span id="session-points" class="text-3xl font-bold block text-accent-green">0 PTS</span>
+                        </div>
+                    </div>
+                    <div id="point-accrual-message" class="mt-3 text-sm text-center font-semibold p-2 rounded-lg bg-slate-700">
+                        Watch for 60 seconds to earn 1 point. (၁ မိနစ်ပြည့်တိုင်း ၁ မှတ်ရပါမည်။)
+                    </div>
+                </div>
+                <!-- END NEW: Points Tracker UI -->
+
+                <div class="bg-card-bg p-4 rounded-xl shadow-md border border-slate-700">
+                    <div class="aspect-video w-full rounded-xl overflow-hidden mb-4">
+                        <!-- 'allow="autoplay"' attribute is added here, and autoplay will be added to URL in JS -->
                         <iframe id="video-iframe" src="" frameborder="0"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                             allowfullscreen class="w-full h-full"></iframe>
                     </div>
-                    <h2 class="text-2xl font-semibold mb-0" id="video-player-title"></h2>
-                    <p class="text-muted-text mb-2" id="video-player-description"></p>
+                    
+                    <h2 class="text-2xl font-semibold mb-1" id="video-player-title"></h2>
+                    <p class="text-muted-text mb-4" id="video-player-description"></p>
+                    
                     <div class="flex justify-between items-center">
                         <button id="get-summary-btn"
                             class="action-btn px-4 py-2 bg-secondary hover:bg-pink-500 text-white font-semibold rounded-lg transition-colors duration-200 text-sm">
@@ -496,7 +520,7 @@
                     </div>
 
                     <!-- Ad 2 Placement (Below Get Summary Button) -->
-                    <div class="mt-0">
+                    <div class="mt-4">
                         <script async="async" data-cfasync="false" src="//institutionnounreverend.com/5fae19ca63dcfa0b73c6e2395f27545a/invoke.js"></script>
                         <div id="container-5fae19ca63dcfa0b73c6e2395f27545a"></div>
                     </div>
@@ -909,13 +933,12 @@
                             class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary">
                     </div>
                     <div>
-                        <label for="video-points" class="block text-sm font-medium mb-1">Points</label>
+                        <label for="video-points" class="block text-sm font-medium mb-1">Points (No longer relevant for 1pt/60s system)</label>
                         <input type="number" id="video-points" name="videoPoints" required
                             class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary">
                     </div>
                     <div>
-                        <label for="watch-duration" class="block text-sm font-medium mb-1">Watch Duration
-                            (Seconds)</label>
+                        <label for="watch-duration" class="block text-sm font-medium mb-1">Watch Duration (Seconds - No longer relevant)</label>
                         <input type="number" id="watch-duration" name="watchDuration" required
                             class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary">
                     </div>
@@ -1052,6 +1075,11 @@
             const videoPlayerTitle = document.getElementById('video-player-title');
             const videoPlayerDescription = document.getElementById('video-player-description');
 
+            // NEW: Points Tracker UI elements
+            const sessionTimeElement = document.getElementById('session-time');
+            const sessionPointsElement = document.getElementById('session-points');
+            const pointAccrualMessage = document.getElementById('point-accrual-message');
+
             const sidebar = document.getElementById('sidebar');
             const menuToggleBtn = document.getElementById('menu-toggle');
             const backdrop = document.getElementById('backdrop');
@@ -1122,6 +1150,13 @@
 
             const adminEmail = 'mr.ping2025@gmail.com';
 
+            // NEW: Video Watcher State Variables
+            let watchInterval = null;
+            let currentVideoId = null;
+            let sessionWatchTime = 0;
+            let sessionPoints = 0;
+            const POINTS_PER_SECOND = 1 / 60; // 1 point per 60 seconds (1 minute)
+
             // Utility function to get social media icons
             function getSocialIcon(platform) {
                 switch (platform) {
@@ -1135,9 +1170,11 @@
                 }
             }
 
-            // Utility function to extract YouTube video ID from a URL
+            // Utility function to extract YouTube video ID and append autoplay=1
             function getYouTubeId(url) {
                 let videoId = null;
+                let embedUrl = null;
+
                 try {
                     const urlObj = new URL(url);
                     const hostname = urlObj.hostname;
@@ -1159,7 +1196,12 @@
                         videoId = match[1];
                     }
                 }
-                return videoId;
+
+                if (videoId) {
+                    embedUrl = `https://www.youtube.com/embed/${videoId}?rel=0&autoplay=1&mute=0&enablejsapi=1`;
+                }
+
+                return { videoId, embedUrl };
             }
 
             // Function to get a YouTube thumbnail
@@ -1269,12 +1311,14 @@
                         const videosCollectionRef = collection(db, `/artifacts/${appId}/public/data/videos`);
                         const videosSnapshot = await getDocs(videosCollectionRef);
                         if (videosSnapshot.empty) {
+                            // Note: points and watchDuration are mostly irrelevant now for the point system, 
+                            // but kept for the sake of the admin UI/data structure.
                             const initialVideos = [
-                                { id: 'vid1', title: "The Beauty of Nature", category: "Nature", points: 12, watchDuration: 10, description: "A breathtaking journey through mountains and forests.", videoUrl: "https://www.youtube.com/embed/g2J03u13kXg" },
-                                { id: 'vid2', title: "Learn React in 30 Seconds", category: "Education", points: 25, watchDuration: 15, description: "A quick overview of React hooks.", videoUrl: "https://www.youtube.com/embed/Ke90Tje7VS0" },
-                                { id: 'vid3', title: "City Life at Night", category: "Travel", points: 75, watchDuration: 20, description: "Explore the vibrant life of a metropolis after dark.", videoUrl: "https://www.youtube.com/embed/5a-H_gqM_9E" },
-                                { id: 'vid4', title: "Cooking a Perfect Steak", category: "Food", points: 60, watchDuration: 10, description: "A step by step guide to cooking steak.", videoUrl: "https://www.youtube.com/embed/H0d82C7YjA8" },
-                                { id: 'vid5', title: "Gaming Highlights of the Week", category: "Gaming", points: 40, watchDuration: 10, description: "The best moments in esports.", videoUrl: "https://www.youtube.com/embed/d-Yq36_9tQ0" }
+                                { id: 'vid1', title: "The Beauty of Nature", category: "Nature", points: 60, watchDuration: 60, description: "A breathtaking journey through mountains and forests.", videoUrl: "https://www.youtube.com/embed/g2J03u13kXg" },
+                                { id: 'vid2', title: "Learn React in 30 Seconds", category: "Education", points: 30, watchDuration: 30, description: "A quick overview of React hooks.", videoUrl: "https://www.youtube.com/embed/Ke90Tje7VS0" },
+                                { id: 'vid3', title: "City Life at Night", category: "Travel", points: 90, watchDuration: 90, description: "Explore the vibrant life of a metropolis after dark.", videoUrl: "https://www.youtube.com/embed/5a-H_gqM_9E" },
+                                { id: 'vid4', title: "Cooking a Perfect Steak", category: "Food", points: 60, watchDuration: 60, description: "A step by step guide to cooking steak.", videoUrl: "https://www.youtube.com/embed/H0d82C7YjA8" },
+                                { id: 'vid5', title: "Gaming Highlights of the Week", category: "Gaming", points: 120, watchDuration: 120, description: "The best moments in esports.", videoUrl: "https://www.youtube.com/embed/d-Yq36_9tQ0" }
                             ];
                             for (const video of initialVideos) {
                                 await setDoc(doc(videosCollectionRef, video.id), {
@@ -1462,8 +1506,8 @@
                         pointsHistory: newHistory,
                     };
 
-                    // Add to the appropriate watched/completed list based on type
-                    if (type === 'video') {
+                    // Only add video ID to watchedVideos if we are adding points from a video
+                    if (type === 'video' && id) {
                         updateData.watchedVideos = arrayUnion(id);
                     } else if (type === 'social') {
                         updateData.completedSocialTasks = arrayUnion(id);
@@ -1851,14 +1895,9 @@
 
                 let videoGridHtml = '';
                 sortedVideos.forEach(video => {
-                    let thumbnailUrl;
-                    const youtubeId = getYouTubeId(video.videoUrl);
-                    if (youtubeId) {
-                        thumbnailUrl = getYouTubeThumbnail(youtubeId);
-                    } else {
-                        thumbnailUrl = 'https://placehold.co/400x225/1f3148/ffffff?text=Video';
-                    }
-
+                    const { videoId, embedUrl } = getYouTubeId(video.videoUrl);
+                    let thumbnailUrl = getYouTubeThumbnail(videoId);
+                    
                     const isWatched = watchedVideoIds.includes(video.id);
                     const stateClasses = isWatched ? 'opacity-50 pointer-events-none' : 'cursor-pointer';
 
@@ -1870,8 +1909,9 @@
 
                     // Mock data for new UI elements for demonstration
                     const mockChannelName = "Ping Rewards Channel";
+                    // Displaying the number of points that *would be* earned if it was the old system, or just the duration
                     const mockViews = `${(video.points * 1000).toLocaleString()} views`;
-                    const mockUploadDate = `${video.watchDuration} days ago`;
+                    const mockUploadDate = `${video.watchDuration || 60} seconds long`;
 
                     const videoCardHtml = `
                         <div class="video-card group ${stateClasses}" data-video-url="${video.videoUrl}" data-video-id="${video.id}">
@@ -1879,8 +1919,9 @@
                                 <img src="${thumbnailUrl}" alt="${video.title}" class="w-full h-auto object-cover rounded-xl group-hover:rounded-none transition-all duration-200" onerror="this.onerror=null; this.src='https://placehold.co/400x225/1f3148/ffffff?text=Video';">
                                 ${watchedOverlay}
                                 <div class="absolute bottom-1.5 right-1.5 flex items-center space-x-1">
-                                     <span class="bg-primary bg-opacity-90 text-white text-xs font-bold px-2 py-1 rounded-md">${video.points} PTS</span>
-                                     <span class="bg-black bg-opacity-75 text-white text-xs font-semibold px-2 py-1 rounded-md">${video.watchDuration} SEC</span>
+                                     <!-- Points and duration are for display only, actual earning is 1pt/60s -->
+                                     <span class="bg-primary bg-opacity-90 text-white text-xs font-bold px-2 py-1 rounded-md">~${Math.round((video.watchDuration || 60) * POINTS_PER_SECOND)} PTS/Min</span>
+                                     <span class="bg-black bg-opacity-75 text-white text-xs font-semibold px-2 py-1 rounded-md">${Math.max(1, Math.ceil(video.watchDuration / 60) || 1)} MIN</span>
                                 </div>
                             </div>
                             <div class="flex items-start space-x-3">
@@ -1992,7 +2033,7 @@
                         <tr class="hover:bg-slate-700 transition-colors duration-200" data-video-id="${video.id}">
                             <td class="p-4">${video.title}</td>
                             <td class="p-4">${video.category}</td>
-                            <td class="p-4">${video.points}</td>
+                            <td class="p-4">${video.points} (Legacy)</td>
                             <td class="p-4">
                                 <a href="#" class="actions-btn edit-btn text-primary hover:text-indigo-400 mr-4 transition-colors duration-200" data-video-id="${video.id}">Edit</a>
                                 <a href="#" class="actions-btn delete-btn text-red-500 hover:text-red-400 transition-colors duration-200" data-video-id="${video.id}">Delete</a>
@@ -2129,7 +2170,7 @@
             }
 
             function animateCoins(startElement, endElement, points) {
-                const numberOfCoins = Math.min(Math.floor(points / 20), 10);
+                const numberOfCoins = Math.min(Math.floor(points / 1), 10); // Changed to 1 point per coin for more frequent points, max 10
                 const startRect = startElement.getBoundingClientRect();
                 const endRect = endElement.getBoundingClientRect();
 
@@ -2155,6 +2196,13 @@
                 }
             }
 
+            // Function to format seconds into MM:SS
+            function formatTime(totalSeconds) {
+                const minutes = Math.floor(totalSeconds / 60);
+                const seconds = totalSeconds % 60;
+                return `${minutes.toString().padStart(2, '0')} minutes ${seconds.toString().padStart(2, '0')} seconds`;
+            }
+
             async function attachVideoCardListeners() {
                 const cards = document.querySelectorAll('.video-card');
                 cards.forEach(card => {
@@ -2163,45 +2211,76 @@
                         const video = videos.find(v => v.id === videoId);
 
                         if (video) {
+                            currentVideoId = video.id; // Set current video ID
                             videoCardToAnimate = card; // Store the card element for animation later
-                            if (videoIframe) videoIframe.src = video.videoUrl;
+
+                            const { embedUrl } = getYouTubeId(video.videoUrl); // Get autoplay URL
+
+                            if (videoIframe) videoIframe.src = embedUrl;
                             if (videoPlayerTitle) videoPlayerTitle.textContent = video.title;
                             if (videoPlayerDescription) videoPlayerDescription.textContent = video.description;
                             showView('video-player-view');
                             if (summaryOutput) summaryOutput.innerHTML = ''; // Clear previous summary
 
-                            let pointsEarnedInSession = false;
-                            clearTimeout(window.videoWatchTimer);
-                            window.videoWatchTimer = setTimeout(() => {
-                                pointsEarnedInSession = true;
-                                console.log(`Video watched for required duration. Click 'Back to Videos' to earn points.`);
-                                window.currentWatchedVideoId = video.id; // Store ID for summary button
-                            }, video.watchDuration * 1000);
+                            // Reset session tracking variables
+                            sessionWatchTime = 0;
+                            sessionPoints = 0;
+                            if (sessionTimeElement) sessionTimeElement.textContent = formatTime(sessionWatchTime);
+                            if (sessionPointsElement) sessionPointsElement.textContent = `${sessionPoints} PTS`;
+
+                            // Clear any existing interval
+                            if (watchInterval) clearInterval(watchInterval);
+
+                            // Start a new interval to accrue points every 1 second
+                            let lastMinuteEarned = 0;
+                            watchInterval = setInterval(() => {
+                                sessionWatchTime += 1; // Increment watch time by 1 second
+
+                                // Check if a full minute (60 seconds) has elapsed since the last point award
+                                const currentMinute = Math.floor(sessionWatchTime / 60);
+
+                                if (currentMinute > lastMinuteEarned) {
+                                    sessionPoints += 1; // Award 1 point
+                                    lastMinuteEarned = currentMinute;
+                                    console.log(`Earned 1 point at ${sessionWatchTime}s. Total session points: ${sessionPoints}`);
+                                    
+                                    // Animate a single coin (1 point) to the session points tracker
+                                    const startElement = sessionPointsElement;
+                                    const endElement = document.getElementById('user-points-display') || totalPointsValue;
+                                    animateCoins(startElement, endElement, 1);
+
+                                    // Update Firestore with the immediate point gain (1 point for 1 minute)
+                                    // This minimizes data loss if the user closes the tab before hitting 'Back'
+                                    updatePointsInFirestore(1, `Watched video: "${video.title}" (1 min)`, currentVideoId, 'video');
+
+                                }
+                                
+                                // Update UI elements
+                                if (sessionTimeElement) sessionTimeElement.textContent = formatTime(sessionWatchTime);
+                                if (sessionPointsElement) sessionPointsElement.textContent = `${sessionPoints} PTS`;
+
+                            }, 1000); // Check every 1 second
+
 
                             if (videoPlayerBackBtn) {
                                 videoPlayerBackBtn.onclick = async () => {
-                                    clearTimeout(window.videoWatchTimer);
-                                    if (videoIframe) videoIframe.src = '';
+                                    // Clear the interval immediately
+                                    if (watchInterval) clearInterval(watchInterval);
+                                    watchInterval = null;
+
+                                    if (videoIframe) videoIframe.src = ''; // Stop video playback
 
                                     // Switch view immediately for a faster feel
                                     showView('watch-videos-view');
-
-                                    if (pointsEarnedInSession) {
-                                        if (videoCardToAnimate) {
-                                            const endElement = document.getElementById('user-points-display');
-                                            animateCoins(videoCardToAnimate, endElement, video.points);
-                                            // Pass video ID to the function
-                                            // Update points in the background without showing loading spinner
-                                            setTimeout(async () => {
-                                                await updatePointsInFirestore(video.points, `Watched "${video.title}"`, video.id, 'video');
-                                            }, 1000);
-                                        } else {
-                                            await updatePointsInFirestore(video.points, `Watched "${video.title}"`, video.id, 'video');
-                                        }
-                                        console.log("Points updated via Firebase.");
-                                    } else {
-                                        console.log(`You did not watch the video for the required duration. No points were awarded.`);
-                                    }
+                                    
+                                    // Note: The new logic awards points in real-time. The back button just stops the session.
+                                    // The total session points are already included in the Firestore updates via the interval.
+                                    
+                                    // Reset session tracking variables
+                                    currentVideoId = null;
+                                    sessionWatchTime = 0;
+                                    sessionPoints = 0;
+                                    console.log("Video session ended. Points were updated in real-time.");
                                 };
                             }
                         }
@@ -2460,7 +2539,7 @@
 
             if (getSummaryBtn) {
                 getSummaryBtn.addEventListener('click', async () => {
-                    const currentVideo = videos.find(v => v.id === window.currentWatchedVideoId);
+                    const currentVideo = videos.find(v => v.id === currentVideoId);
                     if (!currentVideo) {
                         if (summaryOutput) summaryOutput.innerHTML = `<p class="text-red-500">Video not found.</p>`;
                         return;
@@ -2514,6 +2593,12 @@
                     if (backdrop) backdrop.classList.remove('open');
                     document.body.classList.remove('no-scroll');
                     if (targetId === 'watch-videos-view') {
+                        // Clear any running video interval when leaving the player page
+                        if (watchInterval) clearInterval(watchInterval);
+                        watchInterval = null;
+                        currentVideoId = null;
+                        sessionWatchTime = 0;
+                        sessionPoints = 0;
                         renderVideoGrid('all');
                     } else if (targetId === 'social-tasks-view') {
                         renderSocialTasksGrid();
@@ -2585,6 +2670,8 @@
                         description: formData.get('videoDescription'),
                         category: formData.get('videoCategory'),
                         videoUrl: formData.get('videoUrl'),
+                        // Points and duration are not used for user earning anymore, 
+                        // but keep them in the admin form/db for data structure and future use
                         points: parseInt(formData.get('videoPoints')),
                         watchDuration: parseInt(formData.get('watchDuration'))
                     };
