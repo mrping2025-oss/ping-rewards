@@ -10,7 +10,7 @@
         content="Ping Rewards, Money Making, Earn Money, Watch Videos, Social Tasks, Points, Rewards, Cash Out, Online Earning, Video Rewards, Task Completion, Referral Program">
     <meta property="og:description"
         content="Ping Rewards သည် video ကြည့်ခြင်းနှင့် social tasks ပြုလုပ်ခြင်းအားဖြင့် အွန်လိုင်းတွင်ပိုက်ဆံရှာဖွေရန်အတွက် platform တစ်ခုဖြစ်သည်။">
-    <!-- NAMO TASSA BHAGAVATO ARAHATO SAMMA SAMBUDDHASSA -->
+    <!-- NAMO TASSA BHAGAVATO ARAHATO SAMMA SAMBUDDHASSa -->
     <title>Ping Rewards</title>
     <link rel="icon" type="image/svg+xml"
         href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%236366f1' d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9v-4h2.5c1.38 0 2.5-1.12 2.5-2.5S12.88 7 11.5 7H9v-2h2.5C14.43 5 16 6.57 16 8.5S14.43 12 11.5 12H9v4h4v-2z'/%3E%3C/svg%3E">
@@ -483,6 +483,16 @@
                     id="video-grid">
                     <!-- Video cards  -->
                 </div>
+                
+                <!-- NEW: Floating Scroll-to-Top Rocket Button (Hidden by default) -->
+                <button id="scroll-to-top-btn"
+                    class="hidden fixed bottom-6 right-6 z-50 p-4 bg-accent-orange hover:bg-amber-600 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-110 active:scale-95">
+                    <!-- Rocket/Up Arrow SVG -->
+                    <svg class="w-6 h-6 text-white transform rotate-315" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2l-5 5h3v7h4V7h3l-5-5zM4 20h16v2H4z"/>
+                    </svg>
+                </button>
+                <!-- END NEW: Floating Scroll-to-Top Rocket Button -->
             </div>
 
             <!-- Video Player View (Updated) -->
@@ -780,8 +790,12 @@
             <!-- Manage Videos View -->
             <div id="manage-videos-view" class="content-view" style="display: none;">
                 <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
-                    <div class="flex justify-between items-center mb-6">
+                    <!-- NEW: Search bar added here -->
+                    <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
                         <h2 class="text-xl font-semibold">Manage Videos</h2>
+                        <input type="text" id="manage-videos-search"
+                            class="flex-grow sm:flex-grow-0 min-w-[200px] px-4 py-2 rounded-full bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary placeholder-muted-text"
+                            placeholder="Search videos...">
                         <button id="add-video-btn"
                             class="px-4 py-2 bg-primary hover:bg-indigo-600 rounded-lg text-white font-semibold transition-colors duration-200">
                             Add New Video
@@ -808,8 +822,12 @@
             <!-- Manage Social Tasks View -->
             <div id="manage-social-tasks-view" class="content-view" style="display: none;">
                 <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
-                    <div class="flex justify-between items-center mb-6">
+                    <!-- NEW: Search bar added here -->
+                    <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
                         <h2 class="text-xl font-semibold">Manage Social Tasks</h2>
+                        <input type="text" id="manage-social-tasks-search"
+                            class="flex-grow sm:flex-grow-0 min-w-[200px] px-4 py-2 rounded-full bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary placeholder-muted-text"
+                            placeholder="Search tasks...">
                         <button id="add-social-task-btn"
                             class="px-4 py-2 bg-primary hover:bg-indigo-600 rounded-lg text-white font-semibold transition-colors duration-200">
                             Add New Task
@@ -837,7 +855,13 @@
             <!-- Manage Users View -->
             <div id="manage-users-view" class="content-view" style="display: none;">
                 <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
-                    <h2 class="text-xl font-semibold mb-2">Manage Users</h2>
+                    <!-- NEW: Search bar added here -->
+                    <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+                        <h2 class="text-xl font-semibold">Manage Users</h2>
+                        <input type="text" id="manage-users-search"
+                            class="flex-grow sm:flex-grow-0 min-w-[200px] px-4 py-2 rounded-full bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary placeholder-muted-text"
+                            placeholder="Search users...">
+                    </div>
                     <p class="text-muted-text mb-6">View user data, manage status, and edit information.</p>
                     <div class="overflow-x-auto rounded-lg">
                         <table class="w-full text-left table-auto">
@@ -1158,6 +1182,15 @@
             const copyStatus = document.getElementById('copy-status');
             const invitedUsersTable = document.getElementById('invited-users-table');
             const referralBonus = 50; // Referral bonus set to 50 PTS
+            
+            // NEW: Scroll to Top Button
+            const scrollToTopBtn = document.getElementById('scroll-to-top-btn');
+            const appContent = document.getElementById('app-content');
+            
+            // NEW: Admin Search Elements
+            const manageVideosSearch = document.getElementById('manage-videos-search');
+            const manageSocialTasksSearch = document.getElementById('manage-social-tasks-search');
+            const manageUsersSearch = document.getElementById('manage-users-search');
 
             let videos = [];
             let socialTasks = []; //  array to hold social tasks
@@ -1522,7 +1555,7 @@
                 }
             }
 
-            async function fetchAllUsers() {
+            async function fetchAllUsers(query = '') { // ADDED query parameter
                 showLoading();
                 if (!usersTableBody) return;
                 usersTableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-muted-text">Fetching users...</td></tr>`;
@@ -1530,7 +1563,7 @@
                     const usersCollectionRef = collection(db, `/artifacts/${appId}/users`);
                     const querySnapshot = await getDocs(usersCollectionRef);
                     const users = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    renderUsersTable(users);
+                    renderUsersTable(users, query); // Pass query to render function
                 } catch (e) {
                     console.error("Error fetching users:", e);
                     usersTableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-red-500">Error fetching users.</td></tr>`;
@@ -1896,6 +1929,18 @@
                         activeLink.classList.add('active', 'bg-primary/20', 'text-white');
                     }
                 }
+                
+                // NEW: Scroll To Top Button visibility handler
+                if (scrollToTopBtn && appContent) {
+                    const isWatchVideosView = targetId === 'watch-videos-view';
+                    if (isWatchVideosView && appContent.scrollTop > 300) {
+                         // Show if already scrolled down
+                         scrollToTopBtn.classList.remove('hidden');
+                    } else {
+                         // Hide immediately for other views or if not scrolled down
+                         scrollToTopBtn.classList.add('hidden');
+                    }
+                }
             }
 
             function updatePageTitle(viewId) {
@@ -2127,15 +2172,27 @@
                 attachSocialTaskListeners();
             }
 
-            function renderUsersTable(users) {
+            function renderUsersTable(users, query = '') { // ADDED query parameter
                 if (!usersTableBody) return;
+                
+                let filteredUsers = users;
+                if (query) {
+                    const lowerQuery = query.toLowerCase();
+                    filteredUsers = users.filter(user =>
+                        user.id.toLowerCase().includes(lowerQuery) ||
+                        (user.name && user.name.toLowerCase().includes(lowerQuery)) ||
+                        (user.email && user.email.toLowerCase().includes(lowerQuery)) ||
+                        (user.role && user.role.toLowerCase().includes(lowerQuery))
+                    );
+                }
+
                 usersTableBody.innerHTML = '';
-                if (users.length === 0) {
+                if (filteredUsers.length === 0) {
                     usersTableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-muted-text">No users found.</td></tr>`;
                     return;
                 }
 
-                users.forEach(user => {
+                filteredUsers.forEach(user => {
                     const toggleRoleBtnText = user.role === 'admin' ? 'Demote to User' : 'Promote to Admin';
                     const tableRowHtml = `
                         <tr data-user-id="${user.id}" class="hover:bg-slate-700 transition-colors duration-200">
@@ -2152,17 +2209,33 @@
                     `;
                     usersTableBody.innerHTML += tableRowHtml;
                 });
-                attachManageUsersListeners(users);
+                attachManageUsersListeners(filteredUsers);
             }
 
-            function renderManageVideosTable() {
+            function renderManageVideosTable(query = '') { // ADDED query parameter
                 const videoTableBody = document.querySelector('#videos-table');
                 if (!videoTableBody) {
                     console.error("Video table body element not found.");
                     return;
                 }
+                
+                let filteredVideos = videos;
+                if (query) {
+                    const lowerQuery = query.toLowerCase();
+                    filteredVideos = videos.filter(video =>
+                        video.title.toLowerCase().includes(lowerQuery) ||
+                        video.category.toLowerCase().includes(lowerQuery) ||
+                        video.description.toLowerCase().includes(lowerQuery)
+                    );
+                }
+                
                 videoTableBody.innerHTML = '';
-                videos.forEach(video => {
+                if (filteredVideos.length === 0) {
+                    videoTableBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-muted-text">No videos found.</td></tr>`;
+                    return;
+                }
+                
+                filteredVideos.forEach(video => {
                     const tableRowHtml = `
                         <tr class="hover:bg-slate-700 transition-colors duration-200" data-video-id="${video.id}">
                             <td class="p-4">${video.title}</td>
@@ -2180,10 +2253,26 @@
             }
 
             // Renders the manage social tasks table for admin view
-            function renderManageSocialTasksTable() {
+            function renderManageSocialTasksTable(query = '') { // ADDED query parameter
                 if (!socialTaskTableBody) return;
+                
+                let filteredTasks = socialTasks;
+                if (query) {
+                    const lowerQuery = query.toLowerCase();
+                    filteredTasks = socialTasks.filter(task =>
+                        task.title.toLowerCase().includes(lowerQuery) ||
+                        task.platform.toLowerCase().includes(lowerQuery) ||
+                        task.link.toLowerCase().includes(lowerQuery)
+                    );
+                }
+                
                 socialTaskTableBody.innerHTML = '';
-                socialTasks.forEach(task => {
+                if (filteredTasks.length === 0) {
+                    socialTaskTableBody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-muted-text">No social tasks found.</td></tr>`;
+                    return;
+                }
+                
+                filteredTasks.forEach(task => {
                     const tableRowHtml = `
                         <tr class="hover:bg-slate-700 transition-colors duration-200" data-task-id="${task.id}">
                             <td class="p-4">${task.title}</td>
@@ -2739,11 +2828,14 @@
                     if (targetId === 'social-tasks-view') {
                         renderSocialTasksGrid();
                     } else if (targetId === 'manage-videos-view') {
-                        renderManageVideosTable();
+                        // Pass current search query
+                        renderManageVideosTable(manageVideosSearch ? manageVideosSearch.value : '');
                     } else if (targetId === 'manage-social-tasks-view') {
-                        renderManageSocialTasksTable();
+                        // Pass current search query & fix display issue
+                        renderManageSocialTasksTable(manageSocialTasksSearch ? manageSocialTasksSearch.value : '');
                     } else if (targetId === 'manage-users-view') {
-                        fetchAllUsers();
+                        // Pass current search query
+                        fetchAllUsers(manageUsersSearch ? manageUsersSearch.value : '');
                     } else if (targetId === 'points-history-view') {
                         renderPointsHistoryTable();
                     } else if (targetId === 'invite-and-earn-view') {
@@ -2975,6 +3067,49 @@
                     } finally {
                         hideLoading();
                     }
+                });
+            }
+
+            // --- START NEW: Scroll To Top Logic ---
+            if (scrollToTopBtn && appContent) {
+                // Handle scroll to top on button click
+                scrollToTopBtn.addEventListener('click', () => {
+                    appContent.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                });
+
+                // Handle button visibility on scroll
+                appContent.addEventListener('scroll', () => {
+                    const isWatchVideosViewActive = document.getElementById('watch-videos-view').style.display === 'block';
+
+                    if (isWatchVideosViewActive && appContent.scrollTop > 300) { // Show if scrolled more than 300px
+                        scrollToTopBtn.classList.remove('hidden');
+                    } else {
+                        scrollToTopBtn.classList.add('hidden');
+                    }
+                });
+            }
+            // --- END NEW: Scroll To Top Logic ---
+            
+            // Admin Search Bar Listeners
+            if (manageVideosSearch) {
+                manageVideosSearch.addEventListener('input', () => {
+                    renderManageVideosTable(manageVideosSearch.value);
+                });
+            }
+
+            if (manageSocialTasksSearch) {
+                manageSocialTasksSearch.addEventListener('input', () => {
+                    renderManageSocialTasksTable(manageSocialTasksSearch.value);
+                });
+            }
+
+            if (manageUsersSearch) {
+                manageUsersSearch.addEventListener('input', () => {
+                    // Fetch all users again and apply filter client-side
+                    fetchAllUsers(manageUsersSearch.value);
                 });
             }
 
