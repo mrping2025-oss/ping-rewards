@@ -99,7 +99,36 @@
         .animate-scroll:hover {
             animation-play-state: paused;
         }
-        /* Animation */
+        /* NEW: Circular Progress Bar Styles */
+        .circular-progress-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1001;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #1e293b; /* card-bg */
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            border: 2px solid #6366f1; /* primary */
+        }
+        .circular-progress {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: conic-gradient(#f59e0b 0deg, #1e293b 0deg); /* Amber color */
+        }
+        .progress-value {
+            position: absolute;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #f59e0b; /* Amber */
+        }
     </style>
 </head>
 
@@ -481,24 +510,13 @@
                     <script type="text/javascript" src="//institutionnounreverend.com/c6affa5f0ae4df4d56203646aa9bf458/invoke.js"></script>
                 </div>
                 
-                <!-- NEW: Points Tracker UI -->
-                <div class="bg-card-bg p-4 rounded-xl shadow-lg border border-slate-700 mb-4">
-                    <h3 class="text-lg font-semibold mb-3 text-primary">Points Tracker (အမှတ် စုဆောင်းမှု)</h3>
-                    <div class="flex justify-between items-center flex-wrap gap-2">
-                        <div>
-                            <span class="text-sm text-muted-text block">Time Watched This Session:</span>
-                            <span id="session-time" class="text-xl font-bold block">0 seconds</span>
-                        </div>
-                        <div class="text-right">
-                            <span class="text-sm text-muted-text block">Points Earned This Session:</span>
-                            <span id="session-points" class="text-3xl font-bold block text-accent-green">0 PTS</span>
-                        </div>
-                    </div>
-                    <div id="point-accrual-message" class="mt-3 text-sm text-center font-semibold p-2 rounded-lg bg-slate-700">
-                        Watch for 60 seconds to earn 1 point. (၁ မိနစ်ပြည့်တိုင်း ၁ မှတ်ရပါမည်။)
+                <!-- NEW: Floating Circular Points Tracker UI -->
+                <div id="circular-points-tracker" class="circular-progress-container hidden">
+                    <div id="progress-circle" class="circular-progress">
+                        <span id="progress-time-remaining" class="progress-value">60s</span>
                     </div>
                 </div>
-                <!-- END NEW: Points Tracker UI -->
+                <!-- END NEW: Floating Circular Points Tracker UI -->
 
                 <div class="bg-card-bg p-4 rounded-xl shadow-md border border-slate-700">
                     <div class="aspect-video w-full rounded-xl overflow-hidden mb-4">
@@ -938,7 +956,7 @@
                             class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary">
                     </div>
                     <div>
-                        <label for="watch-duration" class="block text-sm font-medium mb-1">Watch Duration (Seconds - No longer relevant)</label>
+                        <label for="watch-duration" class="block text-sm font-medium mb-1">Watch Duration (Seconds - Max earning duration)</label>
                         <input type="number" id="watch-duration" name="watchDuration" required
                             class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary">
                     </div>
@@ -1075,10 +1093,10 @@
             const videoPlayerTitle = document.getElementById('video-player-title');
             const videoPlayerDescription = document.getElementById('video-player-description');
 
-            // NEW: Points Tracker UI elements
-            const sessionTimeElement = document.getElementById('session-time');
-            const sessionPointsElement = document.getElementById('session-points');
-            const pointAccrualMessage = document.getElementById('point-accrual-message');
+            // NEW: Circular Points Tracker UI elements
+            const circularPointsTracker = document.getElementById('circular-points-tracker');
+            const progressCircle = document.getElementById('progress-circle');
+            const progressTimeRemaining = document.getElementById('progress-time-remaining');
 
             const sidebar = document.getElementById('sidebar');
             const menuToggleBtn = document.getElementById('menu-toggle');
@@ -1156,6 +1174,50 @@
             let sessionWatchTime = 0;
             let sessionPoints = 0;
             const POINTS_PER_SECOND = 1 / 60; // 1 point per 60 seconds (1 minute)
+
+            // NEW: Core function to handle exiting the video player view, 
+            // including stopping the timer and applying cooldown if necessary.
+            const handlePlayerExit = (isAutoExit = false) => {
+                const currentVideo = videos.find(v => v.id === currentVideoId);
+                const videoMaxDuration = currentVideo?.watchDuration || 0;
+                
+                // 1. Cleanup timers and UI
+                if (watchInterval) clearInterval(watchInterval);
+                watchInterval = null;
+
+                if (videoIframe) videoIframe.src = ''; // Stop video playback
+                if (circularPointsTracker) circularPointsTracker.classList.add('hidden');
+
+                // 2. Apply Cooldown if minimum watch time (60s = 1 point) was met
+                if (currentVideoId && sessionWatchTime >= 60) {
+                    console.log(`[EXIT] Cooldown triggered: ${isAutoExit ? 'Auto' : 'Manual'} exit after ${sessionWatchTime}s.`);
+                    
+                    // Force full watch/cooldown logic if minimum time reached, regardless of full duration.
+                    // Use 0 points as points are already recorded minute-by-minute.
+                    updatePointsInFirestore(
+                        0, 
+                        isAutoExit ? `Video completed/max duration reached: "${currentVideo.title}"` : `Cooldown applied on manual exit: "${currentVideo.title}"`, 
+                        currentVideoId, 
+                        'video', 
+                        true, // isFullWatch = true triggers cooldown update (as requested by user)
+                        videoMaxDuration
+                    );
+                } else if (currentVideoId && sessionWatchTime > 0) {
+                    console.log(`[EXIT] User watched ${sessionWatchTime}s (< 60s). Not enough watch time for cooldown.`);
+                }
+
+                // 3. Navigate away and reset session variables
+                showView('watch-videos-view');
+                
+                currentVideoId = null;
+                sessionWatchTime = 0;
+                sessionPoints = 0;
+                
+                // Re-render the grid to show new cooldown status
+                const activeFilterBtn = document.querySelector('#watch-videos-view .filter-btn.active');
+                const category = activeFilterBtn ? activeFilterBtn.getAttribute('data-category') : 'all';
+                renderVideoGrid(category);
+            };
 
             // Utility function to get social media icons
             function getSocialIcon(platform) {
@@ -1289,7 +1351,8 @@
                             points: 0,
                             pointsHistory: [],
                             payoutHistory: [],
-                            watchedVideos: [],
+                            watchedVideos: [], // Simple list of IDs for general tracking
+                            videoCooldowns: [], // Array of {id: 'vidX', availableAfter: timestamp} objects
                             completedSocialTasks: [],
                             // IMPORTANT: Save referrerId in the new user's document
                             referrerId: validReferrerId, 
@@ -1311,21 +1374,20 @@
                         const videosCollectionRef = collection(db, `/artifacts/${appId}/public/data/videos`);
                         const videosSnapshot = await getDocs(videosCollectionRef);
                         if (videosSnapshot.empty) {
-                            // Note: points and watchDuration are mostly irrelevant now for the point system, 
-                            // but kept for the sake of the admin UI/data structure.
+                            // watchDuration is now the maximum time (in seconds) to earn points
                             const initialVideos = [
-                                { id: 'vid1', title: "The Beauty of Nature", category: "Nature", points: 60, watchDuration: 60, description: "A breathtaking journey through mountains and forests.", videoUrl: "https://www.youtube.com/embed/g2J03u13kXg" },
-                                { id: 'vid2', title: "Learn React in 30 Seconds", category: "Education", points: 30, watchDuration: 30, description: "A quick overview of React hooks.", videoUrl: "https://www.youtube.com/embed/Ke90Tje7VS0" },
-                                { id: 'vid3', title: "City Life at Night", category: "Travel", points: 90, watchDuration: 90, description: "Explore the vibrant life of a metropolis after dark.", videoUrl: "https://www.youtube.com/embed/5a-H_gqM_9E" },
-                                { id: 'vid4', title: "Cooking a Perfect Steak", category: "Food", points: 60, watchDuration: 60, description: "A step by step guide to cooking steak.", videoUrl: "https://www.youtube.com/embed/H0d82C7YjA8" },
-                                { id: 'vid5', title: "Gaming Highlights of the Week", category: "Gaming", points: 120, watchDuration: 120, description: "The best moments in esports.", videoUrl: "https://www.youtube.com/embed/d-Yq36_9tQ0" }
+                                { id: 'vid1', title: "The Beauty of Nature", category: "Nature", points: 60, watchDuration: 300, description: "A breathtaking journey through mountains and forests.", videoUrl: "https://www.youtube.com/embed/g2J03u13kXg" },
+                                { id: 'vid2', title: "Learn React in 30 Seconds", category: "Education", points: 30, watchDuration: 180, description: "A quick overview of React hooks.", videoUrl: "https://www.youtube.com/embed/Ke90Tje7VS0" },
+                                { id: 'vid3', title: "City Life at Night", category: "Travel", points: 90, watchDuration: 540, description: "Explore the vibrant life of a metropolis after dark.", videoUrl: "https://www.youtube.com/embed/5a-H_gqM_9E" },
+                                { id: 'vid4', title: "Cooking a Perfect Steak", category: "Food", points: 60, watchDuration: 240, description: "A step by step guide to cooking steak.", videoUrl: "https://www.youtube.com/embed/H0d82C7YjA8" },
+                                { id: 'vid5', title: "Gaming Highlights of the Week", category: "Gaming", points: 120, watchDuration: 720, description: "The best moments in esports.", videoUrl: "https://www.youtube.com/embed/d-Yq36_9tQ0" }
                             ];
                             for (const video of initialVideos) {
                                 await setDoc(doc(videosCollectionRef, video.id), {
                                     title: video.title,
                                     category: video.category,
-                                    points: video.points,
-                                    watchDuration: video.watchDuration,
+                                    points: video.points, // Legacy points, ignored for earning logic
+                                    watchDuration: video.watchDuration, // Max earning duration
                                     description: video.description,
                                     videoUrl: video.videoUrl
                                 });
@@ -1489,9 +1551,8 @@
             }
 
             // Updates user points in Firestore and adds a new history entry
-            async function updatePointsInFirestore(pointsToAdd, description, id, type = 'video') {
+            async function updatePointsInFirestore(pointsToAdd, description, id, type = 'video', isFullWatch = false, videoDuration = 0) {
                 if (!userData || !userId) return;
-                // showLoading(); // REMOVED to make UI feel faster
                 try {
                     const userDocRef = doc(db, `/artifacts/${appId}/users/${userId}`);
                     const newPoints = userData.points + pointsToAdd;
@@ -1506,9 +1567,26 @@
                         pointsHistory: newHistory,
                     };
 
-                    // Only add video ID to watchedVideos if we are adding points from a video
                     if (type === 'video' && id) {
-                        updateData.watchedVideos = arrayUnion(id);
+                        if (isFullWatch) {
+                             // Mark as fully watched and set cooldown
+                             const availableAfter = Date.now() + (24 * 60 * 60 * 1000); // 24 hours from now
+                             const cooldownEntry = { id: id, watchedAt: Date.now(), availableAfter: availableAfter };
+
+                             // Add ID to simple watched list (for historical tracking if needed)
+                             updateData.watchedVideos = arrayUnion(id);
+                             
+                             // Update Cooldowns array
+                             let newCooldowns = userData.videoCooldowns || [];
+                             // Remove old entry if exists (in case user watched it after the cooldown reset)
+                             newCooldowns = newCooldowns.filter(c => c.id !== id);
+                             newCooldowns.push(cooldownEntry);
+                             updateData.videoCooldowns = newCooldowns;
+
+                        } else if (pointsToAdd > 0) {
+                            // Only update watchedVideos if points were actually added (marks minimum watch)
+                            updateData.watchedVideos = arrayUnion(id);
+                        }
                     } else if (type === 'social') {
                         updateData.completedSocialTasks = arrayUnion(id);
                     }
@@ -1518,7 +1596,6 @@
                 } catch (e) {
                     console.error("Error updating points:", e);
                 }
-                // finally { hideLoading(); } // REMOVED
             }
 
             async function saveVideo(videoData, videoId = null) {
@@ -1887,41 +1964,98 @@
                     return;
                 }
 
-                // Sort videos: unwatched first, then watched
+                // Get cooldown info
+                const videoCooldowns = userData?.videoCooldowns || [];
                 const watchedVideoIds = userData?.watchedVideos || [];
-                const unwatchedVideos = filteredVideos.filter(video => !watchedVideoIds.includes(video.id));
-                const watchedVideos = filteredVideos.filter(video => watchedVideoIds.includes(video.id));
-                const sortedVideos = [...unwatchedVideos, ...watchedVideos];
+
+                // Function to check if a video is on cooldown
+                const getCooldownStatus = (videoId) => {
+                    const cooldown = videoCooldowns.find(c => c.id === videoId);
+                    if (!cooldown) return { isOnCooldown: false };
+
+                    const availableAfter = cooldown.availableAfter;
+                    if (Date.now() < availableAfter) {
+                        return {
+                            isOnCooldown: true,
+                            availableAfter: availableAfter,
+                            remainingTime: availableAfter - Date.now()
+                        };
+                    }
+                    // If cooldown is expired, we need to manually clean up the expired entry 
+                    // This is handled by a filter/re-render logic in the next step to keep the sorting correct
+                    return { isOnCooldown: false };
+                };
+
+                // Filter and categorize videos based on cooldown status
+                let availableVideos = [];
+                let cooldownVideos = [];
+                
+                filteredVideos.forEach(video => {
+                    const status = getCooldownStatus(video.id);
+                    if (status.isOnCooldown) {
+                        cooldownVideos.push({ ...video, ...status });
+                    } else {
+                        availableVideos.push(video);
+                    }
+                });
+                
+                // Sort the available videos (unwatched always come before watched, though both are clickable now if cooldown is over)
+                availableVideos.sort((a, b) => {
+                    const aWatched = watchedVideoIds.includes(a.id);
+                    const bWatched = watchedVideoIds.includes(b.id);
+                    if (aWatched === bWatched) return 0;
+                    return aWatched ? 1 : -1; // Unwatched (false) comes first
+                });
+
+                // Cooldown videos go to the bottom and are sorted by earliest availability
+                cooldownVideos.sort((a, b) => a.availableAfter - b.availableAfter);
+
+                const sortedVideos = [...availableVideos, ...cooldownVideos];
+
 
                 let videoGridHtml = '';
                 sortedVideos.forEach(video => {
                     const { videoId, embedUrl } = getYouTubeId(video.videoUrl);
                     let thumbnailUrl = getYouTubeThumbnail(videoId);
                     
-                    const isWatched = watchedVideoIds.includes(video.id);
-                    const stateClasses = isWatched ? 'opacity-50 pointer-events-none' : 'cursor-pointer';
+                    const status = getCooldownStatus(video.id);
+                    const isWatched = watchedVideoIds.includes(video.id); // For visual marker only
+                    const isOnCooldown = status.isOnCooldown;
 
-                    const watchedOverlay = isWatched
-                        ? `<div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center rounded-xl">
+                    let stateClasses = 'cursor-pointer';
+                    let watchedOverlay = '';
+                    let actionText = 'Watch to Earn';
+
+                    if (isOnCooldown) {
+                         stateClasses = 'opacity-50 pointer-events-none cursor-not-allowed';
+                         const remainingHours = Math.ceil(status.remainingTime / (1000 * 60 * 60));
+                         actionText = `Cooldown: ${remainingHours} Hrs Left`;
+                         watchedOverlay = `<div class="absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center rounded-xl flex-col p-4">
+                                <svg class="w-8 h-8 text-yellow-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span class="text-sm font-bold text-yellow-400 text-center">Cooldown: ${remainingHours} Hrs Left</span>
+                            </div>`;
+                    } else if (isWatched) {
+                        // Video was fully watched before, but cooldown is over.
+                         watchedOverlay = `<div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center rounded-xl">
                                <svg class="w-12 h-12 text-accent-green" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                           </div>`
-                        : '';
-
-                    // Mock data for new UI elements for demonstration
-                    const mockChannelName = "Ping Rewards Channel";
-                    // Displaying the number of points that *would be* earned if it was the old system, or just the duration
-                    const mockViews = `${(video.points * 1000).toLocaleString()} views`;
-                    const mockUploadDate = `${video.watchDuration || 60} seconds long`;
+                           </div>`;
+                        actionText = 'Watched Before (Ready!)';
+                    }
+                    
+                    // Calculation for Points/Min and Max Duration display
+                    const watchDuration = video.watchDuration || 60;
+                    const pointsPerMin = Math.round(60 * POINTS_PER_SECOND); // 1 point per min
+                    const maxDurationMin = Math.max(1, Math.ceil(watchDuration / 60) || 1);
+                    const mockChannelName = "Ping Channel";
 
                     const videoCardHtml = `
-                        <div class="video-card group ${stateClasses}" data-video-url="${video.videoUrl}" data-video-id="${video.id}">
+                        <div class="video-card group ${stateClasses}" data-video-url="${video.videoUrl}" data-video-id="${video.id}" data-max-duration="${watchDuration}" ${isOnCooldown ? 'data-cooldown="true"' : ''}>
                             <div class="relative mb-2">
                                 <img src="${thumbnailUrl}" alt="${video.title}" class="w-full h-auto object-cover rounded-xl group-hover:rounded-none transition-all duration-200" onerror="this.onerror=null; this.src='https://placehold.co/400x225/1f3148/ffffff?text=Video';">
                                 ${watchedOverlay}
                                 <div class="absolute bottom-1.5 right-1.5 flex items-center space-x-1">
-                                     <!-- Points and duration are for display only, actual earning is 1pt/60s -->
-                                     <span class="bg-primary bg-opacity-90 text-white text-xs font-bold px-2 py-1 rounded-md">~${Math.round((video.watchDuration || 60) * POINTS_PER_SECOND)} PTS/Min</span>
-                                     <span class="bg-black bg-opacity-75 text-white text-xs font-semibold px-2 py-1 rounded-md">${Math.max(1, Math.ceil(video.watchDuration / 60) || 1)} MIN</span>
+                                     <span class="bg-primary bg-opacity-90 text-white text-xs font-bold px-2 py-1 rounded-md">~${pointsPerMin} PTS/Min</span>
+                                     <span class="bg-black bg-opacity-75 text-white text-xs font-semibold px-2 py-1 rounded-md">${maxDurationMin} MIN</span>
                                 </div>
                             </div>
                             <div class="flex items-start space-x-3">
@@ -1932,9 +2066,9 @@
                                     <h3 class="text-base font-medium text-text-color line-clamp-2 leading-tight">${video.title}</h3>
                                     <p class="text-sm text-muted-text mt-1">${mockChannelName}</p>
                                     <div class="text-sm text-muted-text flex items-center space-x-2">
-                                        <span>${mockViews}</span>
+                                        <span>${actionText}</span>
                                         <span>•</span>
-                                        <span>${mockUploadDate}</span>
+                                        <span>${video.category}</span>
                                     </div>
                                 </div>
                             </div>
@@ -2062,7 +2196,7 @@
                             </td>
                         </tr>
                     `;
-                    socialTaskTableBody.innerHTML += tableRowHtml;
+                    socialTaskTableBody.innerHTML += taskRowHtml;
                 });
                 attachManageSocialTasksListeners();
             }
@@ -2200,89 +2334,90 @@
             function formatTime(totalSeconds) {
                 const minutes = Math.floor(totalSeconds / 60);
                 const seconds = totalSeconds % 60;
-                return `${minutes.toString().padStart(2, '0')} minutes ${seconds.toString().padStart(2, '0')} seconds`;
+                return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
             }
 
             async function attachVideoCardListeners() {
                 const cards = document.querySelectorAll('.video-card');
                 cards.forEach(card => {
                     card.addEventListener('click', (e) => {
+                        // Prevent click if it's on cooldown (though CSS pointer-events should handle this)
+                        if (card.getAttribute('data-cooldown') === 'true') return; 
+
                         const videoId = card.getAttribute('data-video-id');
                         const video = videos.find(v => v.id === videoId);
 
                         if (video) {
-                            currentVideoId = video.id; // Set current video ID
-                            videoCardToAnimate = card; // Store the card element for animation later
+                            currentVideoId = video.id;
+                            videoCardToAnimate = card;
 
-                            const { embedUrl } = getYouTubeId(video.videoUrl); // Get autoplay URL
+                            const { embedUrl } = getYouTubeId(video.videoUrl);
+                            const maxDurationSeconds = video.watchDuration || 60; // Max duration to earn points
 
                             if (videoIframe) videoIframe.src = embedUrl;
                             if (videoPlayerTitle) videoPlayerTitle.textContent = video.title;
                             if (videoPlayerDescription) videoPlayerDescription.textContent = video.description;
+                            
+                            // Show player and circular tracker UI
                             showView('video-player-view');
-                            if (summaryOutput) summaryOutput.innerHTML = ''; // Clear previous summary
-
+                            if (summaryOutput) summaryOutput.innerHTML = '';
+                            if (circularPointsTracker) circularPointsTracker.classList.remove('hidden');
+                            
                             // Reset session tracking variables
                             sessionWatchTime = 0;
                             sessionPoints = 0;
-                            if (sessionTimeElement) sessionTimeElement.textContent = formatTime(sessionWatchTime);
-                            if (sessionPointsElement) sessionPointsElement.textContent = `${sessionPoints} PTS`;
-
+                            let lastMinuteEarned = 0;
+                            
                             // Clear any existing interval
                             if (watchInterval) clearInterval(watchInterval);
 
+                            // Update progress bar state
+                            if (progressCircle) progressCircle.style.background = `conic-gradient(#f59e0b 0deg, #1e293b 0deg)`;
+                            if (progressTimeRemaining) progressTimeRemaining.textContent = `${60}s`;
+
+                            // Set up the back button function for manual exit
+                            // This button calls the shared exit logic
+                            if (videoPlayerBackBtn) videoPlayerBackBtn.onclick = () => handlePlayerExit(false);
+
                             // Start a new interval to accrue points every 1 second
-                            let lastMinuteEarned = 0;
-                            watchInterval = setInterval(() => {
+                            watchInterval = setInterval(async () => {
                                 sessionWatchTime += 1; // Increment watch time by 1 second
 
-                                // Check if a full minute (60 seconds) has elapsed since the last point award
+                                // --- 1. Check for Maximum Duration Reached (Auto-Exit) ---
+                                if (sessionWatchTime >= maxDurationSeconds) {
+                                    // Auto-exit: The cooldown and exit logic is now inside handlePlayerExit
+                                    console.log("Video max duration reached. Exiting.");
+                                    handlePlayerExit(true); // Call with isAutoExit = true
+                                    return; // Stop execution for this interval tick
+                                }
+                                
+                                // --- 2. Point Accrual Logic (1 point every 60 seconds) ---
                                 const currentMinute = Math.floor(sessionWatchTime / 60);
-
                                 if (currentMinute > lastMinuteEarned) {
                                     sessionPoints += 1; // Award 1 point
                                     lastMinuteEarned = currentMinute;
                                     console.log(`Earned 1 point at ${sessionWatchTime}s. Total session points: ${sessionPoints}`);
                                     
-                                    // Animate a single coin (1 point) to the session points tracker
-                                    const startElement = sessionPointsElement;
+                                    // Animate a single coin (1 point) to the points display
+                                    const startElement = progressCircle; 
                                     const endElement = document.getElementById('user-points-display') || totalPointsValue;
                                     animateCoins(startElement, endElement, 1);
 
                                     // Update Firestore with the immediate point gain (1 point for 1 minute)
-                                    // This minimizes data loss if the user closes the tab before hitting 'Back'
-                                    updatePointsInFirestore(1, `Watched video: "${video.title}" (1 min)`, currentVideoId, 'video');
-
+                                    await updatePointsInFirestore(1, `Watched video: "${video.title}" (1 min)`, currentVideoId, 'video', false);
                                 }
                                 
-                                // Update UI elements
-                                if (sessionTimeElement) sessionTimeElement.textContent = formatTime(sessionWatchTime);
-                                if (sessionPointsElement) sessionPointsElement.textContent = `${sessionPoints} PTS`;
+                                // --- 3. Circular Progress Update ---
+                                const secondsIntoMinute = sessionWatchTime % 60;
+                                const remainingSeconds = 60 - secondsIntoMinute;
+                                const progressAngle = (secondsIntoMinute / 60) * 360;
 
+                                // Update UI elements
+                                if (progressTimeRemaining) progressTimeRemaining.textContent = `${remainingSeconds}s`;
+                                if (progressCircle) progressCircle.style.background = `conic-gradient(#f59e0b ${progressAngle}deg, #1e293b ${progressAngle}deg)`;
+                                
                             }, 1000); // Check every 1 second
 
-
-                            if (videoPlayerBackBtn) {
-                                videoPlayerBackBtn.onclick = async () => {
-                                    // Clear the interval immediately
-                                    if (watchInterval) clearInterval(watchInterval);
-                                    watchInterval = null;
-
-                                    if (videoIframe) videoIframe.src = ''; // Stop video playback
-
-                                    // Switch view immediately for a faster feel
-                                    showView('watch-videos-view');
-                                    
-                                    // Note: The new logic awards points in real-time. The back button just stops the session.
-                                    // The total session points are already included in the Firestore updates via the interval.
-                                    
-                                    // Reset session tracking variables
-                                    currentVideoId = null;
-                                    sessionWatchTime = 0;
-                                    sessionPoints = 0;
-                                    console.log("Video session ended. Points were updated in real-time.");
-                                };
-                            }
                         }
                     });
                 });
@@ -2588,19 +2723,20 @@
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
                     const targetId = link.getAttribute('data-target');
+                    
+                    const currentPlayerView = document.getElementById('video-player-view');
+                    const isExitingPlayer = currentPlayerView && currentPlayerView.style.display === 'block';
+
+                    if (isExitingPlayer && targetId !== 'video-player-view') {
+                        // Call the shared exit function if navigating away from the player view
+                        handlePlayerExit(false); 
+                    }
+
                     showView(targetId);
                     if (sidebar) sidebar.classList.remove('open');
                     if (backdrop) backdrop.classList.remove('open');
                     document.body.classList.remove('no-scroll');
-                    if (targetId === 'watch-videos-view') {
-                        // Clear any running video interval when leaving the player page
-                        if (watchInterval) clearInterval(watchInterval);
-                        watchInterval = null;
-                        currentVideoId = null;
-                        sessionWatchTime = 0;
-                        sessionPoints = 0;
-                        renderVideoGrid('all');
-                    } else if (targetId === 'social-tasks-view') {
+                    if (targetId === 'social-tasks-view') {
                         renderSocialTasksGrid();
                     } else if (targetId === 'manage-videos-view') {
                         renderManageVideosTable();
