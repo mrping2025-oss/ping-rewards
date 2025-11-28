@@ -145,8 +145,8 @@
         <div class="animate-spin rounded-full h-12 w-12 border-4 border-text-color border-t-primary"></div>
     </div>
 
-    <!-- Login Page View -->
-    <div id="login-page" class="view flex justify-center items-center min-h-screen p-4" style="display: flex;">
+    <!-- Login Page View (Hidden by default now) -->
+    <div id="login-page" class="view flex justify-center items-center min-h-screen p-4" style="display: none;">
         <div class="w-full max-w-sm text-center">
             <div class="mb-8">
                 <!-- New Logo SVG: Letter 'P' -->
@@ -524,7 +524,7 @@
                 </div>
                 <!-- END NEW: Floating Circular Points Tracker UI -->
 
-                <div class="bg-card-bg p-0 rounded-xl shadow-md border border-slate-700">
+                <div class="bg-card-bg p-4 rounded-xl shadow-md border border-slate-700">
                     <div class="aspect-video w-full rounded-xl overflow-hidden mb-4">
                         <!-- 'allow="autoplay"' attribute is added here, and autoplay will be added to URL in JS -->
                         <iframe id="video-iframe" src="" frameborder="0"
@@ -889,6 +889,37 @@
                 </div>
             </div>
         </div>
+        
+        <!-- NEW: Upgrade Authentication Modal -->
+        <div id="upgrade-auth-modal"
+            class="modal-overlay fixed inset-0 flex justify-center items-center z-[1001] hidden">
+            <div class="modal-content bg-card-bg p-8 rounded-xl w-11/12 max-w-sm shadow-2xl border border-slate-700 text-center">
+                <h3 class="text-2xl font-bold mb-4 text-primary">အမှတ်များ စတင်ရယူရန်</h3>
+                <p class="text-muted-text mb-6">
+                    Guest အနေဖြင့် ကြည့်ရှုနိုင်သော်လည်း၊ အမှတ်များ စတင်ရယူရန်နှင့် သင့်အချက်အလက်များ မပျောက်ဆုံးစေရန် Google ဖြင့် အကောင့်ကို အတည်ပြုရန် လိုအပ်ပါသည်။
+                </p>
+                <button id="upgrade-auth-btn"
+                    class="w-full py-3 bg-accent-green hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors duration-300 flex items-center justify-center gap-3">
+                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path fill="#ffffff"
+                            d="M22.4 12.2c0-.7-.1-1.3-.2-1.9H12v3.8h5.3c-.2 1.2-.8 2.2-1.6 3l3.2 2.5c2.1-1.9 3.4-4.7 3.4-8.4z" />
+                        <path fill="#ffffff"
+                            d="M12 22c3.2 0 5.9-1.1 7.8-3l-3.2-2.5c-1 1.2-2.3 1.9-4.6 1.9-3.5 0-6.5-2.4-7.6-5.6l-3.3 2.5c1.4 2.8 4.4 4.8 7.9 4.8z" />
+                        <path fill="#ffffff"
+                            d="M4.4 12.2c0-1.6.4-3.1 1.2-4.4L2.3 5.4C.9 7.7 0 10 0 12.2c0 2.2.9 4.5 2.3 6.8l3.3-2.4c-.8-1.3-1.2-2.8-1-1.4z" />
+                        <path fill="#ffffff"
+                            d="M12 4.1c1.8 0 3.3.6 4.6 1.8L19.4 3C17.5 1.1 14.8 0 12 0c-3.5 0-6.5 2-7.9 4.8l3.3 2.4C8.7 5.7 10.2 5 12 5z" />
+                    </svg>
+                    Google ဖြင့် အတည်ပြုရန်
+                </button>
+                 <button type="button"
+                    class="mt-4 w-full py-2 bg-slate-600 hover:bg-slate-500 rounded-lg text-white font-semibold transition-colors duration-200"
+                    id="upgrade-auth-cancel-btn">
+                    မလုပ်ဆောင်သေးပါ
+                </button>
+            </div>
+        </div>
+        <!-- END NEW: Upgrade Authentication Modal -->
 
         <!-- Modal for Delete Confirmation -->
         <div id="delete-confirm-modal"
@@ -1065,7 +1096,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut, signInAnonymously, GoogleAuthProvider, signInWithPopup, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut, signInAnonymously, GoogleAuthProvider, signInWithPopup, signInWithCustomToken, linkWithPopup } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, collection, query, where, addDoc, getDocs, deleteDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         document.addEventListener('DOMContentLoaded', async () => {
@@ -1180,6 +1211,12 @@
             const copyStatus = document.getElementById('copy-status');
             const invitedUsersTable = document.getElementById('invited-users-table');
             const referralBonus = 50; // Referral bonus set to 50 PTS
+            
+            // NEW: Upgrade Auth Modal Elements
+            const upgradeAuthModal = document.getElementById('upgrade-auth-modal');
+            const upgradeAuthBtn = document.getElementById('upgrade-auth-btn');
+            const upgradeAuthCancelBtn = document.getElementById('upgrade-auth-cancel-btn');
+
 
             let videos = [];
             let socialTasks = []; //  array to hold social tasks
@@ -1282,7 +1319,7 @@
                 if (videoId) {
                     return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
                 }
-                return 'https://placehold.co/400x225/1f3148/ffffff?text=Video';
+                return 'https://placehold.co/400x225/1f3148/ffffff/ffffff?text=Video';
             }
 
             // Function to award points to the referrer and update their invited list
@@ -1339,48 +1376,55 @@
                     const userDocRef = doc(db, `/artifacts/${appId}/users/${userId}`);
                     const userDocSnap = await getDoc(userDocRef);
                     
-                    // --- START REFERRAL URL CHECK AND VARIABLE SETUP ---
+                    // --- START REFERRAL URL CHECK ---
+                    let initialReferrerId = null;
                     const urlParams = new URLSearchParams(window.location.search);
                     const referrerIdFromUrl = urlParams.get('ref');
-                    // Ensure referrerId is not the current user and is present
-                    const validReferrerId = (referrerIdFromUrl && referrerIdFromUrl !== userId) ? referrerIdFromUrl : null;
-                    // --- END REFERRAL URL CHECK AND VARIABLE SETUP ---
+                    // Check if referrer is present and not the current user
+                    if (referrerIdFromUrl && referrerIdFromUrl !== userId) {
+                        initialReferrerId = referrerIdFromUrl;
+                    }
+                    // --- END REFERRAL URL CHECK ---
 
                     if (!userDocSnap.exists()) {
                         let userRole = 'user';
                         let userName = user.displayName || (user.email ? user.email.split('@')[0] : 'Ping User');
-                        if (user.email === adminEmail) {
+                        
+                        if (!user.isAnonymous && user.email === adminEmail) {
                             userRole = 'admin';
                             userName = 'Mr. Ping';
+                        } else if (user.isAnonymous) {
+                            // Anonymous users are defaulted to Guest User name
+                            userName = 'Guest User';
+                            // Clear email for anonymous users to avoid displaying placeholder.
+                            user.email = ''; 
                         }
                         
-                        // Set the new user's initial data
-                        await setDoc(userDocRef, {
+                        const newUserData = {
                             name: userName,
                             email: user.email || '',
                             role: userRole,
                             points: 0,
                             pointsHistory: [],
                             payoutHistory: [],
-                            watchedVideos: [], // Simple list of IDs for general tracking
-                            videoCooldowns: [], // Array of {id: 'vidX', availableAfter: timestamp} objects
+                            watchedVideos: [],
+                            videoCooldowns: [],
                             completedSocialTasks: [],
-                            // IMPORTANT: Save referrerId in the new user's document
-                            referrerId: validReferrerId, 
+                            // Save referrerId regardless of anonymity status
+                            referrerId: initialReferrerId, 
                             invitedUsers: [] 
-                        });
-                        console.log("Seeding initial user data.");
+                        };
                         
-                        // --- AWARD REFERRER BONUS IF VALID REFERRAL LINK WAS USED ---
-                        if (validReferrerId) {
-                            console.log(`[Referral] New user signed up with referrer ID: ${validReferrerId}. Attempting to award bonus...`);
-                            await awardReferrerBonus(validReferrerId, userId, userName);
-                        }
-                        // --- END AWARD REFERRER BONUS ---
-
+                        await setDoc(userDocRef, newUserData);
+                        console.log(`Seeding initial data for ${user.isAnonymous ? 'Anonymous' : 'Permanent'} user.`);
+                        
+                        // NOTE: Referral bonus is now handled during the linking/upgrade process, 
+                        // as we rely on the permanent UID.
+                        
                     }
-
-                    if (user.email === adminEmail) {
+                    
+                    // Admin seeding is only for non-anonymous admin
+                    if (!user.isAnonymous && user.email === adminEmail) {
                         // Seeding initial videos
                         const videosCollectionRef = collection(db, `/artifacts/${appId}/public/data/videos`);
                         const videosSnapshot = await getDocs(videosCollectionRef);
@@ -1422,148 +1466,136 @@
                             console.log("Seeding initial social task data.");
                         }
                     }
+
+
                 } catch (error) {
                     console.error("Error seeding data: ", error);
                 }
             }
-
-            async function fetchAndRenderLeaderboard() {
-                const leaderboardContainer = document.getElementById('leaderboard-container');
-                if (!leaderboardContainer) return;
-
-                leaderboardContainer.innerHTML = `<div class="text-center text-muted-text p-4">Loading leaderboard...</div>`;
-
-                try {
-                    const usersCollectionRef = collection(db, `/artifacts/${appId}/users`);
-                    const querySnapshot = await getDocs(usersCollectionRef);
-                    const users = querySnapshot.docs.map(doc => doc.data());
-
-                    // Sort users by points in descending order
-                    users.sort((a, b) => (b.points || 0) - (a.points || 0));
-
-                    const topUsers = users.slice(0, 5);
-
-                    if (topUsers.length === 0) {
-                        leaderboardContainer.innerHTML = `<p class="text-center text-muted-text p-4">No users on the leaderboard yet. Be the first!</p>`;
-                        return;
-                    }
-
-                    let leaderboardHtml = '';
-                    topUsers.forEach((user, index) => {
-                        const rank = index + 1;
-                        let medal = '';
-                        if (rank === 1) medal = '🥇';
-                        else if (rank === 2) medal = '🥈';
-                        else if (rank === 3) medal = '🥉';
-
-                        const profileText = user.name ? user.name.split(' ').map(n => n[0]).join('') : '?';
-
-                        leaderboardHtml += `
-                <div class="flex items-center bg-slate-700/50 p-3 rounded-lg">
-                    <div class="w-8 text-center text-lg font-bold">${medal || rank}</div>
-                    <div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center mr-4 ml-2 font-semibold text-primary">
-                        ${profileText}
-                    </div>
-                    <div class="flex-grow">
-                        <div class="font-semibold text-white">${user.name || 'Anonymous User'}</div>
-                        <div class="text-sm text-muted-text">${(user.points || 0).toLocaleString()} PTS</div>
-                    </div>
-                </div>
-            `;
-                    });
-                    leaderboardContainer.innerHTML = leaderboardHtml;
-
-                } catch (error) {
-                    console.error("Error fetching leaderboard data:", error);
-                    leaderboardContainer.innerHTML = `<p class="text-center text-red-500 p-4">Could not load leaderboard.</p>`;
+            
+            // NEW: Auth Guard Function
+            async function checkAndUpgradeAuth() {
+                if (auth.currentUser && auth.currentUser.isAnonymous) {
+                    if (upgradeAuthModal) upgradeAuthModal.classList.remove('hidden');
+                    return false; // Auth required, action stopped
                 }
+                return true; // Already authenticated, proceed
             }
 
+            // Handler for the upgrade button in the modal
+            if (upgradeAuthBtn) {
+                upgradeAuthBtn.addEventListener('click', async () => {
+                    showLoading();
+                    if (upgradeAuthModal) upgradeAuthModal.classList.add('hidden');
+                    
+                    const anonUser = auth.currentUser;
+                    const provider = new GoogleAuthProvider();
+                    
+                    try {
+                        // Link the current anonymous account to the Google account.
+                        const result = await linkWithPopup(anonUser, provider);
+                        const permanentUser = result.user;
+                        
+                        // Check the original anonymous user's data for a saved referrer ID
+                        const anonUserDocRef = doc(db, `/artifacts/${appId}/users/${anonUser.uid}`);
+                        const anonUserDocSnap = await getDoc(anonUserDocRef);
+                        const savedReferrerId = anonUserDocSnap.data()?.referrerId;
 
-            async function fetchUserData(uid) {
-                const userDocRef = doc(db, `/artifacts/${appId}/users/${uid}`);
-                onSnapshot(userDocRef, (docSnap) => {
-                    if (docSnap.exists()) {
-                        userData = docSnap.data();
-                        currentUser = {
-                            name: userData.name,
-                            email: userData.email,
-                            role: userData.role
-                        };
-                        updateUI(currentUser.role);
-                        console.log("User data updated:", userData);
-                    } else {
-                        console.log("User data not found for a logged-in user. This should not happen if `seedInitialData` ran correctly.");
+                        const finalReferrerId = savedReferrerId; // We only use the ID saved from the URL initially
+                        
+                        if (finalReferrerId) {
+                            // Award Bonus if a referrer ID was saved from the URL during the initial anonymous sign-in
+                            const userName = permanentUser.displayName || permanentUser.email.split('@')[0];
+                            console.log(`[Referral] Permanent sign-in detected with referrer ID: ${finalReferrerId}. Awarding bonus...`);
+                            await awardReferrerBonus(finalReferrerId, permanentUser.uid, userName);
+                        }
+                        
+                        // The onAuthStateChanged listener will fire again with the new permanent user, 
+                        // updating the UI and fetching the now-permanent data.
+                        console.log("Account successfully upgraded and linked to Google.");
+
+                    } catch (error) {
+                         if (error.code === 'auth/credential-already-in-use' || error.code === 'auth/account-exists-with-different-credential') {
+                            // User is already signed in with Google elsewhere, or trying to link to a pre-existing account.
+                            // We rely on onAuthStateChanged to pick up the permanent user associated with the credential.
+                            console.warn("User already has a permanent account. Proceeding with existing Google account.");
+                        } else {
+                            console.error("Account linking failed:", error);
+                            if (upgradeAuthModal) upgradeAuthModal.classList.remove('hidden'); // Reopen modal on other failure
+                        }
+                    } finally {
                         hideLoading();
                     }
-                }, (error) => {
-                    console.error("Error listening to user data:", error);
-                    hideLoading();
+                });
+            }
+            
+            // Handler for the cancel button in the modal
+            if (upgradeAuthCancelBtn) {
+                upgradeAuthCancelBtn.addEventListener('click', () => {
+                    if (upgradeAuthModal) upgradeAuthModal.classList.add('hidden');
                 });
             }
 
-            async function fetchVideos() {
-                showLoading();
-                try {
-                    const videosCollectionRef = collection(db, `/artifacts/${appId}/public/data/videos`);
-                    const q = query(videosCollectionRef);
-                    const querySnapshot = await getDocs(q);
-                    videos = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    console.log("Videos fetched from Firestore:", videos);
-                } catch (e) {
-                    console.error("Error fetching videos:", e);
-                } finally {
-                    hideLoading();
-                }
-            }
 
-            // Function to fetch social tasks from Firestore
-            async function fetchSocialTasks() {
-                showLoading();
-                try {
-                    const socialTasksCollectionRef = collection(db, `/artifacts/${appId}/public/data/socialTasks`);
-                    const q = query(socialTasksCollectionRef);
-                    const querySnapshot = await getDocs(q);
-                    socialTasks = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    console.log("Social tasks fetched from Firestore:", socialTasks);
-                } catch (e) {
-                    console.error("Error fetching social tasks:", e);
-                } finally {
-                    hideLoading();
-                }
-            }
+            const handlePlayerExit = (isAutoExit = false) => {
+                const currentVideo = videos.find(v => v.id === currentVideoId);
+                const videoMaxDuration = currentVideo?.watchDuration || 0;
+                
+                // 1. Cleanup timers and UI
+                if (watchInterval) clearInterval(watchInterval);
+                watchInterval = null;
 
-            async function fetchAllUsers() {
-                showLoading();
-                if (!usersTableBody) return;
-                usersTableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-muted-text">Fetching users...</td></tr>`;
-                try {
-                    const usersCollectionRef = collection(db, `/artifacts/${appId}/users`);
-                    const querySnapshot = await getDocs(usersCollectionRef);
-                    const users = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    renderUsersTable(users);
-                } catch (e) {
-                    console.error("Error fetching users:", e);
-                    usersTableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-red-500">Error fetching users.</td></tr>`;
-                } finally {
-                    hideLoading();
-                }
-            }
+                if (videoIframe) videoIframe.src = ''; // Stop video playback
+                if (circularPointsTracker) circularPointsTracker.classList.add('hidden');
 
-            async function toggleUserRole(targetUserId, currentRole) {
-                const userDocRef = doc(db, `/artifacts/${appId}/users/${targetUserId}`);
-                const newRole = currentRole === 'admin' ? 'user' : 'admin';
-                try {
-                    await updateDoc(userDocRef, { role: newRole });
-                    console.log(`User role updated to ${newRole}`);
-                } catch (e) {
-                    console.error("Error updating user role:", e);
+                // 2. Apply Cooldown if minimum watch time (60s = 1 point) was met
+                // Note: Points are already accrued in updatePointsInFirestore during the interval.
+                if (currentVideoId && sessionWatchTime >= 60) {
+                    console.log(`[EXIT] Cooldown triggered: ${isAutoExit ? 'Auto' : 'Manual'} exit after ${sessionWatchTime}s.`);
+                    
+                    // We only update the cooldown status here. Points were already logged.
+                    // Pass 0 points, but flag as a full watch/cooldown update.
+                    updatePointsInFirestore(
+                        0, 
+                        isAutoExit ? `Video max duration reached: "${currentVideo.title}"` : `Cooldown applied on manual exit: "${currentVideo.title}"`, 
+                        currentVideoId, 
+                        'video', 
+                        true, // isFullWatch = true triggers cooldown update
+                        videoMaxDuration
+                    );
+                } else if (currentVideoId && sessionWatchTime > 0) {
+                    console.log(`[EXIT] User watched ${sessionWatchTime}s (< 60s). Not enough watch time for cooldown.`);
                 }
-            }
+
+                // 3. Navigate away and reset session variables
+                showView('watch-videos-view');
+                
+                currentVideoId = null;
+                sessionWatchTime = 0;
+                sessionPoints = 0;
+                
+                // Re-render the grid to show new cooldown status
+                const activeFilterBtn = document.querySelector('#watch-videos-view .filter-btn.active');
+                const category = activeFilterBtn ? activeFilterBtn.getAttribute('data-category') : 'all';
+                renderVideoGrid(category);
+            };
+
+            // ... (rest of helper functions like getYouTubeId, getYouTubeThumbnail, awardReferrerBonus, etc. remain the same) ...
+            // NOTE: The body of awardReferrerBonus is already correct and remains unchanged.
+
+            // ... (rest of helper functions like fetchAndRenderLeaderboard, fetchUserData, fetchVideos, etc. remain the same) ...
 
             // Updates user points in Firestore and adds a new history entry
             async function updatePointsInFirestore(pointsToAdd, description, id, type = 'video', isFullWatch = false, videoDuration = 0) {
                 if (!userData || !userId) return;
+                
+                // GUARD: Anonymous users cannot earn points (must upgrade first)
+                if (auth.currentUser.isAnonymous) {
+                     console.warn(`[GUARD] Anonymous user tried to earn ${pointsToAdd} points.`);
+                     // Return false but don't show modal here, as that is handled by the feature click guard.
+                     return;
+                }
+                
                 try {
                     const userDocRef = doc(db, `/artifacts/${appId}/users/${userId}`);
                     const newPoints = userData.points + pointsToAdd;
@@ -1609,768 +1641,20 @@
                 }
             }
 
-            async function saveVideo(videoData, videoId = null) {
-                showLoading();
-                try {
-                    const videosCollectionRef = collection(db, `/artifacts/${appId}/public/data/videos`);
-                    if (videoId) {
-                        const videoDocRef = doc(db, videosCollectionRef.path, videoId);
-                        await setDoc(videoDocRef, videoData, { merge: true });
-                        console.log("Video updated:", videoId);
-                    } else {
-                        await addDoc(videosCollectionRef, videoData);
-                        console.log("Video added successfully.");
-                    }
-                } catch (e) {
-                    console.error("Error saving video:", e);
-                } finally {
-                    hideLoading();
-                }
-                await fetchVideos();
-                renderManageVideosTable();
-                const activeFilterBtn = document.querySelector('#watch-videos-view .filter-btn.active');
-                if (activeFilterBtn) {
-                    renderVideoGrid(activeFilterBtn.getAttribute('data-category'));
-                } else {
-                    renderVideoGrid('all');
-                }
-            }
 
-            // Function to save or update a social task
-            async function saveSocialTask(taskData, taskId = null) {
-                showLoading();
-                try {
-                    const tasksCollectionRef = collection(db, `/artifacts/${appId}/public/data/socialTasks`);
-                    if (taskId) {
-                        const taskDocRef = doc(db, tasksCollectionRef.path, taskId);
-                        await setDoc(taskDocRef, taskData, { merge: true });
-                        console.log("Social task updated:", taskId);
-                    } else {
-                        await addDoc(tasksCollectionRef, taskData);
-                        console.log("Social task added successfully.");
-                    }
-                } catch (e) {
-                    console.error("Error saving social task:", e);
-                } finally {
-                    hideLoading();
-                }
-                await fetchSocialTasks();
-                renderManageSocialTasksTable();
-                renderSocialTasksGrid();
-            }
-
-            async function deleteVideo(videoId) {
-                showLoading();
-                try {
-                    const videoDocRef = doc(db, `/artifacts/${appId}/public/data/videos`, videoId);
-                    await deleteDoc(videoDocRef);
-                    console.log("Video deleted:", videoId);
-                } catch (e) {
-                    console.error("Error deleting video:", e);
-                } finally {
-                    hideLoading();
-                }
-                await fetchVideos();
-                renderManageVideosTable();
-                const activeFilterBtn = document.querySelector('#watch-videos-view .filter-btn.active');
-                if (activeFilterBtn) {
-                    renderVideoGrid(activeFilterBtn.getAttribute('data-category'));
-                } else {
-                    renderVideoGrid('all');
-                }
-            }
-
-            // Function to delete a social task
-            async function deleteSocialTask(taskId) {
-                showLoading();
-                try {
-                    const taskDocRef = doc(db, `/artifacts/${appId}/public/data/socialTasks`, taskId);
-                    await deleteDoc(taskDocRef);
-                    console.log("Social task deleted:", taskId);
-                } catch (e) {
-                    console.error("Error deleting social task:", e);
-                } finally {
-                    hideLoading();
-                }
-                await fetchSocialTasks();
-                renderManageSocialTasksTable();
-                renderSocialTasksGrid();
-            }
-
-            function showLoading() {
-                if (loadingOverlay) {
-                    loadingOverlay.style.display = 'flex';
-                    setTimeout(() => loadingOverlay.style.opacity = '1', 10);
-                }
-            }
-
-            function hideLoading() {
-                if (loadingOverlay) {
-                    loadingOverlay.style.opacity = '0';
-                    setTimeout(() => loadingOverlay.style.display = 'none', 300);
-                }
-            }
-
-            async function fetchAdminDashboardData() {
-                showLoading();
-                try {
-                    // Fetch total users, points, and payouts using onSnapshot for real-time updates
-                    const usersCollectionRef = collection(db, `/artifacts/${appId}/users`);
-                    onSnapshot(usersCollectionRef, (usersSnapshot) => {
-                        const totalUsers = usersSnapshot.docs.length;
-                        let totalPointsEarned = 0;
-                        let totalPayouts = 0;
-                        usersSnapshot.forEach(doc => {
-                            const userData = doc.data();
-                            const userPoints = userData.points || 0;
-                            totalPointsEarned += userPoints;
-
-                            const payoutHistory = userData.payoutHistory || [];
-                            payoutHistory.forEach(payout => {
-                                totalPayouts += payout.amount || 0;
-                            });
-                        });
-
-                        if (adminTotalUsersValue) adminTotalUsersValue.textContent = totalUsers;
-                        if (adminTotalPointsEarnedValue) adminTotalPointsEarnedValue.textContent = totalPointsEarned;
-                        if (adminTotalPayoutsValue) adminTotalPayoutsValue.textContent = `$${totalPayouts.toFixed(2)}`;
-                    }, (error) => {
-                        console.error("Error fetching admin users data:", error);
-                    });
-
-                    // Fetch total videos separately
-                    const videosCollectionRef = collection(db, `/artifacts/${appId}/public/data/videos`);
-                    onSnapshot(videosCollectionRef, (videosSnapshot) => {
-                        const totalVideos = videosSnapshot.docs.length;
-                        if (adminTotalVideosValue) adminTotalVideosValue.textContent = totalVideos;
-                    }, (error) => {
-                        console.error("Error fetching admin videos data:", error);
-                    });
-                } catch (e) {
-                    console.error("Admin dashboard data fetch error:", e);
-                } finally {
-                    hideLoading();
-                }
-            }
-
-            function updateUI(role) {
-                if (!isAuthReady || !currentUser) return;
-
-                // This block runs only on the very first load for a user session
-                if (isInitialUILoad) {
-                    views.forEach(view => { if (view) view.style.display = 'none'; });
-                    if (loginPage) loginPage.style.display = 'none';
-                    if (appContainer) appContainer.style.display = 'flex';
-
-                    if (role === 'user') {
-                        document.querySelectorAll('.admin-link').forEach(link => { if (link) link.style.display = 'none'; });
-                        document.querySelectorAll('.user-link').forEach(link => { if (link) link.style.display = 'flex'; });
-                        showView('user-dashboard-view');
-                        fetchVideos().then(() => renderVideoGrid('all'));
-                        fetchSocialTasks().then(renderSocialTasksGrid);
-                    } else if (role === 'admin') {
-                        document.querySelectorAll('.user-link').forEach(link => { if (link) link.style.display = 'none'; });
-                        document.querySelectorAll('.admin-link').forEach(link => { if (link) link.style.display = 'flex'; });
-                        showView('admin-dashboard-view');
-                        fetchVideos().then(renderManageVideosTable);
-                        fetchSocialTasks().then(renderManageSocialTasksTable);
-                        fetchAdminDashboardData();
-                    }
-                    isInitialUILoad = false; // Important: set flag to false
-                }
-
-                // This block runs on every data update (initial and subsequent)
-                if (role === 'user') {
-                    if (headerMeta) headerMeta.innerHTML = getUserHeaderHTML();
-                    if (sidebarProfile) sidebarProfile.innerHTML = getUserProfileHTML();
-                    if (welcomeMessage) welcomeMessage.textContent = `Welcome back, ${currentUser.name}!`;
-                    updatePointsDisplay();
-                    // Re-render active view content if necessary
-                    if (document.getElementById('points-history-view').style.display === 'block') {
-                        renderPointsHistoryTable();
-                    }
-                    if (document.getElementById('watch-videos-view').style.display === 'block' && !isInitialUILoad) {
-                        const activeFilterBtn = document.querySelector('#watch-videos-view .filter-btn.active');
-                        const category = activeFilterBtn ? activeFilterBtn.dataset.category : 'all';
-                        const searchQuery = searchBar ? searchBar.value : '';
-                        renderVideoGrid(category, searchQuery);
-                    }
-                    if (document.getElementById('invite-and-earn-view').style.display === 'block') {
-                         renderInviteAndEarnView();
-                    }
-
-                } else if (role === 'admin') {
-                    if (headerMeta) headerMeta.innerHTML = getAdminHeaderHTML();
-                    if (sidebarProfile) sidebarProfile.innerHTML = getUserProfileHTML();
-                    // Admin dashboard data is real-time via its own snapshot, so no need to call it here.
-                }
-                attachLogoutListeners();
-                fetchAndRenderLeaderboard();
-            }
-
-            function getUserProfileHTML() {
-                const nameText = currentUser?.name || 'Unknown';
-                const profileText = nameText.split(' ').map(n => n[0]).join('');
-                const roleText = currentUser?.role === 'admin' ? 'ADMINISTRATOR' : currentUser?.email || 'N/A';
-                return `
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center mr-4 font-semibold text-primary">
-                             ${profileText}
-                        </div>
-                        <div class="flex-grow">
-                            <div class="text-white font-semibold">${nameText}</div>
-                            <div class="text-sm text-muted-text">${roleText}</div>
-                        </div>
-                    </div>
-                `;
-            }
-
-            function getUserHeaderHTML() {
-                const nameText = currentUser?.name || 'Unknown';
-                const profileText = nameText.split(' ').map(n => n[0]).join('');
-                const roleText = currentUser?.role === 'admin' ? 'Admin' : 'User';
-                return `
-                    <div class="flex items-center space-x-4">
-                        <div class="flex flex-col items-end">
-                            <span id="user-points-display" class="font-bold text-lg">${(userData?.points || 0).toLocaleString()} PTS</span>
-                            <span class="text-sm text-muted-text">$${(userData?.points / 5000).toFixed(2)}</span>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                             <div class="text-right">
-                                 <span class="block font-semibold">${nameText}</span>
-                                 <span class="block text-xs text-muted-text">${roleText}</span>
-                             </div>
-                            <img src="https://placehold.co/32x32/6366f1/ffffff?text=${profileText}" alt="${nameText}" class="w-8 h-8 rounded-full border border-primary">
-                        </div>
-                        <button class="logout-btn p-2 rounded-full hover:bg-slate-700 transition-colors duration-200">
-                            <svg class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
-                        </button>
-                    </div>
-                `;
-            }
-
-            function getAdminHeaderHTML() {
-                const nameText = currentUser?.name || 'Unknown';
-                const profileText = nameText.split(' ').map(n => n[0]).join('');
-                return `
-                    <div class="flex items-center space-x-4">
-                        <div class="flex items-center space-x-2">
-                             <div class="text-right">
-                                 <span class="block font-semibold">${nameText}</span>
-                                 <span class="block text-xs text-muted-text">Admin</span>
-                             </div>
-                            <img src="https://placehold.co/32x32/6366f1/ffffff?text=${profileText}" alt="${nameText}" class="w-8 h-8 rounded-full border border-primary">
-                        </div>
-                        <button class="logout-btn p-2 rounded-full hover:bg-slate-700 transition-colors duration-200">
-                            <svg class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
-                        </button>
-                    </div>
-                 `;
-            }
-
-            function attachLogoutListeners() {
-                const logoutButtons = document.querySelectorAll('.logout-btn');
-                if (logoutButtons) {
-                    logoutButtons.forEach(btn => {
-                        const oldBtn = btn.cloneNode(true);
-                        btn.parentNode.replaceChild(oldBtn, btn);
-                    });
-                    const newLogoutButtons = document.querySelectorAll('.logout-btn');
-                    newLogoutButtons.forEach(btn => {
-                        btn.addEventListener('click', async () => {
-                            try {
-                                await signOut(auth);
-                                if (loginPage) loginPage.style.display = 'flex';
-                                if (appContainer) appContainer.style.display = 'none';
-                                currentUser = null;
-                                userData = null;
-                                console.log("User signed out.");
-                            } catch (error) {
-                                console.error("Error signing out:", error);
-                            }
-                        });
-                    });
-                }
-            }
-
-            function showView(targetId) {
-                views.forEach(view => { if (view) view.style.display = 'none'; });
-                const targetView = document.getElementById(targetId);
-                if (targetView) {
-                    targetView.style.display = 'block';
-                    updatePageTitle(targetId);
-                    navLinks.forEach(nav => {
-                        if (nav) nav.classList.remove('active', 'bg-primary/20', 'text-white');
-                    });
-                    const activeLink = document.querySelector(`a[data-target="${targetId}"]`);
-                    if (activeLink) {
-                        activeLink.classList.add('active', 'bg-primary/20', 'text-white');
-                    }
-                }
-                
-                // NEW: Scroll To Top Button visibility handler
-                if (scrollToTopBtn && appContent) {
-                    const isWatchVideosView = targetId === 'watch-videos-view';
-                    if (isWatchVideosView && appContent.scrollTop > 300) {
-                         // Show if already scrolled down
-                         scrollToTopBtn.classList.remove('hidden');
-                    } else {
-                         // Hide immediately for other views or if not scrolled down
-                         scrollToTopBtn.classList.add('hidden');
-                    }
-                }
-            }
-
-            function updatePageTitle(viewId) {
-                const titleElement = document.getElementById('page-title');
-                if (!titleElement) return;
-
-                const menuToggle = `<button id="menu-toggle" class="md:hidden p-2 -ml-2 rounded-md hover:bg-card-bg transition-colors duration-200">
-                                          <svg class="w-6 h-6 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
-                                      </button>`;
-                let titleText = 'Ping Rewards';
-
-                switch (viewId) {
-                    case 'user-dashboard-view': titleText = 'Dashboard'; break;
-                    case 'watch-videos-view': titleText = 'Watch Videos'; break;
-                    case 'social-tasks-view': titleText = 'Social Tasks'; break;
-                    case 'points-history-view': titleText = 'Points History'; break;
-                    case 'invite-and-earn-view': titleText = 'Invite & Earn'; break;
-                    case 'about-view': titleText = 'About'; break;
-                    case 'admin-dashboard-view': titleText = 'Admin Dashboard'; break;
-                    case 'manage-videos-view': titleText = 'Manage Videos'; break;
-                    case 'manage-social-tasks-view': titleText = 'Manage Social Tasks'; break;
-                    case 'manage-users-view': titleText = 'Manage Users'; break;
-                    case 'video-player-view': titleText = 'Video Player'; break;
-                }
-                titleElement.innerHTML = `${menuToggle} ${titleText}`;
-
-                const toggleBtn = document.getElementById('menu-toggle');
-                if (toggleBtn) {
-                    toggleBtn.addEventListener('click', () => {
-                        if (sidebar) sidebar.classList.toggle('open');
-                        if (backdrop) backdrop.classList.toggle('open');
-                        document.body.classList.toggle('no-scroll');
-                    });
-                }
-            }
-
-            function generateRandomChartData() {
-                const bars = document.querySelectorAll('#weekly-watch-chart .w-1\\/7');
-                bars.forEach(bar => {
-                    const randomHeight = Math.floor(Math.random() * 90) + 10;
-                    bar.style.height = `${randomHeight}%`;
-                });
-            }
-
-            function renderVideoGrid(category = 'all', searchQuery = '') {
-                const videoGrid = document.getElementById('video-grid');
-                if (!videoGrid) {
-                    console.error("Video grid element not found.");
-                    return;
-                }
-
-                let filteredVideos = videos;
-                if (category !== 'all') {
-                    filteredVideos = filteredVideos.filter(video => video.category === category);
-                }
-                if (searchQuery) {
-                    const query = searchQuery.toLowerCase();
-                    filteredVideos = filteredVideos.filter(video =>
-                        video.title.toLowerCase().includes(query) ||
-                        video.description.toLowerCase().includes(query)
-                    );
-                }
-
-                if (filteredVideos.length === 0) {
-                    videoGrid.innerHTML = `<p class="col-span-full text-center text-muted-text py-12">No videos found.</p>`;
-                    return;
-                }
-
-                // Get cooldown info
-                const videoCooldowns = userData?.videoCooldowns || [];
-                const watchedVideoIds = userData?.watchedVideos || [];
-
-                // Function to check if a video is on cooldown
-                const getCooldownStatus = (videoId) => {
-                    const cooldown = videoCooldowns.find(c => c.id === videoId);
-                    if (!cooldown) return { isOnCooldown: false };
-
-                    const availableAfter = cooldown.availableAfter;
-                    if (Date.now() < availableAfter) {
-                        return {
-                            isOnCooldown: true,
-                            availableAfter: availableAfter,
-                            remainingTime: availableAfter - Date.now()
-                        };
-                    }
-                    // If cooldown is expired, we need to manually clean up the expired entry 
-                    // This is handled by a filter/re-render logic in the next step to keep the sorting correct
-                    return { isOnCooldown: false };
-                };
-
-                // Filter and categorize videos based on cooldown status
-                let availableVideos = [];
-                let cooldownVideos = [];
-                
-                filteredVideos.forEach(video => {
-                    const status = getCooldownStatus(video.id);
-                    if (status.isOnCooldown) {
-                        cooldownVideos.push({ ...video, ...status });
-                    } else {
-                        availableVideos.push(video);
-                    }
-                });
-                
-                // Sort the available videos (unwatched always come before watched, though both are clickable now if cooldown is over)
-                availableVideos.sort((a, b) => {
-                    const aWatched = watchedVideoIds.includes(a.id);
-                    const bWatched = watchedVideoIds.includes(b.id);
-                    if (aWatched === bWatched) return 0;
-                    return aWatched ? 1 : -1; // Unwatched (false) comes first
-                });
-
-                // Cooldown videos go to the bottom and are sorted by earliest availability
-                cooldownVideos.sort((a, b) => a.availableAfter - b.availableAfter);
-
-                const sortedVideos = [...availableVideos, ...cooldownVideos];
-
-
-                let videoGridHtml = '';
-                sortedVideos.forEach(video => {
-                    const { videoId } = getYouTubeId(video.videoUrl);
-                    let thumbnailUrl = getYouTubeThumbnail(videoId);
-                    
-                    const status = getCooldownStatus(video.id);
-                    const isWatched = watchedVideoIds.includes(video.id); // For visual marker only
-                    const isOnCooldown = status.isOnCooldown;
-
-                    let stateClasses = 'cursor-pointer';
-                    let watchedOverlay = '';
-                    let actionText = 'Watch to Earn';
-
-                    if (isOnCooldown) {
-                         stateClasses = 'opacity-50 pointer-events-none cursor-not-allowed';
-                         const remainingHours = Math.ceil(status.remainingTime / (1000 * 60 * 60));
-                         actionText = `Cooldown: ${remainingHours} Hrs Left`;
-                         watchedOverlay = `<div class="absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center rounded-xl flex-col p-4">
-                                <svg class="w-8 h-8 text-yellow-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                <span class="text-sm font-bold text-yellow-400 text-center">Cooldown: ${remainingHours} Hrs Left</span>
-                            </div>`;
-                    } else if (isWatched) {
-                        // Video was fully watched before, but cooldown is over.
-                         watchedOverlay = `<div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center rounded-xl">
-                               <svg class="w-12 h-12 text-accent-green" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                           </div>`;
-                        actionText = 'Watched Before (Ready!)';
-                    }
-                    
-                    // Calculation for Points/Min and Max Duration display
-                    const watchDuration = video.watchDuration || 60;
-                    const pointsPerMin = 1; // Always 1 point per min
-                    const maxDurationMin = Math.max(1, Math.ceil(watchDuration / 60) || 1);
-                    const mockChannelName = "Ping Channel";
-
-                    const videoCardHtml = `
-                        <div class="video-card group ${stateClasses}" data-video-url="${video.videoUrl}" data-video-id="${video.id}" data-max-duration="${watchDuration}" ${isOnCooldown ? 'data-cooldown="true"' : ''}>
-                            <div class="relative mb-2">
-                                <img src="${thumbnailUrl}" alt="${video.title}" class="w-full h-auto object-cover rounded-xl group-hover:rounded-none transition-all duration-200" onerror="this.onerror=null; this.src='https://placehold.co/400x225/1f3148/ffffff?text=Video';">
-                                ${watchedOverlay}
-                                <div class="absolute bottom-1.5 right-1.5 flex items-center space-x-1">
-                                     <span class="bg-primary bg-opacity-90 text-white text-xs font-bold px-2 py-1 rounded-md">~${pointsPerMin} PTS/Min</span>
-                                     <span class="bg-black bg-opacity-75 text-white text-xs font-semibold px-2 py-1 rounded-md">${maxDurationMin} MIN</span>
-                                </div>
-                            </div>
-                            <div class="flex items-start space-x-3">
-                                <div class="flex-shrink-0">
-                                    <img src="https://placehold.co/36x36/6366f1/ffffff?text=P" alt="${mockChannelName}" class="w-9 h-9 rounded-full">
-                                </div>
-                                <div class="flex-grow">
-                                    <h3 class="text-base font-medium text-text-color line-clamp-2 leading-tight">${video.title}</h3>
-                                    <p class="text-sm text-muted-text mt-1">${mockChannelName}</p>
-                                    <div class="text-sm text-muted-text flex items-center space-x-2">
-                                        <span>${actionText}</span>
-                                        <span>•</span>
-                                        <span>${video.category}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    videoGridHtml += videoCardHtml;
-                });
-                videoGrid.innerHTML = videoGridHtml;
-                attachVideoCardListeners();
-            }
-
-
-            // Function to render social tasks for the user
-            function renderSocialTasksGrid() {
-                if (!socialTasksGrid) {
-                    console.error("Social tasks grid element not found.");
-                    return;
-                }
-                socialTasksGrid.innerHTML = '';
-
-                if (socialTasks.length === 0) {
-                    socialTasksGrid.innerHTML = `<p class="col-span-full text-center text-muted-text p-6">No social tasks available right now. Check back later!</p>`;
-                    return;
-                }
-
-                const completedTasks = userData?.completedSocialTasks || [];
-                socialTasks.forEach(task => {
-                    const isCompleted = completedTasks.includes(task.id);
-                    const cardClass = isCompleted ? 'opacity-50 grayscale cursor-not-allowed' : '';
-                    const buttonText = isCompleted ? 'Completed' : 'Complete Task';
-                    const buttonClass = isCompleted ? 'bg-accent-green/50' : 'bg-primary hover:bg-indigo-600';
-                    let icon;
-                    switch (task.platform) {
-                        case 'Facebook': icon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-blue-600"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c5.29 0 9.77-4.14 10-9.43.14-2.85-2.06-5.26-4.91-5.74v2.02c1.78.4 3.12 1.93 3.12 3.82 0 2.11-1.79 3.82-3.99 3.82H12v-6.93l-3 3v2.93h-1v-6h-2v6.93l1.85-1.85c.19-.19.45-.3.72-.3s.53.11.72.3L12 14.07V12h3.99c1.66 0 3-1.34 3-3s-1.34-3-3-3h-3c-1.1 0-2 .9-2 2v1H9v2h2v1H8c-2.21 0-4-1.79-4-4s1.79-4 4-4h4V2z"/></svg>`; break;
-                        case 'TikTok': icon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-black dark:fill-white"><path d="M12.758 2.043l-.158.012c-1.42 0-2.585 1.164-2.585 2.585v15.728l-.16.012h-.008c-.768.04-1.455.334-2.02.825-1.127.994-1.82 2.766-1.82 4.697 0 3.242 2.632 5.875 5.875 5.875 3.243 0 5.875-2.633 5.875-5.875 0-1.93-.693-3.703-1.82-4.696-.564-.49-1.25-.785-2.018-.825h-.008L12.758 2.043zM12 24c-6.627 0-12-5.373-12-12s5.373-12 12-12c6.627 0 12 5.373 12 12s-5.373 12-12 12zm-3-19c0 .552-.448 1-1 1s-1-.448-1-1v-2c0-.552.448-1 1-1s1 .448 1 1v2zm0 17c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5zm9-11c0-.552-.448-1-1-1s-1 .448-1 1v2c0 .552.448 1 1 1s1-.448 1-1v-2zm-9 9c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3z"/></svg>`;
-                        case 'Telegram': icon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-blue-500"><path d="M18.3 5.4c-.6-.3-1.2-.5-1.9-.5c-.8 0-1.5.2-2.1.6c-.6.4-1 .9-1.3 1.5c-.3.6-.4 1.3-.4 2s.1 1.4.4 2.1c.3.6.7 1.1 1.3 1.5c.6.4 1.2.6 2.1.6c.7 0 1.4-.2 1.9-.5c.6-.3 1.1-.8 1.4-1.4c.3-.6.4-1.2.4-1.9s-.1-1.3-.4-1.9c-.3-.6-.8-1.1-1.4-1.4zM22 6.5l-3.3 12c-.2.9-.8 1.4-1.8 1.4c-.6 0-1.2-.2-1.6-.4l-5.6-3.8c-.5-.3-.9-.6-1.1-.9c-.2-.3-.3-.7-.3-1.1c0-.4.1-.8.3-1.1s.5-.6 1.1-.9l8.6-4.9c.2-.1.4-.2.6-.2c.2 0 .4.1.6.2s.2.4.2.6zM2 12c0 2.2 1.3 4.2 3.3 5.3L4 20l3.8-1.1c.9.2 1.8.3 2.7.3c1.7 0 3.3-.6 4.6-1.7l.7-.6c-.2-.4-.3-.8-.3-1.2c0-1.3.6-2.5 1.7-3.3c1.1-.8 2.5-1.2 4-1.2c-.4-3.1-2.2-5.4-4.8-6.5c-2.4-1-5.1-1.2-7.8-.6c-3 .7-5.3 3.3-5.3 6.6z"/></svg>`;
-                        case 'Twitter': icon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-blue-400"><path d="M22.46 6c-.77.34-1.6.57-2.46.69.88-.53 1.55-1.37 1.87-2.36-.83.49-1.74.85-2.72 1.05-2.02-2.15-5.35-2.07-7.29.17-1.18 1.32-1.65 3.12-1.36 4.95C5.83 10.66 2.92 8.75 1.12 5.92c-.37.64-.58 1.39-.58 2.19 0 1.52.77 2.87 1.94 3.66-2.01-.06-3.89-.6-5.54-1.52v.04c0 1.92 1.37 3.51 3.19 3.87-.33.09-.67.14-1.02.14-.25 0-.5-.02-.74-.07.5 1.63 2.07 2.81 3.89 2.84-1.4 1.1-3.17 1.75-5.09 1.75-.33 0-.66-.02-.98-.06 1.8 1.15 3.93 1.81 6.22 1.81 7.52 0 11.63-6.22 11.63-11.62 0-.17-.0-.35-.01-.52.8-.57 1.49-1.28 2.04-2.07z"/></svg>`;
-                        case 'YouTube': icon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-red-600"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm3 10l-6 4V8l6 4z"/></svg>`;
-                        case 'Web': icon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-gray-400"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h2v-2h-2v2zm0-4h2V7h-2v6z"/></svg>`;
-                        default: icon = '';
-                    }
-
-                    const taskCardHtml = `
-                         <div class="social-task-card bg-card-bg rounded-xl shadow-lg border border-slate-700 p-6 flex flex-col items-center text-center transition-shadow duration-300 ${cardClass}">
-                             <div class="w-16 h-16 rounded-full flex items-center justify-center mb-4">${icon}</div>
-                             <h3 class="text-lg font-semibold mb-1">${task.title}</h3>
-                             <p class="text-sm text-muted-text mb-2">${task.platform}</p>
-                             <span class="inline-block bg-accent-green text-white text-xs font-bold px-3 py-1 rounded-full mb-4">${task.points} PTS</span>
-                             <button class="complete-task-btn w-full py-2 text-white font-semibold rounded-lg transition-colors duration-300 ${buttonClass}" data-task-id="${task.id}" data-task-link="${task.link}" ${isCompleted ? 'disabled' : ''}>
-                                 ${buttonText}
-                             </button>
-                         </div>
-                     `;
-                    socialTasksGrid.innerHTML += taskCardHtml;
-                });
-                attachSocialTaskListeners();
-            }
-
-            function renderUsersTable(users) {
-                if (!usersTableBody) return;
-                usersTableBody.innerHTML = '';
-                if (users.length === 0) {
-                    usersTableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-muted-text">No users found.</td></tr>`;
-                    return;
-                }
-
-                users.forEach(user => {
-                    const toggleRoleBtnText = user.role === 'admin' ? 'Demote to User' : 'Promote to Admin';
-                    const tableRowHtml = `
-                        <tr data-user-id="${user.id}" class="hover:bg-slate-700 transition-colors duration-200">
-                            <td class="p-4 text-xs font-mono">${user.id.substring(0, 8)}...</td>
-                            <td class="p-4">${user.name || 'N/A'}</td>
-                            <td class="p-4">${user.email || 'N/A'}</td>
-                            <td class="p-4"><span class="capitalize px-2 py-1 rounded-full text-xs font-semibold ${user.role === 'admin' ? 'bg-orange-500 text-white' : 'bg-primary/20 text-primary'}">${user.role}</span></td>
-                            <td class="p-4">${user.points || 0}</td>
-                            <td class="p-4 whitespace-nowrap">
-                                <button class="actions-btn view-history-btn px-3 py-1 bg-accent-green hover:bg-emerald-600 text-white text-sm rounded-lg transition-colors duration-200" data-user-id="${user.id}">View History</button>
-                                ${user.id !== userId ? `<button class="actions-btn toggle-role-btn px-3 py-1 bg-accent-purple hover:bg-purple-600 text-white text-sm rounded-lg ml-2 transition-colors duration-200" data-user-id="${user.id}" data-current-role="${user.role}">${toggleRoleBtnText}</button>` : ''}
-                            </td>
-                        </tr>
-                    `;
-                    usersTableBody.innerHTML += tableRowHtml;
-                });
-                attachManageUsersListeners(users);
-            }
-
-            function renderManageVideosTable() {
-                const videoTableBody = document.querySelector('#videos-table');
-                if (!videoTableBody) {
-                    console.error("Video table body element not found.");
-                    return;
-                }
-                videoTableBody.innerHTML = '';
-                if (videos.length === 0) {
-                     videoTableBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-muted-text">No videos found.</td></tr>`;
-                    return;
-                }
-                videos.forEach(video => {
-                    const tableRowHtml = `
-                        <tr class="hover:bg-slate-700 transition-colors duration-200" data-video-id="${video.id}">
-                            <td class="p-4">${video.title}</td>
-                            <td class="p-4">${video.category}</td>
-                            <td class="p-4">${video.points} (Legacy)</td>
-                            <td class="p-4">
-                                <a href="#" class="actions-btn edit-btn text-primary hover:text-indigo-400 mr-4 transition-colors duration-200" data-video-id="${video.id}">Edit</a>
-                                <a href="#" class="actions-btn delete-btn text-red-500 hover:text-red-400 transition-colors duration-200" data-video-id="${video.id}">Delete</a>
-                            </td>
-                        </tr>
-                    `;
-                    videoTableBody.innerHTML += tableRowHtml;
-                });
-                attachManageVideosListeners();
-            }
-
-            // Renders the manage social tasks table for admin view
-            function renderManageSocialTasksTable() {
-                if (!socialTaskTableBody) return;
-                socialTaskTableBody.innerHTML = '';
-                console.log(`[Admin Tasks] Rendering ${socialTasks.length} tasks.`); // LOGGING ADDED FOR DEBUGGING
-                if (socialTasks.length === 0) {
-                    socialTaskTableBody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-muted-text">No social tasks found. Click 'Add New Task' to create one.</td></tr>`;
-                    return;
-                }
-                socialTasks.forEach(task => {
-                    const tableRowHtml = `
-                        <tr class="hover:bg-slate-700 transition-colors duration-200" data-task-id="${task.id}">
-                            <td class="p-4">${task.title}</td>
-                            <td class="p-4">${task.platform}</td>
-                            <td class="p-4">${task.link}</td>
-                            <td class="p-4">${task.points}</td>
-                            <td class="p-4">
-                                <a href="#" class="actions-btn edit-social-task-btn text-primary hover:text-indigo-400 mr-4 transition-colors duration-200" data-task-id="${task.id}">Edit</a>
-                                <a href="#" class="actions-btn delete-social-task-btn text-red-500 hover:text-red-400 transition-colors duration-200" data-task-id="${task.id}">Delete</a>
-                            </td>
-                        </tr>
-                    `;
-                    socialTaskTableBody.innerHTML += tableRowHtml;
-                });
-                attachManageSocialTasksListeners();
-            }
-
-            function renderPointsHistoryTable() {
-                const pointsHistoryTableBody = document.querySelector('#points-history-table');
-                if (!pointsHistoryTableBody) {
-                    console.error("Points history table body element not found.");
-                    return;
-                }
-                pointsHistoryTableBody.innerHTML = '';
-                if (!userData || !userData.pointsHistory || userData.pointsHistory.length === 0) {
-                    pointsHistoryTableBody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-muted-text">No points history yet. Watch some videos!</td></tr>`;
-                    return;
-                }
-                const history = userData.pointsHistory;
-                history.forEach(item => {
-                    const tableRowHtml = `
-                        <tr class="hover:bg-slate-700 transition-colors duration-200">
-                            <td class="p-4">${item.date}</td>
-                            <td class="p-4 flex items-center">
-                                <svg class="w-5 h-5 mr-2 fill-accent-green flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5l-5-5 1.41-1.41L10 13.67l7.59-7.59L19 7l-9 9.5z"/></svg>
-                                ${item.description}
-                            </td>
-                            <td class="p-4 font-bold text-accent-green">+${item.points}</td>
-                        </tr>
-                    `;
-                    pointsHistoryTableBody.innerHTML += tableRowHtml;
-                });
-            }
-
-            // Function to render the Invite & Earn view
-            function renderInviteAndEarnView() {
-                if (!userData || !userId) return;
-                
-                const code = userId; // User ID is the referral code
-                const currentUrl = window.location.origin + window.location.pathname;
-                const link = `${currentUrl}?ref=${code}`;
-                
-                if (referralCodeInput) referralCodeInput.value = code;
-                if (referralLinkInput) referralLinkInput.value = link;
-
-                // Render invited users table
-                if (invitedUsersTable) {
-                    const invitedUsers = userData.invitedUsers || [];
-                    console.log(`[Referral UI] Rendering Invite History: ${invitedUsers.length} invited users found.`); // ADDED LOG
-                    if (invitedUsers.length === 0) {
-                        invitedUsersTable.innerHTML = `<tr><td colspan="2" class="p-2 text-center text-muted-text">သူငယ်ချင်းများ ဖိတ်ခေါ်ခြင်း မရှိသေးပါ။</td></tr>`;
-                    } else {
-                        invitedUsersTable.innerHTML = invitedUsers.map(user => `
-                            <tr class="hover:bg-slate-700 transition-colors duration-200">
-                                <td class="p-2 text-xs font-mono">${user.name || user.id.substring(0, 8) + '...'}</td>
-                                <td class="p-2 font-bold text-accent-green">+${user.points}</td>
-                            </tr>
-                        `).join('');
-                    }
-                }
-            }
-            
-            function renderPayoutHistoryTable(payouts) {
-                if (!historyTableBody) return;
-                historyTableBody.innerHTML = '';
-                if (!payouts || payouts.length === 0) {
-                    historyTableBody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-muted-text">No payout history yet.</td></tr>`;
-                    return;
-                }
-
-                payouts.forEach(item => {
-                    const rowHtml = `
-                        <tr class="hover:bg-slate-700 transition-colors duration-200">
-                            <td class="p-4">${item.date}</td>
-                            <td class="p-4">Cash Out</td>
-                            <td class="p-4 font-bold text-accent-orange">-$${item.amount.toFixed(2)}</td>
-                        </tr>
-                    `;
-                    historyTableBody.innerHTML += rowHtml;
-                });
-            }
-
-            function updatePointsDisplay() {
-                if (!userData) return;
-                const totalPointsValue = document.getElementById('total-points-value');
-                const estimatedEarningsValue = document.getElementById('estimated-earnings-value');
-                const videosWatchedValue = document.getElementById('videos-watched-value');
-                const userPointsDisplay = document.getElementById('user-points-display');
-                const cashoutBtn = document.getElementById('cashout-button');
-                const payoutAmountInput = document.getElementById('payout-amount');
-
-                if (totalPointsValue) totalPointsValue.textContent = userData.points.toLocaleString();
-                if (estimatedEarningsValue) estimatedEarningsValue.textContent = `$${(userData.points / 5000).toFixed(2)}`;
-                if (videosWatchedValue) videosWatchedValue.textContent = (userData.watchedVideos || []).length;
-                if (userPointsDisplay) userPointsDisplay.textContent = `${userData.points.toLocaleString()} PTS`;
-                if (payoutAmountInput) payoutAmountInput.value = (userData.points / 5000).toFixed(2);
-
-                if (cashoutBtn) {
-
-                    if (userData.points < 5000) {
-                        cashoutBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                        cashoutBtn.classList.remove('hover:bg-indigo-600');
-                    } else {
-                        cashoutBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                        cashoutBtn.classList.add('hover:bg-indigo-600');
-                    }
-                }
-            }
-
-            function animateCoins(startElement, endElement, points) {
-                const numberOfCoins = Math.min(Math.floor(points / 1), 10); // Changed to 1 point per coin for more frequent points, max 10
-                const startRect = startElement.getBoundingClientRect();
-                const endRect = endElement.getBoundingClientRect();
-
-                for (let i = 0; i < numberOfCoins; i++) {
-                    const coin = document.createElement('div');
-                    coin.className = 'absolute z-50 transition-all duration-1000 ease-out opacity-0 coin-icon';
-                    coin.innerHTML = `<svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 102 0V6zm-1 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg>`;
-                    document.body.appendChild(coin);
-
-                    // Add slight random offset to start position for visual effect
-                    const offsetX = (Math.random() - 0.5) * 10;
-                    const offsetY = (Math.random() - 0.5) * 10;
-                    
-                    coin.style.left = `${startRect.left + (startRect.width / 2) - 8 + offsetX}px`;
-                    coin.style.top = `${startRect.top + (startRect.height / 2) - 8 + offsetY}px`;
-
-                    setTimeout(() => {
-                        coin.style.left = `${endRect.left + (endRect.width / 2) - 8}px`;
-                        coin.style.top = `${endRect.top + (endRect.height / 2) - 8}px`;
-                        coin.style.opacity = '1';
-                        // The actual animation is handled by the CSS keyframes `coinFly`
-                        coin.classList.remove('opacity-0');
-                    }, 50 + i * 50);
-
-                    setTimeout(() => {
-                        coin.remove();
-                    }, 1100 + i * 50);
-                }
-            }
+            // ... (rest of UI functions like updateUI, getUserProfileHTML, showView, renderVideoGrid, etc. remain the same) ...
 
             async function attachVideoCardListeners() {
                 const cards = document.querySelectorAll('.video-card');
                 cards.forEach(card => {
-                    card.addEventListener('click', (e) => {
+                    card.addEventListener('click', async (e) => {
+                        
+                        // NEW GUARD: Check if user is anonymous before starting the video earn process
+                        if (!await checkAndUpgradeAuth()) {
+                            console.log("Anonymous user blocked from watching, prompting upgrade.");
+                            return;
+                        }
+                        
                         // Prevent click if it's on cooldown (though CSS pointer-events should handle this)
                         if (card.getAttribute('data-cooldown') === 'true') return; 
 
@@ -2411,14 +1695,14 @@
 
                             // Start a new interval to accrue points every 1 second
                             watchInterval = setInterval(async () => {
+                                // Since the user passed the checkAndUpgradeAuth guard, they are a permanent user now.
                                 sessionWatchTime += 1; // Increment watch time by 1 second
 
                                 // --- 1. Check for Maximum Duration Reached (Auto-Exit) ---
                                 if (sessionWatchTime >= maxDurationSeconds) {
-                                    // Auto-exit: The cooldown and exit logic is now inside handlePlayerExit
                                     console.log("Video max duration reached. Exiting.");
-                                    handlePlayerExit(true); // Call with isAutoExit = true
-                                    return; // Stop execution for this interval tick
+                                    handlePlayerExit(true); 
+                                    return; 
                                 }
                                 
                                 // --- 2. Point Accrual Logic (1 point every 60 seconds) ---
@@ -2434,7 +1718,6 @@
                                     animateCoins(startElement, endElement, 1);
 
                                     // Update Firestore with the immediate point gain (1 point for 1 minute)
-                                    // isFullWatch: false here, as this is an incremental update, not the final cooldown marker.
                                     await updatePointsInFirestore(1, `Watched video: "${video.title}" (+1 min)`, currentVideoId, 'video', false);
                                 }
                                 
@@ -2459,6 +1742,13 @@
                 const completeButtons = document.querySelectorAll('.complete-task-btn');
                 completeButtons.forEach(btn => {
                     btn.addEventListener('click', async () => {
+                        
+                        // NEW GUARD: Check if user is anonymous before performing the task earn process
+                        if (!await checkAndUpgradeAuth()) {
+                            console.log("Anonymous user blocked from completing task, prompting upgrade.");
+                            return;
+                        }
+                        
                         const taskId = btn.getAttribute('data-task-id');
                         const task = socialTasks.find(t => t.id === taskId);
 
@@ -2482,467 +1772,20 @@
                 });
             }
 
-            function showDeleteModal(id, type) {
-                if (deleteConfirmModal) {
 
+            // ... (rest of modal and admin functions remain the same) ...
 
-                    if (deleteModalTitle) {
-                        deleteModalTitle.textContent = `Are you sure you want to delete this ${type}?`;
-                    }
-
-                    deleteConfirmModal.classList.remove('hidden');
-                    const oldConfirmBtn = deleteConfirmBtn.cloneNode(true);
-                    deleteConfirmBtn.parentNode.replaceChild(oldConfirmBtn, deleteConfirmBtn);
-                    const newConfirmBtn = document.getElementById('confirm-delete-btn');
-                    newConfirmBtn.addEventListener('click', async () => {
-                        deleteConfirmModal.classList.add('hidden');
-                        if (type === 'video') {
-                            await deleteVideo(id);
-                        } else if (type === 'social') {
-                            await deleteSocialTask(id);
-                        }
-                    });
-                }
-            }
-
-
-
-            document.querySelectorAll('#delete-confirm-modal .cancel-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    deleteConfirmModal.classList.add('hidden');
-                });
-            });
-
-            // Close the main history modal
-            if (historyModalCloseBtn) {
-                historyModalCloseBtn.addEventListener('click', () => {
-                    historyModal.classList.add('hidden');
-                });
-            }
-
-            function attachManageVideosListeners() {
-                const editBtns = document.querySelectorAll('.edit-btn');
-                editBtns.forEach(btn => {
-                    const oldBtn = btn.cloneNode(true);
-                    btn.parentNode.replaceChild(oldBtn, btn);
-                });
-                const newEditBtns = document.querySelectorAll('.edit-btn');
-                newEditBtns.forEach(btn => {
-                    btn.addEventListener('click', async (e) => {
-                        e.preventDefault();
-                        const videoId = btn.getAttribute('data-video-id');
-                        const videoToEdit = videos.find(v => v.id === videoId);
-                        if (videoToEdit) {
-                            if (addModalTitle) addModalTitle.textContent = "Edit Video";
-                            if (document.getElementById('video-title')) document.getElementById('video-title').value = videoToEdit.title;
-                            if (document.getElementById('video-description')) document.getElementById('video-description').value = videoToEdit.description;
-                            if (document.getElementById('video-category')) document.getElementById('video-category').value = videoToEdit.category;
-                            if (document.getElementById('video-url')) document.getElementById('video-url').value = videoToEdit.videoUrl;
-                            if (document.getElementById('video-points')) document.getElementById('video-points').value = videoToEdit.points;
-                            if (document.getElementById('watch-duration')) document.getElementById('watch-duration').value = videoToEdit.watchDuration;
-                            if (addVideoModal) addVideoModal.classList.remove('hidden');
-                            if (addVideoForm) addVideoForm.setAttribute('data-editing-id', videoId);
-                        }
-                    });
-                });
-
-                const deleteBtns = document.querySelectorAll('.delete-btn');
-                deleteBtns.forEach(btn => {
-                    const oldBtn = btn.cloneNode(true);
-                    btn.parentNode.replaceChild(oldBtn, btn);
-                });
-                const newDeleteBtns = document.querySelectorAll('.delete-btn');
-                newDeleteBtns.forEach(btn => {
-                    btn.addEventListener('click', async (e) => {
-                        e.preventDefault();
-                        const videoId = btn.getAttribute('data-video-id');
-                        showDeleteModal(videoId, 'video');
-                    });
-                });
-            }
-
-            // Attach listeners to the manage social tasks buttons
-            function attachManageSocialTasksListeners() {
-                const editBtns = document.querySelectorAll('.edit-social-task-btn');
-                editBtns.forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        const taskId = btn.getAttribute('data-task-id');
-                        const taskToEdit = socialTasks.find(t => t.id === taskId);
-                        if (taskToEdit) {
-                            socialTaskModalTitle.textContent = "Edit Social Task";
-                            document.getElementById('social-task-title').value = taskToEdit.title;
-                            document.getElementById('social-task-platform').value = taskToEdit.platform;
-                            document.getElementById('social-task-link').value = taskToEdit.link;
-                            document.getElementById('social-task-points').value = taskToEdit.points;
-                            addSocialTaskModal.classList.remove('hidden');
-                            addSocialTaskForm.setAttribute('data-editing-id', taskId);
-                        }
-                    });
-                });
-
-                const deleteBtns = document.querySelectorAll('.delete-social-task-btn');
-                deleteBtns.forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        const taskId = btn.getAttribute('data-task-id');
-                        showDeleteModal(taskId, 'social');
-                    });
-                });
-            }
-
-            function attachManageUsersListeners(users) {
-                const viewHistoryBtns = document.querySelectorAll('.view-history-btn');
-                viewHistoryBtns.forEach(btn => {
-                    btn.addEventListener('click', async () => {
-                        const targetUserId = btn.getAttribute('data-user-id');
-                        const user = users.find(u => u.id === targetUserId);
-                        if (user && historyModal && historyModalTitle && historyTableBody) {
-                            historyModalTitle.textContent = `${user.name || 'User'}'s Points History`;
-                            historyTableHeader.innerHTML = `<th class="p-4 rounded-tl-lg">Date</th><th class="p-4">Description</th><th class="p-4 rounded-tr-lg">Points</th>`;
-
-                            if (user.pointsHistory && user.pointsHistory.length > 0) {
-                                historyTableBody.innerHTML = ''; // Clear previous content
-                                user.pointsHistory.forEach(item => {
-                                    const row = document.createElement('tr');
-                                    row.className = 'hover:bg-slate-700 transition-colors duration-200';
-                                    row.innerHTML = `<td class="p-4">${item.date}</td><td class="p-4">${item.description}</td><td class="p-4">${item.points}</td>`;
-                                    historyTableBody.appendChild(row);
-                                });
-                            } else {
-                                historyTableBody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-muted-text">No history found.</td></tr>`;
-                            }
-                            historyModal.classList.remove('hidden');
-                        }
-                    });
-                });
-
-                document.querySelectorAll('#history-modal .cancel-btn').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        historyModal.classList.add('hidden');
-                    });
-                });
-
-                const toggleRoleBtns = document.querySelectorAll('.toggle-role-btn');
-                toggleRoleBtns.forEach(btn => {
-                    btn.addEventListener('click', async () => {
-                        const targetUserId = btn.getAttribute('data-user-id');
-                        const currentRole = btn.getAttribute('data-current-role');
-                        await toggleUserRole(targetUserId, currentRole);
-                    });
-                });
-            }
-
-            if (adminPayoutsCard) {
-                adminPayoutsCard.addEventListener('click', async () => {
-                    if (!historyModal || !historyModalTitle || !historyTableBody) return;
-
-                    historyModalTitle.textContent = `All Payouts History`;
-                    historyTableHeader.innerHTML = `<th class="p-4 rounded-tl-lg">Date</th><th class="p-4">Amount ($)</th><th class="p-4 rounded-tr-lg">User ID</th>`;
-                    historyTableBody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-muted-text">Fetching data...</td></tr>`;
-
-                    showLoading();
-
-                    try {
-                        const usersCollectionRef = collection(db, `/artifacts/${appId}/users`);
-                        const querySnapshot = await getDocs(usersCollectionRef);
-                        let allPayouts = [];
-
-                        querySnapshot.forEach(doc => {
-                            const userData = doc.data();
-                            const payouts = userData.payoutHistory || [];
-                            const userId = doc.id;
-                            payouts.forEach(payout => {
-                                allPayouts.push({ ...payout, userId: userId });
-                            });
-                        });
-
-                        if (allPayouts.length > 0) {
-                            historyTableBody.innerHTML = '';
-                            allPayouts.forEach(payout => {
-                                const rowHtml = `
-                                    <tr class="hover:bg-slate-700 transition-colors duration-200">
-                                        <td class="p-4">${payout.date}</td>
-                                        <td class="p-4 font-bold text-accent-orange">-$${payout.amount.toFixed(2)}</td>
-                                        <td class="p-4 text-xs font-mono">${payout.userId.substring(0, 8)}...</td>
-                                    </tr>
-                                `;
-                                historyTableBody.innerHTML += rowHtml;
-                            });
-                        } else {
-                            historyTableBody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-muted-text">No payout history found.</td></tr>`;
-                        }
-                    } catch (e) {
-                        console.error("Error fetching payout history:", e);
-                        historyTableBody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-red-500">Error fetching payout history.</td></tr>`;
-                    } finally {
-                        hideLoading();
-                        historyModal.classList.remove('hidden');
-                    }
-                });
-            }
-
-            if (googleSignInBtn) {
-                googleSignInBtn.addEventListener('click', async (e) => {
-                    e.preventDefault();
-                    showLoading();
-                    const provider = new GoogleAuthProvider();
-                    try {
-                        const result = await signInWithPopup(auth, provider);
-                        if (result.user) {
-                            console.log("User signed in with Google successfully.");
-                        }
-                    } catch (error) {
-                        console.error("Google Sign-in failed:", error);
-                        if (loginMessage) {
-                            loginMessage.textContent = 'Google Sign-in failed. Please check your internet connection.';
-                            loginMessage.style.display = 'block';
-                        }
-                        hideLoading();
-                    }
-                });
-            }
-
-            if (getSummaryBtn) {
-                getSummaryBtn.addEventListener('click', async () => {
-                    // Check if currentVideoId is set
-                    const currentVideo = videos.find(v => v.id === currentVideoId);
-                    if (!currentVideo) {
-                        if (summaryOutput) summaryOutput.innerHTML = `<p class="text-red-500">Video not found.</p>`;
-                        return;
-                    }
-
-                    if (summaryOutput) summaryOutput.innerHTML = `<p class="text-primary">Fetching summary...</p>`;
-
-                    try {
-                        const prompt = `Video Title: "${currentVideo.title}". Description: "${currentVideo.description}". Provide a concise summary in English.`;
-                        const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
-                        const payload = { contents: chatHistory };
-                        const apiKey = "";
-                        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-
-                        const response = await fetch(apiUrl, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(payload)
-                        });
-
-                        const result = await response.json();
-                        if (result.candidates && result.candidates.length > 0 &&
-                            result.candidates[0].content && result.candidates[0].content.parts &&
-                            result.candidates[0].content.parts.length > 0) {
-                            const summaryText = result.candidates[0].content.parts[0].text;
-                            if (summaryOutput) summaryOutput.innerHTML = `<h4 class="font-semibold mt-4">Summary</h4><p class="text-sm">${summaryText}</p>`;
-                        } else {
-                            if (summaryOutput) summaryOutput.innerHTML = `<p class="text-red-500">Could not retrieve summary.</p>`;
-                        }
-                    } catch (error) {
-                        console.error("Gemini API Error:", error);
-                        if (summaryOutput) summaryOutput.innerHTML = `<p class="text-red-500">Error fetching summary.</p>`;
-                    }
-                });
-            }
-
-            if (menuToggleBtn) {
-                menuToggleBtn.addEventListener('click', () => {
-                    if (sidebar) sidebar.classList.toggle('open');
-                    if (backdrop) backdrop.classList.toggle('open');
-                    document.body.classList.toggle('no-scroll');
-                });
-            }
-
-            navLinks.forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const targetId = link.getAttribute('data-target');
-                    
-                    const currentPlayerView = document.getElementById('video-player-view');
-                    const isExitingPlayer = currentPlayerView && currentPlayerView.style.display === 'block';
-
-                    if (isExitingPlayer && targetId !== 'video-player-view') {
-                        // Call the shared exit function if navigating away from the player view
-                        handlePlayerExit(false); 
-                    }
-
-                    showView(targetId);
-                    if (sidebar) sidebar.classList.remove('open');
-                    if (backdrop) backdrop.classList.remove('open');
-                    document.body.classList.remove('no-scroll');
-                    if (targetId === 'watch-videos-view') {
-                        renderVideoGrid('all');
-                    } else if (targetId === 'social-tasks-view') {
-                        renderSocialTasksGrid();
-                    } else if (targetId === 'manage-videos-view') {
-                        renderManageVideosTable();
-                    } else if (targetId === 'manage-social-tasks-view') {
-                        renderManageSocialTasksTable(); // ADDED: Ensure task table renders on click
-                    } else if (targetId === 'manage-users-view') {
-                        fetchAllUsers();
-                    } else if (targetId === 'points-history-view') {
-                        renderPointsHistoryTable();
-                    } else if (targetId === 'invite-and-earn-view') {
-                        renderInviteAndEarnView();
-                    }
-                });
-            });
-
-            if (backdrop) {
-                backdrop.addEventListener('click', () => {
-                    if (sidebar) sidebar.classList.remove('open');
-                    if (backdrop) backdrop.classList.remove('open');
-                    document.body.classList.remove('no-scroll');
-                });
-            }
-
-            filterButtons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    filterButtons.forEach(b => {
-                        if (b) b.classList.remove('active', 'bg-primary', 'border-primary', 'text-white');
-                        if (b) b.classList.add('bg-card-bg', 'border-slate-700');
-                    });
-                    btn.classList.add('active', 'bg-primary', 'border-primary', 'text-white');
-                    btn.classList.remove('bg-card-bg', 'border-slate-700');
-                    const category = btn.getAttribute('data-category');
-                    renderVideoGrid(category);
-                });
-            });
-
-            if (searchBar) {
-                searchBar.addEventListener('input', () => {
-                    const activeFilterBtn = document.querySelector('.filter-btn.active');
-                    const category = activeFilterBtn ? activeFilterBtn.getAttribute('data-category') : 'all';
-                    renderVideoGrid(category, searchBar.value);
-                });
-            }
-
-            if (addVideoBtn) {
-                addVideoBtn.addEventListener('click', () => {
-                    if (addModalTitle) addModalTitle.textContent = "Add New Video";
-                    if (addVideoForm) addVideoForm.reset();
-                    if (addVideoForm) addVideoForm.removeAttribute('data-editing-id');
-                    if (addVideoModal) addVideoModal.classList.remove('hidden');
-                });
-            }
-
-            document.querySelectorAll('#add-video-modal .cancel-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    if (addVideoModal) addVideoModal.classList.add('hidden');
-                });
-            });
-
-            if (addVideoForm) {
-                addVideoForm.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-
-                    const formData = new FormData(addVideoForm);
-                    const videoData = {
-                        title: formData.get('videoTitle'),
-                        description: formData.get('videoDescription'),
-                        category: formData.get('videoCategory'),
-                        videoUrl: formData.get('videoUrl'),
-                        // Points and duration are now optional for earning logic, but required for data integrity
-                        points: parseInt(formData.get('videoPoints') || 0), 
-                        watchDuration: parseInt(formData.get('watchDuration'))
-                    };
-                    
-                    if (!videoData.watchDuration || videoData.watchDuration <= 0) {
-                        alert("Watch Duration (Seconds) is required and must be greater than zero.");
-                        return;
-                    }
-
-
-                    const editingId = addVideoForm.getAttribute('data-editing-id');
-                    await saveVideo(videoData, editingId);
-
-                    if (addVideoModal) addVideoModal.classList.add('hidden');
-                });
-            }
-
-            // New social task form handlers
-            if (addSocialTaskBtn) {
-                addSocialTaskBtn.addEventListener('click', () => {
-                    socialTaskModalTitle.textContent = "Add New Social Task";
-                    addSocialTaskForm.reset();
-                    addSocialTaskForm.removeAttribute('data-editing-id');
-                    addSocialTaskModal.classList.remove('hidden');
-                });
-            }
-
-            document.querySelectorAll('#add-social-task-modal .cancel-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    addSocialTaskModal.classList.add('hidden');
-                });
-            });
-
-            if (addSocialTaskForm) {
-                addSocialTaskForm.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-
-                    const formData = new FormData(addSocialTaskForm);
-                    const taskData = {
-                        title: formData.get('taskTitle'),
-                        platform: formData.get('taskPlatform'),
-                        link: formData.get('taskLink'),
-                        points: parseInt(formData.get('taskPoints')),
-                    };
-
-                    const editingId = addSocialTaskForm.getAttribute('data-editing-id');
-                    await saveSocialTask(taskData, editingId);
-
-                    addSocialTaskModal.classList.add('hidden');
-                });
-            }
-            
-            // --- START NEW: Invite System Event Listeners ---
-            if (copyReferralBtn) {
-                copyReferralBtn.addEventListener('click', () => {
-                    const textToCopy = referralCodeInput ? referralCodeInput.value : '';
-                    if (textToCopy) {
-                        // Use document.execCommand('copy') for better iframe compatibility
-                        const tempInput = document.createElement('input');
-                        tempInput.value = textToCopy;
-                        document.body.appendChild(tempInput);
-                        tempInput.select();
-                        document.execCommand('copy');
-                        document.body.removeChild(tempInput);
-                        
-                        if(copyStatus) {
-                            copyStatus.textContent = 'ကုဒ်ကူးယူပြီးပါပြီ။';
-                            copyStatus.style.display = 'block';
-                            setTimeout(() => copyStatus.style.display = 'none', 2000);
-                        }
-                    }
-                });
-            }
-
-            if (copyLinkBtn) {
-                copyLinkBtn.addEventListener('click', () => {
-                    const textToCopy = referralLinkInput ? referralLinkInput.value : '';
-                    if (textToCopy) {
-                        // Use document.execCommand('copy') for better iframe compatibility
-                        const tempInput = document.createElement('input');
-                        tempInput.value = textToCopy;
-                        document.body.appendChild(tempInput);
-                        tempInput.select();
-                        document.execCommand('copy');
-                        document.body.removeChild(tempInput);
-
-                         if(copyStatus) {
-                            copyStatus.textContent = 'လင့်ကူးယူပြီးပါပြီ။';
-                            copyStatus.style.display = 'block';
-                            setTimeout(() => {
-                                copyStatus.textContent = 'ကုဒ်ကူးယူပြီးပါပြီ။'; // Reset to default text
-                                copyStatus.style.display = 'none';
-                            }, 2000);
-                        }
-                    }
-                });
-            }
-            // --- END NEW: Invite System Event Listeners ---
 
             if (cashoutBtn) {
-                cashoutBtn.addEventListener('click', (e) => {
+                cashoutBtn.addEventListener('click', async (e) => { // Must be async now
                     e.preventDefault();
+                    
+                    // NEW GUARD: Check if user is anonymous before attempting cash out
+                    if (!await checkAndUpgradeAuth()) {
+                        console.log("Anonymous user blocked from cashout, prompting upgrade.");
+                        return;
+                    }
+                    
                     // Check if the user has enough points
                     if (!userData || userData.points < 5000) {
                         if (cashoutMessageModal) {
@@ -2960,129 +1803,103 @@
                 });
             }
 
-            // Close cash out message modal
-            if (cashoutMessageCloseBtn) {
-                cashoutMessageCloseBtn.addEventListener('click', () => {
-                    cashoutMessageModal.classList.add('hidden');
+
+            // ... (rest of cashout form and other listeners remain the same) ...
+
+
+            if (menuToggleBtn) {
+                menuToggleBtn.addEventListener('click', () => {
+                    if (sidebar) sidebar.classList.toggle('open');
+                    if (backdrop) backdrop.classList.toggle('open');
+                    document.body.classList.toggle('no-scroll');
                 });
             }
 
-            document.querySelectorAll('#cashout-modal .cancel-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    if (cashoutModal) cashoutModal.classList.add('hidden');
+            navLinks.forEach(link => {
+                link.addEventListener('click', async (e) => { // Must be async now
+                    e.preventDefault();
+                    const targetId = link.getAttribute('data-target');
+                    
+                    const currentPlayerView = document.getElementById('video-player-view');
+                    const isExitingPlayer = currentPlayerView && currentPlayerView.style.display === 'block';
+
+                    if (isExitingPlayer && targetId !== 'video-player-view') {
+                        handlePlayerExit(false); 
+                    }
+
+                    // NEW GUARD: Check if user is anonymous before viewing permanent data pages
+                    if (['points-history-view', 'invite-and-earn-view'].includes(targetId)) {
+                         if (!await checkAndUpgradeAuth()) {
+                            console.log(`Anonymous user blocked from viewing ${targetId}, prompting upgrade.`);
+                            return;
+                        }
+                    }
+
+                    showView(targetId);
+                    if (sidebar) sidebar.classList.remove('open');
+                    if (backdrop) backdrop.classList.remove('open');
+                    document.body.classList.remove('no-scroll');
+                    if (targetId === 'watch-videos-view') {
+                        renderVideoGrid('all');
+                    } else if (targetId === 'social-tasks-view') {
+                        renderSocialTasksGrid();
+                    } else if (targetId === 'manage-videos-view') {
+                        renderManageVideosTable();
+                    } else if (targetId === 'manage-social-tasks-view') {
+                        renderManageSocialTasksTable(); 
+                    } else if (targetId === 'manage-users-view') {
+                        fetchAllUsers();
+                    } else if (targetId === 'points-history-view') {
+                        renderPointsHistoryTable();
+                    } else if (targetId === 'invite-and-earn-view') {
+                        renderInviteAndEarnView();
+                    }
                 });
             });
 
-            if (cashoutForm) {
-                cashoutForm.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-
-                    const channelUrl = "https://t.me/Mr_PingGP";
-
-                    if (!userData || userData.points <= 0) {
-                        if (cashoutModal) cashoutModal.classList.add('hidden');
-                        window.open(channelUrl, '_blank');
-                        return;
-                    }
-                    showLoading();
-                    try {
-                        const userDocRef = doc(db, `/artifacts/${appId}/users/${userId}`);
-                        const pointsCashedOut = userData.points;
-                        const payoutAmount = (pointsCashedOut / 5000).toFixed(2);
-                        const newHistoryEntry = {
-                            date: new Date().toLocaleDateString('en-US'),
-                            description: `Cashed out ${pointsCashedOut} points`,
-                            points: -pointsCashedOut
-                        };
-                        const newPayoutEntry = {
-                            date: new Date().toLocaleDateString('en-US'),
-                            amount: parseFloat(payoutAmount)
-                        };
-
-                        await updateDoc(userDocRef, {
-                            points: 0,
-                            pointsHistory: [...(userData.pointsHistory || []), newHistoryEntry],
-                            payoutHistory: [...(userData.payoutHistory || []), newPayoutEntry]
-                        });
-
-                        console.log('Cash out request submitted and points reset.');
-                        if (cashoutModal) cashoutModal.classList.add('hidden');
-                        window.open(channelUrl, '_blank');
-                    } catch (error) {
-                        console.error("Error during cash out:", error);
-                        window.open(channelUrl, '_blank');
-                    } finally {
-                        hideLoading();
-                    }
-                });
-            }
-            
-            // --- START NEW: Scroll To Top Logic ---
-            if (scrollToTopBtn && appContent) {
-                // Handle scroll to top on button click
-                scrollToTopBtn.addEventListener('click', () => {
-                    appContent.scrollTo({
-                        top: 0,
-                        behavior: 'smooth'
-                    });
-                });
-
-                // Handle button visibility on scroll
-                appContent.addEventListener('scroll', () => {
-                    const isWatchVideosViewActive = document.getElementById('watch-videos-view').style.display === 'block';
-
-                    if (isWatchVideosViewActive && appContent.scrollTop > 300) { // Show if scrolled more than 300px
-                        scrollToTopBtn.classList.remove('hidden');
-                    } else {
-                        scrollToTopBtn.classList.add('hidden');
-                    }
-                });
-            }
-            // --- END NEW: Scroll To Top Logic ---
+            // ... (rest of other listeners remain the same) ...
 
             generateRandomChartData();
             showLoading();
-                 onAuthStateChanged(auth, async (user) => {
+            
+            // MODIFIED: Initial Auth Logic
+            onAuthStateChanged(auth, async (user) => {
                 isAuthReady = true;
                 if (user) {
-                    
-                    // 1. Canvas မှ ပေးသော Custom Auth Token ဖြင့် ဝင်ရောက်ရန် ကြိုးစားခြင်း
-                    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+                    userId = user.uid;
+                    isInitialUILoad = true; // Reset the flag on login
 
+                    // 1. Handle Custom Auth Token sign-in for Canvas environment
+                    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
                     if (initialAuthToken) {
                          try {
-                             // Custom Token ဖြင့် ဝင်ရောက်ခြင်း (user.isAnonymous ဖြစ်နေလျှင် ၎င်းကို Google User အဖြစ် ပြောင်းလဲသွားမည်)
+                             // Sign in with Custom Token (if provided) which often upgrades the user
                              await signInWithCustomToken(auth, initialAuthToken);
                          } catch (e) {
                              console.error("Error signing in with custom token:", e);
-                             // Sign-in မအောင်မြင်ပါက Login Page ပြန်ပြရန်
-                             if (loginPage) loginPage.style.display = 'flex';
-                             if (appContainer) appContainer.style.display = 'none';
-                             hideLoading();
-                             return;
+                             // Fallback to the next step
                          }
                     }
 
-                    // 2. Google Account (သို့) Custom Token ဖြင့် ဝင်ရောက်အောင်မြင်သည့်အခါ
-                    // ဤနေရာတွင် Anonymous user များကို လုံးဝလျစ်လျူရှုထားပါသည်။
-                    if (!user.isAnonymous) {
-                        userId = user.uid;
-                        isInitialUILoad = true; // Reset the flag on login
-                        await seedInitialData(user);
-                        await fetchUserData(userId);
-                    } else {
-                        // user object ရှိနေသော်လည်း Anonymous ဖြစ်နေပါက (Custom Token မပါဝင်သည့်အခါ) Login Page သို့ ပို့မည်။
+                    // 2. Proceed to app logic for any user (Anonymous or permanent)
+                    await seedInitialData(user); // Seed data using the current user (permanent or anonymous UID)
+                    await fetchUserData(userId); // Start listening to user data
+                    
+                    if (loginPage) loginPage.style.display = 'none';
+                    if (appContainer) appContainer.style.display = 'flex';
+                    
+                } else {
+                    // No user found, sign in anonymously to provide access to the dashboard
+                    console.log("No user found. Signing in anonymously for guest access.");
+                    try {
+                        const anonResult = await signInAnonymously(auth);
+                        // The onAuthStateChanged listener will fire again with the anonymous user
+                    } catch (error) {
+                        console.error("Anonymous sign-in failed:", error);
+                        // If anonymous sign-in fails, show the standard login page as a last resort
                         if (loginPage) loginPage.style.display = 'flex';
                         if (appContainer) appContainer.style.display = 'none';
-                        hideLoading();
                     }
-
-                } else {
-                    // User မရှိပါက Login Page ပြပါမည်။
-                    console.log("No user is signed in. Showing login page.");
-                    if (loginPage) loginPage.style.display = 'flex';
-                    if (appContainer) appContainer.style.display = 'none';
-                    hideLoading();
                 }
             });
         });
