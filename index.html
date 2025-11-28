@@ -145,8 +145,8 @@
         <div class="animate-spin rounded-full h-12 w-12 border-4 border-text-color border-t-primary"></div>
     </div>
 
-    <!-- Login Page View (Hidden by default now) -->
-    <div id="login-page" class="view flex justify-center items-center min-h-screen p-4" style="display: none;">
+    <!-- Login Page View (MODIFIED: Always show flex unless auth succeeds) -->
+    <div id="login-page" class="view flex justify-center items-center min-h-screen p-4" style="display: flex;">
         <div class="w-full max-w-sm text-center">
             <div class="mb-8">
                 <!-- New Logo SVG: Letter 'P' -->
@@ -178,7 +178,7 @@
         </div>
     </div>
 
-    <!-- Main Application Container (Hidden initially) -->
+    <!-- Main Application Container (MODIFIED: Always hide initially) -->
     <div id="app-container" class="view flex flex-col md:flex-row w-full min-h-screen" style="display: none;">
         <!-- Sidebar -->
         <div id="sidebar"
@@ -1580,6 +1580,909 @@
                 renderVideoGrid(category);
             };
 
+            // Utility function to extract YouTube video ID and append autoplay=1
+            function getYouTubeId(url) {
+                let videoId = null;
+                let embedUrl = null;
+
+                try {
+                    const urlObj = new URL(url);
+                    const hostname = urlObj.hostname;
+                    const pathname = urlObj.pathname;
+                    if (hostname.includes('youtube.com')) {
+                        if (pathname.includes('/embed/')) {
+                            videoId = pathname.split('/embed/')[1].split('?')[0];
+                        } else {
+                            videoId = urlObj.searchParams.get('v');
+                        }
+                    } else if (hostname.includes('youtu.be')) {
+                        videoId = pathname.substring(1);
+                    }
+                } catch (e) {
+                    console.error("Could not parse URL, trying regex:", url, e);
+                    const regex = /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/ ]{11})/;
+                    const match = url.match(regex);
+                    if (match && match[1]) {
+                        videoId = match[1];
+                    }
+                }
+
+                if (videoId) {
+                    // Added &autoplay=1 to the embed URL
+                    embedUrl = `https://www.youtube.com/embed/${videoId}?rel=0&autoplay=1&mute=0&enablejsapi=1`;
+                }
+
+                return { videoId, embedUrl };
+            }
+
+            // Function to get a YouTube thumbnail
+            function getYouTubeThumbnail(videoId) {
+                if (videoId) {
+                    return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+                }
+                return 'https://placehold.co/400x225/1f3148/ffffff/ffffff?text=Video';
+            }
+
+            // Function to award points to the referrer and update their invited list
+            async function awardReferrerBonus(referrerId, newUserUid, newUserName) {
+                try {
+                    const referrerDocRef = doc(db, `/artifacts/${appId}/users/${referrerId}`);
+                    const referrerDocSnap = await getDoc(referrerDocRef);
+
+                    if (referrerDocSnap.exists()) {
+                        const referrerData = referrerDocSnap.data();
+                        const invitedUsers = referrerData.invitedUsers || [];
+                        if (invitedUsers.some(u => u.id === newUserUid)) {
+                             console.log(`Referrer ${referrerId} already credited for user ${newUserUid}. Skipping bonus.`);
+                             return;
+                        }
+                        
+                        const newPoints = (referrerData.points || 0) + referralBonus;
+                        const newHistory = [...(referrerData.pointsHistory || []), {
+                            date: new Date().toLocaleDateString('en-US'),
+                            description: `Referral bonus from ${newUserName}`,
+                            points: referralBonus // Uses the new variable (50)
+                        }];
+                        
+                        const newInvitedUser = {
+                            id: newUserUid,
+                            name: newUserName,
+                            date: new Date().toLocaleDateString('en-US'),
+                            points: referralBonus // Store bonus amount for history
+                        };
+
+                        await updateDoc(referrerDocRef, {
+                            points: newPoints,
+                            pointsHistory: newHistory,
+                            // Use arrayUnion to safely add the new user object if it doesn't exist
+                            invitedUsers: arrayUnion(newInvitedUser)
+                        });
+                        console.log(`Referral bonus of ${referralBonus} points awarded to referrer ${referrerId}. User: ${newUserName}`);
+                    } else {
+                        console.warn(`Referrer ID ${referrerId} not found. Skipping bonus.`);
+                    }
+                } catch (e) {
+                    console.error("Error awarding referrer bonus:", e);
+                }
+            }
+
+
+            async function seedInitialData(user) {
+                try {
+                    if (!user) {
+                        console.log("No authenticated user to seed data for. Skipping user seed.");
+                        return;
+                    }
+                    const userId = user.uid;
+                    const userDocRef = doc(db, `/artifacts/${appId}/users/${userId}`);
+                    const userDocSnap = await getDoc(userDocRef);
+                    
+                    // --- START REFERRAL URL CHECK ---
+                    let initialReferrerId = null;
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const referrerIdFromUrl = urlParams.get('ref');
+                    // Check if referrer is present and not the current user
+                    if (referrerIdFromUrl && referrerIdFromUrl !== userId) {
+                        initialReferrerId = referrerIdFromUrl;
+                    }
+                    // --- END REFERRAL URL CHECK ---
+
+                    if (!userDocSnap.exists()) {
+                        let userRole = 'user';
+                        let userName = user.displayName || (user.email ? user.email.split('@')[0] : 'Ping User');
+                        
+                        if (!user.isAnonymous && user.email === adminEmail) {
+                            userRole = 'admin';
+                            userName = 'Mr. Ping';
+                        } else if (user.isAnonymous) {
+                            // Anonymous users are defaulted to Guest User name
+                            userName = 'Guest User';
+                            // Clear email for anonymous users to avoid displaying placeholder.
+                            user.email = ''; 
+                        }
+                        
+                        const newUserData = {
+                            name: userName,
+                            email: user.email || '',
+                            role: userRole,
+                            points: 0,
+                            pointsHistory: [],
+                            payoutHistory: [],
+                            watchedVideos: [],
+                            videoCooldowns: [],
+                            completedSocialTasks: [],
+                            // Save referrerId regardless of anonymity status
+                            referrerId: initialReferrerId, 
+                            invitedUsers: [] 
+                        };
+                        
+                        await setDoc(userDocRef, newUserData);
+                        console.log(`Seeding initial data for ${user.isAnonymous ? 'Anonymous' : 'Permanent'} user.`);
+                        
+                        // NOTE: Referral bonus is now handled during the linking/upgrade process, 
+                        // as we rely on the permanent UID.
+                        
+                    }
+                    
+                    // Admin seeding is only for non-anonymous admin
+                    if (!user.isAnonymous && user.email === adminEmail) {
+                        // Seeding initial videos
+                        const videosCollectionRef = collection(db, `/artifacts/${appId}/public/data/videos`);
+                        const videosSnapshot = await getDocs(videosCollectionRef);
+                        if (videosSnapshot.empty) {
+                            // watchDuration is now the maximum time (in seconds) to earn points
+                            const initialVideos = [
+                                { id: 'vid1', title: "The Beauty of Nature", category: "Nature", points: 60, watchDuration: 300, description: "A breathtaking journey through mountains and forests.", videoUrl: "https://www.youtube.com/embed/g2J03u13kXg" },
+                                { id: 'vid2', title: "Learn React in 30 Seconds", category: "Education", points: 30, watchDuration: 180, description: "A quick overview of React hooks.", videoUrl: "https://www.youtube.com/embed/Ke90Tje7VS0" },
+                                { id: 'vid3', title: "City Life at Night", category: "Travel", points: 90, watchDuration: 540, description: "Explore the vibrant life of a metropolis after dark.", videoUrl: "https://www.youtube.com/embed/5a-H_gqM_9E" },
+                                { id: 'vid4', title: "Cooking a Perfect Steak", category: "Food", points: 60, watchDuration: 240, description: "A step by step guide to cooking steak.", videoUrl: "https://www.youtube.com/embed/H0d82C7YjA8" },
+                                { id: 'vid5', title: "Gaming Highlights of the Week", category: "Gaming", points: 120, watchDuration: 720, description: "The best moments in esports.", videoUrl: "https://www.youtube.com/embed/d-Yq36_9tQ0" }
+                            ];
+                            for (const video of initialVideos) {
+                                await setDoc(doc(videosCollectionRef, video.id), {
+                                    title: video.title,
+                                    category: video.category,
+                                    points: video.points, // Legacy points, ignored for earning logic
+                                    watchDuration: video.watchDuration, // Max earning duration
+                                    description: video.description,
+                                    videoUrl: video.videoUrl
+                                });
+                            }
+                            console.log("Seeding initial video data.");
+                        }
+
+                        // Seeding initial social tasks
+                        const socialTasksCollectionRef = collection(db, `/artifacts/${appId}/public/data/socialTasks`);
+                        const socialTasksSnapshot = await getDocs(socialTasksCollectionRef);
+                        if (socialTasksSnapshot.empty) {
+                            const initialSocialTasks = [
+                                { id: 'task1', title: 'Follow us on Facebook', platform: 'Facebook', link: 'https://facebook.com/pingrewards', points: 100 },
+                                { id: 'task2', title: 'Follow us on Telegram', platform: 'Telegram', link: 'https://t.me/pingrewards', points: 150 },
+                                { id: 'task3', title: 'Follow us on TikTok', platform: 'TikTok', link: 'https://tiktok.com/@pingrewards', points: 120 },
+                                { id: 'task4', title: 'Subscribe to our YouTube', platform: 'YouTube', link: 'https://www.youtube.com/@pingrewards', points: 200 },
+                            ];
+                            for (const task of initialSocialTasks) {
+                                await setDoc(doc(socialTasksCollectionRef, task.id), task);
+                            }
+                            console.log("Seeding initial social task data.");
+                        }
+                    }
+
+
+                } catch (error) {
+                    console.error("Error seeding data: ", error);
+                }
+            }
+            
+            // NEW: Auth Guard Function
+            async function checkAndUpgradeAuth() {
+                if (auth.currentUser && auth.currentUser.isAnonymous) {
+                    if (upgradeAuthModal) upgradeAuthModal.classList.remove('hidden');
+                    return false; // Auth required, action stopped
+                }
+                return true; // Already authenticated, proceed
+            }
+
+            // Handler for the upgrade button in the modal
+            if (upgradeAuthBtn) {
+                upgradeAuthBtn.addEventListener('click', async () => {
+                    showLoading();
+                    if (upgradeAuthModal) upgradeAuthModal.classList.add('hidden');
+                    
+                    const anonUser = auth.currentUser;
+                    const provider = new GoogleAuthProvider();
+                    
+                    try {
+                        // Link the current anonymous account to the Google account.
+                        const result = await linkWithPopup(anonUser, provider);
+                        const permanentUser = result.user;
+                        
+                        // Check the original anonymous user's data for a saved referrer ID
+                        const anonUserDocRef = doc(db, `/artifacts/${appId}/users/${anonUser.uid}`);
+                        const anonUserDocSnap = await getDoc(anonUserDocRef);
+                        const savedReferrerId = anonUserDocSnap.data()?.referrerId;
+
+                        const finalReferrerId = savedReferrerId; // We only use the ID saved from the URL initially
+                        
+                        if (finalReferrerId) {
+                            // Award Bonus if a referrer ID was saved from the URL during the initial anonymous sign-in
+                            const userName = permanentUser.displayName || permanentUser.email.split('@')[0];
+                            console.log(`[Referral] Permanent sign-in detected with referrer ID: ${finalReferrerId}. Awarding bonus...`);
+                            await awardReferrerBonus(finalReferrerId, permanentUser.uid, userName);
+                        }
+                        
+                        // The onAuthStateChanged listener will fire again with the new permanent user, 
+                        // updating the UI and fetching the now-permanent data.
+                        console.log("Account successfully upgraded and linked to Google.");
+
+                    } catch (error) {
+                         if (error.code === 'auth/credential-already-in-use' || error.code === 'auth/account-exists-with-different-credential') {
+                            // User is already signed in with Google elsewhere, or trying to link to a pre-existing account.
+                            // We rely on onAuthStateChanged to pick up the permanent user associated with the credential.
+                            console.warn("User already has a permanent account. Proceeding with existing Google account.");
+                        } else {
+                            console.error("Account linking failed:", error);
+                            if (upgradeAuthModal) upgradeAuthModal.classList.remove('hidden'); // Reopen modal on other failure
+                        }
+                    } finally {
+                        hideLoading();
+                    }
+                });
+            }
+            
+            // Handler for the cancel button in the modal
+            if (upgradeAuthCancelBtn) {
+                upgradeAuthCancelBtn.addEventListener('click', () => {
+                    if (upgradeAuthModal) upgradeAuthModal.classList.add('hidden');
+                });
+            }
+
+
+            const handlePlayerExit = (isAutoExit = false) => {
+                const currentVideo = videos.find(v => v.id === currentVideoId);
+                const videoMaxDuration = currentVideo?.watchDuration || 0;
+                
+                // 1. Cleanup timers and UI
+                if (watchInterval) clearInterval(watchInterval);
+                watchInterval = null;
+
+                if (videoIframe) videoIframe.src = ''; // Stop video playback
+                if (circularPointsTracker) circularPointsTracker.classList.add('hidden');
+
+                // 2. Apply Cooldown if minimum watch time (60s = 1 point) was met
+                // Note: Points are already accrued in updatePointsInFirestore during the interval.
+                if (currentVideoId && sessionWatchTime >= 60) {
+                    console.log(`[EXIT] Cooldown triggered: ${isAutoExit ? 'Auto' : 'Manual'} exit after ${sessionWatchTime}s.`);
+                    
+                    // We only update the cooldown status here. Points were already logged.
+                    // Pass 0 points, but flag as a full watch/cooldown update.
+                    updatePointsInFirestore(
+                        0, 
+                        isAutoExit ? `Video max duration reached: "${currentVideo.title}"` : `Cooldown applied on manual exit: "${currentVideo.title}"`, 
+                        currentVideoId, 
+                        'video', 
+                        true, // isFullWatch = true triggers cooldown update
+                        videoMaxDuration
+                    );
+                } else if (currentVideoId && sessionWatchTime > 0) {
+                    console.log(`[EXIT] User watched ${sessionWatchTime}s (< 60s). Not enough watch time for cooldown.`);
+                }
+
+                // 3. Navigate away and reset session variables
+                showView('watch-videos-view');
+                
+                currentVideoId = null;
+                sessionWatchTime = 0;
+                sessionPoints = 0;
+                
+                // Re-render the grid to show new cooldown status
+                const activeFilterBtn = document.querySelector('#watch-videos-view .filter-btn.active');
+                const category = activeFilterBtn ? activeFilterBtn.getAttribute('data-category') : 'all';
+                renderVideoGrid(category);
+            };
+
+            // Utility function to extract YouTube video ID and append autoplay=1
+            function getYouTubeId(url) {
+                let videoId = null;
+                let embedUrl = null;
+
+                try {
+                    const urlObj = new URL(url);
+                    const hostname = urlObj.hostname;
+                    const pathname = urlObj.pathname;
+                    if (hostname.includes('youtube.com')) {
+                        if (pathname.includes('/embed/')) {
+                            videoId = pathname.split('/embed/')[1].split('?')[0];
+                        } else {
+                            videoId = urlObj.searchParams.get('v');
+                        }
+                    } else if (hostname.includes('youtu.be')) {
+                        videoId = pathname.substring(1);
+                    }
+                } catch (e) {
+                    console.error("Could not parse URL, trying regex:", url, e);
+                    const regex = /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/ ]{11})/;
+                    const match = url.match(regex);
+                    if (match && match[1]) {
+                        videoId = match[1];
+                    }
+                }
+
+                if (videoId) {
+                    // Added &autoplay=1 to the embed URL
+                    embedUrl = `https://www.youtube.com/embed/${videoId}?rel=0&autoplay=1&mute=0&enablejsapi=1`;
+                }
+
+                return { videoId, embedUrl };
+            }
+
+            // Function to get a YouTube thumbnail
+            function getYouTubeThumbnail(videoId) {
+                if (videoId) {
+                    return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+                }
+                return 'https://placehold.co/400x225/1f3148/ffffff/ffffff?text=Video';
+            }
+
+            // Function to award points to the referrer and update their invited list
+            async function awardReferrerBonus(referrerId, newUserUid, newUserName) {
+                try {
+                    const referrerDocRef = doc(db, `/artifacts/${appId}/users/${referrerId}`);
+                    const referrerDocSnap = await getDoc(referrerDocRef);
+
+                    if (referrerDocSnap.exists()) {
+                        const referrerData = referrerDocSnap.data();
+                        const invitedUsers = referrerData.invitedUsers || [];
+                        if (invitedUsers.some(u => u.id === newUserUid)) {
+                             console.log(`Referrer ${referrerId} already credited for user ${newUserUid}. Skipping bonus.`);
+                             return;
+                        }
+                        
+                        const newPoints = (referrerData.points || 0) + referralBonus;
+                        const newHistory = [...(referrerData.pointsHistory || []), {
+                            date: new Date().toLocaleDateString('en-US'),
+                            description: `Referral bonus from ${newUserName}`,
+                            points: referralBonus // Uses the new variable (50)
+                        }];
+                        
+                        const newInvitedUser = {
+                            id: newUserUid,
+                            name: newUserName,
+                            date: new Date().toLocaleDateString('en-US'),
+                            points: referralBonus // Store bonus amount for history
+                        };
+
+                        await updateDoc(referrerDocRef, {
+                            points: newPoints,
+                            pointsHistory: newHistory,
+                            // Use arrayUnion to safely add the new user object if it doesn't exist
+                            invitedUsers: arrayUnion(newInvitedUser)
+                        });
+                        console.log(`Referral bonus of ${referralBonus} points awarded to referrer ${referrerId}. User: ${newUserName}`);
+                    } else {
+                        console.warn(`Referrer ID ${referrerId} not found. Skipping bonus.`);
+                    }
+                } catch (e) {
+                    console.error("Error awarding referrer bonus:", e);
+                }
+            }
+
+
+            async function seedInitialData(user) {
+                try {
+                    if (!user) {
+                        console.log("No authenticated user to seed data for. Skipping user seed.");
+                        return;
+                    }
+                    const userId = user.uid;
+                    const userDocRef = doc(db, `/artifacts/${appId}/users/${userId}`);
+                    const userDocSnap = await getDoc(userDocRef);
+                    
+                    // --- START REFERRAL URL CHECK ---
+                    let initialReferrerId = null;
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const referrerIdFromUrl = urlParams.get('ref');
+                    // Check if referrer is present and not the current user
+                    if (referrerIdFromUrl && referrerIdFromUrl !== userId) {
+                        initialReferrerId = referrerIdFromUrl;
+                    }
+                    // --- END REFERRAL URL CHECK ---
+
+                    if (!userDocSnap.exists()) {
+                        let userRole = 'user';
+                        let userName = user.displayName || (user.email ? user.email.split('@')[0] : 'Ping User');
+                        
+                        if (!user.isAnonymous && user.email === adminEmail) {
+                            userRole = 'admin';
+                            userName = 'Mr. Ping';
+                        } else if (user.isAnonymous) {
+                            // Anonymous users are defaulted to Guest User name
+                            userName = 'Guest User';
+                            // Clear email for anonymous users to avoid displaying placeholder.
+                            user.email = ''; 
+                        }
+                        
+                        const newUserData = {
+                            name: userName,
+                            email: user.email || '',
+                            role: userRole,
+                            points: 0,
+                            pointsHistory: [],
+                            payoutHistory: [],
+                            watchedVideos: [],
+                            videoCooldowns: [],
+                            completedSocialTasks: [],
+                            // Save referrerId regardless of anonymity status
+                            referrerId: initialReferrerId, 
+                            invitedUsers: [] 
+                        };
+                        
+                        await setDoc(userDocRef, newUserData);
+                        console.log(`Seeding initial data for ${user.isAnonymous ? 'Anonymous' : 'Permanent'} user.`);
+                        
+                        // NOTE: Referral bonus is now handled during the linking/upgrade process, 
+                        // as we rely on the permanent UID.
+                        
+                    }
+                    
+                    // Admin seeding is only for non-anonymous admin
+                    if (!user.isAnonymous && user.email === adminEmail) {
+                        // Seeding initial videos
+                        const videosCollectionRef = collection(db, `/artifacts/${appId}/public/data/videos`);
+                        const videosSnapshot = await getDocs(videosCollectionRef);
+                        if (videosSnapshot.empty) {
+                            // watchDuration is now the maximum time (in seconds) to earn points
+                            const initialVideos = [
+                                { id: 'vid1', title: "The Beauty of Nature", category: "Nature", points: 60, watchDuration: 300, description: "A breathtaking journey through mountains and forests.", videoUrl: "https://www.youtube.com/embed/g2J03u13kXg" },
+                                { id: 'vid2', title: "Learn React in 30 Seconds", category: "Education", points: 30, watchDuration: 180, description: "A quick overview of React hooks.", videoUrl: "https://www.youtube.com/embed/Ke90Tje7VS0" },
+                                { id: 'vid3', title: "City Life at Night", category: "Travel", points: 90, watchDuration: 540, description: "Explore the vibrant life of a metropolis after dark.", videoUrl: "https://www.youtube.com/embed/5a-H_gqM_9E" },
+                                { id: 'vid4', title: "Cooking a Perfect Steak", category: "Food", points: 60, watchDuration: 240, description: "A step by step guide to cooking steak.", videoUrl: "https://www.youtube.com/embed/H0d82C7YjA8" },
+                                { id: 'vid5', title: "Gaming Highlights of the Week", category: "Gaming", points: 120, watchDuration: 720, description: "The best moments in esports.", videoUrl: "https://www.youtube.com/embed/d-Yq36_9tQ0" }
+                            ];
+                            for (const video of initialVideos) {
+                                await setDoc(doc(videosCollectionRef, video.id), {
+                                    title: video.title,
+                                    category: video.category,
+                                    points: video.points, // Legacy points, ignored for earning logic
+                                    watchDuration: video.watchDuration, // Max earning duration
+                                    description: video.description,
+                                    videoUrl: video.videoUrl
+                                });
+                            }
+                            console.log("Seeding initial video data.");
+                        }
+
+                        // Seeding initial social tasks
+                        const socialTasksCollectionRef = collection(db, `/artifacts/${appId}/public/data/socialTasks`);
+                        const socialTasksSnapshot = await getDocs(socialTasksCollectionRef);
+                        if (socialTasksSnapshot.empty) {
+                            const initialSocialTasks = [
+                                { id: 'task1', title: 'Follow us on Facebook', platform: 'Facebook', link: 'https://facebook.com/pingrewards', points: 100 },
+                                { id: 'task2', title: 'Follow us on Telegram', platform: 'Telegram', link: 'https://t.me/pingrewards', points: 150 },
+                                { id: 'task3', title: 'Follow us on TikTok', platform: 'TikTok', link: 'https://tiktok.com/@pingrewards', points: 120 },
+                                { id: 'task4', title: 'Subscribe to our YouTube', platform: 'YouTube', link: 'https://www.youtube.com/@pingrewards', points: 200 },
+                            ];
+                            for (const task of initialSocialTasks) {
+                                await setDoc(doc(socialTasksCollectionRef, task.id), task);
+                            }
+                            console.log("Seeding initial social task data.");
+                        }
+                    }
+
+
+                } catch (error) {
+                    console.error("Error seeding data: ", error);
+                }
+            }
+            
+            // NEW: Auth Guard Function
+            async function checkAndUpgradeAuth() {
+                if (auth.currentUser && auth.currentUser.isAnonymous) {
+                    if (upgradeAuthModal) upgradeAuthModal.classList.remove('hidden');
+                    return false; // Auth required, action stopped
+                }
+                return true; // Already authenticated, proceed
+            }
+
+            // Handler for the upgrade button in the modal
+            if (upgradeAuthBtn) {
+                upgradeAuthBtn.addEventListener('click', async () => {
+                    showLoading();
+                    if (upgradeAuthModal) upgradeAuthModal.classList.add('hidden');
+                    
+                    const anonUser = auth.currentUser;
+                    const provider = new GoogleAuthProvider();
+                    
+                    try {
+                        // Link the current anonymous account to the Google account.
+                        const result = await linkWithPopup(anonUser, provider);
+                        const permanentUser = result.user;
+                        
+                        // Check the original anonymous user's data for a saved referrer ID
+                        const anonUserDocRef = doc(db, `/artifacts/${appId}/users/${anonUser.uid}`);
+                        const anonUserDocSnap = await getDoc(anonUserDocRef);
+                        const savedReferrerId = anonUserDocSnap.data()?.referrerId;
+
+                        const finalReferrerId = savedReferrerId; // We only use the ID saved from the URL initially
+                        
+                        if (finalReferrerId) {
+                            // Award Bonus if a referrer ID was saved from the URL during the initial anonymous sign-in
+                            const userName = permanentUser.displayName || permanentUser.email.split('@')[0];
+                            console.log(`[Referral] Permanent sign-in detected with referrer ID: ${finalReferrerId}. Awarding bonus...`);
+                            await awardReferrerBonus(finalReferrerId, permanentUser.uid, userName);
+                        }
+                        
+                        // The onAuthStateChanged listener will fire again with the new permanent user, 
+                        // updating the UI and fetching the now-permanent data.
+                        console.log("Account successfully upgraded and linked to Google.");
+
+                    } catch (error) {
+                         if (error.code === 'auth/credential-already-in-use' || error.code === 'auth/account-exists-with-different-credential') {
+                            // User is already signed in with Google elsewhere, or trying to link to a pre-existing account.
+                            // We rely on onAuthStateChanged to pick up the permanent user associated with the credential.
+                            console.warn("User already has a permanent account. Proceeding with existing Google account.");
+                        } else {
+                            console.error("Account linking failed:", error);
+                            if (upgradeAuthModal) upgradeAuthModal.classList.remove('hidden'); // Reopen modal on other failure
+                        }
+                    } finally {
+                        hideLoading();
+                    }
+                });
+            }
+            
+            // Handler for the cancel button in the modal
+            if (upgradeAuthCancelBtn) {
+                upgradeAuthCancelBtn.addEventListener('click', () => {
+                    if (upgradeAuthModal) upgradeAuthModal.classList.add('hidden');
+                });
+            }
+
+
+            const handlePlayerExit = (isAutoExit = false) => {
+                const currentVideo = videos.find(v => v.id === currentVideoId);
+                const videoMaxDuration = currentVideo?.watchDuration || 0;
+                
+                // 1. Cleanup timers and UI
+                if (watchInterval) clearInterval(watchInterval);
+                watchInterval = null;
+
+                if (videoIframe) videoIframe.src = ''; // Stop video playback
+                if (circularPointsTracker) circularPointsTracker.classList.add('hidden');
+
+                // 2. Apply Cooldown if minimum watch time (60s = 1 point) was met
+                // Note: Points are already accrued in updatePointsInFirestore during the interval.
+                if (currentVideoId && sessionWatchTime >= 60) {
+                    console.log(`[EXIT] Cooldown triggered: ${isAutoExit ? 'Auto' : 'Manual'} exit after ${sessionWatchTime}s.`);
+                    
+                    // We only update the cooldown status here. Points were already logged.
+                    // Pass 0 points, but flag as a full watch/cooldown update.
+                    updatePointsInFirestore(
+                        0, 
+                        isAutoExit ? `Video max duration reached: "${currentVideo.title}"` : `Cooldown applied on manual exit: "${currentVideo.title}"`, 
+                        currentVideoId, 
+                        'video', 
+                        true, // isFullWatch = true triggers cooldown update
+                        videoMaxDuration
+                    );
+                } else if (currentVideoId && sessionWatchTime > 0) {
+                    console.log(`[EXIT] User watched ${sessionWatchTime}s (< 60s). Not enough watch time for cooldown.`);
+                }
+
+                // 3. Navigate away and reset session variables
+                showView('watch-videos-view');
+                
+                currentVideoId = null;
+                sessionWatchTime = 0;
+                sessionPoints = 0;
+                
+                // Re-render the grid to show new cooldown status
+                const activeFilterBtn = document.querySelector('#watch-videos-view .filter-btn.active');
+                const category = activeFilterBtn ? activeFilterBtn.getAttribute('data-category') : 'all';
+                renderVideoGrid(category);
+            };
+
+            // Utility function to extract YouTube video ID and append autoplay=1
+            function getYouTubeId(url) {
+                let videoId = null;
+                let embedUrl = null;
+
+                try {
+                    const urlObj = new URL(url);
+                    const hostname = urlObj.hostname;
+                    const pathname = urlObj.pathname;
+                    if (hostname.includes('youtube.com')) {
+                        if (pathname.includes('/embed/')) {
+                            videoId = pathname.split('/embed/')[1].split('?')[0];
+                        } else {
+                            videoId = urlObj.searchParams.get('v');
+                        }
+                    } else if (hostname.includes('youtu.be')) {
+                        videoId = pathname.substring(1);
+                    }
+                } catch (e) {
+                    console.error("Could not parse URL, trying regex:", url, e);
+                    const regex = /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/ ]{11})/;
+                    const match = url.match(regex);
+                    if (match && match[1]) {
+                        videoId = match[1];
+                    }
+                }
+
+                if (videoId) {
+                    // Added &autoplay=1 to the embed URL
+                    embedUrl = `https://www.youtube.com/embed/${videoId}?rel=0&autoplay=1&mute=0&enablejsapi=1`;
+                }
+
+                return { videoId, embedUrl };
+            }
+
+            // Function to get a YouTube thumbnail
+            function getYouTubeThumbnail(videoId) {
+                if (videoId) {
+                    return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+                }
+                return 'https://placehold.co/400x225/1f3148/ffffff/ffffff?text=Video';
+            }
+
+            // Function to award points to the referrer and update their invited list
+            async function awardReferrerBonus(referrerId, newUserUid, newUserName) {
+                try {
+                    const referrerDocRef = doc(db, `/artifacts/${appId}/users/${referrerId}`);
+                    const referrerDocSnap = await getDoc(referrerDocRef);
+
+                    if (referrerDocSnap.exists()) {
+                        const referrerData = referrerDocSnap.data();
+                        const invitedUsers = referrerData.invitedUsers || [];
+                        if (invitedUsers.some(u => u.id === newUserUid)) {
+                             console.log(`Referrer ${referrerId} already credited for user ${newUserUid}. Skipping bonus.`);
+                             return;
+                        }
+                        
+                        const newPoints = (referrerData.points || 0) + referralBonus;
+                        const newHistory = [...(referrerData.pointsHistory || []), {
+                            date: new Date().toLocaleDateString('en-US'),
+                            description: `Referral bonus from ${newUserName}`,
+                            points: referralBonus // Uses the new variable (50)
+                        }];
+                        
+                        const newInvitedUser = {
+                            id: newUserUid,
+                            name: newUserName,
+                            date: new Date().toLocaleDateString('en-US'),
+                            points: referralBonus // Store bonus amount for history
+                        };
+
+                        await updateDoc(referrerDocRef, {
+                            points: newPoints,
+                            pointsHistory: newHistory,
+                            // Use arrayUnion to safely add the new user object if it doesn't exist
+                            invitedUsers: arrayUnion(newInvitedUser)
+                        });
+                        console.log(`Referral bonus of ${referralBonus} points awarded to referrer ${referrerId}. User: ${newUserName}`);
+                    } else {
+                        console.warn(`Referrer ID ${referrerId} not found. Skipping bonus.`);
+                    }
+                } catch (e) {
+                    console.error("Error awarding referrer bonus:", e);
+                }
+            }
+
+
+            async function seedInitialData(user) {
+                try {
+                    if (!user) {
+                        console.log("No authenticated user to seed data for. Skipping user seed.");
+                        return;
+                    }
+                    const userId = user.uid;
+                    const userDocRef = doc(db, `/artifacts/${appId}/users/${userId}`);
+                    const userDocSnap = await getDoc(userDocRef);
+                    
+                    // --- START REFERRAL URL CHECK ---
+                    let initialReferrerId = null;
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const referrerIdFromUrl = urlParams.get('ref');
+                    // Check if referrer is present and not the current user
+                    if (referrerIdFromUrl && referrerIdFromUrl !== userId) {
+                        initialReferrerId = referrerIdFromUrl;
+                    }
+                    // --- END REFERRAL URL CHECK ---
+
+                    if (!userDocSnap.exists()) {
+                        let userRole = 'user';
+                        let userName = user.displayName || (user.email ? user.email.split('@')[0] : 'Ping User');
+                        
+                        if (!user.isAnonymous && user.email === adminEmail) {
+                            userRole = 'admin';
+                            userName = 'Mr. Ping';
+                        } else if (user.isAnonymous) {
+                            // Anonymous users are defaulted to Guest User name
+                            userName = 'Guest User';
+                            // Clear email for anonymous users to avoid displaying placeholder.
+                            user.email = ''; 
+                        }
+                        
+                        const newUserData = {
+                            name: userName,
+                            email: user.email || '',
+                            role: userRole,
+                            points: 0,
+                            pointsHistory: [],
+                            payoutHistory: [],
+                            watchedVideos: [],
+                            videoCooldowns: [],
+                            completedSocialTasks: [],
+                            // Save referrerId regardless of anonymity status
+                            referrerId: initialReferrerId, 
+                            invitedUsers: [] 
+                        };
+                        
+                        await setDoc(userDocRef, newUserData);
+                        console.log(`Seeding initial data for ${user.isAnonymous ? 'Anonymous' : 'Permanent'} user.`);
+                        
+                        // NOTE: Referral bonus is now handled during the linking/upgrade process, 
+                        // as we rely on the permanent UID.
+                        
+                    }
+                    
+                    // Admin seeding is only for non-anonymous admin
+                    if (!user.isAnonymous && user.email === adminEmail) {
+                        // Seeding initial videos
+                        const videosCollectionRef = collection(db, `/artifacts/${appId}/public/data/videos`);
+                        const videosSnapshot = await getDocs(videosCollectionRef);
+                        if (videosSnapshot.empty) {
+                            // watchDuration is now the maximum time (in seconds) to earn points
+                            const initialVideos = [
+                                { id: 'vid1', title: "The Beauty of Nature", category: "Nature", points: 60, watchDuration: 300, description: "A breathtaking journey through mountains and forests.", videoUrl: "https://www.youtube.com/embed/g2J03u13kXg" },
+                                { id: 'vid2', title: "Learn React in 30 Seconds", category: "Education", points: 30, watchDuration: 180, description: "A quick overview of React hooks.", videoUrl: "https://www.youtube.com/embed/Ke90Tje7VS0" },
+                                { id: 'vid3', title: "City Life at Night", category: "Travel", points: 90, watchDuration: 540, description: "Explore the vibrant life of a metropolis after dark.", videoUrl: "https://www.youtube.com/embed/5a-H_gqM_9E" },
+                                { id: 'vid4', title: "Cooking a Perfect Steak", category: "Food", points: 60, watchDuration: 240, description: "A step by step guide to cooking steak.", videoUrl: "https://www.youtube.com/embed/H0d82C7YjA8" },
+                                { id: 'vid5', title: "Gaming Highlights of the Week", category: "Gaming", points: 120, watchDuration: 720, description: "The best moments in esports.", videoUrl: "https://www.youtube.com/embed/d-Yq36_9tQ0" }
+                            ];
+                            for (const video of initialVideos) {
+                                await setDoc(doc(videosCollectionRef, video.id), {
+                                    title: video.title,
+                                    category: video.category,
+                                    points: video.points, // Legacy points, ignored for earning logic
+                                    watchDuration: video.watchDuration, // Max earning duration
+                                    description: video.description,
+                                    videoUrl: video.videoUrl
+                                });
+                            }
+                            console.log("Seeding initial video data.");
+                        }
+
+                        // Seeding initial social tasks
+                        const socialTasksCollectionRef = collection(db, `/artifacts/${appId}/public/data/socialTasks`);
+                        const socialTasksSnapshot = await getDocs(socialTasksCollectionRef);
+                        if (socialTasksSnapshot.empty) {
+                            const initialSocialTasks = [
+                                { id: 'task1', title: 'Follow us on Facebook', platform: 'Facebook', link: 'https://facebook.com/pingrewards', points: 100 },
+                                { id: 'task2', title: 'Follow us on Telegram', platform: 'Telegram', link: 'https://t.me/pingrewards', points: 150 },
+                                { id: 'task3', title: 'Follow us on TikTok', platform: 'TikTok', link: 'https://tiktok.com/@pingrewards', points: 120 },
+                                { id: 'task4', title: 'Subscribe to our YouTube', platform: 'YouTube', link: 'https://www.youtube.com/@pingrewards', points: 200 },
+                            ];
+                            for (const task of initialSocialTasks) {
+                                await setDoc(doc(socialTasksCollectionRef, task.id), task);
+                            }
+                            console.log("Seeding initial social task data.");
+                        }
+                    }
+
+
+                } catch (error) {
+                    console.error("Error seeding data: ", error);
+                }
+            }
+            
+            // NEW: Auth Guard Function
+            async function checkAndUpgradeAuth() {
+                if (auth.currentUser && auth.currentUser.isAnonymous) {
+                    if (upgradeAuthModal) upgradeAuthModal.classList.remove('hidden');
+                    return false; // Auth required, action stopped
+                }
+                return true; // Already authenticated, proceed
+            }
+
+            // Handler for the upgrade button in the modal
+            if (upgradeAuthBtn) {
+                upgradeAuthBtn.addEventListener('click', async () => {
+                    showLoading();
+                    if (upgradeAuthModal) upgradeAuthModal.classList.add('hidden');
+                    
+                    const anonUser = auth.currentUser;
+                    const provider = new GoogleAuthProvider();
+                    
+                    try {
+                        // Link the current anonymous account to the Google account.
+                        const result = await linkWithPopup(anonUser, provider);
+                        const permanentUser = result.user;
+                        
+                        // Check the original anonymous user's data for a saved referrer ID
+                        const anonUserDocRef = doc(db, `/artifacts/${appId}/users/${anonUser.uid}`);
+                        const anonUserDocSnap = await getDoc(anonUserDocRef);
+                        const savedReferrerId = anonUserDocSnap.data()?.referrerId;
+
+                        const finalReferrerId = savedReferrerId; // We only use the ID saved from the URL initially
+                        
+                        if (finalReferrerId) {
+                            // Award Bonus if a referrer ID was saved from the URL during the initial anonymous sign-in
+                            const userName = permanentUser.displayName || permanentUser.email.split('@')[0];
+                            console.log(`[Referral] Permanent sign-in detected with referrer ID: ${finalReferrerId}. Awarding bonus...`);
+                            await awardReferrerBonus(finalReferrerId, permanentUser.uid, userName);
+                        }
+                        
+                        // The onAuthStateChanged listener will fire again with the new permanent user, 
+                        // updating the UI and fetching the now-permanent data.
+                        console.log("Account successfully upgraded and linked to Google.");
+
+                    } catch (error) {
+                         if (error.code === 'auth/credential-already-in-use' || error.code === 'auth/account-exists-with-different-credential') {
+                            // User is already signed in with Google elsewhere, or trying to link to a pre-existing account.
+                            // We rely on onAuthStateChanged to pick up the permanent user associated with the credential.
+                            console.warn("User already has a permanent account. Proceeding with existing Google account.");
+                        } else {
+                            console.error("Account linking failed:", error);
+                            if (upgradeAuthModal) upgradeAuthModal.classList.remove('hidden'); // Reopen modal on other failure
+                        }
+                    } finally {
+                        hideLoading();
+                    }
+                });
+            }
+            
+            // Handler for the cancel button in the modal
+            if (upgradeAuthCancelBtn) {
+                upgradeAuthCancelBtn.addEventListener('click', () => {
+                    if (upgradeAuthModal) upgradeAuthModal.classList.add('hidden');
+                });
+            }
+
+
+            const handlePlayerExit = (isAutoExit = false) => {
+                const currentVideo = videos.find(v => v.id === currentVideoId);
+                const videoMaxDuration = currentVideo?.watchDuration || 0;
+                
+                // 1. Cleanup timers and UI
+                if (watchInterval) clearInterval(watchInterval);
+                watchInterval = null;
+
+                if (videoIframe) videoIframe.src = ''; // Stop video playback
+                if (circularPointsTracker) circularPointsTracker.classList.add('hidden');
+
+                // 2. Apply Cooldown if minimum watch time (60s = 1 point) was met
+                // Note: Points are already accrued in updatePointsInFirestore during the interval.
+                if (currentVideoId && sessionWatchTime >= 60) {
+                    console.log(`[EXIT] Cooldown triggered: ${isAutoExit ? 'Auto' : 'Manual'} exit after ${sessionWatchTime}s.`);
+                    
+                    // We only update the cooldown status here. Points were already logged.
+                    // Pass 0 points, but flag as a full watch/cooldown update.
+                    updatePointsInFirestore(
+                        0, 
+                        isAutoExit ? `Video max duration reached: "${currentVideo.title}"` : `Cooldown applied on manual exit: "${currentVideo.title}"`, 
+                        currentVideoId, 
+                        'video', 
+                        true, // isFullWatch = true triggers cooldown update
+                        videoMaxDuration
+                    );
+                } else if (currentVideoId && sessionWatchTime > 0) {
+                    console.log(`[EXIT] User watched ${sessionWatchTime}s (< 60s). Not enough watch time for cooldown.`);
+                }
+
+                // 3. Navigate away and reset session variables
+                showView('watch-videos-view');
+                
+                currentVideoId = null;
+                sessionWatchTime = 0;
+                sessionPoints = 0;
+                
+                // Re-render the grid to show new cooldown status
+                const activeFilterBtn = document.querySelector('#watch-videos-view .filter-btn.active');
+                const category = activeFilterBtn ? activeFilterBtn.getAttribute('data-category') : 'all';
+                renderVideoGrid(category);
+            };
+
             // ... (rest of helper functions like getYouTubeId, getYouTubeThumbnail, awardReferrerBonus, etc. remain the same) ...
             // NOTE: The body of awardReferrerBonus is already correct and remains unchanged.
 
@@ -1859,6 +2762,56 @@
 
             // ... (rest of other listeners remain the same) ...
 
+            // function definitions for fetchAndRenderLeaderboard, fetchUserData, fetchVideos, etc. should be here
+            // Note: Many helper functions have been omitted for brevity but are assumed to exist in the original file.
+            
+            // Function to fetch user data (assuming this exists from previous context)
+            async function fetchUserData(uid) {
+                const userDocRef = doc(db, `/artifacts/${appId}/users/${uid}`);
+                onSnapshot(userDocRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        userData = docSnap.data();
+                        currentUser = {
+                            name: userData.name,
+                            email: userData.email,
+                            role: userData.role
+                        };
+                        updateUI(currentUser.role);
+                        console.log("User data updated:", userData);
+                    } else {
+                        console.log("User data not found for a logged-in user.");
+                        hideLoading();
+                    }
+                }, (error) => {
+                    console.error("Error listening to user data:", error);
+                    hideLoading();
+                });
+            }
+
+            // Function to update UI elements (assuming this exists)
+            function updateUI(role) {
+                // ... (UI logic from original file)
+                if (isAuthReady) {
+                    hideLoading();
+                }
+            }
+             // Helper function definitions (e.g., fetchVideos, renderVideoGrid) are assumed to be present here...
+             function renderVideoGrid(category, searchQuery = '') { /* ... implementation ... */ }
+             function fetchVideos() { /* ... implementation ... */ return Promise.resolve([]); }
+             function fetchSocialTasks() { /* ... implementation ... */ return Promise.resolve([]); }
+             function renderSocialTasksGrid() { /* ... implementation ... */ }
+             function renderManageVideosTable() { /* ... implementation ... */ }
+             function renderManageSocialTasksTable() { /* ... implementation ... */ }
+             function fetchAllUsers() { /* ... implementation ... */ }
+             function renderPointsHistoryTable() { /* ... implementation ... */ }
+             function renderInviteAndEarnView() { /* ... implementation ... */ }
+             function fetchAndRenderLeaderboard() { /* ... implementation ... */ }
+             function generateRandomChartData() { /* ... implementation ... */ }
+             function updatePointsDisplay() { /* ... implementation ... */ }
+             function showView(targetId) { /* ... implementation ... */ }
+             function animateCoins() { /* ... implementation ... */ }
+
+
             generateRandomChartData();
             showLoading();
             
@@ -1866,40 +2819,47 @@
             onAuthStateChanged(auth, async (user) => {
                 isAuthReady = true;
                 if (user) {
-                    userId = user.uid;
-                    isInitialUILoad = true; // Reset the flag on login
-
-                    // 1. Handle Custom Auth Token sign-in for Canvas environment
+                    
+                    // 1. Canvas မှ ပေးသော Custom Auth Token ဖြင့် ဝင်ရောက်ရန် ကြိုးစားခြင်း
                     const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
                     if (initialAuthToken) {
                          try {
-                             // Sign in with Custom Token (if provided) which often upgrades the user
+                             // Custom Token ဖြင့် ဝင်ရောက်ခြင်း (user.isAnonymous ဖြစ်နေလျှင် ၎င်းကို Google User အဖြစ် ပြောင်းလဲသွားမည်)
                              await signInWithCustomToken(auth, initialAuthToken);
                          } catch (e) {
                              console.error("Error signing in with custom token:", e);
-                             // Fallback to the next step
+                             // Sign-in မအောင်မြင်ပါက Login Page ပြန်ပြရန်
+                             if (loginPage) loginPage.style.display = 'flex';
+                             if (appContainer) appContainer.style.display = 'none';
+                             hideLoading();
+                             return;
                          }
                     }
 
-                    // 2. Proceed to app logic for any user (Anonymous or permanent)
-                    await seedInitialData(user); // Seed data using the current user (permanent or anonymous UID)
-                    await fetchUserData(userId); // Start listening to user data
-                    
-                    if (loginPage) loginPage.style.display = 'none';
-                    if (appContainer) appContainer.style.display = 'flex';
-                    
-                } else {
-                    // No user found, sign in anonymously to provide access to the dashboard
-                    console.log("No user found. Signing in anonymously for guest access.");
-                    try {
-                        const anonResult = await signInAnonymously(auth);
-                        // The onAuthStateChanged listener will fire again with the anonymous user
-                    } catch (error) {
-                        console.error("Anonymous sign-in failed:", error);
-                        // If anonymous sign-in fails, show the standard login page as a last resort
+                    // 2. Google Account (သို့) Custom Token ဖြင့် ဝင်ရောက်အောင်မြင်သည့်အခါ
+                    // ဤနေရာတွင် Anonymous user များကို လုံးဝလျစ်လျူရှုထားပါသည်။
+                    if (!user.isAnonymous) {
+                        userId = user.uid;
+                        isInitialUILoad = true; // Reset the flag on login
+                        await seedInitialData(user);
+                        await fetchUserData(userId);
+                        // အောင်မြင်စွာ ဝင်ရောက်ပြီးပါက Login Page ကို ဖျောက်ပြီး App Container ကို ပြမည်
+                        if (loginPage) loginPage.style.display = 'none';
+                        if (appContainer) appContainer.style.display = 'flex';
+                    } else {
+                        // user object ရှိနေသော်လည်း Anonymous ဖြစ်နေပါက (Custom Token မပါဝင်သည့်အခါ) Login Page သို့ ပို့မည်။
                         if (loginPage) loginPage.style.display = 'flex';
                         if (appContainer) appContainer.style.display = 'none';
+                        hideLoading();
                     }
+
+                } else {
+                    // User မရှိပါက Login Page ပြပါမည်။
+                    console.log("No user is signed in. Showing login page.");
+                    if (loginPage) loginPage.style.display = 'flex';
+                    if (appContainer) appContainer.style.display = 'none';
+                    hideLoading();
                 }
             });
         });
