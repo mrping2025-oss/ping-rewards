@@ -145,40 +145,41 @@
         <div class="animate-spin rounded-full h-12 w-12 border-4 border-text-color border-t-primary"></div>
     </div>
 
-    <!-- Login Page View -->
-    <div id="login-page" class="view flex justify-center items-center min-h-screen p-4" style="display: flex;">
-        <div class="w-full max-w-sm text-center">
-            <div class="mb-8">
-                <!-- New Logo SVG: Letter 'P' -->
-                <svg class="w-20 h-20 mx-auto fill-primary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <!-- START: Auth Modal (Replaces old #login-page) -->
+    <div id="auth-modal" class="modal-overlay fixed inset-0 flex justify-center items-center z-[1000] hidden">
+        <div class="modal-content bg-card-bg p-8 rounded-xl w-11/12 max-w-sm shadow-2xl border border-slate-700 text-center">
+            <div class="mb-4">
+                <svg class="w-12 h-12 mx-auto fill-primary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path
                         d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9v-4h2.5c1.38 0 2.5-1.12 2.5-2.5S12.88 7 11.5 7H9v-2h2.5C14.43 5 16 6.57 16 8.5S14.43 12 11.5 12H9v4h4v-2z" />
                 </svg>
-                <div class="text-2xl font-bold mt-2">Ping Rewards</div>
-                <div class="text-muted-text mt-1">Get rewarded for watching videos.</div>
+                <div class="text-xl font-bold mt-2">Ping Rewards</div>
             </div>
-            <div class="bg-card-bg p-8 rounded-xl shadow-lg border border-slate-700">
-                <h2 class="text-xl font-semibold mb-6">Welcome to Ping Rewards</h2>
-                <p id="login-message" class="text-red-500 text-sm mb-4" style="display: none;"></p>
-                <button id="google-sign-in-btn"
-                    class="w-full py-3 bg-primary hover:bg-indigo-600 text-white font-semibold rounded-lg transition-colors duration-300 flex items-center justify-center gap-3">
-                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <path fill="#ffffff"
-                            d="M22.4 12.2c0-.7-.1-1.3-.2-1.9H12v3.8h5.3c-.2 1.2-.8 2.2-1.6 3l3.2 2.5c2.1-1.9 3.4-4.7 3.4-8.4z" />
-                        <path fill="#ffffff"
-                            d="M12 22c3.2 0 5.9-1.1 7.8-3l-3.2-2.5c-1 1.2-2.3 1.9-4.6 1.9-3.5 0-6.5-2.4-7.6-5.6l-3.3 2.5c1.4 2.8 4.4 4.8 7.9 4.8z" />
-                        <path fill="#ffffff"
-                            d="M4.4 12.2c0-1.6.4-3.1 1.2-4.4L2.3 5.4C.9 7.7 0 10 0 12.2c0 2.2.9 4.5 2.3 6.8l3.3-2.4c-.8-1.3-1.2-2.8-1-1.4z" />
-                        <path fill="#ffffff"
-                            d="M12 4.1c1.8 0 3.3.6 4.6 1.8L19.4 3C17.5 1.1 14.8 0 12 0c-3.5 0-6.5 2-7.9 4.8l3.3 2.4C8.7 5.7 10.2 5 12 5z" />
-                    </svg>
-                    Sign in with Google
-                </button>
-            </div>
+            <h2 class="text-xl font-semibold mb-4">Sign in to earn rewards</h2>
+            <p id="auth-message" class="text-red-400 text-sm mb-4" style="display: none;"></p>
+            <button id="google-sign-in-btn"
+                class="w-full py-3 bg-primary hover:bg-indigo-600 text-white font-semibold rounded-lg transition-colors duration-300 flex items-center justify-center gap-3">
+                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path fill="#ffffff"
+                        d="M22.4 12.2c0-.7-.1-1.3-.2-1.9H12v3.8h5.3c-.2 1.2-.8 2.2-1.6 3l3.2 2.5c2.1-1.9 3.4-4.7 3.4-8.4z" />
+                    <path fill="#ffffff"
+                        d="M12 22c3.2 0 5.9-1.1 7.8-3l-3.2-2.5c-1 1.2-2.3 1.9-4.6 1.9-3.5 0-6.5-2.4-7.6-5.6l-3.3 2.5c1.4 2.8 4.4 4.8 7.9 4.8z" />
+                    <path fill="#ffffff"
+                        d="M4.4 12.2c0-1.6.4-3.1 1.2-4.4L2.3 5.4C.9 7.7 0 10 0 12.2c0 2.2.9 4.5 2.3 6.8l3.3-2.4c-.8-1.3-1.2-2.8-1-1.4z" />
+                    <path fill="#ffffff"
+                        d="M12 4.1c1.8 0 3.3.6 4.6 1.8L19.4 3C17.5 1.1 14.8 0 12 0c-3.5 0-6.5 2-7.9 4.8l3.3 2.4C8.7 5.7 10.2 5 12 5z" />
+                </svg>
+                Sign in with Google
+            </button>
+            <button id="auth-modal-close-btn" class="w-full mt-3 py-2 text-muted-text hover:text-white transition-colors duration-200">
+                Cancel
+            </button>
         </div>
     </div>
+    <!-- END: Auth Modal -->
 
     <!-- Main Application Container (Hidden initially) -->
+    <!-- Note: This will be shown immediately upon anonymous sign-in -->
     <div id="app-container" class="view flex flex-col md:flex-row w-full min-h-screen" style="display: none;">
         <!-- Sidebar -->
         <div id="sidebar"
@@ -1090,10 +1091,11 @@
             let userId = null;
             let isAuthReady = false;
 
-            const loginPage = document.getElementById('login-page');
+            const authModal = document.getElementById('auth-modal'); // **MODIFIED** from login-page
+            const authMessage = document.getElementById('auth-message'); // **MODIFIED** from login-message
+            const authModalCloseBtn = document.getElementById('auth-modal-close-btn'); // **NEW**
             const appContainer = document.getElementById('app-container');
             const googleSignInBtn = document.getElementById('google-sign-in-btn');
-            const loginMessage = document.getElementById('login-message');
             const loadingOverlay = document.getElementById('loading-overlay');
 
             const navLinks = document.querySelectorAll('.nav-link');
@@ -1330,107 +1332,130 @@
 
 
             async function seedInitialData(user) {
-                try {
-                    if (!user) {
-                        console.log("No authenticated user to seed data for. Skipping user seed.");
-                        return;
-                    }
-                    const userId = user.uid;
-                    const userDocRef = doc(db, `/artifacts/${appId}/users/${userId}`);
-                    const userDocSnap = await getDoc(userDocRef);
-                    
-                    // --- START REFERRAL URL CHECK AND VARIABLE SETUP ---
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const referrerIdFromUrl = urlParams.get('ref');
-                    // Ensure referrerId is not the current user and is present
-                    const validReferrerId = (referrerIdFromUrl && referrerIdFromUrl !== userId) ? referrerIdFromUrl : null;
-                    // --- END REFERRAL URL CHECK AND VARIABLE SETUP ---
+                // IMPORTANT: This function only runs for NON-ANONYMOUS users or the first time an anonymous user is created
+                if (!user) {
+                    console.log("No authenticated user to seed data for. Skipping user seed.");
+                    return;
+                }
+                
+                const userId = user.uid;
+                const userDocRef = doc(db, `/artifacts/${appId}/users/${userId}`);
+                const userDocSnap = await getDoc(userDocRef);
+                
+                // --- START REFERRAL URL CHECK AND VARIABLE SETUP (Only relevant for non-anonymous sign-ups) ---
+                const urlParams = new URLSearchParams(window.location.search);
+                const referrerIdFromUrl = urlParams.get('ref');
+                // Ensure referrerId is not the current user and is present
+                const validReferrerId = (referrerIdFromUrl && referrerIdFromUrl !== userId) ? referrerIdFromUrl : null;
+                // --- END REFERRAL URL CHECK AND VARIABLE SETUP ---
 
-                    if (!userDocSnap.exists()) {
-                        let userRole = 'user';
-                        let userName = user.displayName || (user.email ? user.email.split('@')[0] : 'Ping User');
-                        if (user.email === adminEmail) {
-                            userRole = 'admin';
-                            userName = 'Mr. Ping';
-                        }
-                        
-                        // Set the new user's initial data
-                        await setDoc(userDocRef, {
-                            name: userName,
-                            email: user.email || '',
-                            role: userRole,
-                            points: 0,
-                            pointsHistory: [],
-                            payoutHistory: [],
-                            watchedVideos: [], // Simple list of IDs for general tracking
-                            videoCooldowns: [], // Array of {id: 'vidX', availableAfter: timestamp} objects
-                            completedSocialTasks: [],
-                            // IMPORTANT: Save referrerId in the new user's document
-                            referrerId: validReferrerId, 
-                            invitedUsers: [] 
-                        });
-                        console.log("Seeding initial user data.");
-                        
-                        // --- AWARD REFERRER BONUS IF VALID REFERRAL LINK WAS USED ---
-                        if (validReferrerId) {
-                            console.log(`[Referral] New user signed up with referrer ID: ${validReferrerId}. Attempting to award bonus...`);
-                            await awardReferrerBonus(validReferrerId, userId, userName);
-                        }
-                        // --- END AWARD REFERRER BONUS ---
-
-                    }
-
+                if (!userDocSnap.exists()) {
+                    let userRole = 'user';
+                    let userName = user.displayName || (user.email ? user.email.split('@')[0] : 'Ping User');
                     if (user.email === adminEmail) {
-                        // Seeding initial videos
-                        const videosCollectionRef = collection(db, `/artifacts/${appId}/public/data/videos`);
-                        const videosSnapshot = await getDocs(videosCollectionRef);
-                        if (videosSnapshot.empty) {
-                            // watchDuration is now the maximum time (in seconds) to earn points
-                            const initialVideos = [
-                                { id: 'vid1', title: "The Beauty of Nature", category: "Nature", points: 60, watchDuration: 300, description: "A breathtaking journey through mountains and forests.", videoUrl: "https://www.youtube.com/embed/g2J03u13kXg" },
-                                { id: 'vid2', title: "Learn React in 30 Seconds", category: "Education", points: 30, watchDuration: 180, description: "A quick overview of React hooks.", videoUrl: "https://www.youtube.com/embed/Ke90Tje7VS0" },
-                                { id: 'vid3', title: "City Life at Night", category: "Travel", points: 90, watchDuration: 540, description: "Explore the vibrant life of a metropolis after dark.", videoUrl: "https://www.youtube.com/embed/5a-H_gqM_9E" },
-                                { id: 'vid4', title: "Cooking a Perfect Steak", category: "Food", points: 60, watchDuration: 240, description: "A step by step guide to cooking steak.", videoUrl: "https://www.youtube.com/embed/H0d82C7YjA8" },
-                                { id: 'vid5', title: "Gaming Highlights of the Week", category: "Gaming", points: 120, watchDuration: 720, description: "The best moments in esports.", videoUrl: "https://www.youtube.com/embed/d-Yq36_9tQ0" }
-                            ];
-                            for (const video of initialVideos) {
-                                await setDoc(doc(videosCollectionRef, video.id), {
-                                    title: video.title,
-                                    category: video.category,
-                                    points: video.points, // Legacy points, ignored for earning logic
-                                    watchDuration: video.watchDuration, // Max earning duration
-                                    description: video.description,
-                                    videoUrl: video.videoUrl
-                                });
-                            }
-                            console.log("Seeding initial video data.");
-                        }
-
-                        // Seeding initial social tasks
-                        const socialTasksCollectionRef = collection(db, `/artifacts/${appId}/public/data/socialTasks`);
-                        const socialTasksSnapshot = await getDocs(socialTasksCollectionRef);
-                        if (socialTasksSnapshot.empty) {
-                            const initialSocialTasks = [
-                                { id: 'task1', title: 'Follow us on Facebook', platform: 'Facebook', link: 'https://facebook.com/pingrewards', points: 100 },
-                                { id: 'task2', title: 'Follow us on Telegram', platform: 'Telegram', link: 'https://t.me/pingrewards', points: 150 },
-                                { id: 'task3', title: 'Follow us on TikTok', platform: 'TikTok', link: 'https://tiktok.com/@pingrewards', points: 120 },
-                                { id: 'task4', title: 'Subscribe to our YouTube', platform: 'YouTube', link: 'https://www.youtube.com/@pingrewards', points: 200 },
-                            ];
-                            for (const task of initialSocialTasks) {
-                                await setDoc(doc(socialTasksCollectionRef, task.id), task);
-                            }
-                            console.log("Seeding initial social task data.");
-                        }
+                        userRole = 'admin';
+                        userName = 'Mr. Ping';
                     }
-                } catch (error) {
-                    console.error("Error seeding data: ", error);
+                    
+                    // Set the new user's initial data
+                    await setDoc(userDocRef, {
+                        name: userName,
+                        email: user.email || '',
+                        role: userRole,
+                        points: 0,
+                        pointsHistory: [],
+                        payoutHistory: [],
+                        watchedVideos: [], // Simple list of IDs for general tracking
+                        videoCooldowns: [], // Array of {id: 'vidX', availableAfter: timestamp} objects
+                        completedSocialTasks: [],
+                        // IMPORTANT: Save referrerId in the new user's document
+                        referrerId: validReferrerId, 
+                        invitedUsers: [] 
+                    });
+                    console.log("Seeding initial user data.");
+                    
+                    // --- AWARD REFERRER BONUS IF VALID REFERRAL LINK WAS USED ---
+                    if (validReferrerId) {
+                        console.log(`[Referral] New user signed up with referrer ID: ${validReferrerId}. Attempting to award bonus...`);
+                        await awardReferrerBonus(validReferrerId, userId, userName);
+                    }
+                    // --- END AWARD REFERRER BONUS ---
+
+                }
+
+                if (user.email === adminEmail) {
+                    // Seeding initial videos (Only runs for admin on first sign-in)
+                    const videosCollectionRef = collection(db, `/artifacts/${appId}/public/data/videos`);
+                    const videosSnapshot = await getDocs(videosCollectionRef);
+                    if (videosSnapshot.empty) {
+                        // watchDuration is now the maximum time (in seconds) to earn points
+                        const initialVideos = [
+                            { id: 'vid1', title: "The Beauty of Nature", category: "Nature", points: 60, watchDuration: 300, description: "A breathtaking journey through mountains and forests.", videoUrl: "https://www.youtube.com/embed/g2J03u13kXg" },
+                            { id: 'vid2', title: "Learn React in 30 Seconds", category: "Education", points: 30, watchDuration: 180, description: "A quick overview of React hooks.", videoUrl: "https://www.youtube.com/embed/Ke90Tje7VS0" },
+                            { id: 'vid3', title: "City Life at Night", category: "Travel", points: 90, watchDuration: 540, description: "Explore the vibrant life of a metropolis after dark.", videoUrl: "https://www.youtube.com/embed/5a-H_gqM_9E" },
+                            { id: 'vid4', title: "Cooking a Perfect Steak", category: "Food", points: 60, watchDuration: 240, description: "A step by step guide to cooking steak.", videoUrl: "https://www.youtube.com/embed/H0d82C7YjA8" },
+                            { id: 'vid5', title: "Gaming Highlights of the Week", category: "Gaming", points: 120, watchDuration: 720, description: "The best moments in esports.", videoUrl: "https://www.youtube.com/embed/d-Yq36_9tQ0" }
+                        ];
+                        for (const video of initialVideos) {
+                            await setDoc(doc(videosCollectionRef, video.id), {
+                                title: video.title,
+                                category: video.category,
+                                points: video.points, // Legacy points, ignored for earning logic
+                                watchDuration: video.watchDuration, // Max earning duration
+                                description: video.description,
+                                videoUrl: video.videoUrl
+                            });
+                        }
+                        console.log("Seeding initial video data.");
+                    }
+
+                    // Seeding initial social tasks
+                    const socialTasksCollectionRef = collection(db, `/artifacts/${appId}/public/data/socialTasks`);
+                    const socialTasksSnapshot = await getDocs(socialTasksCollectionRef);
+                    if (socialTasksSnapshot.empty) {
+                        const initialSocialTasks = [
+                            { id: 'task1', title: 'Follow us on Facebook', platform: 'Facebook', link: 'https://facebook.com/pingrewards', points: 100 },
+                            { id: 'task2', title: 'Follow us on Telegram', platform: 'Telegram', link: 'https://t.me/pingrewards', points: 150 },
+                            { id: 'task3', title: 'Follow us on TikTok', platform: 'TikTok', link: 'https://tiktok.com/@pingrewards', points: 120 },
+                            { id: 'task4', title: 'Subscribe to our YouTube', platform: 'YouTube', link: 'https://www.youtube.com/@pingrewards', points: 200 },
+                        ];
+                        for (const task of initialSocialTasks) {
+                            await setDoc(doc(socialTasksCollectionRef, task.id), task);
+                        }
+                        console.log("Seeding initial social task data.");
+                    }
                 }
             }
+            
+            // Function to check auth state and force Google sign-in if anonymous
+            async function requireAuth(message = "You must sign in with Google to perform this action.") {
+                if (!auth.currentUser || !auth.currentUser.isAnonymous) {
+                    return true; // Already signed in with a Google account
+                }
+
+                // Show the auth modal
+                if (authModal) {
+                    if (authMessage) {
+                        authMessage.textContent = message;
+                        authMessage.style.display = 'block';
+                    }
+                    authModal.classList.remove('hidden');
+                }
+
+                return false; // Not authenticated with Google
+            }
+
 
             async function fetchAndRenderLeaderboard() {
                 const leaderboardContainer = document.getElementById('leaderboard-container');
                 if (!leaderboardContainer) return;
 
+                // For anonymous users, we show a simplified loading/placeholder view
+                if (auth.currentUser && auth.currentUser.isAnonymous) {
+                     leaderboardContainer.innerHTML = `<p class="text-center text-muted-text p-4">Sign in to view the Top Earners Leaderboard.</p>`;
+                     return;
+                }
+                
                 leaderboardContainer.innerHTML = `<div class="text-center text-muted-text p-4">Loading leaderboard...</div>`;
 
                 try {
@@ -1481,6 +1506,9 @@
 
 
             async function fetchUserData(uid) {
+                // Only listen for real users' data. Anonymous users have minimal local data.
+                if (auth.currentUser.isAnonymous) return; 
+
                 const userDocRef = doc(db, `/artifacts/${appId}/users/${uid}`);
                 onSnapshot(userDocRef, (docSnap) => {
                     if (docSnap.exists()) {
@@ -1493,7 +1521,8 @@
                         updateUI(currentUser.role);
                         console.log("User data updated:", userData);
                     } else {
-                        console.log("User data not found for a logged-in user. This should not happen if `seedInitialData` ran correctly.");
+                        console.log("Real user data not found. Attempting to re-seed or check state.");
+                        // Handle case where real user data might be missing (shouldn't happen after seed)
                         hideLoading();
                     }
                 }, (error) => {
@@ -1503,6 +1532,7 @@
             }
 
             async function fetchVideos() {
+                // Fetch videos for both authenticated and anonymous users
                 showLoading();
                 try {
                     const videosCollectionRef = collection(db, `/artifacts/${appId}/public/data/videos`);
@@ -1519,6 +1549,7 @@
 
             // Function to fetch social tasks from Firestore
             async function fetchSocialTasks() {
+                // Fetch tasks for both authenticated and anonymous users
                 showLoading();
                 try {
                     const socialTasksCollectionRef = collection(db, `/artifacts/${appId}/public/data/socialTasks`);
@@ -1563,7 +1594,9 @@
 
             // Updates user points in Firestore and adds a new history entry
             async function updatePointsInFirestore(pointsToAdd, description, id, type = 'video', isFullWatch = false, videoDuration = 0) {
-                if (!userData || !userId) return;
+                // Must be a non-anonymous user to earn points
+                if (!userData || !userId || auth.currentUser.isAnonymous) return;
+                
                 try {
                     const userDocRef = doc(db, `/artifacts/${appId}/users/${userId}`);
                     const newPoints = userData.points + pointsToAdd;
@@ -1610,6 +1643,7 @@
             }
 
             async function saveVideo(videoData, videoId = null) {
+                // Admin function - implicitly non-anonymous
                 showLoading();
                 try {
                     const videosCollectionRef = collection(db, `/artifacts/${appId}/public/data/videos`);
@@ -1638,6 +1672,7 @@
 
             // Function to save or update a social task
             async function saveSocialTask(taskData, taskId = null) {
+                // Admin function - implicitly non-anonymous
                 showLoading();
                 try {
                     const tasksCollectionRef = collection(db, `/artifacts/${appId}/public/data/socialTasks`);
@@ -1660,6 +1695,7 @@
             }
 
             async function deleteVideo(videoId) {
+                // Admin function - implicitly non-anonymous
                 showLoading();
                 try {
                     const videoDocRef = doc(db, `/artifacts/${appId}/public/data/videos`, videoId);
@@ -1682,6 +1718,7 @@
 
             // Function to delete a social task
             async function deleteSocialTask(taskId) {
+                // Admin function - implicitly non-anonymous
                 showLoading();
                 try {
                     const taskDocRef = doc(db, `/artifacts/${appId}/public/data/socialTasks`, taskId);
@@ -1712,6 +1749,7 @@
             }
 
             async function fetchAdminDashboardData() {
+                // Admin function - implicitly non-anonymous
                 showLoading();
                 try {
                     // Fetch total users, points, and payouts using onSnapshot for real-time updates
@@ -1759,15 +1797,13 @@
                 // This block runs only on the very first load for a user session
                 if (isInitialUILoad) {
                     views.forEach(view => { if (view) view.style.display = 'none'; });
-                    if (loginPage) loginPage.style.display = 'none';
                     if (appContainer) appContainer.style.display = 'flex';
 
                     if (role === 'user') {
                         document.querySelectorAll('.admin-link').forEach(link => { if (link) link.style.display = 'none'; });
                         document.querySelectorAll('.user-link').forEach(link => { if (link) link.style.display = 'flex'; });
                         showView('user-dashboard-view');
-                        fetchVideos().then(() => renderVideoGrid('all'));
-                        fetchSocialTasks().then(renderSocialTasksGrid);
+                        // Video/Task fetch is done during initial anonymous sign-in now.
                     } else if (role === 'admin') {
                         document.querySelectorAll('.user-link').forEach(link => { if (link) link.style.display = 'none'; });
                         document.querySelectorAll('.admin-link').forEach(link => { if (link) link.style.display = 'flex'; });
@@ -1783,7 +1819,10 @@
                 if (role === 'user') {
                     if (headerMeta) headerMeta.innerHTML = getUserHeaderHTML();
                     if (sidebarProfile) sidebarProfile.innerHTML = getUserProfileHTML();
-                    if (welcomeMessage) welcomeMessage.textContent = `Welcome back, ${currentUser.name}!`;
+                    // Show appropriate welcome message based on auth status
+                    if (welcomeMessage) {
+                        welcomeMessage.textContent = auth.currentUser?.isAnonymous ? "Welcome to Ping Rewards! Sign in to start earning." : `Welcome back, ${currentUser.name}!`;
+                    }
                     updatePointsDisplay();
                     // Re-render active view content if necessary
                     if (document.getElementById('points-history-view').style.display === 'block') {
@@ -1791,7 +1830,7 @@
                     }
                     if (document.getElementById('watch-videos-view').style.display === 'block' && !isInitialUILoad) {
                         const activeFilterBtn = document.querySelector('#watch-videos-view .filter-btn.active');
-                        const category = activeFilterBtn ? activeFilterBtn.dataset.category : 'all';
+                        const category = activeFilterBtn ? activeFilterBtn.getAttribute('data-category') : 'all';
                         const searchQuery = searchBar ? searchBar.value : '';
                         renderVideoGrid(category, searchQuery);
                     }
@@ -1809,9 +1848,10 @@
             }
 
             function getUserProfileHTML() {
-                const nameText = currentUser?.name || 'Unknown';
+                const isAnon = auth.currentUser?.isAnonymous;
+                const nameText = isAnon ? 'Guest' : (currentUser?.name || 'Unknown');
                 const profileText = nameText.split(' ').map(n => n[0]).join('');
-                const roleText = currentUser?.role === 'admin' ? 'ADMINISTRATOR' : currentUser?.email || 'N/A';
+                const roleText = isAnon ? 'View Only' : (currentUser?.role === 'admin' ? 'ADMINISTRATOR' : currentUser?.email || 'N/A');
                 return `
                     <div class="flex items-center">
                         <div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center mr-4 font-semibold text-primary">
@@ -1826,14 +1866,20 @@
             }
 
             function getUserHeaderHTML() {
-                const nameText = currentUser?.name || 'Unknown';
+                const isAnon = auth.currentUser?.isAnonymous;
+                const nameText = isAnon ? 'Guest' : (currentUser?.name || 'Unknown');
                 const profileText = nameText.split(' ').map(n => n[0]).join('');
-                const roleText = currentUser?.role === 'admin' ? 'Admin' : 'User';
+                const roleText = isAnon ? 'Guest' : (currentUser?.role === 'admin' ? 'Admin' : 'User');
+                
+                // For anonymous users, points are zero and cannot be shown/cashed out
+                const currentPoints = isAnon ? 0 : (userData?.points || 0);
+                const currentEarnings = isAnon ? 0 : (userData?.points / 5000);
+
                 return `
                     <div class="flex items-center space-x-4">
                         <div class="flex flex-col items-end">
-                            <span id="user-points-display" class="font-bold text-lg">${(userData?.points || 0).toLocaleString()} PTS</span>
-                            <span class="text-sm text-muted-text">$${(userData?.points / 5000).toFixed(2)}</span>
+                            <span id="user-points-display" class="font-bold text-lg">${currentPoints.toLocaleString()} PTS</span>
+                            <span class="text-sm text-muted-text">$${currentEarnings.toFixed(2)}</span>
                         </div>
                         <div class="flex items-center space-x-2">
                              <div class="text-right">
@@ -1842,7 +1888,7 @@
                              </div>
                             <img src="https://placehold.co/32x32/6366f1/ffffff?text=${profileText}" alt="${nameText}" class="w-8 h-8 rounded-full border border-primary">
                         </div>
-                        <button class="logout-btn p-2 rounded-full hover:bg-slate-700 transition-colors duration-200">
+                        <button class="logout-btn p-2 rounded-full hover:bg-slate-700 transition-colors duration-200" ${isAnon ? 'style="display:none;"' : ''}>
                             <svg class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
                         </button>
                     </div>
@@ -1879,12 +1925,11 @@
                     newLogoutButtons.forEach(btn => {
                         btn.addEventListener('click', async () => {
                             try {
+                                // Sign out clears the real user session
                                 await signOut(auth);
-                                if (loginPage) loginPage.style.display = 'flex';
-                                if (appContainer) appContainer.style.display = 'none';
-                                currentUser = null;
-                                userData = null;
-                                console.log("User signed out.");
+                                
+                                // Reset to anonymous state (onAuthStateChanged will handle re-signing in anonymously)
+                                // We don't hide the app container here; the new anonymous session will reset the UI
                             } catch (error) {
                                 console.error("Error signing out:", error);
                             }
@@ -1987,12 +2032,15 @@
                     return;
                 }
 
-                // Get cooldown info
-                const videoCooldowns = userData?.videoCooldowns || [];
-                const watchedVideoIds = userData?.watchedVideos || [];
+                // Cooldown and watched info is only available for non-anonymous users
+                const isAnon = auth.currentUser?.isAnonymous;
+                const videoCooldowns = isAnon ? [] : (userData?.videoCooldowns || []);
+                const watchedVideoIds = isAnon ? [] : (userData?.watchedVideos || []);
 
                 // Function to check if a video is on cooldown
                 const getCooldownStatus = (videoId) => {
+                    if (isAnon) return { isOnCooldown: false }; // No cooldown for anonymous viewing
+
                     const cooldown = videoCooldowns.find(c => c.id === videoId);
                     if (!cooldown) return { isOnCooldown: false };
 
@@ -2004,8 +2052,6 @@
                             remainingTime: availableAfter - Date.now()
                         };
                     }
-                    // If cooldown is expired, we need to manually clean up the expired entry 
-                    // This is handled by a filter/re-render logic in the next step to keep the sorting correct
                     return { isOnCooldown: false };
                 };
 
@@ -2022,7 +2068,7 @@
                     }
                 });
                 
-                // Sort the available videos (unwatched always come before watched, though both are clickable now if cooldown is over)
+                // Sort the available videos 
                 availableVideos.sort((a, b) => {
                     const aWatched = watchedVideoIds.includes(a.id);
                     const bWatched = watchedVideoIds.includes(b.id);
@@ -2047,7 +2093,7 @@
 
                     let stateClasses = 'cursor-pointer';
                     let watchedOverlay = '';
-                    let actionText = 'Watch to Earn';
+                    let actionText = isAnon ? 'View Only (Sign In to Earn)' : 'Watch to Earn';
 
                     if (isOnCooldown) {
                          stateClasses = 'opacity-50 pointer-events-none cursor-not-allowed';
@@ -2057,12 +2103,17 @@
                                 <svg class="w-8 h-8 text-yellow-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                 <span class="text-sm font-bold text-yellow-400 text-center">Cooldown: ${remainingHours} Hrs Left</span>
                             </div>`;
-                    } else if (isWatched) {
+                    } else if (isWatched && !isAnon) {
                         // Video was fully watched before, but cooldown is over.
                          watchedOverlay = `<div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center rounded-xl">
                                <svg class="w-12 h-12 text-accent-green" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                            </div>`;
                         actionText = 'Watched Before (Ready!)';
+                    } else if (isAnon) {
+                         // Anonymous user overlay to hint at signing in
+                         watchedOverlay = `<div class="absolute inset-0 bg-primary/20 flex items-center justify-center rounded-xl">
+                               <span class="text-sm font-bold text-white p-2 bg-primary/80 rounded-lg">Sign In to Earn</span>
+                           </div>`;
                     }
                     
                     // Calculation for Points/Min and Max Duration display
@@ -2117,12 +2168,15 @@
                     return;
                 }
 
-                const completedTasks = userData?.completedSocialTasks || [];
+                const isAnon = auth.currentUser?.isAnonymous;
+                const completedTasks = isAnon ? [] : (userData?.completedSocialTasks || []);
+                
                 socialTasks.forEach(task => {
                     const isCompleted = completedTasks.includes(task.id);
-                    const cardClass = isCompleted ? 'opacity-50 grayscale cursor-not-allowed' : '';
-                    const buttonText = isCompleted ? 'Completed' : 'Complete Task';
-                    const buttonClass = isCompleted ? 'bg-accent-green/50' : 'bg-primary hover:bg-indigo-600';
+                    const cardClass = isCompleted ? 'opacity-50 grayscale cursor-not-allowed' : (isAnon ? 'cursor-pointer' : 'cursor-pointer hover:shadow-primary/50');
+                    const buttonText = isCompleted ? 'Completed' : (isAnon ? 'Sign In to Complete' : 'Complete Task');
+                    const buttonClass = isCompleted ? 'bg-accent-green/50' : (isAnon ? 'bg-secondary hover:bg-pink-500' : 'bg-primary hover:bg-indigo-600');
+                    
                     let icon;
                     switch (task.platform) {
                         case 'Facebook': icon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-blue-600"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c5.29 0 9.77-4.14 10-9.43.14-2.85-2.06-5.26-4.91-5.74v2.02c1.78.4 3.12 1.93 3.12 3.82 0 2.11-1.79 3.82-3.99 3.82H12v-6.93l-3 3v2.93h-1v-6h-2v6.93l1.85-1.85c.19-.19.45-.3.72-.3s.53.11.72.3L12 14.07V12h3.99c1.66 0 3-1.34 3-3s-1.34-3-3-3h-3c-1.1 0-2 .9-2 2v1H9v2h2v1H8c-2.21 0-4-1.79-4-4s1.79-4 4-4h4V2z"/></svg>`; break;
@@ -2151,6 +2205,7 @@
             }
 
             function renderUsersTable(users) {
+                // ... (No change needed here - Admin view)
                 if (!usersTableBody) return;
                 usersTableBody.innerHTML = '';
                 if (users.length === 0) {
@@ -2179,6 +2234,7 @@
             }
 
             function renderManageVideosTable() {
+                // ... (No change needed here - Admin view)
                 const videoTableBody = document.querySelector('#videos-table');
                 if (!videoTableBody) {
                     console.error("Video table body element not found.");
@@ -2208,6 +2264,7 @@
 
             // Renders the manage social tasks table for admin view
             function renderManageSocialTasksTable() {
+                // ... (No change needed here - Admin view)
                 if (!socialTaskTableBody) return;
                 socialTaskTableBody.innerHTML = '';
                 console.log(`[Admin Tasks] Rendering ${socialTasks.length} tasks.`); // LOGGING ADDED FOR DEBUGGING
@@ -2234,6 +2291,12 @@
             }
 
             function renderPointsHistoryTable() {
+                // Only show data for non-anonymous users
+                if (auth.currentUser?.isAnonymous) {
+                     pointsHistoryTableBody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-muted-text">Sign in to view your points history.</td></tr>`;
+                     return;
+                }
+                
                 const pointsHistoryTableBody = document.querySelector('#points-history-table');
                 if (!pointsHistoryTableBody) {
                     console.error("Points history table body element not found.");
@@ -2262,6 +2325,18 @@
 
             // Function to render the Invite & Earn view
             function renderInviteAndEarnView() {
+                const isAnon = auth.currentUser?.isAnonymous;
+                
+                if (isAnon) {
+                    // Placeholder for anonymous users
+                    if (referralCodeInput) referralCodeInput.value = 'Sign In to Generate Code';
+                    if (referralLinkInput) referralLinkInput.value = 'Sign In to Generate Link';
+                    if (invitedUsersTable) invitedUsersTable.innerHTML = `<tr><td colspan="2" class="p-2 text-center text-muted-text">Sign in to view and share your referral details.</td></tr>`;
+                    if (copyReferralBtn) copyReferralBtn.disabled = true;
+                    if (copyLinkBtn) copyLinkBtn.disabled = true;
+                    return;
+                }
+
                 if (!userData || !userId) return;
                 
                 const code = userId; // User ID is the referral code
@@ -2270,6 +2345,9 @@
                 
                 if (referralCodeInput) referralCodeInput.value = code;
                 if (referralLinkInput) referralLinkInput.value = link;
+                if (copyReferralBtn) copyReferralBtn.disabled = false;
+                if (copyLinkBtn) copyLinkBtn.disabled = false;
+
 
                 // Render invited users table
                 if (invitedUsersTable) {
@@ -2289,6 +2367,7 @@
             }
             
             function renderPayoutHistoryTable(payouts) {
+                // ... (No change needed here - Admin view)
                 if (!historyTableBody) return;
                 historyTableBody.innerHTML = '';
                 if (!payouts || payouts.length === 0) {
@@ -2309,23 +2388,24 @@
             }
 
             function updatePointsDisplay() {
-                if (!userData) return;
-                const totalPointsValue = document.getElementById('total-points-value');
-                const estimatedEarningsValue = document.getElementById('estimated-earnings-value');
-                const videosWatchedValue = document.getElementById('videos-watched-value');
+                const isAnon = auth.currentUser?.isAnonymous;
+                
+                // Use 0 for anonymous user points
+                const currentPoints = isAnon ? 0 : (userData?.points || 0);
+
+                if (totalPointsValue) totalPointsValue.textContent = currentPoints.toLocaleString();
+                if (estimatedEarningsValue) estimatedEarningsValue.textContent = `$${(currentPoints / 5000).toFixed(2)}`;
+                if (videosWatchedValue) videosWatchedValue.textContent = isAnon ? '0' : (userData.watchedVideos || []).length;
+                
                 const userPointsDisplay = document.getElementById('user-points-display');
+                if (userPointsDisplay) userPointsDisplay.textContent = `${currentPoints.toLocaleString()} PTS`;
+                
                 const cashoutBtn = document.getElementById('cashout-button');
                 const payoutAmountInput = document.getElementById('payout-amount');
-
-                if (totalPointsValue) totalPointsValue.textContent = userData.points.toLocaleString();
-                if (estimatedEarningsValue) estimatedEarningsValue.textContent = `$${(userData.points / 5000).toFixed(2)}`;
-                if (videosWatchedValue) videosWatchedValue.textContent = (userData.watchedVideos || []).length;
-                if (userPointsDisplay) userPointsDisplay.textContent = `${userData.points.toLocaleString()} PTS`;
-                if (payoutAmountInput) payoutAmountInput.value = (userData.points / 5000).toFixed(2);
+                if (payoutAmountInput) payoutAmountInput.value = (currentPoints / 5000).toFixed(2);
 
                 if (cashoutBtn) {
-
-                    if (userData.points < 5000) {
+                    if (isAnon || currentPoints < 5000) {
                         cashoutBtn.classList.add('opacity-50', 'cursor-not-allowed');
                         cashoutBtn.classList.remove('hover:bg-indigo-600');
                     } else {
@@ -2336,6 +2416,9 @@
             }
 
             function animateCoins(startElement, endElement, points) {
+                // Only animate for non-anonymous users
+                if (auth.currentUser?.isAnonymous) return;
+                
                 const numberOfCoins = Math.min(Math.floor(points / 1), 10); // Changed to 1 point per coin for more frequent points, max 10
                 const startRect = startElement.getBoundingClientRect();
                 const endRect = endElement.getBoundingClientRect();
@@ -2370,7 +2453,15 @@
             async function attachVideoCardListeners() {
                 const cards = document.querySelectorAll('.video-card');
                 cards.forEach(card => {
-                    card.addEventListener('click', (e) => {
+                    card.addEventListener('click', async (e) => {
+                        e.preventDefault();
+                        
+                        // *** WRAP with requireAuth check for earning actions ***
+                        if (!await requireAuth("Sign in with Google to start earning points and watching videos.")) {
+                            return; 
+                        }
+                        // *** END WRAP ***
+                        
                         // Prevent click if it's on cooldown (though CSS pointer-events should handle this)
                         if (card.getAttribute('data-cooldown') === 'true') return; 
 
@@ -2459,6 +2550,13 @@
                 const completeButtons = document.querySelectorAll('.complete-task-btn');
                 completeButtons.forEach(btn => {
                     btn.addEventListener('click', async () => {
+                        
+                        // *** WRAP with requireAuth check for earning actions ***
+                        if (!await requireAuth("Sign in with Google to complete social tasks and earn points.")) {
+                            return; 
+                        }
+                        // *** END WRAP ***
+
                         const taskId = btn.getAttribute('data-task-id');
                         const task = socialTasks.find(t => t.id === taskId);
 
@@ -2483,6 +2581,7 @@
             }
 
             function showDeleteModal(id, type) {
+                // ... (No change needed here - Admin view)
                 if (deleteConfirmModal) {
 
 
@@ -2521,6 +2620,7 @@
             }
 
             function attachManageVideosListeners() {
+                // ... (No change needed here - Admin view)
                 const editBtns = document.querySelectorAll('.edit-btn');
                 editBtns.forEach(btn => {
                     const oldBtn = btn.cloneNode(true);
@@ -2563,6 +2663,7 @@
 
             // Attach listeners to the manage social tasks buttons
             function attachManageSocialTasksListeners() {
+                // ... (No change needed here - Admin view)
                 const editBtns = document.querySelectorAll('.edit-social-task-btn');
                 editBtns.forEach(btn => {
                     btn.addEventListener('click', (e) => {
@@ -2592,6 +2693,7 @@
             }
 
             function attachManageUsersListeners(users) {
+                // ... (No change needed here - Admin view)
                 const viewHistoryBtns = document.querySelectorAll('.view-history-btn');
                 viewHistoryBtns.forEach(btn => {
                     btn.addEventListener('click', async () => {
@@ -2634,6 +2736,7 @@
             }
 
             if (adminPayoutsCard) {
+                // ... (No change needed here - Admin view)
                 adminPayoutsCard.addEventListener('click', async () => {
                     if (!historyModal || !historyModalTitle || !historyTableBody) return;
 
@@ -2691,19 +2794,29 @@
                         const result = await signInWithPopup(auth, provider);
                         if (result.user) {
                             console.log("User signed in with Google successfully.");
+                            // authStateChange will handle closing the modal and loading user data
                         }
                     } catch (error) {
                         console.error("Google Sign-in failed:", error);
-                        if (loginMessage) {
-                            loginMessage.textContent = 'Google Sign-in failed. Please check your internet connection.';
-                            loginMessage.style.display = 'block';
+                        if (authMessage) {
+                            authMessage.textContent = 'Google Sign-in failed. Please check your internet connection.';
+                            authMessage.style.display = 'block';
                         }
                         hideLoading();
                     }
                 });
             }
+            
+            // Handle closing the Auth Modal manually
+            if (authModalCloseBtn) {
+                authModalCloseBtn.addEventListener('click', () => {
+                    if (authModal) authModal.classList.add('hidden');
+                });
+            }
+
 
             if (getSummaryBtn) {
+                // ... (No change needed here)
                 getSummaryBtn.addEventListener('click', async () => {
                     // Check if currentVideoId is set
                     const currentVideo = videos.find(v => v.id === currentVideoId);
@@ -2773,10 +2886,16 @@
                     } else if (targetId === 'social-tasks-view') {
                         renderSocialTasksGrid();
                     } else if (targetId === 'manage-videos-view') {
+                        // Admin view - requires real sign-in, but just loading content here
+                        if (auth.currentUser?.isAnonymous) requireAuth("Sign in with Google as an Admin to access this page.");
                         renderManageVideosTable();
                     } else if (targetId === 'manage-social-tasks-view') {
-                        renderManageSocialTasksTable(); // ADDED: Ensure task table renders on click
+                        // Admin view - requires real sign-in
+                        if (auth.currentUser?.isAnonymous) requireAuth("Sign in with Google as an Admin to access this page.");
+                        renderManageSocialTasksTable(); 
                     } else if (targetId === 'manage-users-view') {
+                        // Admin view - requires real sign-in
+                        if (auth.currentUser?.isAnonymous) requireAuth("Sign in with Google as an Admin to access this page.");
                         fetchAllUsers();
                     } else if (targetId === 'points-history-view') {
                         renderPointsHistoryTable();
@@ -2817,6 +2936,10 @@
 
             if (addVideoBtn) {
                 addVideoBtn.addEventListener('click', () => {
+                    if (auth.currentUser?.isAnonymous) {
+                         requireAuth("Sign in with Google as an Admin to manage videos.");
+                         return;
+                    }
                     if (addModalTitle) addModalTitle.textContent = "Add New Video";
                     if (addVideoForm) addVideoForm.reset();
                     if (addVideoForm) addVideoForm.removeAttribute('data-editing-id');
@@ -2861,6 +2984,10 @@
             // New social task form handlers
             if (addSocialTaskBtn) {
                 addSocialTaskBtn.addEventListener('click', () => {
+                    if (auth.currentUser?.isAnonymous) {
+                         requireAuth("Sign in with Google as an Admin to manage social tasks.");
+                         return;
+                    }
                     socialTaskModalTitle.textContent = "Add New Social Task";
                     addSocialTaskForm.reset();
                     addSocialTaskForm.removeAttribute('data-editing-id');
@@ -2895,7 +3022,9 @@
             
             // --- START NEW: Invite System Event Listeners ---
             if (copyReferralBtn) {
-                copyReferralBtn.addEventListener('click', () => {
+                copyReferralBtn.addEventListener('click', async () => {
+                    if (!await requireAuth("Sign in with Google to copy your referral code.")) return;
+
                     const textToCopy = referralCodeInput ? referralCodeInput.value : '';
                     if (textToCopy) {
                         // Use document.execCommand('copy') for better iframe compatibility
@@ -2916,7 +3045,9 @@
             }
 
             if (copyLinkBtn) {
-                copyLinkBtn.addEventListener('click', () => {
+                copyLinkBtn.addEventListener('click', async () => {
+                    if (!await requireAuth("Sign in with Google to copy your referral link.")) return;
+
                     const textToCopy = referralLinkInput ? referralLinkInput.value : '';
                     if (textToCopy) {
                         // Use document.execCommand('copy') for better iframe compatibility
@@ -2941,8 +3072,15 @@
             // --- END NEW: Invite System Event Listeners ---
 
             if (cashoutBtn) {
-                cashoutBtn.addEventListener('click', (e) => {
+                cashoutBtn.addEventListener('click', async (e) => {
                     e.preventDefault();
+                    
+                    // *** WRAP with requireAuth check for earning actions ***
+                    if (!await requireAuth("Sign in with Google to submit a cash out request.")) {
+                        return; 
+                    }
+                    // *** END WRAP ***
+                    
                     // Check if the user has enough points
                     if (!userData || userData.points < 5000) {
                         if (cashoutMessageModal) {
@@ -2978,12 +3116,24 @@
                     e.preventDefault();
 
                     const channelUrl = "https://t.me/Mr_PingGP";
-
-                    if (!userData || userData.points <= 0) {
+                    
+                    // Re-check auth and points before processing
+                    if (auth.currentUser?.isAnonymous || !userData || userData.points <= 0) {
                         if (cashoutModal) cashoutModal.classList.add('hidden');
-                        window.open(channelUrl, '_blank');
+                         requireAuth("Sign in with Google to process your cash out.");
                         return;
                     }
+
+                    if (userData.points < 5000) {
+                        if (cashoutModal) cashoutModal.classList.add('hidden');
+                         // Show failure modal instead of navigating
+                        if (cashoutMessageModal) {
+                            cashoutMessageText.textContent = `Cash out failed: You need 5000 points to cash out.`;
+                            cashoutMessageModal.classList.remove('hidden');
+                        }
+                        return;
+                    }
+
                     showLoading();
                     try {
                         const userDocRef = doc(db, `/artifacts/${appId}/users/${userId}`);
@@ -3007,10 +3157,17 @@
 
                         console.log('Cash out request submitted and points reset.');
                         if (cashoutModal) cashoutModal.classList.add('hidden');
+                        
+                        // After successful submission, open the Telegram channel for confirmation/contact
                         window.open(channelUrl, '_blank');
                     } catch (error) {
                         console.error("Error during cash out:", error);
-                        window.open(channelUrl, '_blank');
+                        if (cashoutModal) cashoutModal.classList.add('hidden');
+                        // Show generic error message
+                        if (cashoutMessageModal) {
+                            cashoutMessageText.textContent = `An error occurred during cash out. Please try again or contact support.`;
+                            cashoutMessageModal.classList.remove('hidden');
+                        }
                     } finally {
                         hideLoading();
                     }
@@ -3042,48 +3199,87 @@
 
             generateRandomChartData();
             showLoading();
-                 onAuthStateChanged(auth, async (user) => {
-                isAuthReady = true;
-                if (user) {
-                    
-                    // 1. Canvas မှ ပေးသော Custom Auth Token ဖြင့် ဝင်ရောက်ရန် ကြိုးစားခြင်း
-                    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+            
+            // Initial Anonymous Sign-In check
+            if (!auth.currentUser) {
+                try {
+                    // Try to sign in anonymously first if no user session exists
+                    await signInAnonymously(auth);
+                    console.log("Signed in anonymously for initial access.");
+                } catch (e) {
+                    console.error("Failed to sign in anonymously:", e);
+                    // If anonymous sign-in fails, just hide loading and exit
+                    hideLoading();
+                    return;
+                }
+            }
 
-                    if (initialAuthToken) {
+
+            // Listen for any auth state change (anonymous or real user)
+            onAuthStateChanged(auth, async (user) => {
+                isAuthReady = true;
+
+                if (user) {
+                    userId = user.uid;
+
+                    // 1. Check for Custom Token (Canvas Environment)
+                    if (typeof __initial_auth_token !== 'undefined' && user.isAnonymous) {
                          try {
-                             // Custom Token ဖြင့် ဝင်ရောက်ခြင်း (user.isAnonymous ဖြစ်နေလျှင် ၎င်းကို Google User အဖြစ် ပြောင်းလဲသွားမည်)
-                             await signInWithCustomToken(auth, initialAuthToken);
+                             // Try to convert anonymous user to real user with custom token
+                             await signInWithCustomToken(auth, __initial_auth_token);
+                             // The onAuthStateChanged listener will fire again with the real user object, 
+                             // and we'll handle the rest in the next block.
+                             console.log("Attempting to sign in with custom token.");
+                             return; 
                          } catch (e) {
                              console.error("Error signing in with custom token:", e);
-                             // Sign-in မအောင်မြင်ပါက Login Page ပြန်ပြရန်
-                             if (loginPage) loginPage.style.display = 'flex';
-                             if (appContainer) appContainer.style.display = 'none';
-                             hideLoading();
-                             return;
+                             // Fallback to anonymous state if custom token fails
                          }
                     }
 
-                    // 2. Google Account (သို့) Custom Token ဖြင့် ဝင်ရောက်အောင်မြင်သည့်အခါ
-                    // ဤနေရာတွင် Anonymous user များကို လုံးဝလျစ်လျူရှုထားပါသည်။
+                    // 2. Handle the user's current status (Anonymous or Real)
                     if (!user.isAnonymous) {
-                        userId = user.uid;
-                        isInitialUILoad = true; // Reset the flag on login
+                        // User is signed in with Google/real account
+                        if (authModal) authModal.classList.add('hidden');
+                        if (appContainer) appContainer.style.display = 'flex'; // Ensure app is visible
+                        
+                        // Load full user data and UI
+                        isInitialUILoad = true;
                         await seedInitialData(user);
                         await fetchUserData(userId);
+                        
                     } else {
-                        // user object ရှိနေသော်လည်း Anonymous ဖြစ်နေပါက (Custom Token မပါဝင်သည့်အခါ) Login Page သို့ ပို့မည်။
-                        if (loginPage) loginPage.style.display = 'flex';
-                        if (appContainer) appContainer.style.display = 'none';
-                        hideLoading();
-                    }
+                        // User is Anonymous (initial state for unauthenticated users)
+                        // Note: Anonymous user cannot have real Firestore data (points, history) due to security rules.
+                        // We use minimal local data structure for UI rendering.
+                        currentUser = { name: 'Guest', email: 'anonymous', role: 'user' };
+                        // Mock userData for display purposes (will not be saved)
+                        userData = { 
+                            points: 0, 
+                            watchedVideos: [], 
+                            completedSocialTasks: [], 
+                            videoCooldowns: [], 
+                            invitedUsers: [], 
+                            pointsHistory: [] 
+                        }; 
+                        
+                        // Show the app container (dashboard) immediately
+                        if (authModal) authModal.classList.add('hidden');
+                        if (appContainer) appContainer.style.display = 'flex';
+                        
+                        // Set up minimal UI for guest
+                        updateUI(currentUser.role);
+                        showView('user-dashboard-view');
+                        fetchVideos().then(() => renderVideoGrid('all')); // Load videos for viewing
+                        fetchSocialTasks().then(renderSocialTasksGrid); // Load tasks for viewing
 
+                        console.log("User is running as Anonymous Guest. Actions require Google sign-in.");
+                    }
                 } else {
-                    // User မရှိပါက Login Page ပြပါမည်။
-                    console.log("No user is signed in. Showing login page.");
-                    if (loginPage) loginPage.style.display = 'flex';
-                    if (appContainer) appContainer.style.display = 'none';
-                    hideLoading();
+                    // This state should rarely be hit after the initial signInAnonymously call
+                    console.log("No user session found. (Should have signed in anonymously).");
                 }
+                hideLoading();
             });
         });
            
