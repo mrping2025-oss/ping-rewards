@@ -277,11 +277,12 @@
                     </a>
                 </li>
 
-                <hr class="my-4 border-slate-700 admin-link">
+                <!-- FIX 1: Hide Admin links by default using inline style to prevent flicker -->
+                <hr class="my-4 border-slate-700 admin-link" style="display: none;">
 
-                <li>
+                <li class="admin-link" style="display: none;">
                     <a href="#"
-                        class="nav-link admin-link flex items-center p-3 rounded-lg hover:bg-primary/20 transition-colors duration-200"
+                        class="nav-link flex items-center p-3 rounded-lg hover:bg-primary/20 transition-colors duration-200"
                         data-target="admin-dashboard-view">
                         <svg class="w-6 h-6 mr-3 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                             <path
@@ -290,9 +291,9 @@
                         Admin Dashboard
                     </a>
                 </li>
-                <li>
+                <li class="admin-link" style="display: none;">
                     <a href="#"
-                        class="nav-link admin-link flex items-center p-3 rounded-lg hover:bg-primary/20 transition-colors duration-200"
+                        class="nav-link flex items-center p-3 rounded-lg hover:bg-primary/20 transition-colors duration-200"
                         data-target="manage-videos-view">
                         <svg class="w-6 h-6 mr-3 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                             <path
@@ -301,9 +302,9 @@
                         Manage Videos
                     </a>
                 </li>
-                <li>
+                <li class="admin-link" style="display: none;">
                     <a href="#"
-                        class="nav-link admin-link flex items-center p-3 rounded-lg hover:bg-primary/20 transition-colors duration-200"
+                        class="nav-link flex items-center p-3 rounded-lg hover:bg-primary/20 transition-colors duration-200"
                         data-target="manage-social-tasks-view">
                         <svg class="w-6 h-6 mr-3 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                             <path
@@ -312,9 +313,9 @@
                         Manage Social Tasks
                     </a>
                 </li>
-                <li>
+                <li class="admin-link" style="display: none;">
                     <a href="#"
-                        class="nav-link admin-link flex items-center p-3 rounded-lg hover:bg-primary/20 transition-colors duration-200"
+                        class="nav-link flex items-center p-3 rounded-lg hover:bg-primary/20 transition-colors duration-200"
                         data-target="manage-users-view">
                         <svg class="w-6 h-6 mr-3 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                             <path
@@ -1427,6 +1428,41 @@
                     console.error("Error seeding data: ", error);
                 }
             }
+            
+            // FIX 2.1: Use onSnapshot for real-time public data fetching
+            function setupPublicDataListeners(isGuest) {
+                // Listener for Videos
+                const videosCollectionRef = collection(db, `/artifacts/${appId}/public/data/videos`);
+                onSnapshot(videosCollectionRef, (querySnapshot) => {
+                    videos = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    console.log("Videos updated via snapshot:", videos.length);
+                    
+                    // Only re-render videos if the view is currently active
+                    if (document.getElementById('watch-videos-view').style.display === 'block') {
+                        const activeFilterBtn = document.querySelector('#watch-videos-view .filter-btn.active');
+                        const category = activeFilterBtn ? activeFilterBtn.dataset.category : 'all';
+                        renderVideoGrid(category, searchBar.value, isGuest);
+                    }
+                }, (error) => {
+                    console.error("Error listening to videos:", error);
+                });
+
+                // Listener for Social Tasks
+                const socialTasksCollectionRef = collection(db, `/artifacts/${appId}/public/data/socialTasks`);
+                onSnapshot(socialTasksCollectionRef, (querySnapshot) => {
+                    socialTasks = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    console.log("Social tasks updated via snapshot:", socialTasks.length);
+
+                    // Re-render tasks if the view is currently active (Fixes Issue 2)
+                    if (document.getElementById('social-tasks-view').style.display === 'block') {
+                        renderSocialTasksGrid(isGuest);
+                    }
+                }, (error) => {
+                    console.error("Error listening to social tasks:", error);
+                });
+            }
+            
+            // Remove old fetchVideos and fetchSocialTasks functions...
 
             async function fetchAndRenderLeaderboard() {
                 const leaderboardContainer = document.getElementById('leaderboard-container');
@@ -1501,38 +1537,6 @@
                     console.error("Error listening to user data:", error);
                     hideLoading();
                 });
-            }
-
-            async function fetchVideos() {
-                // Guests also need to fetch videos, so don't show loading overlay if auth isn't fully ready
-                if(userId) showLoading(); 
-                try {
-                    const videosCollectionRef = collection(db, `/artifacts/${appId}/public/data/videos`);
-                    const q = query(videosCollectionRef);
-                    const querySnapshot = await getDocs(q);
-                    videos = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    console.log("Videos fetched from Firestore:", videos);
-                } catch (e) {
-                    console.error("Error fetching videos:", e);
-                } finally {
-                    if(userId) hideLoading(); 
-                }
-            }
-
-            // Function to fetch social tasks from Firestore
-            async function fetchSocialTasks() {
-                 if(userId) showLoading(); 
-                try {
-                    const socialTasksCollectionRef = collection(db, `/artifacts/${appId}/public/data/socialTasks`);
-                    const q = query(socialTasksCollectionRef);
-                    const querySnapshot = await getDocs(q);
-                    socialTasks = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    console.log("Social tasks fetched from Firestore:", socialTasks);
-                } catch (e) {
-                    console.error("Error fetching social tasks:", e);
-                } finally {
-                    if(userId) hideLoading(); 
-                }
             }
 
             async function fetchAllUsers() {
@@ -1628,14 +1632,8 @@
                 } finally {
                     hideLoading();
                 }
-                await fetchVideos();
+                // Rely on onSnapshot to re-render tables/grids
                 renderManageVideosTable();
-                const activeFilterBtn = document.querySelector('#watch-videos-view .filter-btn.active');
-                if (activeFilterBtn) {
-                    renderVideoGrid(activeFilterBtn.getAttribute('data-category'), '', userId === null);
-                } else {
-                    renderVideoGrid('all', '', userId === null);
-                }
             }
 
             // Function to save or update a social task
@@ -1656,9 +1654,8 @@
                 } finally {
                     hideLoading();
                 }
-                await fetchSocialTasks();
+                // Rely on onSnapshot to re-render tables/grids
                 renderManageSocialTasksTable();
-                renderSocialTasksGrid(userId === null);
             }
 
             async function deleteVideo(videoId) {
@@ -1672,14 +1669,8 @@
                 } finally {
                     hideLoading();
                 }
-                await fetchVideos();
+                // Rely on onSnapshot to re-render tables/grids
                 renderManageVideosTable();
-                const activeFilterBtn = document.querySelector('#watch-videos-view .filter-btn.active');
-                if (activeFilterBtn) {
-                    renderVideoGrid(activeFilterBtn.getAttribute('data-category'), '', userId === null);
-                } else {
-                    renderVideoGrid('all', '', userId === null);
-                }
             }
 
             // Function to delete a social task
@@ -1694,9 +1685,8 @@
                 } finally {
                     hideLoading();
                 }
-                await fetchSocialTasks();
+                // Rely on onSnapshot to re-render tables/grids
                 renderManageSocialTasksTable();
-                renderSocialTasksGrid(userId === null);
             }
 
             function showLoading() {
@@ -1739,15 +1729,10 @@
                     }, (error) => {
                         console.error("Error fetching admin users data:", error);
                     });
+                    
+                    // Total Videos is covered by the public data listener (setupPublicDataListeners)
+                    if (adminTotalVideosValue) adminTotalVideosValue.textContent = videos.length; 
 
-                    // Fetch total videos separately
-                    const videosCollectionRef = collection(db, `/artifacts/${appId}/public/data/videos`);
-                    onSnapshot(videosCollectionRef, (videosSnapshot) => {
-                        const totalVideos = videosSnapshot.docs.length;
-                        if (adminTotalVideosValue) adminTotalVideosValue.textContent = totalVideos;
-                    }, (error) => {
-                        console.error("Error fetching admin videos data:", error);
-                    });
                 } catch (e) {
                     console.error("Admin dashboard data fetch error:", e);
                 } finally {
@@ -1767,27 +1752,25 @@
                     if (loginPage) loginPage.style.display = 'none';
                     if (appContainer) appContainer.style.display = 'flex';
                     
+                    // Set initial visibility based on role
+                    document.querySelectorAll('.admin-link').forEach(link => { 
+                        if (link) link.style.display = (actualRole === 'admin' ? 'flex' : 'none'); 
+                    });
+                    document.querySelectorAll('.user-link').forEach(link => { 
+                        if (link) link.style.display = (actualRole === 'admin' ? 'none' : 'flex'); 
+                    });
+                    
                     if (actualRole === 'user') {
-                        document.querySelectorAll('.admin-link').forEach(link => { if (link) link.style.display = 'none'; });
-                        document.querySelectorAll('.user-link').forEach(link => { if (link) link.style.display = 'flex'; });
                         showView('user-dashboard-view');
-                        // Videos/Tasks are already fetched in the onAuthStateChanged block for guests or fetched here for logged-in users
-                        // We must call render functions here if it's the initial load for a logged in user
-                        
-                        // We must check if videos/tasks are already loaded from the onAuthStateChanged for guest/user mode
-                        if (videos.length === 0) fetchVideos();
-                        if (socialTasks.length === 0) fetchSocialTasks();
-                        
+                        // Render initial grids using already-fetched (via onSnapshot) data
                         renderVideoGrid('all', '', isGuest);
                         renderSocialTasksGrid(isGuest);
                         
                     } else if (role === 'admin') {
-                        document.querySelectorAll('.user-link').forEach(link => { if (link) link.style.display = 'none'; });
-                        document.querySelectorAll('.admin-link').forEach(link => { if (link) link.style.display = 'flex'; });
                         showView('admin-dashboard-view');
-                        fetchVideos().then(renderManageVideosTable);
-                        fetchSocialTasks().then(renderManageSocialTasksTable);
-                        fetchAdminDashboardData();
+                        fetchAdminDashboardData(); // Admin data fetch includes snapshots
+                        renderManageVideosTable();
+                        renderManageSocialTasksTable();
                     }
                     isInitialUILoad = false; // Important: set flag to false
                 }
@@ -1808,23 +1791,14 @@
 
                     if (activeViewId === 'points-history-view') {
                         if (isGuest) {
-                            // If guest, ensure the guest view message is rendered
                              document.getElementById('points-history-view').innerHTML = getGuestViewHtml('Points History', 'view your points and history', 'view your points history.');
                         } else {
                             renderPointsHistoryTable();
                         }
                     }
-                    if (activeViewId === 'watch-videos-view' && !isInitialUILoad) {
-                        const activeFilterBtn = document.querySelector('#watch-videos-view .filter-btn.active');
-                        const category = activeFilterBtn ? activeFilterBtn.dataset.category : 'all';
-                        const searchQuery = searchBar ? searchBar.value : '';
-                        renderVideoGrid(category, searchQuery, isGuest); // Pass guest status to render
-                    }
-                    if (activeViewId === 'social-tasks-view' && !isInitialUILoad) {
-                         renderSocialTasksGrid(isGuest); // Pass guest status to render
-                    }
+                    // Video and Social tasks rendering is now mostly handled by the public data listeners (onSnapshot)
                     if (activeViewId === 'invite-and-earn-view') {
-                         renderInviteAndEarnView(isGuest); // Pass guest status
+                         renderInviteAndEarnView(isGuest); 
                     }
 
                 } else if (actualRole === 'admin') {
@@ -2135,7 +2109,7 @@
                     const mockChannelName = "Ping Channel";
 
                     const videoCardHtml = `
-                        <div class="video-card group ${stateClasses}" data-video-url="${video.videoUrl}" data-video-id="${video.id}" data-max-duration="${watchDuration}" data-is-guest="${isGuest}" ${isOnCooldown ? 'data-cooldown="true"' : ''}>
+                        <div class="video-card group ${stateClasses}" data-video-url="${video.videoUrl}" data-video-id="${video.id}" data-max-duration="${watchDuration}" data-is-guest="${isGuest}">
                             <div class="relative mb-2">
                                 <img src="${thumbnailUrl}" alt="${video.title}" class="w-full h-auto object-cover rounded-xl group-hover:rounded-none transition-all duration-200" onerror="this.onerror=null; this.src='https://placehold.co/400x225/1f3148/ffffff?text=Video';">
                                 ${watchedOverlay}
@@ -3221,6 +3195,8 @@
                         userId = user.uid;
                         
                         if (isInitialUILoad) {
+                            // Set up public data listeners once (not guest)
+                            setupPublicDataListeners(false);
                              // Only seed data and start listening for the first time
                             await seedInitialData(user);
                             // fetchUserData sets up a snapshot listener which calls updateUI when data is ready
@@ -3237,9 +3213,8 @@
                         
                         // Proceed with initial UI load for guest mode (only if not already loaded)
                         if (isInitialUILoad) {
-                             // Only fetch videos/tasks once
-                             await fetchVideos(); 
-                             await fetchSocialTasks(); 
+                             // Set up public data listeners once (guest)
+                             setupPublicDataListeners(true);
                              updateUI('guest'); // Manually call UI update for guest
                         }
                     }
@@ -3251,9 +3226,8 @@
                     userId = null;
                     
                     if (isInitialUILoad) {
-                         // Only fetch videos/tasks once
-                         await fetchVideos(); 
-                         await fetchSocialTasks(); 
+                         // Set up public data listeners once (guest)
+                         setupPublicDataListeners(true);
                          updateUI('guest');
                     }
                 }
