@@ -1394,9 +1394,9 @@
                             const initialVideos = [
                                 { id: 'vid1', title: "The Beauty of Nature", category: "Nature", points: 60, watchDuration: 300, description: "A breathtaking journey through mountains and forests.", videoUrl: "https://www.youtube.com/embed/g2J03u13kXg" },
                                 { id: 'vid2', title: "Learn React in 30 Seconds", category: "Education", points: 30, watchDuration: 180, description: "A quick overview of React hooks.", videoUrl: "https://www.youtube.com/embed/Ke90Tje7VS0" },
-                                { id: 'vid3', title: "City Life at Night", category: "Travel", points: 90, watchDuration: 540, description: "Explore the vibrant life of a metropolis after dark.", videoUrl: "https://www.youtube.com/embed/5a-H_gqM_9E" },
-                                { id: 'vid4', title: "Cooking a Perfect Steak", category: "Food", points: 60, watchDuration: 240, description: "A step by step guide to cooking steak.", videoUrl: "https://www.youtube.com/embed/H0d82C7YjA8" },
-                                { id: 'vid5', title: "Gaming Highlights of the Week", category: "Gaming", points: 120, watchDuration: 720, description: "The best moments in esports.", videoUrl: "https://www.youtube.com/embed/d-Yq36_9tQ0" }
+                                { id: 'vid3', title: "City Life at Night", category: "Travel", points: 90, watchDuration: 540, description: "Explore the vibrant life of a metropolis after dark.", "videoUrl": "https://www.youtube.com/embed/5a-H_gqM_9E" },
+                                { id: 'vid4', title: "Cooking a Perfect Steak", category: "Food", points: 60, watchDuration: 240, description: "A step by step guide to cooking steak.", "videoUrl": "https://www.youtube.com/embed/H0d82C7YjA8" },
+                                { id: 'vid5', title: "Gaming Highlights of the Week", category: "Gaming", points: 120, watchDuration: 720, description: "The best moments in esports.", "videoUrl": "https://www.youtube.com/embed/d-Yq36_9tQ0" }
                             ];
                             for (const video of initialVideos) {
                                 await setDoc(doc(videosCollectionRef, video.id), {
@@ -1432,7 +1432,7 @@
                 }
             }
             
-            // FIX 1 & 2: Update setupPublicDataListeners to re-render Admin views on snapshot update
+            // FIX 1: Update setupPublicDataListeners to re-render Admin views on snapshot update
             function setupPublicDataListeners(isGuest) {
                 // Listener for Videos
                 const videosCollectionRef = collection(db, `/artifacts/${appId}/public/data/videos`);
@@ -2035,47 +2035,49 @@
 
                 // Function to check if a video is on cooldown
                 const getCooldownStatus = (videoId) => {
-                    if (isGuest) return { isOnCooldown: false }; // Guest means no cooldown check
+                    if (isGuest) return { isOnCooldown: false, isWatched: false }; // Guest means no cooldown check
 
+                    const isWatched = watchedVideoIds.includes(videoId);
                     const cooldown = videoCooldowns.find(c => c.id === videoId);
-                    if (!cooldown) return { isOnCooldown: false };
+                    
+                    if (!cooldown) return { isOnCooldown: false, isWatched: isWatched };
 
                     const availableAfter = cooldown.availableAfter;
                     if (Date.now() < availableAfter) {
                         return {
                             isOnCooldown: true,
+                            isWatched: isWatched,
                             availableAfter: availableAfter,
                             remainingTime: availableAfter - Date.now()
                         };
                     }
-                    return { isOnCooldown: false };
+                    // Cooldown expired
+                    return { isOnCooldown: false, isWatched: isWatched };
                 };
-
-                // Filter and categorize videos based on cooldown status
-                let availableVideos = [];
-                let cooldownVideos = [];
                 
+                // Categorize and sort the videos based on new logic
+                let primaryVideos = []; // Unwatched/Never Cooldown
+                let secondaryVideos = []; // Watched before, Cooldown expired (Ready)
+                let cooldownVideos = []; // Currently On Cooldown
+
                 filteredVideos.forEach(video => {
                     const status = getCooldownStatus(video.id);
                     if (status.isOnCooldown) {
                         cooldownVideos.push({ ...video, ...status });
+                    } else if (status.isWatched) {
+                        // Cooldown is false, but isWatched is true (meaning cooldown expired)
+                        secondaryVideos.push({ ...video, ...status });
                     } else {
-                        availableVideos.push(video);
+                        // Not watched before, not on cooldown
+                        primaryVideos.push({ ...video, ...status });
                     }
-                });
-                
-                // Sort the available videos (unwatched always come before watched, though both are clickable now if cooldown is over)
-                availableVideos.sort((a, b) => {
-                    const aWatched = watchedVideoIds.includes(a.id);
-                    const bWatched = watchedVideoIds.includes(b.id);
-                    if (aWatched === bWatched) return 0;
-                    return aWatched ? 1 : -1; // Unwatched (false) comes first
                 });
 
                 // Cooldown videos go to the bottom and are sorted by earliest availability
                 cooldownVideos.sort((a, b) => a.availableAfter - b.availableAfter);
-
-                const sortedVideos = [...availableVideos, ...cooldownVideos];
+                
+                // Final sorted list: Primary (New/Unwatched) -> Secondary (Ready/Watched) -> Cooldown
+                const sortedVideos = [...primaryVideos, ...secondaryVideos, ...cooldownVideos];
 
 
                 let videoGridHtml = '';
@@ -2084,7 +2086,7 @@
                     let thumbnailUrl = getYouTubeThumbnail(videoId);
                     
                     const status = getCooldownStatus(video.id);
-                    const isWatched = watchedVideoIds.includes(video.id); // For visual marker only
+                    const isWatched = status.isWatched; // Cooldown expired but watched before
                     const isOnCooldown = status.isOnCooldown;
 
                     let stateClasses = 'cursor-pointer video-clickable';
@@ -2108,7 +2110,7 @@
                                 <span class="text-sm font-bold text-yellow-400 text-center">Cooldown: ${remainingHours} Hrs Left</span>
                             </div>`;
                     } else if (isWatched) {
-                        // Video was fully watched before, but cooldown is over.
+                        // Cooldown expired and ready to re-watch
                          watchedOverlay = `<div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center rounded-xl">
                                <svg class="w-12 h-12 text-accent-green" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                            </div>`;
@@ -2185,20 +2187,20 @@
                     const buttonText = isCompleted ? 'Completed' : 'Complete Task';
                     const buttonClass = isCompleted ? 'bg-accent-green/50' : 'bg-primary hover:bg-indigo-600';
 
-                    let icon;
+                    let taskIcon = ''; // FIX: Renamed 'icon' to 'taskIcon' to avoid potential constant assignment error
                     switch (task.platform) {
-                        case 'Facebook': icon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-blue-600"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c5.29 0 9.77-4.14 10-9.43.14-2.85-2.06-5.26-4.91-5.74v2.02c1.78.4 3.12 1.93 3.12 3.82 0 2.11-1.79 3.82-3.99 3.82H12v-6.93l-3 3v2.93h-1v-6h-2v6.93l1.85-1.85c.19-.19.45-.3.72-.3s.53.11.72.3L12 14.07V12h3.99c1.66 0 3-1.34 3-3s-1.34-3-3-3h-3c-1.1 0-2 .9-2 2v1H9v2h2v1H8c-2.21 0-4-1.79-4-4s1.79-4 4-4h4V2z"/></svg>`; break;
-                        case 'TikTok': icon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-black dark:fill-white"><path d="M12.758 2.043l-.158.012c-1.42 0-2.585 1.164-2.585 2.585v15.728l-.16.012h-.008c-.768.04-1.455.334-2.02.825-1.127.994-1.82 2.766-1.82 4.697 0 3.242 2.632 5.875 5.875 5.875 3.243 0 5.875-2.633 5.875-5.875 0-1.93-.693-3.703-1.82-4.696-.564-.49-1.25-.785-2.018-.825h-.008L12.758 2.043zM12 24c-6.627 0-12-5.373-12-12s5.373-12 12-12c6.627 0 12 5.373 12 12s-5.373 12-12 12zm-3-19c0 .552-.448 1-1 1s-1-.448-1-1v-2c0-.552.448-1 1-1s1 .448 1 1v2zm0 17c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5zm9-11c0-.552-.448-1-1-1s-1 .448-1 1v2c0 .552.448 1 1 1s1-.448 1-1v-2zm-9 9c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3z"/></svg>`;
-                        case 'Telegram': icon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-blue-500"><path d="M18.3 5.4c-.6-.3-1.2-.5-1.9-.5c-.8 0-1.5.2-2.1.6c-.6.4-1 .9-1.3 1.5c-.3.6-.4 1.3-.4 2s.1 1.4.4 2.1c.3.6.7 1.1 1.3 1.5c.6.4 1.2.6 2.1.6c.7 0 1.4-.2 1.9-.5c.6-.3 1.1-.8 1.4-1.4c.3-.6.4-1.2.4-1.9s-.1-1.3-.4-1.9c-.3-.6-.8-1.1-1.4-1.4zM22 6.5l-3.3 12c-.2.9-.8 1.4-1.8 1.4c-.6 0-1.2-.2-1.6-.4l-5.6-3.8c-.5-.3-.9-.6-1.1-.9c-.2-.3-.3-.7-.3-1.1c0-.4.1-.8.3-1.1s.5-.6 1.1-.9l8.6-4.9c.2-.1.4-.2.6-.2c.2 0 .4.1.6.2s.2.4.2.6zM2 12c0 2.2 1.3 4.2 3.3 5.3L4 20l3.8-1.1c.9.2 1.8.3 2.7.3c1.7 0 3.3-.6 4.6-1.7l.7-.6c-.2-.4-.3-.8-.3-1.2c0-1.3.6-2.5 1.7-3.3c1.1-.8 2.5-1.2 4-1.2c-.4-3.1-2.2-5.4-4.8-6.5c-2.4-1-5.1-1.2-7.8-.6c-3 .7-5.3 3.3-5.3 6.6z"/></svg>`;
-                        case 'Twitter': icon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-blue-400"><path d="M22.46 6c-.77.34-1.6.57-2.46.69.88-.53 1.55-1.37 1.87-2.36-.83.49-1.74.85-2.72 1.05-2.02-2.15-5.35-2.07-7.29.17-1.18 1.32-1.65 3.12-1.36 4.95C5.83 10.66 2.92 8.75 1.12 5.92c-.37.64-.58 1.39-.58 2.19 0 1.52.77 2.87 1.94 3.66-2.01-.06-3.89-.6-5.54-1.52v.04c0 1.92 1.37 3.51 3.19 3.87-.33.09-.67.14-1.02.14-.25 0-.5-.02-.74-.07.5 1.63 2.07 2.81 3.89 2.84-1.4 1.1-3.17 1.75-5.09 1.75-.33 0-.66-.02-.98-.06 1.8 1.15 3.93 1.81 6.22 1.81 7.52 0 11.63-6.22 11.63-11.62 0-.17-.0-.35-.01-.52.8-.57 1.49-1.28 2.04-2.07z"/></svg>`;
-                        case 'YouTube': icon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-red-600"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm3 10l-6 4V8l6 4z"/></svg>`;
-                        case 'Web': icon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-gray-400"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h2v-2h-2v2zm0-4h2V7h-2v6z"/></svg>`;
-                        default: icon = '';
+                        case 'Facebook': taskIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-blue-600"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c5.29 0 9.77-4.14 10-9.43.14-2.85-2.06-5.26-4.91-5.74v2.02c1.78.4 3.12 1.93 3.12 3.82 0 2.11-1.79 3.82-3.99 3.82H12v-6.93l-3 3v2.93h-1v-6h-2v6.93l1.85-1.85c.19-.19.45-.3.72-.3s.53.11.72.3L12 14.07V12h3.99c1.66 0 3-1.34 3-3s-1.34-3-3-3h-3c-1.1 0-2 .9-2 2v1H9v2h2v1H8c-2.21 0-4-1.79-4-4s1.79-4 4-4h4V2z"/></svg>`; break;
+                        case 'TikTok': taskIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-black dark:fill-white"><path d="M12.758 2.043l-.158.012c-1.42 0-2.585 1.164-2.585 2.585v15.728l-.16.012h-.008c-.768.04-1.455.334-2.02.825-1.127.994-1.82 2.766-1.82 4.697 0 3.242 2.632 5.875 5.875 5.875 3.243 0 5.875-2.633 5.875-5.875 0-1.93-.693-3.703-1.82-4.696-.564-.49-1.25-.785-2.018-.825h-.008L12.758 2.043zM12 24c-6.627 0-12-5.373-12-12s5.373-12 12-12c6.627 0 12 5.373 12 12s-5.373 12-12 12zm-3-19c0 .552-.448 1-1 1s-1-.448-1-1v-2c0-.552.448-1 1-1s1 .448 1 1v2zm0 17c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5zm9-11c0-.552-.448-1-1-1s-1 .448-1 1v2c0 .552.448 1 1 1s1-.448 1-1v-2zm-9 9c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3z"/></svg>`; break;
+                        case 'Telegram': taskIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-blue-500"><path d="M18.3 5.4c-.6-.3-1.2-.5-1.9-.5c-.8 0-1.5.2-2.1.6c-.6.4-1 .9-1.3 1.5c-.3.6-.4 1.3-.4 2s.1 1.4.4 2.1c.3.6.7 1.1 1.3 1.5c.6.4 1.2.6 2.1.6c.7 0 1.4-.2 1.9-.5c.6-.3 1.1-.8 1.4-1.4c.3-.6.4-1.2.4-1.9s-.1-1.3-.4-1.9c-.3-.6-.8-1.1-1.4-1.4zM22 6.5l-3.3 12c-.2.9-.8 1.4-1.8 1.4c-.6 0-1.2-.2-1.6-.4l-5.6-3.8c-.5-.3-.9-.6-1.1-.9c-.2-.3-.3-.7-.3-1.1c0-.4.1-.8.3-1.1s.5-.6 1.1-.9l8.6-4.9c.2-.1.4-.2.6-.2c.2 0 .4.1.6.2s.2.4.2.6zM2 12c0 2.2 1.3 4.2 3.3 5.3L4 20l3.8-1.1c.9.2 1.8.3 2.7.3c1.7 0 3.3-.6 4.6-1.7l.7-.6c-.2-.4-.3-.8-.3-1.2c0-1.3.6-2.5 1.7-3.3c1.1-.8 2.5-1.2 4-1.2c-.4-3.1-2.2-5.4-4.8-6.5c-2.4-1-5.1-1.2-7.8-.6c-3 .7-5.3 3.3-5.3 6.6z"/></svg>`; break;
+                        case 'Twitter': taskIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-blue-400"><path d="M22.46 6c-.77.34-1.6.57-2.46.69.88-.53 1.55-1.37 1.87-2.36-.83.49-1.74.85-2.72 1.05-2.02-2.15-5.35-2.07-7.29.17-1.18 1.32-1.65 3.12-1.36 4.95C5.83 10.66 2.92 8.75 1.12 5.92c-.37.64-.58 1.39-.58 2.19 0 1.52.77 2.87 1.94 3.66-2.01-.06-3.89-.6-5.54-1.52v.04c0 1.92 1.37 3.51 3.19 3.87-.33.09-.67.14-1.02.14-.25 0-.5-.02-.74-.07.5 1.63 2.07 2.81 3.89 2.84-1.4 1.1-3.17 1.75-5.09 1.75-.33 0-.66-.02-.98-.06 1.8 1.15 3.93 1.81 6.22 1.81 7.52 0 11.63-6.22 11.63-11.62 0-.17-.0-.35-.01-.52.8-.57 1.49-1.28 2.04-2.07z"/></svg>`; break;
+                        case 'YouTube': taskIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-red-600"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm3 10l-6 4V8l6 4z"/></svg>`;
+                        case 'Web': taskIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-gray-400"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h2v-2h-2v2zm0-4h2V7h-2v6z"/></svg>`;
+                        default: taskIcon = '';
                     }
 
                     const taskCardHtml = `
                          <div class="social-task-card bg-card-bg rounded-xl shadow-lg border border-slate-700 p-6 flex flex-col items-center text-center transition-shadow duration-300 ${cardClass}">
-                             <div class="w-16 h-16 rounded-full flex items-center justify-center mb-4">${icon}</div>
+                             <div class="w-16 h-16 rounded-full flex items-center justify-center mb-4">${taskIcon}</div>
                              <h3 class="text-lg font-semibold mb-1">${task.title}</h3>
                              <p class="text-sm text-muted-text mb-2">${task.platform}</p>
                              <span class="inline-block bg-accent-green text-white text-xs font-bold px-3 py-1 rounded-full mb-4">${task.points} PTS</span>
@@ -2651,6 +2653,8 @@
                 // Start the watch interval (runs every 1 second)
                 if (watchInterval) clearInterval(watchInterval); // Clear any existing interval
 
+                let lastMinuteEarned = 0; // Initialize a local tracker for minute-based earning
+
                 watchInterval = setInterval(() => {
                     sessionWatchTime++;
                     const remainingTime = maxDuration - sessionWatchTime;
@@ -2677,7 +2681,8 @@
                     progressTimeRemaining.textContent = `${Math.max(0, remainingTime)}s`;
 
                     // If full minute has passed and points earned > 0, save to Firestore
-                    if (sessionWatchTime % 60 === 0 && sessionWatchTime <= maxDuration) {
+                    const currentMinute = Math.floor(sessionWatchTime / 60);
+                    if (currentMinute > lastMinuteEarned && sessionWatchTime <= maxDuration) {
                         const pointsToSave = 60 * POINTS_PER_SECOND; // Always 1 point
                         updatePointsInFirestore(
                             pointsToSave, 
@@ -2686,8 +2691,10 @@
                             'video', 
                             false // Not a full watch yet
                         );
+                        lastMinuteEarned = currentMinute; // Update local tracker
                         console.log(`Earned ${pointsToSave} points. Total session time: ${sessionWatchTime}s`);
                     }
+
 
                     // End condition: Max duration reached
                     if (sessionWatchTime >= maxDuration) {
@@ -2716,7 +2723,7 @@
                 searchBar.addEventListener('input', (e) => {
                     const activeFilterBtn = document.querySelector('#watch-videos-view .filter-btn.active');
                     const category = activeFilterBtn ? activeFilterBtn.getAttribute('data-category') : 'all';
-                    renderVideoGrid(category, e.target.value, currentUser?.role === 'guest');
+                    renderVideoGrid(category, searchBar.value, currentUser?.role === 'guest');
                 });
             }
 
