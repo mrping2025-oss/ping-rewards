@@ -626,7 +626,7 @@
                                 <table class="w-full text-left table-auto">
                                     <thead class="text-slate-400 uppercase text-xs">
                                         <tr>
-                                            <th class="p-2">အသုံးပြုသူ ID</th>
+                                            <th class="p-2">အသုံးပြုသူ</th>
                                             <th class="p-2">ရရှိခဲ့သည့် အမှတ်</th>
                                         </tr>
                                     </thead>
@@ -1432,7 +1432,7 @@
                 }
             }
             
-            // FIX 2.1: Use onSnapshot for real-time public data fetching
+            // FIX 1 & 2: Update setupPublicDataListeners to re-render Admin views on snapshot update
             function setupPublicDataListeners(isGuest) {
                 // Listener for Videos
                 const videosCollectionRef = collection(db, `/artifacts/${appId}/public/data/videos`);
@@ -1440,12 +1440,18 @@
                     videos = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     console.log("Videos updated via snapshot:", videos.length);
                     
-                    // Only re-render videos if the view is currently active
+                    // Only re-render video grids if the view is currently active
                     if (document.getElementById('watch-videos-view').style.display === 'block') {
                         const activeFilterBtn = document.querySelector('#watch-videos-view .filter-btn.active');
                         const category = activeFilterBtn ? activeFilterBtn.getAttribute('data-category') : 'all';
                         renderVideoGrid(category, searchBar.value, isGuest);
                     }
+                    
+                    // NEW FIX 2: Re-render Admin Manage Videos view if active
+                    if (document.getElementById('manage-videos-view')?.style.display === 'block' && !isGuest) {
+                        renderManageVideosTable(); 
+                    }
+                    
                 }, (error) => {
                     console.error("Error listening to videos:", error);
                 });
@@ -1456,10 +1462,16 @@
                     socialTasks = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     console.log("Social tasks updated via snapshot:", socialTasks.length);
 
-                    // Re-render tasks if the view is currently active (Fixes Issue 2)
+                    // Re-render tasks if the user view is currently active
                     if (document.getElementById('social-tasks-view').style.display === 'block') {
                         renderSocialTasksGrid(isGuest);
                     }
+                    
+                    // NEW FIX 2: Re-render Admin Manage Social Tasks view if active
+                    if (document.getElementById('manage-social-tasks-view')?.style.display === 'block' && !isGuest) {
+                        renderManageSocialTasksTable(); 
+                    }
+                    
                 }, (error) => {
                     console.error("Error listening to social tasks:", error);
                 });
@@ -1635,8 +1647,7 @@
                 } finally {
                     hideLoading();
                 }
-                // Rely on onSnapshot to re-render tables/grids
-                renderManageVideosTable();
+                // FIX 2: Removed manual render call, rely entirely on onSnapshot
             }
 
             // Function to save or update a social task
@@ -1657,8 +1668,7 @@
                 } finally {
                     hideLoading();
                 }
-                // Rely on onSnapshot to re-render tables/grids
-                renderManageSocialTasksTable();
+                // FIX 2: Removed manual render call, rely entirely on onSnapshot
             }
 
             async function deleteVideo(videoId) {
@@ -1673,7 +1683,7 @@
                     hideLoading();
                 }
                 // Rely on onSnapshot to re-render tables/grids
-                renderManageVideosTable();
+                // renderManageVideosTable(); // This is now handled by onSnapshot
             }
 
             // Function to delete a social task
@@ -1689,7 +1699,7 @@
                     hideLoading();
                 }
                 // Rely on onSnapshot to re-render tables/grids
-                renderManageSocialTasksTable();
+                // renderManageSocialTasksTable(); // This is now handled by onSnapshot
             }
 
             function showLoading() {
@@ -2169,7 +2179,6 @@
                     // Disable if completed OR if guest
                     const isDisabled = isCompleted || isGuest; 
                     
-                    // FIX: Changed 'const' to 'let' to allow modification (+=) below.
                     let cardClass = isDisabled ? 'opacity-50 cursor-not-allowed' : '';
                     if(isCompleted) cardClass += ' grayscale'; // Add grayscale only if genuinely completed
                     
@@ -2362,9 +2371,11 @@
                 } else {
                     let tableHtml = '';
                     invitedUsers.forEach(user => {
+                         // FIX 1: Display user name, falling back to a truncated ID
+                        const displayId = user.name || (user.id ? user.id.substring(0, 8) + '...' : 'Unknown User');
                         tableHtml += `
                             <tr class="hover:bg-slate-700/50 transition-colors duration-150">
-                                <td class="p-2 text-sm font-mono break-all">${user.id}</td>
+                                <td class="p-2 text-sm font-mono break-all">${displayId}</td>
                                 <td class="p-2 text-accent-green font-semibold whitespace-nowrap">+${user.points} PTS</td>
                             </tr>
                         `;
@@ -2427,9 +2438,9 @@
                     } else if (targetId === 'points-history-view') {
                         renderPointsHistoryTable();
                     } else if (targetId === 'manage-videos-view') {
-                        renderManageVideosTable();
+                        renderManageVideosTable(); // Now triggered on view load and by snapshot
                     } else if (targetId === 'manage-social-tasks-view') {
-                        renderManageSocialTasksTable();
+                        renderManageSocialTasksTable(); // Now triggered on view load and by snapshot
                     } else if (targetId === 'manage-users-view') {
                         fetchAllUsers();
                     } else if (targetId === 'admin-dashboard-view') {
@@ -2634,6 +2645,7 @@
                 
                 // Set initial progress value to maximum duration for display
                 progressTimeRemaining.textContent = `${maxDuration}s`;
+                // Set initial state to 0% (full gray circle)
                 progressCircle.style.background = `conic-gradient(#f59e0b 0deg, #1e293b 0deg)`;
 
                 // Start the watch interval (runs every 1 second)
@@ -2647,9 +2659,21 @@
                     const pointsThisSecond = POINTS_PER_SECOND;
                     sessionPoints += pointsThisSecond;
 
-                    // Update UI (Progress Circle)
-                    const progressPercentage = (sessionWatchTime / maxDuration) * 100;
-                    progressCircle.style.background = `conic-gradient(#f59e0b ${progressPercentage * 3.6}deg, #1e293b ${progressPercentage * 3.6}deg)`;
+                    // --- START MODIFICATION FOR 60-SECOND CIRCULAR PROGRESS ---
+                    
+                    // 1. Calculate time elapsed within the current 60-second cycle
+                    const progressInMinute = sessionWatchTime % 60;
+                    
+                    // 2. Calculate the progress percentage for the current 60-second cycle (0 to 100)
+                    const progressPercentagePerMinute = (progressInMinute / 60) * 100;
+
+                    // 3. Update UI (Progress Circle) based on the 60-second cycle
+                    // Use progressPercentagePerMinute * 3.6 to convert to degrees (360/100 = 3.6)
+                    progressCircle.style.background = `conic-gradient(#f59e0b ${progressPercentagePerMinute * 3.6}deg, #1e293b ${progressPercentagePerMinute * 3.6}deg)`;
+                    
+                    // --- END MODIFICATION ---
+                    
+                    // Update time remaining display (still shows overall remaining earning time)
                     progressTimeRemaining.textContent = `${Math.max(0, remainingTime)}s`;
 
                     // If full minute has passed and points earned > 0, save to Firestore
@@ -2785,15 +2809,33 @@
             // --- Referral Code/Link Handlers ---
             if (copyReferralBtn) {
                 copyReferralBtn.addEventListener('click', () => {
-                    document.execCommand('copy', false, referralCodeInput.value);
-                    showCopyStatus('Referral Code Copied!');
+                    const textToCopy = referralCodeInput ? referralCodeInput.value : '';
+                    if (textToCopy) {
+                         // Use document.execCommand('copy') for better iframe compatibility
+                        const tempInput = document.createElement('input');
+                        tempInput.value = textToCopy;
+                        document.body.appendChild(tempInput);
+                        tempInput.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(tempInput);
+                        showCopyStatus('ကုဒ်ကူးယူပြီးပါပြီ။');
+                    }
                 });
             }
 
             if (copyLinkBtn) {
                 copyLinkBtn.addEventListener('click', () => {
-                    document.execCommand('copy', false, referralLinkInput.value);
-                    showCopyStatus('Referral Link Copied!');
+                     const textToCopy = referralLinkInput ? referralLinkInput.value : '';
+                    if (textToCopy) {
+                         // Use document.execCommand('copy') for better iframe compatibility
+                        const tempInput = document.createElement('input');
+                        tempInput.value = textToCopy;
+                        document.body.appendChild(tempInput);
+                        tempInput.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(tempInput);
+                        showCopyStatus('လင့်ကူးယူပြီးပါပြီ။');
+                    }
                 });
             }
 
