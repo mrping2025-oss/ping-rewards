@@ -145,8 +145,8 @@
         <div class="animate-spin rounded-full h-12 w-12 border-4 border-text-color border-t-primary"></div>
     </div>
 
-    <!-- Login Page View -->
-    <div id="login-page" class="view flex justify-center items-center min-h-screen p-4" style="display: flex;">
+    <!-- START: Login Page View (This is shown by default and hidden upon successful login) -->
+    <div id="login-page" class="view flex justify-center items-center min-h-screen p-4" style="display: none;">
         <div class="w-full max-w-sm text-center">
             <div class="mb-8">
                 <!-- New Logo SVG: Letter 'P' -->
@@ -177,9 +177,10 @@
             </div>
         </div>
     </div>
+    <!-- END: Login Page View -->
 
-    <!-- Main Application Container (Hidden initially) -->
-    <div id="app-container" class="view flex flex-col md:flex-row w-full min-h-screen" style="display: none;">
+    <!-- Main Application Container (Visible initially for guest mode) -->
+    <div id="app-container" class="view flex flex-col md:flex-row w-full min-h-screen" style="display: flex;">
         <!-- Sidebar -->
         <div id="sidebar"
             class="sidebar fixed md:relative z-[100] md:z-0 top-0 left-0 w-64 h-full bg-card-bg shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out md:translate-x-0">
@@ -1503,7 +1504,8 @@
             }
 
             async function fetchVideos() {
-                showLoading();
+                // Guests also need to fetch videos, so don't show loading overlay if auth isn't fully ready
+                if(userId) showLoading(); 
                 try {
                     const videosCollectionRef = collection(db, `/artifacts/${appId}/public/data/videos`);
                     const q = query(videosCollectionRef);
@@ -1513,13 +1515,13 @@
                 } catch (e) {
                     console.error("Error fetching videos:", e);
                 } finally {
-                    hideLoading();
+                    if(userId) hideLoading(); 
                 }
             }
 
             // Function to fetch social tasks from Firestore
             async function fetchSocialTasks() {
-                showLoading();
+                 if(userId) showLoading(); 
                 try {
                     const socialTasksCollectionRef = collection(db, `/artifacts/${appId}/public/data/socialTasks`);
                     const q = query(socialTasksCollectionRef);
@@ -1529,7 +1531,7 @@
                 } catch (e) {
                     console.error("Error fetching social tasks:", e);
                 } finally {
-                    hideLoading();
+                    if(userId) hideLoading(); 
                 }
             }
 
@@ -1754,20 +1756,33 @@
             }
 
             function updateUI(role) {
-                if (!isAuthReady || !currentUser) return;
+                if (!isAuthReady) return;
+
+                const isGuest = role === 'guest';
+                const actualRole = isGuest ? 'user' : role; // Guests use the user interface structure
 
                 // This block runs only on the very first load for a user session
                 if (isInitialUILoad) {
                     views.forEach(view => { if (view) view.style.display = 'none'; });
                     if (loginPage) loginPage.style.display = 'none';
                     if (appContainer) appContainer.style.display = 'flex';
-
-                    if (role === 'user') {
+                    
+                    if (actualRole === 'user') {
                         document.querySelectorAll('.admin-link').forEach(link => { if (link) link.style.display = 'none'; });
                         document.querySelectorAll('.user-link').forEach(link => { if (link) link.style.display = 'flex'; });
                         showView('user-dashboard-view');
-                        fetchVideos().then(() => renderVideoGrid('all'));
-                        fetchSocialTasks().then(renderSocialTasksGrid);
+                        // Videos/Tasks are already fetched in the onAuthStateChanged block for guests or fetched here for logged-in users
+                        // We must call render functions here if it's the initial load for a logged in user
+                        if(!isGuest) {
+                            // Only fetch and render grids if logged in on initial load (otherwise it was done in onAuthStateChanged)
+                            fetchVideos().then(() => renderVideoGrid('all', '', isGuest));
+                            fetchSocialTasks().then(() => renderSocialTasksGrid(isGuest));
+                        } else {
+                            // If guest, render with data fetched in onAuthStateChanged
+                            renderVideoGrid('all', '', isGuest);
+                            renderSocialTasksGrid(isGuest);
+                        }
+
                     } else if (role === 'admin') {
                         document.querySelectorAll('.user-link').forEach(link => { if (link) link.style.display = 'none'; });
                         document.querySelectorAll('.admin-link').forEach(link => { if (link) link.style.display = 'flex'; });
@@ -1780,41 +1795,50 @@
                 }
 
                 // This block runs on every data update (initial and subsequent)
-                if (role === 'user') {
-                    if (headerMeta) headerMeta.innerHTML = getUserHeaderHTML();
-                    if (sidebarProfile) sidebarProfile.innerHTML = getUserProfileHTML();
-                    if (welcomeMessage) welcomeMessage.textContent = `Welcome back, ${currentUser.name}!`;
-                    updatePointsDisplay();
+                if (actualRole === 'user') {
+                    if (headerMeta) headerMeta.innerHTML = getUserHeaderHTML(isGuest); // Pass guest status
+                    if (sidebarProfile) sidebarProfile.innerHTML = getUserProfileHTML(isGuest); // Pass guest status
+                    
+                    if (welcomeMessage) welcomeMessage.textContent = isGuest ? `Welcome to Ping Rewards! Login to start earning points.` : `Welcome back, ${currentUser.name}!`;
+
+                    updatePointsDisplay(); // Will use userData (0 points for guest)
+                    fetchAndRenderLeaderboard(); // Leaderboard is public data
+
                     // Re-render active view content if necessary
-                    if (document.getElementById('points-history-view').style.display === 'block') {
+                    const activeView = document.querySelector('.content-view[style*="block"]');
+                    const activeViewId = activeView ? activeView.id : '';
+
+                    if (activeViewId === 'points-history-view' && !isGuest) {
                         renderPointsHistoryTable();
                     }
-                    if (document.getElementById('watch-videos-view').style.display === 'block' && !isInitialUILoad) {
+                    if (activeViewId === 'watch-videos-view' && !isInitialUILoad) {
                         const activeFilterBtn = document.querySelector('#watch-videos-view .filter-btn.active');
                         const category = activeFilterBtn ? activeFilterBtn.dataset.category : 'all';
                         const searchQuery = searchBar ? searchBar.value : '';
-                        renderVideoGrid(category, searchQuery);
+                        renderVideoGrid(category, searchQuery, isGuest); // Pass guest status to render
                     }
-                    if (document.getElementById('invite-and-earn-view').style.display === 'block') {
-                         renderInviteAndEarnView();
+                    if (activeViewId === 'social-tasks-view' && !isInitialUILoad) {
+                         renderSocialTasksGrid(isGuest); // Pass guest status to render
+                    }
+                    if (activeViewId === 'invite-and-earn-view') {
+                         renderInviteAndEarnView(isGuest); // Pass guest status
                     }
 
-                } else if (role === 'admin') {
+                } else if (actualRole === 'admin') {
                     if (headerMeta) headerMeta.innerHTML = getAdminHeaderHTML();
                     if (sidebarProfile) sidebarProfile.innerHTML = getUserProfileHTML();
-                    // Admin dashboard data is real-time via its own snapshot, so no need to call it here.
+                    // Admin dashboard data is real-time via its own snapshot.
                 }
-                attachLogoutListeners();
-                fetchAndRenderLeaderboard();
+                attachLogoutListeners(isGuest); // Pass isGuest to properly re-attach listeners or skip.
             }
 
-            function getUserProfileHTML() {
-                const nameText = currentUser?.name || 'Unknown';
+            function getUserProfileHTML(isGuest = false) {
+                const nameText = isGuest ? 'Guest User' : (currentUser?.name || 'Unknown');
                 const profileText = nameText.split(' ').map(n => n[0]).join('');
-                const roleText = currentUser?.role === 'admin' ? 'ADMINISTRATOR' : currentUser?.email || 'N/A';
+                const roleText = isGuest ? 'LOGIN REQUIRED' : (currentUser?.role === 'admin' ? 'ADMINISTRATOR' : currentUser?.email || 'N/A');
                 return `
                     <div class="flex items-center">
-                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center mr-4 font-semibold text-primary">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full ${isGuest ? 'bg-slate-700 text-muted-text' : 'bg-primary/20 flex items-center justify-center mr-4 font-semibold text-primary'}">
                              ${profileText}
                         </div>
                         <div class="flex-grow">
@@ -1825,26 +1849,35 @@
                 `;
             }
 
-            function getUserHeaderHTML() {
-                const nameText = currentUser?.name || 'Unknown';
+            function getUserHeaderHTML(isGuest = false) {
+                const nameText = isGuest ? 'Guest' : (currentUser?.name || 'Unknown');
                 const profileText = nameText.split(' ').map(n => n[0]).join('');
-                const roleText = currentUser?.role === 'admin' ? 'Admin' : 'User';
+                const roleText = isGuest ? 'View Only' : (currentUser?.role === 'admin' ? 'Admin' : 'User');
+                
+                const pointsDisplay = isGuest ?
+                    `<span class="font-bold text-lg text-red-400">0 PTS</span><span class="text-sm text-muted-text">Login to Earn</span>` :
+                    `<span id="user-points-display" class="font-bold text-lg">${(userData?.points || 0).toLocaleString()} PTS</span><span class="text-sm text-muted-text">$${(userData?.points / 5000).toFixed(2)}</span>`;
+                
+                // If Guest, show a Login button that swaps the view
+                const authButton = isGuest ? 
+                    `<button onclick="document.getElementById('login-page').style.display = 'flex'; document.getElementById('app-container').style.display = 'none'; document.getElementById('login-message').style.display='none';" class="px-3 py-1 bg-accent-green hover:bg-emerald-600 rounded-lg text-white text-sm font-semibold transition-colors duration-200">Login</button>` :
+                    `<button class="logout-btn p-2 rounded-full hover:bg-slate-700 transition-colors duration-200">
+                        <svg class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+                    </button>`;
+
                 return `
                     <div class="flex items-center space-x-4">
                         <div class="flex flex-col items-end">
-                            <span id="user-points-display" class="font-bold text-lg">${(userData?.points || 0).toLocaleString()} PTS</span>
-                            <span class="text-sm text-muted-text">$${(userData?.points / 5000).toFixed(2)}</span>
+                            ${pointsDisplay}
                         </div>
                         <div class="flex items-center space-x-2">
                              <div class="text-right">
                                  <span class="block font-semibold">${nameText}</span>
                                  <span class="block text-xs text-muted-text">${roleText}</span>
                              </div>
-                            <img src="https://placehold.co/32x32/6366f1/ffffff?text=${profileText}" alt="${nameText}" class="w-8 h-8 rounded-full border border-primary">
+                            <img src="https://placehold.co/32x32/${isGuest ? '94a3b8' : '6366f1'}/ffffff?text=${profileText}" alt="${nameText}" class="w-8 h-8 rounded-full border border-primary">
                         </div>
-                        <button class="logout-btn p-2 rounded-full hover:bg-slate-700 transition-colors duration-200">
-                            <svg class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
-                        </button>
+                        ${authButton}
                     </div>
                 `;
             }
@@ -1868,7 +1901,9 @@
                  `;
             }
 
-            function attachLogoutListeners() {
+            function attachLogoutListeners(isGuest = false) {
+                if(isGuest) return; // Skip attaching listeners if in guest mode, as the login button is inline JS
+
                 const logoutButtons = document.querySelectorAll('.logout-btn');
                 if (logoutButtons) {
                     logoutButtons.forEach(btn => {
@@ -1880,10 +1915,7 @@
                         btn.addEventListener('click', async () => {
                             try {
                                 await signOut(auth);
-                                if (loginPage) loginPage.style.display = 'flex';
-                                if (appContainer) appContainer.style.display = 'none';
-                                currentUser = null;
-                                userData = null;
+                                // The onAuthStateChanged handler will catch the logout and set up guest view
                                 console.log("User signed out.");
                             } catch (error) {
                                 console.error("Error signing out:", error);
@@ -1963,7 +1995,7 @@
                 });
             }
 
-            function renderVideoGrid(category = 'all', searchQuery = '') {
+            function renderVideoGrid(category = 'all', searchQuery = '', isGuest = false) {
                 const videoGrid = document.getElementById('video-grid');
                 if (!videoGrid) {
                     console.error("Video grid element not found.");
@@ -1987,12 +2019,14 @@
                     return;
                 }
 
-                // Get cooldown info
-                const videoCooldowns = userData?.videoCooldowns || [];
-                const watchedVideoIds = userData?.watchedVideos || [];
+                // Get cooldown info (only applicable if not guest)
+                const videoCooldowns = isGuest ? [] : (userData?.videoCooldowns || []);
+                const watchedVideoIds = isGuest ? [] : (userData?.watchedVideos || []);
 
                 // Function to check if a video is on cooldown
                 const getCooldownStatus = (videoId) => {
+                    if (isGuest) return { isOnCooldown: false }; // Guest means no cooldown check
+
                     const cooldown = videoCooldowns.find(c => c.id === videoId);
                     if (!cooldown) return { isOnCooldown: false };
 
@@ -2004,8 +2038,6 @@
                             remainingTime: availableAfter - Date.now()
                         };
                     }
-                    // If cooldown is expired, we need to manually clean up the expired entry 
-                    // This is handled by a filter/re-render logic in the next step to keep the sorting correct
                     return { isOnCooldown: false };
                 };
 
@@ -2048,8 +2080,16 @@
                     let stateClasses = 'cursor-pointer';
                     let watchedOverlay = '';
                     let actionText = 'Watch to Earn';
-
-                    if (isOnCooldown) {
+                    
+                    if (isGuest) {
+                        // Guest specific visual lock
+                        stateClasses = 'opacity-80'; 
+                        actionText = 'Login to Earn Points';
+                        watchedOverlay = `<div class="absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center rounded-xl flex-col p-4">
+                                <svg class="w-8 h-8 text-primary mb-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18 10h-2V6c0-2.21-1.79-4-4-4S8 3.79 8 6v4H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V12c0-1.1-.9-2-2-2zm-6-6c1.1 0 2 .9 2 2v4H10V6c0-1.1.9-2 2-2zm6 16H6V12h12v8zM12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/></svg>
+                                <span class="text-sm font-bold text-primary text-center">Login to Start Earning</span>
+                            </div>`;
+                    } else if (isOnCooldown) {
                          stateClasses = 'opacity-50 pointer-events-none cursor-not-allowed';
                          const remainingHours = Math.ceil(status.remainingTime / (1000 * 60 * 60));
                          actionText = `Cooldown: ${remainingHours} Hrs Left`;
@@ -2100,12 +2140,12 @@
                     videoGridHtml += videoCardHtml;
                 });
                 videoGrid.innerHTML = videoGridHtml;
-                attachVideoCardListeners();
+                attachVideoCardListeners(isGuest);
             }
 
 
             // Function to render social tasks for the user
-            function renderSocialTasksGrid() {
+            function renderSocialTasksGrid(isGuest = false) {
                 if (!socialTasksGrid) {
                     console.error("Social tasks grid element not found.");
                     return;
@@ -2120,9 +2160,15 @@
                 const completedTasks = userData?.completedSocialTasks || [];
                 socialTasks.forEach(task => {
                     const isCompleted = completedTasks.includes(task.id);
-                    const cardClass = isCompleted ? 'opacity-50 grayscale cursor-not-allowed' : '';
-                    const buttonText = isCompleted ? 'Completed' : 'Complete Task';
-                    const buttonClass = isCompleted ? 'bg-accent-green/50' : 'bg-primary hover:bg-indigo-600';
+                    // Disable if completed OR if guest
+                    const isDisabled = isCompleted || isGuest; 
+                    
+                    const cardClass = isDisabled ? 'opacity-50 cursor-not-allowed' : '';
+                    if(isCompleted) cardClass += ' grayscale'; // Add grayscale only if genuinely completed
+                    
+                    const buttonText = isGuest ? 'Login to Earn' : (isCompleted ? 'Completed' : 'Complete Task');
+                    const buttonClass = isGuest ? 'bg-red-600/70' : (isCompleted ? 'bg-accent-green/50' : 'bg-primary hover:bg-indigo-600');
+
                     let icon;
                     switch (task.platform) {
                         case 'Facebook': icon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-blue-600"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c5.29 0 9.77-4.14 10-9.43.14-2.85-2.06-5.26-4.91-5.74v2.02c1.78.4 3.12 1.93 3.12 3.82 0 2.11-1.79 3.82-3.99 3.82H12v-6.93l-3 3v2.93h-1v-6h-2v6.93l1.85-1.85c.19-.19.45-.3.72-.3s.53.11.72.3L12 14.07V12h3.99c1.66 0 3-1.34 3-3s-1.34-3-3-3h-3c-1.1 0-2 .9-2 2v1H9v2h2v1H8c-2.21 0-4-1.79-4-4s1.79-4 4-4h4V2z"/></svg>`; break;
@@ -2140,14 +2186,14 @@
                              <h3 class="text-lg font-semibold mb-1">${task.title}</h3>
                              <p class="text-sm text-muted-text mb-2">${task.platform}</p>
                              <span class="inline-block bg-accent-green text-white text-xs font-bold px-3 py-1 rounded-full mb-4">${task.points} PTS</span>
-                             <button class="complete-task-btn w-full py-2 text-white font-semibold rounded-lg transition-colors duration-300 ${buttonClass}" data-task-id="${task.id}" data-task-link="${task.link}" ${isCompleted ? 'disabled' : ''}>
+                             <button class="complete-task-btn w-full py-2 text-white font-semibold rounded-lg transition-colors duration-300 ${buttonClass}" data-task-id="${task.id}" data-task-link="${task.link}" ${isDisabled ? 'disabled' : ''}>
                                  ${buttonText}
                              </button>
                          </div>
                      `;
                     socialTasksGrid.innerHTML += taskCardHtml;
                 });
-                attachSocialTaskListeners();
+                attachSocialTaskListeners(isGuest);
             }
 
             function renderUsersTable(users) {
@@ -2261,9 +2307,22 @@
             }
 
             // Function to render the Invite & Earn view
-            function renderInviteAndEarnView() {
-                if (!userData || !userId) return;
-                
+            function renderInviteAndEarnView(isGuest = false) {
+                // This view is for authenticated users only, but we render a message if guest clicks it (though the link is user-link)
+                if (isGuest || !userId) {
+                    document.getElementById('invite-and-earn-view').innerHTML = `
+                         <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 text-center">
+                             <h2 class="text-xl font-semibold mb-4 text-red-400">Login Required</h2>
+                             <p class="text-muted-text">Please sign in to get your unique referral code and start inviting friends!</p>
+                             <button onclick="document.getElementById('login-page').style.display = 'flex'; document.getElementById('app-container').style.display = 'none'; document.getElementById('login-message').textContent='Sign in to access your referral code.'; document.getElementById('login-message').style.display='block';"
+                                 class="mt-4 px-6 py-2 bg-primary hover:bg-indigo-600 text-white font-semibold rounded-lg transition-colors duration-300">
+                                 Go to Login
+                             </button>
+                         </div>
+                    `;
+                    return;
+                }
+
                 const code = userId; // User ID is the referral code
                 const currentUrl = window.location.origin + window.location.pathname;
                 const link = `${currentUrl}?ref=${code}`;
@@ -2310,6 +2369,7 @@
 
             function updatePointsDisplay() {
                 if (!userData) return;
+                const currentPoints = userData.points || 0;
                 const totalPointsValue = document.getElementById('total-points-value');
                 const estimatedEarningsValue = document.getElementById('estimated-earnings-value');
                 const videosWatchedValue = document.getElementById('videos-watched-value');
@@ -2317,15 +2377,18 @@
                 const cashoutBtn = document.getElementById('cashout-button');
                 const payoutAmountInput = document.getElementById('payout-amount');
 
-                if (totalPointsValue) totalPointsValue.textContent = userData.points.toLocaleString();
-                if (estimatedEarningsValue) estimatedEarningsValue.textContent = `$${(userData.points / 5000).toFixed(2)}`;
+                if (totalPointsValue) totalPointsValue.textContent = currentPoints.toLocaleString();
+                if (estimatedEarningsValue) estimatedEarningsValue.textContent = `$${(currentPoints / 5000).toFixed(2)}`;
                 if (videosWatchedValue) videosWatchedValue.textContent = (userData.watchedVideos || []).length;
-                if (userPointsDisplay) userPointsDisplay.textContent = `${userData.points.toLocaleString()} PTS`;
-                if (payoutAmountInput) payoutAmountInput.value = (userData.points / 5000).toFixed(2);
+                
+                // Note: userPointsDisplay is set in getUserHeaderHTML for guests, but here for logged-in users
+                if (userPointsDisplay && userId) userPointsDisplay.textContent = `${currentPoints.toLocaleString()} PTS`;
+
+                if (payoutAmountInput) payoutAmountInput.value = (currentPoints / 5000).toFixed(2);
 
                 if (cashoutBtn) {
 
-                    if (userData.points < 5000) {
+                    if (currentPoints < 5000) {
                         cashoutBtn.classList.add('opacity-50', 'cursor-not-allowed');
                         cashoutBtn.classList.remove('hover:bg-indigo-600');
                     } else {
@@ -2367,10 +2430,22 @@
                 }
             }
 
-            async function attachVideoCardListeners() {
+            async function attachVideoCardListeners(isGuest = false) {
                 const cards = document.querySelectorAll('.video-card');
                 cards.forEach(card => {
                     card.addEventListener('click', (e) => {
+                        // Check if the user is authenticated (userId is set)
+                        if (isGuest || !userId) {
+                            // User is a guest, prompt login instead of starting video
+                            if (loginPage) loginPage.style.display = 'flex';
+                            if (appContainer) appContainer.style.display = 'none';
+                            if (loginMessage) {
+                                loginMessage.textContent = 'You must sign in to watch videos and earn points.';
+                                loginMessage.style.display = 'block';
+                            }
+                            return;
+                        }
+
                         // Prevent click if it's on cooldown (though CSS pointer-events should handle this)
                         if (card.getAttribute('data-cooldown') === 'true') return; 
 
@@ -2455,10 +2530,22 @@
             }
 
             // Attach listeners to social task buttons
-            function attachSocialTaskListeners() {
+            function attachSocialTaskListeners(isGuest = false) {
                 const completeButtons = document.querySelectorAll('.complete-task-btn');
                 completeButtons.forEach(btn => {
                     btn.addEventListener('click', async () => {
+                        // Check if the user is authenticated (userId is set)
+                        if (isGuest || !userId) {
+                            // User is a guest, prompt login
+                            if (loginPage) loginPage.style.display = 'flex';
+                            if (appContainer) appContainer.style.display = 'none';
+                            if (loginMessage) {
+                                loginMessage.textContent = 'You must sign in to complete social tasks and earn points.';
+                                loginMessage.style.display = 'block';
+                            }
+                            return;
+                        }
+
                         const taskId = btn.getAttribute('data-task-id');
                         const task = socialTasks.find(t => t.id === taskId);
 
@@ -2768,20 +2855,36 @@
                     if (sidebar) sidebar.classList.remove('open');
                     if (backdrop) backdrop.classList.remove('open');
                     document.body.classList.remove('no-scroll');
+                    
+                    const isGuest = userId === null;
+
                     if (targetId === 'watch-videos-view') {
-                        renderVideoGrid('all');
+                        renderVideoGrid('all', '', isGuest);
                     } else if (targetId === 'social-tasks-view') {
-                        renderSocialTasksGrid();
+                        renderSocialTasksGrid(isGuest);
                     } else if (targetId === 'manage-videos-view') {
                         renderManageVideosTable();
                     } else if (targetId === 'manage-social-tasks-view') {
-                        renderManageSocialTasksTable(); // ADDED: Ensure task table renders on click
+                        renderManageSocialTasksTable(); 
                     } else if (targetId === 'manage-users-view') {
                         fetchAllUsers();
                     } else if (targetId === 'points-history-view') {
-                        renderPointsHistoryTable();
+                        if (isGuest) {
+                             document.getElementById('points-history-view').innerHTML = `
+                                <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 text-center">
+                                     <h2 class="text-xl font-semibold mb-4 text-red-400">Login Required</h2>
+                                     <p class="text-muted-text">Please sign in to view your points and history!</p>
+                                     <button onclick="document.getElementById('login-page').style.display = 'flex'; document.getElementById('app-container').style.display = 'none'; document.getElementById('login-message').textContent='Sign in to view your points history.'; document.getElementById('login-message').style.display='block';"
+                                         class="mt-4 px-6 py-2 bg-primary hover:bg-indigo-600 text-white font-semibold rounded-lg transition-colors duration-300">
+                                         Go to Login
+                                     </button>
+                                 </div>
+                             `;
+                        } else {
+                            renderPointsHistoryTable();
+                        }
                     } else if (targetId === 'invite-and-earn-view') {
-                        renderInviteAndEarnView();
+                        renderInviteAndEarnView(isGuest);
                     }
                 });
             });
@@ -2803,7 +2906,7 @@
                     btn.classList.add('active', 'bg-primary', 'border-primary', 'text-white');
                     btn.classList.remove('bg-card-bg', 'border-slate-700');
                     const category = btn.getAttribute('data-category');
-                    renderVideoGrid(category);
+                    renderVideoGrid(category, searchBar.value, userId === null);
                 });
             });
 
@@ -2811,7 +2914,7 @@
                 searchBar.addEventListener('input', () => {
                     const activeFilterBtn = document.querySelector('.filter-btn.active');
                     const category = activeFilterBtn ? activeFilterBtn.getAttribute('data-category') : 'all';
-                    renderVideoGrid(category, searchBar.value);
+                    renderVideoGrid(category, searchBar.value, userId === null);
                 });
             }
 
@@ -2943,6 +3046,16 @@
             if (cashoutBtn) {
                 cashoutBtn.addEventListener('click', (e) => {
                     e.preventDefault();
+                    
+                    const isGuest = userId === null;
+                    if(isGuest) {
+                         if (cashoutMessageModal) {
+                            cashoutMessageText.textContent = `You must sign in to cash out your earnings.`;
+                            cashoutMessageModal.classList.remove('hidden');
+                        }
+                         return;
+                    }
+                    
                     // Check if the user has enough points
                     if (!userData || userData.points < 5000) {
                         if (cashoutMessageModal) {
@@ -3042,48 +3155,69 @@
 
             generateRandomChartData();
             showLoading();
-                 onAuthStateChanged(auth, async (user) => {
+            
+            // NEW: Auth State Handler - Handles both initial setup and subsequent logins/logouts
+            onAuthStateChanged(auth, async (user) => {
                 isAuthReady = true;
-                if (user) {
-                    
-                    // 1. Canvas မှ ပေးသော Custom Auth Token ဖြင့် ဝင်ရောက်ရန် ကြိုးစားခြင်း
-                    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-                    if (initialAuthToken) {
+                
+                // 1. စတင် loading လုပ်စဉ် (Canvas environment) တွင် Custom Token ဖြင့် ဝင်ရောက်ခြင်းကို စစ်ဆေးခြင်း
+                const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+                
+                if (user && initialAuthToken) {
+                     // Anonymous ဖြစ်နေပြီး Custom Token ရှိရင် Sign In လုပ်ရန်ကြိုးစားသည်
+                     if (user.isAnonymous) {
                          try {
-                             // Custom Token ဖြင့် ဝင်ရောက်ခြင်း (user.isAnonymous ဖြစ်နေလျှင် ၎င်းကို Google User အဖြစ် ပြောင်းလဲသွားမည်)
                              await signInWithCustomToken(auth, initialAuthToken);
+                             console.log("Signed in with custom token.");
+                             return; // Wait for the second call to onAuthStateChanged (real user)
                          } catch (e) {
                              console.error("Error signing in with custom token:", e);
-                             // Sign-in မအောင်မြင်ပါက Login Page ပြန်ပြရန်
-                             if (loginPage) loginPage.style.display = 'flex';
-                             if (appContainer) appContainer.style.display = 'none';
-                             hideLoading();
-                             return;
+                             // Sign-in မအောင်မြင်ပါက Guest View ကို ဆက်ပြမည်။
+                             user = null; // Treat as no user
                          }
-                    }
-
-                    // 2. Google Account (သို့) Custom Token ဖြင့် ဝင်ရောက်အောင်မြင်သည့်အခါ
-                    // ဤနေရာတွင် Anonymous user များကို လုံးဝလျစ်လျူရှုထားပါသည်။
-                    if (!user.isAnonymous) {
-                        userId = user.uid;
-                        isInitialUILoad = true; // Reset the flag on login
-                        await seedInitialData(user);
-                        await fetchUserData(userId);
-                    } else {
-                        // user object ရှိနေသော်လည်း Anonymous ဖြစ်နေပါက (Custom Token မပါဝင်သည့်အခါ) Login Page သို့ ပို့မည်။
-                        if (loginPage) loginPage.style.display = 'flex';
-                        if (appContainer) appContainer.style.display = 'none';
-                        hideLoading();
-                    }
-
-                } else {
-                    // User မရှိပါက Login Page ပြပါမည်။
-                    console.log("No user is signed in. Showing login page.");
-                    if (loginPage) loginPage.style.display = 'flex';
-                    if (appContainer) appContainer.style.display = 'none';
-                    hideLoading();
+                     }
                 }
+                
+                // 2. User အခြေအနေကို စစ်ဆေးပြီး UI ပြသခြင်း
+                if (user) {
+                    // User is signed in (Google or Custom Token)
+                    userId = user.uid;
+                    
+                    if (isInitialUILoad) {
+                        // Only seed data and start listening for the first time
+                        await seedInitialData(user);
+                        // fetchUserData sets up a snapshot listener which calls updateUI when data is ready
+                        await fetchUserData(userId); 
+                        
+                        // Ensure the app view is visible and login page is hidden
+                        if (loginPage) loginPage.style.display = 'none';
+                        if (appContainer) appContainer.style.display = 'flex';
+                    }
+                    
+                } else {
+                    // No user is signed in (Guest mode)
+                    currentUser = { name: 'Guest', email: 'Login to Earn', role: 'guest' };
+                    // Provide mock data for display purposes
+                    userData = { points: 0, watchedVideos: [], pointsHistory: [], payoutHistory: [], videoCooldowns: [] }; 
+                    userId = null;
+                    
+                    // Show app container for guests
+                    if (loginPage) loginPage.style.display = 'none';
+                    if (appContainer) appContainer.style.display = 'flex';
+                    
+                    // Proceed with initial UI load for guest mode
+                    if (isInitialUILoad) {
+                         // Only fetch videos/tasks once
+                         await fetchVideos(); 
+                         await fetchSocialTasks(); 
+                         updateUI('guest'); // Manually call UI update for guest
+                    }
+                }
+
+                if (isInitialUILoad) {
+                    isInitialUILoad = false; // Set this flag off after the first full load attempt
+                }
+                hideLoading();
             });
         });
            
@@ -3092,4 +3226,3 @@
 </body>
 
 </html>
-
