@@ -2875,20 +2875,30 @@
             function attachVideoManagementListeners() {
                 // Edit Video
                 document.querySelectorAll('.edit-video-btn').forEach(btn => {
-                    btn.onclick = () => {
-                        const videoId = btn.getAttribute('data-video-id');
+                    // Start of robust attachment using cloning
+                    const oldBtn = btn.cloneNode(true);
+                    btn.parentNode.replaceChild(oldBtn, btn);
+                    const newBtn = oldBtn;
+                    
+                    newBtn.addEventListener('click', () => {
+                        const videoId = newBtn.getAttribute('data-video-id');
                         showAddEditVideoModal(videoId);
-                    };
+                    });
                 });
                 // Delete Video
                 document.querySelectorAll('.delete-video-btn').forEach(btn => {
-                    btn.onclick = () => {
-                        const videoId = btn.getAttribute('data-video-id');
+                    // Start of robust attachment using cloning
+                    const oldBtn = btn.cloneNode(true);
+                    btn.parentNode.replaceChild(oldBtn, btn);
+                    const newBtn = oldBtn;
+
+                    newBtn.addEventListener('click', () => {
+                        const videoId = newBtn.getAttribute('data-video-id');
                         const video = videos.find(v => v.id === videoId);
                         showDeleteConfirmModal(`Delete Video: ${video.title}`, 'Are you sure you want to permanently delete this video?', (confirm) => {
                             if (confirm) deleteVideo(videoId);
                         });
-                    };
+                    });
                 });
             }
             
@@ -2900,20 +2910,30 @@
             function attachSocialTaskManagementListeners() {
                 // Edit Task
                 document.querySelectorAll('.edit-social-task-btn').forEach(btn => {
-                    btn.onclick = () => {
-                        const taskId = btn.getAttribute('data-task-id');
+                    // Start of robust attachment using cloning
+                    const oldBtn = btn.cloneNode(true);
+                    btn.parentNode.replaceChild(oldBtn, btn);
+                    const newBtn = oldBtn;
+
+                    newBtn.addEventListener('click', () => {
+                        const taskId = newBtn.getAttribute('data-task-id');
                         showAddEditSocialTaskModal(taskId);
-                    };
+                    });
                 });
                 // Delete Task
                 document.querySelectorAll('.delete-social-task-btn').forEach(btn => {
-                    btn.onclick = () => {
-                        const taskId = btn.getAttribute('data-task-id');
+                    // Start of robust attachment using cloning
+                    const oldBtn = btn.cloneNode(true);
+                    btn.parentNode.replaceChild(oldBtn, btn);
+                    const newBtn = oldBtn;
+                    
+                    newBtn.addEventListener('click', () => {
+                        const taskId = newBtn.getAttribute('data-task-id');
                         const task = socialTasks.find(t => t.id === taskId);
                         showDeleteConfirmModal(`Delete Task: ${task.title}`, 'Are you sure you want to permanently delete this social task?', (confirm) => {
                             if (confirm) deleteSocialTask(taskId);
                         });
-                    };
+                    });
                 });
             }
 
