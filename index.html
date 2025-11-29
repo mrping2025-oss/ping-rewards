@@ -1202,9 +1202,39 @@
             let sessionPoints = 0;
             const POINTS_PER_SECOND = 1 / 60; // 1 point per 60 seconds (1 minute)
             
+            // --- NEW FUNCTION: applyVideoCooldown ---
+            // This function applies the 24-hour cooldown and updates watchedVideos array
+            async function applyVideoCooldown(videoId) {
+                if (!userData || !userId || !videoId) return;
+
+                try {
+                    const userDocRef = doc(db, `/artifacts/${appId}/users/${userId}`);
+                    
+                    // 24 hours from now
+                    const availableAfter = Date.now() + (24 * 60 * 60 * 1000); 
+                    const cooldownEntry = { id: videoId, watchedAt: Date.now(), availableAfter: availableAfter };
+
+                    let newCooldowns = userData.videoCooldowns || [];
+                    // Remove old entry if exists (important for case where expired cooldown is reapplied)
+                    newCooldowns = newCooldowns.filter(c => c.id !== videoId);
+                    newCooldowns.push(cooldownEntry);
+
+                    await updateDoc(userDocRef, {
+                        // Update Cooldowns array
+                        videoCooldowns: newCooldowns,
+                        // Also mark as watched (for visual checkmark/sorting)
+                        watchedVideos: arrayUnion(videoId)
+                    });
+                    console.log(`[COOLDOWN] Video ${videoId} set on 24hr cooldown.`);
+                } catch (e) {
+                    console.error("Error applying video cooldown:", e);
+                }
+            }
+            // --- END NEW FUNCTION: applyVideoCooldown ---
+
             // NEW: Core function to handle exiting the video player view, 
             // including stopping the timer and applying cooldown if necessary.
-            const handlePlayerExit = (isAutoExit = false) => {
+            const handlePlayerExit = async (isAutoExit = false) => {
                 const currentVideo = videos.find(v => v.id === currentVideoId);
                 const videoMaxDuration = currentVideo?.watchDuration || 0;
                 
@@ -1216,22 +1246,13 @@
                 if (circularPointsTracker) circularPointsTracker.classList.add('hidden');
 
                 // 2. Apply Cooldown if minimum watch time (60s = 1 point) was met
-                // Note: Points are already accrued in updatePointsInFirestore during the interval.
+                // Cooldown is now triggered immediately if points were earned (>= 60s watched).
                 if (currentVideoId && sessionWatchTime >= 60) {
-                    console.log(`[EXIT] Cooldown triggered: ${isAutoExit ? 'Auto' : 'Manual'} exit after ${sessionWatchTime}s.`);
-                    
-                    // We only update the cooldown status here. Points were already logged.
-                    // Pass 0 points, but flag as a full watch/cooldown update.
-                    updatePointsInFirestore(
-                        0, 
-                        isAutoExit ? `Video max duration reached: "${currentVideo.title}"` : `Cooldown applied on manual exit: "${currentVideo.title}"`, 
-                        currentVideoId, 
-                        'video', 
-                        true, // isFullWatch = true triggers cooldown update
-                        videoMaxDuration
-                    );
+                    console.log(`[EXIT] Applying 24-hour cooldown after ${sessionWatchTime}s watched.`);
+                    // Directly apply cooldown if any points (>= 60s) were earned.
+                    await applyVideoCooldown(currentVideoId);
                 } else if (currentVideoId && sessionWatchTime > 0) {
-                    console.log(`[EXIT] User watched ${sessionWatchTime}s (< 60s). Not enough watch time for cooldown.`);
+                    console.log(`[EXIT] User watched ${sessionWatchTime}s (< 60s). Not enough watch time for cooldown or points.`);
                 }
 
                 // 3. Navigate away and reset session variables
@@ -1583,6 +1604,8 @@
             }
 
             // Updates user points in Firestore and adds a new history entry
+            // NOTE: isFullWatch and videoDuration parameters are kept for compatibility with existing calls, 
+            // but the internal cooldown logic is removed here and moved to applyVideoCooldown.
             async function updatePointsInFirestore(pointsToAdd, description, id, type = 'video', isFullWatch = false, videoDuration = 0) {
                 if (!userData || !userId) return;
                 try {
@@ -1599,26 +1622,10 @@
                         pointsHistory: newHistory,
                     };
 
-                    if (type === 'video' && id) {
-                        if (isFullWatch) {
-                             // Mark as fully watched and set cooldown
-                             const availableAfter = Date.now() + (24 * 60 * 60 * 1000); // 24 hours from now
-                             const cooldownEntry = { id: id, watchedAt: Date.now(), availableAfter: availableAfter };
-
-                             // Add ID to simple watched list (for historical tracking if needed)
-                             updateData.watchedVideos = arrayUnion(id);
-                             
-                             // Update Cooldowns array
-                             let newCooldowns = userData.videoCooldowns || [];
-                             // Remove old entry if exists (in case user watched it after the cooldown reset)
-                             newCooldowns = newCooldowns.filter(c => c.id !== id);
-                             newCooldowns.push(cooldownEntry);
-                             updateData.videoCooldowns = newCooldowns;
-
-                        } else if (pointsToAdd > 0) {
-                            // Only update watchedVideos if points were actually added (marks minimum watch)
-                            updateData.watchedVideos = arrayUnion(id);
-                        }
+                    if (type === 'video' && id && pointsToAdd > 0) {
+                         // Only mark as watched if points were actually earned (for sorting/checkmark)
+                         // Cooldown logic is now handled exclusively by applyVideoCooldown
+                         updateData.watchedVideos = arrayUnion(id);
                     } else if (type === 'social') {
                         updateData.completedSocialTasks = arrayUnion(id);
                     }
@@ -2655,7 +2662,7 @@
 
                 let lastMinuteEarned = 0; // Initialize a local tracker for minute-based earning
 
-                watchInterval = setInterval(() => {
+                watchInterval = setInterval(async () => { // Changed to async to support applyVideoCooldown call
                     sessionWatchTime++;
                     const remainingTime = maxDuration - sessionWatchTime;
                     
@@ -2688,8 +2695,7 @@
                             pointsToSave, 
                             `Watched video: "${video.title}" (+60s)`, 
                             video.id, 
-                            'video', 
-                            false // Not a full watch yet
+                            'video'
                         );
                         lastMinuteEarned = currentMinute; // Update local tracker
                         console.log(`Earned ${pointsToSave} points. Total session time: ${sessionWatchTime}s`);
@@ -2698,10 +2704,13 @@
 
                     // End condition: Max duration reached
                     if (sessionWatchTime >= maxDuration) {
-                        console.log(`Max duration of ${maxDuration}s reached for video: ${video.id}`);
+                        console.log(`Max duration of ${maxDuration}s reached for video: ${video.id}. Applying cooldown and exiting.`);
                         
-                        // We rely on the updatePointsInFirestore inside handlePlayerExit to handle the cooldown setting.
-                        // The user has already earned all the points, but we call the exit function to ensure cleanup and cooldown application.
+                        // Call applyVideoCooldown directly if >= 60s (which maxDuration guarantees)
+                        if (maxDuration >= 60) {
+                            await applyVideoCooldown(video.id);
+                        }
+
                         handlePlayerExit(true); // true = isAutoExit
 
                         clearInterval(watchInterval);
