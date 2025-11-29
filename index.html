@@ -1440,7 +1440,7 @@
                     // Only re-render videos if the view is currently active
                     if (document.getElementById('watch-videos-view').style.display === 'block') {
                         const activeFilterBtn = document.querySelector('#watch-videos-view .filter-btn.active');
-                        const category = activeFilterBtn ? activeFilterBtn.dataset.category : 'all';
+                        const category = activeFilterBtn ? activeFilterBtn.getAttribute('data-category') : 'all';
                         renderVideoGrid(category, searchBar.value, isGuest);
                     }
                 }, (error) => {
@@ -2613,6 +2613,7 @@
                 editBtns.forEach(btn => {
                     const oldBtn = btn.cloneNode(true);
                     btn.parentNode.replaceChild(oldBtn, btn);
+                    
                 });
                 const newEditBtns = document.querySelectorAll('.edit-btn');
                 newEditBtns.forEach(btn => {
