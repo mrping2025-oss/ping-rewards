@@ -785,13 +785,16 @@
                 </div>
             </div>
 
-            <!-- Manage Videos View -->
+            <!-- Manage Videos View (Updated with Search) -->
             <div id="manage-videos-view" class="content-view" style="display: none;">
                 <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-xl font-semibold">Manage Videos</h2>
+                    <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+                        <h2 class="text-xl font-semibold whitespace-nowrap">Manage Videos</h2>
+                        <input type="text" id="manage-videos-search"
+                            class="flex-grow max-w-md px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary placeholder-muted-text"
+                            placeholder="Search videos by title or category...">
                         <button id="add-video-btn"
-                            class="px-4 py-2 bg-primary hover:bg-indigo-600 rounded-lg text-white font-semibold transition-colors duration-200">
+                            class="px-4 py-2 bg-primary hover:bg-indigo-600 rounded-lg text-white font-semibold transition-colors duration-200 whitespace-nowrap">
                             Add New Video
                         </button>
                     </div>
@@ -813,13 +816,16 @@
                 </div>
             </div>
 
-            <!-- Manage Social Tasks View -->
+            <!-- Manage Social Tasks View (Updated with Search) -->
             <div id="manage-social-tasks-view" class="content-view" style="display: none;">
                 <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-xl font-semibold">Manage Social Tasks</h2>
+                    <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+                        <h2 class="text-xl font-semibold whitespace-nowrap">Manage Social Tasks</h2>
+                        <input type="text" id="manage-social-tasks-search"
+                            class="flex-grow max-w-md px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary placeholder-muted-text"
+                            placeholder="Search social tasks by title or platform...">
                         <button id="add-social-task-btn"
-                            class="px-4 py-2 bg-primary hover:bg-indigo-600 rounded-lg text-white font-semibold transition-colors duration-200">
+                            class="px-4 py-2 bg-primary hover:bg-indigo-600 rounded-lg text-white font-semibold transition-colors duration-200 whitespace-nowrap">
                             Add New Task
                         </button>
                     </div>
@@ -842,10 +848,13 @@
                 </div>
             </div>
 
-            <!-- Manage Users View -->
+            <!-- Manage Users View (Updated with Search) -->
             <div id="manage-users-view" class="content-view" style="display: none;">
                 <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
                     <h2 class="text-xl font-semibold mb-2">Manage Users</h2>
+                    <input type="text" id="manage-users-search"
+                        class="w-full px-4 py-2 mb-4 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary placeholder-muted-text"
+                        placeholder="Search users by name, email or ID...">
                     <p class="text-muted-text mb-6">View user data, manage status, and edit information.</p>
                     <div class="overflow-x-auto rounded-lg">
                         <table class="w-full text-left table-auto">
@@ -1131,17 +1140,24 @@
 
             const addVideoBtn = document.getElementById('add-video-btn');
             const addVideoModal = document.getElementById('add-video-modal');
-            const addVideoForm = document.getElementById('add-video-form');
+            // CRITICAL FIX: Change const to let for form references to allow cloning/replacement
+            let addVideoForm = document.getElementById('add-video-form'); 
             const addModalTitle = document.getElementById('modal-title');
             const videoTableBody = document.querySelector('#videos-table');
             const getSummaryBtn = document.getElementById('get-summary-btn');
             const summaryOutput = document.getElementById('summary-output');
+            
+            // NEW Search elements
+            const manageVideosSearch = document.getElementById('manage-videos-search');
+            const manageSocialTasksSearch = document.getElementById('manage-social-tasks-search');
+            const manageUsersSearch = document.getElementById('manage-users-search');
 
             // Social task related elements
             const socialTasksGrid = document.getElementById('social-tasks-grid');
             const addSocialTaskBtn = document.getElementById('add-social-task-btn');
             const addSocialTaskModal = document.getElementById('add-social-task-modal');
-            const addSocialTaskForm = document.getElementById('add-social-task-form');
+            // CRITICAL FIX: Change const to let for form references to allow cloning/replacement
+            let addSocialTaskForm = document.getElementById('add-social-task-form'); 
             const socialTaskTableBody = document.querySelector('#social-tasks-table');
             const socialTaskModalTitle = document.getElementById('social-task-modal-title');
 
@@ -1471,7 +1487,8 @@
                     
                     // NEW FIX 2: Re-render Admin Manage Videos view if active
                     if (document.getElementById('manage-videos-view')?.style.display === 'block' && !isGuest) {
-                        renderManageVideosTable(); 
+                        // Pass current search value when snapshot updates
+                        renderManageVideosTable(manageVideosSearch?.value || ''); 
                     }
                     
                 }, (error) => {
@@ -1492,7 +1509,8 @@
                     
                     // NEW FIX 2: Re-render Admin Manage Social Tasks view if active
                     if (document.getElementById('manage-social-tasks-view')?.style.display === 'block' && !isGuest) {
-                        renderManageSocialTasksTable(); 
+                        // Pass current search value when snapshot updates
+                        renderManageSocialTasksTable(manageSocialTasksSearch?.value || ''); 
                     }
                     
                 }, (error) => {
@@ -1577,14 +1595,25 @@
                 });
             }
 
-            async function fetchAllUsers() {
+            // Updated to accept search query
+            async function fetchAllUsers(searchQuery = '') { 
                 showLoading();
                 if (!usersTableBody) return;
                 usersTableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-muted-text">Fetching users...</td></tr>`;
                 try {
                     const usersCollectionRef = collection(db, `/artifacts/${appId}/users`);
                     const querySnapshot = await getDocs(usersCollectionRef);
-                    const users = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    let users = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                    if (searchQuery) { // Apply filtering
+                        const query = searchQuery.toLowerCase();
+                        users = users.filter(user => 
+                            user.name?.toLowerCase().includes(query) ||
+                            user.email?.toLowerCase().includes(query) ||
+                            user.id.toLowerCase().includes(query)
+                        );
+                    }
+                    
                     renderUsersTable(users);
                 } catch (e) {
                     console.error("Error fetching users:", e);
@@ -1791,8 +1820,9 @@
                     } else if (role === 'admin') {
                         showView('admin-dashboard-view');
                         fetchAdminDashboardData(); // Admin data fetch includes snapshots
-                        renderManageVideosTable();
-                        renderManageSocialTasksTable();
+                        // Initialize search bars with empty query on first load
+                        renderManageVideosTable('');
+                        renderManageSocialTasksTable('');
                     }
                     isInitialUILoad = false; // Important: set flag to false
                 }
@@ -2262,16 +2292,26 @@
             }
 
             // Function to render the table for managing videos (Admin view)
-            function renderManageVideosTable() {
+            function renderManageVideosTable(searchQuery = '') {
                 if (!videoTableBody) return;
                 
-                if (videos.length === 0) {
-                    videoTableBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-muted-text">No videos added yet.</td></tr>`;
+                let filteredVideos = videos;
+                if (searchQuery) { // Apply filtering
+                    const query = searchQuery.toLowerCase();
+                    filteredVideos = videos.filter(video => 
+                        video.title.toLowerCase().includes(query) ||
+                        video.category.toLowerCase().includes(query) ||
+                        video.id.toLowerCase().includes(query)
+                    );
+                }
+
+                if (filteredVideos.length === 0) {
+                    videoTableBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-muted-text">No videos found.</td></tr>`;
                     return;
                 }
 
                 let tableHtml = '';
-                videos.forEach(video => {
+                filteredVideos.forEach(video => {
                     tableHtml += `
                         <tr class="hover:bg-slate-800/50 transition-colors duration-150">
                             <td class="p-4 font-semibold">${video.title}</td>
@@ -2289,16 +2329,26 @@
             }
             
              // Function to render the table for managing social tasks (Admin view)
-            function renderManageSocialTasksTable() {
+            function renderManageSocialTasksTable(searchQuery = '') {
                 if (!socialTaskTableBody) return;
                 
-                if (socialTasks.length === 0) {
+                let filteredTasks = socialTasks;
+                if (searchQuery) { // Apply filtering
+                    const query = searchQuery.toLowerCase();
+                    filteredTasks = socialTasks.filter(task => 
+                        task.title.toLowerCase().includes(query) ||
+                        task.platform.toLowerCase().includes(query) ||
+                        task.id.toLowerCase().includes(query)
+                    );
+                }
+
+                if (filteredTasks.length === 0) {
                     socialTaskTableBody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-muted-text">No social tasks added yet.</td></tr>`;
                     return;
                 }
 
                 let tableHtml = '';
-                socialTasks.forEach(task => {
+                filteredTasks.forEach(task => {
                     tableHtml += `
                         <tr class="hover:bg-slate-800/50 transition-colors duration-150">
                             <td class="p-4 font-semibold">${task.title}</td>
@@ -2465,11 +2515,14 @@
                     } else if (targetId === 'points-history-view') {
                         renderPointsHistoryTable();
                     } else if (targetId === 'manage-videos-view') {
-                        renderManageVideosTable(); // Now triggered on view load and by snapshot
+                        // Pass current search query or empty string if element doesn't exist yet
+                        renderManageVideosTable(manageVideosSearch?.value || ''); 
                     } else if (targetId === 'manage-social-tasks-view') {
-                        renderManageSocialTasksTable(); // Now triggered on view load and by snapshot
+                        // Pass current search query or empty string
+                        renderManageSocialTasksTable(manageSocialTasksSearch?.value || '');
                     } else if (targetId === 'manage-users-view') {
-                        fetchAllUsers();
+                        // Pass current search query or empty string
+                        fetchAllUsers(manageUsersSearch?.value || ''); 
                     } else if (targetId === 'admin-dashboard-view') {
                         fetchAdminDashboardData();
                         generateRandomChartData();
@@ -2884,6 +2937,25 @@
             }
 
             // --- Admin Management Listeners (CRUD) ---
+            
+            // NEW Admin Search Listeners
+            if (manageVideosSearch) {
+                manageVideosSearch.addEventListener('input', (e) => {
+                    renderManageVideosTable(e.target.value);
+                });
+            }
+
+            if (manageSocialTasksSearch) {
+                manageSocialTasksSearch.addEventListener('input', (e) => {
+                    renderManageSocialTasksTable(e.target.value);
+                });
+            }
+
+            if (manageUsersSearch) {
+                manageUsersSearch.addEventListener('input', (e) => {
+                    fetchAllUsers(e.target.value);
+                });
+            }
 
             // Video Management Listeners
             if (addVideoBtn) {
@@ -3067,12 +3139,21 @@
                         document.getElementById('watch-duration').value = video.watchDuration || '';
                     }
                 }
-
-                // Remove old listeners and re-attach the submit handler with the correct ID context
-                const oldForm = addVideoForm.cloneNode(true);
-                addVideoForm.parentNode.replaceChild(oldForm, addVideoForm);
-                const newForm = oldForm;
                 
+                // --- CRITICAL FIX: Replace form and update global reference to re-enable listeners ---
+                const oldFormNode = addVideoForm;
+                const newFormClone = oldFormNode.cloneNode(true);
+                
+                // Replace in DOM
+                oldFormNode.parentNode.replaceChild(newFormClone, oldFormNode); 
+                
+                // Update global reference to the new DOM node
+                addVideoForm = newFormClone; 
+                
+                const newForm = addVideoForm; 
+                // --- END CRITICAL FIX ---
+
+
                 newForm.onsubmit = async (e) => {
                     e.preventDefault();
                     
@@ -3116,10 +3197,18 @@
                     }
                 }
 
-                // Remove old listeners and re-attach the submit handler with the correct ID context
-                const oldForm = addSocialTaskForm.cloneNode(true);
-                addSocialTaskForm.parentNode.replaceChild(oldForm, addSocialTaskForm);
-                const newForm = oldForm;
+                // --- CRITICAL FIX: Replace form and update global reference to re-enable listeners ---
+                const oldFormNode = addSocialTaskForm;
+                const newFormClone = oldFormNode.cloneNode(true);
+                
+                // Replace in DOM
+                oldFormNode.parentNode.replaceChild(newFormClone, oldFormNode); 
+                
+                // Update global reference to the new DOM node
+                addSocialTaskForm = newFormClone; 
+                
+                const newForm = addSocialTaskForm; 
+                // --- END CRITICAL FIX ---
                 
                 newForm.onsubmit = async (e) => {
                     e.preventDefault();
