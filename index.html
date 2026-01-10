@@ -1074,92 +1074,187 @@
         </div>
     </div>
 
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
     const tg = window.Telegram.WebApp;
     const user = tg.initDataUnsafe.user;
+    // စမ်းသပ်ရန် userId (Telegram မှာ မဟုတ်ရင် ဒါကိုသုံးပါလိမ့်မယ်)
     const userId = user ? user.id : "1856743644"; 
-    const backendUrl = "https://ping-rewards-bot.mr-ping2025.workers.dev"; // Slash မပါစေရ
+    const backendUrl = "https://ping-rewards-bot.mr-ping2025.workers.dev"; 
 
     tg.expand();
 
+    // Navigation Logic (ခလုပ်နှိပ်ရင် View ပြောင်းရန်)
+    document.addEventListener("DOMContentLoaded", () => {
+        // Nav Links များအားလုံးကို ရှာပြီး Click Event ထည့်မည်
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('data-target');
+                if(targetId) {
+                    showView(targetId);
+                    
+                    // Mobile တွင် Sidebar ကို Auto ပိတ်ရန်
+                    if(window.innerWidth < 768) {
+                       document.getElementById('sidebar').classList.remove('open');
+                       document.getElementById('backdrop').classList.remove('open');
+                    }
+                }
+            });
+        });
+
+        // Mobile Menu Toggle
+        document.getElementById('menu-toggle').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.add('open');
+            document.getElementById('backdrop').classList.add('open');
+        });
+
+        document.getElementById('backdrop').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('backdrop').classList.remove('open');
+        });
+
+        // Invite code copy buttons
+        setupCopyButtons();
+        
+        // App စတင်မည်
+        initApp();
+    });
+
     function showView(viewId) {
+        // View အားလုံးကို ဖျောက်မည်
         document.querySelectorAll('.content-view').forEach(v => v.style.display = 'none');
-        document.getElementById(viewId).style.display = 'block';
+        // လိုချင်သော View ကို ပြမည်
+        const target = document.getElementById(viewId);
+        if (target) {
+            target.style.display = 'block';
+            document.getElementById('page-title').innerText = viewId.replace(/-/g, ' ').replace('view', '').toUpperCase();
+        }
     }
 
     async function initApp() {
+        // Loading ပြရန် (Optional)
         try {
             const userRes = await fetch(`${backendUrl}/api/get-user?id=${userId}`);
+            
+            // JSON parsing error မတက်အောင် စစ်ဆေးခြင်း
+            if (!userRes.ok) throw new Error("Failed to fetch user");
+            
             const userData = await userRes.json();
 
             if (userData && !userData.error) {
+                // UI Update
                 document.getElementById('total-points-value').textContent = userData.points || 0;
-                document.getElementById('welcome-message').textContent = `Welcome, ${userData.name}!`;
+                document.getElementById('welcome-message').textContent = `Welcome, ${userData.name || 'User'}!`;
                 
-                // အကုန်လုံးကို တစ်ခါတည်း ကြိုတင် Load လုပ်ထားမယ်
-                await loadVideos();
-                await loadTasks();
-                await loadHistory();
+                // Invite Section Update
+                document.getElementById('referral-code-input').value = userData.referral_code || userId;
+                document.getElementById('referral-link-input').value = `https://t.me/PingRewords_bot?start=${userId}`;
+
+                // Data များကို Load လုပ်ခြင်း
+                loadVideos();
+                loadTasks();
+                loadHistory(); // ဒါက အရေးကြီးပါတယ် (Backend မှာ endpoint ရှိရမယ်)
                 
                 showView('user-dashboard-view');
             } else {
-                alert("Please register in the bot first!");
-                tg.close();
+                // User မရှိသေးလျှင် (Telegram Bot မှာ start အရင်လုပ်ခိုင်းပါ)
+                alert("User not found! Please start the bot first.");
+                document.getElementById('welcome-message').textContent = "Please Register via Bot";
             }
-        } catch (err) { alert("Connection Error!"); }
+        } catch (err) {
+            console.error(err);
+            // alert("Connection Error or Backend not ready!");
+            // For testing only - remove in production
+            showView('user-dashboard-view'); 
+        }
     }
 
     // --- Watch Videos Loading ---
     async function loadVideos() {
-        const res = await fetch(`${backendUrl}/api/get-videos`);
-        const videos = await res.json();
-        const grid = document.getElementById('video-grid');
-        grid.innerHTML = videos.map(v => `
-            <div class="video-card bg-card-bg p-4 rounded-xl border border-slate-700 cursor-pointer" onclick="playVideo('${v.id}', '${v.video_url}', '${v.title}')">
-                <img src="https://img.youtube.com/vi/${getYouTubeId(v.video_url)}/hqdefault.jpg" class="w-full rounded-lg mb-2">
-                <h3 class="font-semibold text-sm line-clamp-2">${v.title}</h3>
-                <p class="text-xs text-muted-text mt-1">${v.category} • 1pt/60s</p>
-            </div>
-        `).join('');
+        try {
+            const res = await fetch(`${backendUrl}/api/get-videos`);
+            const videos = await res.json();
+            const grid = document.getElementById('video-grid');
+            
+            if(videos.length === 0) {
+                grid.innerHTML = '<p class="text-muted-text">No videos available.</p>';
+                return;
+            }
+
+            grid.innerHTML = videos.map(v => `
+                <div class="video-card bg-card-bg p-4 rounded-xl border border-slate-700 cursor-pointer hover:border-primary transition" onclick="playVideo('${v.id}', '${v.video_url}', '${v.title}')">
+                    <img src="https://img.youtube.com/vi/${getYouTubeId(v.video_url)}/hqdefault.jpg" class="w-full rounded-lg mb-2">
+                    <h3 class="font-semibold text-sm line-clamp-2 text-white">${v.title}</h3>
+                    <p class="text-xs text-muted-text mt-1">${v.category} • 1pt/60s</p>
+                </div>
+            `).join('');
+        } catch (e) { console.error("Video Load Error", e); }
     }
 
     // --- Social Tasks Loading ---
     async function loadTasks() {
-        const res = await fetch(`${backendUrl}/api/get-tasks`);
-        const tasks = await res.json();
-        const grid = document.getElementById('social-tasks-grid');
-        grid.innerHTML = tasks.map(t => `
-            <div class="card bg-card-bg p-6 rounded-xl border border-slate-700 text-center">
-                <h3 class="text-lg font-bold">${t.title}</h3>
-                <p class="text-accent-green font-bold my-2">+${t.points} PTS</p>
-                <a href="${t.link}" target="_blank" onclick="completeTask('${t.id}', ${t.points}, '${t.title}')" class="inline-block bg-primary px-6 py-2 rounded-lg text-white font-bold">Complete Task</a>
-            </div>
-        `).join('');
+        try {
+            const res = await fetch(`${backendUrl}/api/get-tasks`);
+            const tasks = await res.json();
+            const grid = document.getElementById('social-tasks-grid');
+            
+            if(tasks.length === 0) {
+                grid.innerHTML = '<p class="text-muted-text">No tasks available.</p>';
+                return;
+            }
+
+            grid.innerHTML = tasks.map(t => `
+                <div class="card bg-card-bg p-6 rounded-xl border border-slate-700 text-center">
+                    <h3 class="text-lg font-bold text-white">${t.title}</h3>
+                    <p class="text-accent-green font-bold my-2">+${t.points} PTS</p>
+                    <a href="${t.link}" target="_blank" onclick="completeTask('${t.id}', ${t.points}, '${t.title}')" class="inline-block bg-primary hover:bg-indigo-600 px-6 py-2 rounded-lg text-white font-bold transition">Complete Task</a>
+                </div>
+            `).join('');
+        } catch (e) { console.error("Task Load Error", e); }
     }
 
     // --- Points History Loading ---
     async function loadHistory() {
-        const res = await fetch(`${backendUrl}/api/get-history?id=${userId}`);
-        const history = await res.json();
-        const table = document.getElementById('points-history-table');
-        table.innerHTML = history.map(h => `
-            <tr>
-                <td class="p-4 text-xs">${new Date(h.created_at).toLocaleDateString()}</td>
-                <td class="p-4 text-sm">${h.description}</td>
-                <td class="p-4 font-bold text-accent-green">+${h.points}</td>
-            </tr>
-        `).join('');
+        try {
+            const res = await fetch(`${backendUrl}/api/get-history?id=${userId}`);
+            const history = await res.json();
+            const table = document.getElementById('points-history-table');
+            
+            if(history.length === 0) {
+                table.innerHTML = '<tr><td colspan="3" class="p-4 text-center text-muted-text">No history yet.</td></tr>';
+                return;
+            }
+
+            table.innerHTML = history.map(h => `
+                <tr class="border-b border-slate-700">
+                    <td class="p-4 text-xs text-muted-text">${new Date(h.created_at).toLocaleDateString()}</td>
+                    <td class="p-4 text-sm text-white">${h.description}</td>
+                    <td class="p-4 font-bold text-accent-green">+${h.points}</td>
+                </tr>
+            `).join('');
+        } catch (e) { console.error("History Load Error", e); }
     }
 
     // --- Helper Functions ---
     async function completeTask(taskId, points, title) {
-        await fetch(`${backendUrl}/api/award-points`, {
-            method: 'POST',
-            body: JSON.stringify({ userId, amount: points, desc: `Social Task: ${title}` })
-        });
-        alert("Points Awarded!");
-        initApp();
+        // Prevent spam clicking logic needed here usually
+        try {
+            await fetch(`${backendUrl}/api/award-points`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId, amount: points, desc: `Social Task: ${title}` })
+            });
+            alert(`Success! You earned ${points} points.`);
+            // Refresh User Data
+            const userRes = await fetch(`${backendUrl}/api/get-user?id=${userId}`);
+            const userData = await userRes.json();
+            document.getElementById('total-points-value').textContent = userData.points;
+            loadHistory();
+        } catch(e) {
+            alert("Failed to award points.");
+        }
     }
 
     function getYouTubeId(url) {
@@ -1167,9 +1262,37 @@
         return (match && match[2].length == 11) ? match[2] : null;
     }
 
-    window.onload = initApp;
-</script>
+    function setupCopyButtons() {
+        document.getElementById('copy-referral-btn').addEventListener('click', () => {
+            const code = document.getElementById('referral-code-input');
+            code.select();
+            document.execCommand('copy');
+            alert("Code copied!");
+        });
+        document.getElementById('copy-link-btn').addEventListener('click', () => {
+            const link = document.getElementById('referral-link-input');
+            link.select();
+            document.execCommand('copy');
+            alert("Link copied!");
+        });
+    }
 
+    // Video Player Logic (Simple)
+    window.playVideo = function(id, url, title) {
+        const embedUrl = `https://www.youtube.com/embed/${getYouTubeId(url)}?autoplay=1`;
+        document.getElementById('video-iframe').src = embedUrl;
+        document.getElementById('video-player-title').textContent = title;
+        showView('video-player-view');
+        
+        // Start Timer Logic here if needed
+    }
+    
+    document.getElementById('video-player-back-btn').addEventListener('click', () => {
+        document.getElementById('video-iframe').src = ""; // Stop video
+        showView('watch-videos-view');
+    });
+
+</script>
 </body>
 
 </html>
