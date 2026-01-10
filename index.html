@@ -54,10 +54,9 @@
                 }
             }
         }
-        
+
     </script>
     <style>
-        
         /* General Styles for the entire app */
         body {
             font-family: 'Inter', sans-serif;
@@ -66,6 +65,7 @@
             margin: 0;
             overflow-x: hidden;
         }
+
         .sidebar.open {
             transform: translateX(0);
         }
@@ -85,20 +85,28 @@
         .modal-overlay {
             background-color: rgba(0, 0, 0, 0.7);
         }
+
         /* Animation */
-         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
         @keyframes scroll {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
         }
-        
+
         .animate-scroll {
-            animation: scroll 12s linear infinite; 
+            animation: scroll 12s linear infinite;
         }
 
         .animate-scroll:hover {
             animation-play-state: paused;
         }
+
         /* NEW: Circular Progress Bar Styles */
         .circular-progress-container {
             position: fixed;
@@ -110,25 +118,32 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: #1e293b; /* card-bg */
+            background-color: #1e293b;
+            /* card-bg */
             border-radius: 50%;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-            border: 2px solid #6366f1; /* primary */
+            border: 2px solid #6366f1;
+            /* primary */
         }
+
         .circular-progress {
             width: 70px;
             height: 70px;
             border-radius: 50%;
             display: grid;
             place-items: center;
-            background: conic-gradient(#f59e0b 0deg, #1e293b 0deg); /* Amber color */
+            background: conic-gradient(#f59e0b 0deg, #1e293b 0deg);
+            /* Amber color */
         }
+
         .progress-value {
             position: absolute;
             font-size: 1rem;
             font-weight: 700;
-            color: #f59e0b; /* Amber */
+            color: #f59e0b;
+            /* Amber */
         }
+
         /* Make app-content scrollable on small screens */
         #app-content {
             overflow-y: auto;
@@ -243,7 +258,8 @@
                         class="nav-link user-link flex items-center p-3 rounded-lg hover:bg-primary/20 transition-colors duration-200"
                         data-target="invite-and-earn-view">
                         <svg class="w-6 h-6 mr-3 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                            <path d="M16 12.01c-.01-2.22-1.8-4.01-4-4.01H7c-2.21 0-4 1.79-4 4.01v4.99c0 2.22 1.8 4.01 4 4.01h5c2.21 0 4-1.79 4-4.01v-1.99c0-.55-.45-1-1-1s-1 .45-1 1v1.99c0 1.11-.89 2.01-2 2.01H7c-1.11 0-2-.89-2-2.01v-4.99c0-1.11.89-2.01 2-2.01h5c.55 0 1-.45 1-1s-.45-1-1-1H7c-3.31 0-6 2.69-6 6v4.99c0 3.31 2.69 6 6 6h5c3.31 0 6-2.69 6-6v-1.99c0-.55-.45-1-1-1s-1 .45-1 1v1.99c0 1.11-.89 2.01-2 2.01zM19 8h-4c-1.1 0-2 .9-2 2v4c0 1.1.9 2 2 2h4c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm0 4h-4v-2h4v2z"/>
+                            <path
+                                d="M16 12.01c-.01-2.22-1.8-4.01-4-4.01H7c-2.21 0-4 1.79-4 4.01v4.99c0 2.22 1.8 4.01 4 4.01h5c2.21 0 4-1.79 4-4.01v-1.99c0-.55-.45-1-1-1s-1 .45-1 1v1.99c0 1.11-.89 2.01-2 2.01H7c-1.11 0-2-.89-2-2.01v-4.99c0-1.11.89-2.01 2-2.01h5c.55 0 1-.45 1-1s-.45-1-1-1H7c-3.31 0-6 2.69-6 6v4.99c0 3.31 2.69 6 6 6h5c3.31 0 6-2.69 6-6v-1.99c0-.55-.45-1-1-1s-1 .45-1 1v1.99c0 1.11-.89 2.01-2 2.01zM19 8h-4c-1.1 0-2 .9-2 2v4c0 1.1.9 2 2 2h4c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm0 4h-4v-2h4v2z" />
                         </svg>
                         Invite & Earn
                     </a>
@@ -335,14 +351,16 @@
         <!-- Main Content Area -->
         <div id="app-content" class="flex-grow p-4 md:p-6 transition-all duration-300 ease-in-out">
             <header class="flex justify-between items-center mb-6">
-                <h1 id="page-title" class="text-2xl md:text-3xl font-bold flex items-center">
+                <h1 class="text-2xl md:text-3xl font-bold flex items-center">
+                    <!-- Button ကို ID မတပ်ထားတဲ့ h1 အောက်မှာပဲ ထားမယ် -->
                     <button id="menu-toggle"
                         class="md:hidden p-2 -ml-2 mr-2 rounded-md bg-slate-700 text-white hover:bg-slate-600 transition-colors duration-200">
                         <svg class="w-8 h-8 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                             <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
                         </svg>
                     </button>
-                    Dashboard
+                    <!-- စာသားအတွက် သီးသန့် span လုပ်ပြီး id="page-title" ကို ဒီမှာပြောင်းတပ်မယ် -->
+                    <span id="page-title">Dashboard</span>
                 </h1>
                 <div id="header-meta" class="hidden md:flex items-center space-x-4">
                     <!-- Header meta info -->
@@ -354,22 +372,27 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
                     <div
                         class="card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 col-span-1 lg:col-span-3 flex flex-col md:flex-row justify-between items-center">
-                         <!-- Container -->
-                                    <div class="w-full max-w-7xl overflow-hidden bg-yellow-400 border-y-0 border-yellow-600 py-0 shadow-2xl rounded-4">
-                                        <div class="flex animate-scroll min-w-max">
-                                            <span class="text-sm sm:text-sm font-extrabold text-gray-900 uppercase tracking-wide whitespace-nowrap px-0">
-                                                🎉 အရေးကြီးသည် About ကို နိပ်ပြီး စည်းကမ်းချက်ကို အရင်ဖတ်ပေးပါ 🎉 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                            </span>
-                                            <span class="text-sm sm:text-sm font-extrabold text-gray-900 uppercase tracking-wide whitespace-nowrap px-0">
-                                                🎉 Important: Please click 'About' and read the rules first. 🎉 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                            </span>
-                                            
-                                        </div>
-                                    </div>
-                            <!-- Container -->
+                        <!-- Container -->
+                        <div
+                            class="w-full max-w-7xl overflow-hidden bg-yellow-400 border-y-0 border-yellow-600 py-0 shadow-2xl rounded-4">
+                            <div class="flex animate-scroll min-w-max">
+                                <span
+                                    class="text-sm sm:text-sm font-extrabold text-gray-900 uppercase tracking-wide whitespace-nowrap px-0">
+                                    🎉 အရေးကြီးသည် About ကို နိပ်ပြီး စည်းကမ်းချက်ကို အရင်ဖတ်ပေးပါ 🎉
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                </span>
+                                <span
+                                    class="text-sm sm:text-sm font-extrabold text-gray-900 uppercase tracking-wide whitespace-nowrap px-0">
+                                    🎉 Important: Please click 'About' and read the rules first. 🎉
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                </span>
+
+                            </div>
+                        </div>
+                        <!-- Container -->
                         <div>
-                            
-                                   
+
+
                             <h2 id="welcome-message" class="text-xl font-semibold mb-2"></h2>
                             <p class="text-muted-text">Ready to earn more points? Let's start watching some videos.</p>
                         </div>
@@ -469,10 +492,10 @@
                 <div>
                     <script>
                         const delayInMilliseconds = 1000;
-                
+
                         function loadAdScript() {
                             const script = document.createElement('script');
-                            script.type = 'text/javascript'; 
+                            script.type = 'text/javascript';
                             script.src = '//institutionnounreverend.com/25/d1/54/25d154cfe2cdfcc85914d10a0b4a6eae.js';
                             const targetDiv = document.querySelector('.flex.justify-center.mb-4');
                             if (targetDiv) {
@@ -489,7 +512,7 @@
                     id="video-grid">
                     <!-- Video cards  -->
                 </div>
-                
+
             </div>
 
             <!-- Video Player View (Updated) -->
@@ -502,21 +525,22 @@
                     </svg>
                     Back to Videos
                 </button>
-                
+
                 <!-- Ad Placement under the 'Back to Videos' button -->
                 <div class="my-4">
-                      <script type="text/javascript">
-                    	atOptions = {
-                    		'key' : 'c6affa5f0ae4df4d56203646aa9bf458',
-                    		'format' : 'iframe',
-                    		'height' : 50,
-                    		'width' : 320,
-                    		'params' : {}
-                    	};
+                    <script type="text/javascript">
+                        atOptions = {
+                            'key': 'c6affa5f0ae4df4d56203646aa9bf458',
+                            'format': 'iframe',
+                            'height': 50,
+                            'width': 320,
+                            'params': {}
+                        };
                     </script>
-                    <script type="text/javascript" src="//institutionnounreverend.com/c6affa5f0ae4df4d56203646aa9bf458/invoke.js"></script>
+                    <script type="text/javascript"
+                        src="//institutionnounreverend.com/c6affa5f0ae4df4d56203646aa9bf458/invoke.js"></script>
                 </div>
-                
+
                 <!-- NEW: Floating Circular Points Tracker UI -->
                 <div id="circular-points-tracker" class="circular-progress-container hidden">
                     <div id="progress-circle" class="circular-progress">
@@ -532,10 +556,10 @@
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                             allowfullscreen class="w-full h-full"></iframe>
                     </div>
-                    
+
                     <h2 class="text-2xl font-semibold mb-1" id="video-player-title"></h2>
                     <p class="text-muted-text mb-4" id="video-player-description"></p>
-                    
+
                     <div class="flex justify-between items-center p-4">
                         <button id="get-summary-btn"
                             class="action-btn px-4 py-2 bg-secondary hover:bg-pink-500 text-white font-semibold rounded-lg transition-colors duration-200 text-sm">
@@ -546,7 +570,8 @@
 
                     <!-- Ad 2 Placement (Below Get Summary Button) -->
                     <div class="mt-4">
-                        <script async="async" data-cfasync="false" src="//institutionnounreverend.com/5fae19ca63dcfa0b73c6e2395f27545a/invoke.js"></script>
+                        <script async="async" data-cfasync="false"
+                            src="//institutionnounreverend.com/5fae19ca63dcfa0b73c6e2395f27545a/invoke.js"></script>
                         <div id="container-5fae19ca63dcfa0b73c6e2395f27545a"></div>
                     </div>
                 </div>
@@ -584,36 +609,49 @@
             </div>
 
             <!-- Invite & Earn View  -->
-            
- <div id="invite-and-earn-view" class="content-view" style="display: none;">
+
+            <div id="invite-and-earn-view" class="content-view" style="display: none;">
                 <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 mb-6">
-                    <h2 class="text-xl font-semibold mb-4 text-primary">သူငယ်ချင်းများကို ဖိတ်ခေါ်ပြီး အမှတ်များရယူပါ (Invite & Earn)</h2>
-                    <p class="text-muted-text mb-6">သင်၏ ကိုယ်ပိုင်ဖိတ်ခေါ်ကုဒ် (Referral Code) ကို အသုံးပြု၍ သူငယ်ချင်းများကို ဖိတ်ခေါ်ပါ။ သူငယ်ချင်းတစ်ဦး အကောင့်ဖွင့်တိုင်း အမှတ် **50** ရရှိမည်။</p>
+                    <h2 class="text-xl font-semibold mb-4 text-primary">သူငယ်ချင်းများကို ဖိတ်ခေါ်ပြီး အမှတ်များရယူပါ
+                        (Invite & Earn)</h2>
+                    <p class="text-muted-text mb-6">သင်၏ ကိုယ်ပိုင်ဖိတ်ခေါ်ကုဒ် (Referral Code) ကို အသုံးပြု၍
+                        သူငယ်ချင်းများကို ဖိတ်ခေါ်ပါ။ သူငယ်ချင်းတစ်ဦး အကောင့်ဖွင့်တိုင်း အမှတ် **50** ရရှိမည်။</p>
                     <!-- UPDATED  50 -->
 
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium mb-2">သင့်ရဲ့ ဖိတ်ခေါ်ကုဒ် (Your Referral Code)</label>
+                            <label class="block text-sm font-medium mb-2">သင့်ရဲ့ ဖိတ်ခေါ်ကုဒ် (Your Referral
+                                Code)</label>
                             <div class="flex">
                                 <input type="text" id="referral-code-input" value="Loading..." readonly
                                     class="flex-grow px-4 py-3 rounded-l-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary text-text-color font-mono tracking-wider">
                                 <button id="copy-referral-btn"
                                     class="px-4 py-3 bg-accent-green hover:bg-emerald-600 rounded-r-lg text-white font-semibold transition-colors duration-200 flex items-center gap-2">
-                                    <svg class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                                    <svg class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 24 24">
+                                        <path
+                                            d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+                                    </svg>
                                     Copy
                                 </button>
                             </div>
-                            <p id="copy-status" class="text-sm mt-2 text-primary" style="display:none;">ကုဒ်ကူးယူပြီးပါပြီ။</p>
+                            <p id="copy-status" class="text-sm mt-2 text-primary" style="display:none;">
+                                ကုဒ်ကူးယူပြီးပါပြီ။</p>
                         </div>
-                        
+
                         <div>
-                            <label class="block text-sm font-medium mb-2">သင့်ရဲ့ ဖိတ်ခေါ်လင့် (Your Referral Link)</label>
+                            <label class="block text-sm font-medium mb-2">သင့်ရဲ့ ဖိတ်ခေါ်လင့် (Your Referral
+                                Link)</label>
                             <div class="flex">
                                 <input type="text" id="referral-link-input" value="Loading..." readonly
                                     class="flex-grow px-4 py-3 rounded-l-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary text-text-color text-sm">
                                 <button id="copy-link-btn"
                                     class="px-4 py-3 bg-accent-green hover:bg-emerald-600 rounded-r-lg text-white font-semibold transition-colors duration-200 flex items-center gap-2">
-                                    <svg class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                                    <svg class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 24 24">
+                                        <path
+                                            d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+                                    </svg>
                                     Copy
                                 </button>
                             </div>
@@ -630,7 +668,11 @@
                                         </tr>
                                     </thead>
                                     <tbody id="invited-users-table">
-                                        <tr><td colspan="2" class="p-2 text-center text-muted-text">သူငယ်ချင်းများ ဖိတ်ခေါ်ခြင်း မရှိသေးပါ။</td></td></tr>
+                                        <tr>
+                                            <td colspan="2" class="p-2 text-center text-muted-text">သူငယ်ချင်းများ
+                                                ဖိတ်ခေါ်ခြင်း မရှိသေးပါ။</td>
+                                            </td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -660,15 +702,18 @@
                             <li>**WavePay, KBZ Pay , Binance များဖြင့် Cash Out ပြုလုပ်နိုင်ပါသည်။</li>
                         </ul>
                         <h3 class="text-lg font-bold text-white">၂။ စည်းကမ်းချက်များ</h3>
-                       <ul class="list-disc list-inside space-y-1">
-                            <li>တစ်ဦးလျှင် Account တစ်ခုသာ အသုံးပြုရမည်။ Account အတုများဖြင့် အလွဲသုံးစားပြုလုပ်ပါက အကောင့်ကို ပိတ်သိမ်းမည်။</li>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>တစ်ဦးလျှင် Account တစ်ခုသာ အသုံးပြုရမည်။ Account အတုများဖြင့် အလွဲသုံးစားပြုလုပ်ပါက
+                                အကောင့်ကို ပိတ်သိမ်းမည်။</li>
                             <li>Payment method တစ်ခုကို Account တစ်ခုတည်းဖြင့်သာ ချိတ်ဆက် အသုံးပြုခွင့်ပြုပါသည်။</li>
                             <li>Fake View, Bot များကို အသုံးပြုခြင်း ခွင့်မပြုပါ။ တွေ့ရှိပါက အရေးယူဆောင်ရွက်မည်။</li>
                             <li>Cash Out ပြုလုပ်ရာတွင် သင်၏ Payment Information ကို မှန်ကန်စွာ ဖြည့်သွင်းရမည်။</li>
-                            <li>မီဒီယာ Task များတွင် Comment ပေးပို့သည့်အခါ သင်၏ Users name အစ စာလုံးနှင့် စတင်ကာ ရေးသားရမည်။</li>
+                            <li>မီဒီယာ Task များတွင် Comment ပေးပို့သည့်အခါ သင်၏ Users name အစ စာလုံးနှင့် စတင်ကာ
+                                ရေးသားရမည်။</li>
                             <li>Subscribe နှင့် Follow Tasks များကို တကယ်တမ်း လုပ်ဆောင်ရမည်။ မဟုတ်ပါက အရေးယူခံရမည်။</li>
-                            <li>စည်းကမ်းများကို မလိုက်နာပါက၊ အမှတ်များကို သိမ်းဆည်းခြင်း သို့မဟုတ် အကောင့်ကို ပိတ်သိမ်းခြင်း ပြုလုပ်ပါမည်။</li>
-                       </ul>
+                            <li>စည်းကမ်းများကို မလိုက်နာပါက၊ အမှတ်များကို သိမ်းဆည်းခြင်း သို့မဟုတ် အကောင့်ကို
+                                ပိတ်သိမ်းခြင်း ပြုလုပ်ပါမည်။</li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -874,13 +919,14 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- NEW: Floating Scroll-to-Top Rocket Button (Hidden by default) -->
             <button id="scroll-to-top-btn"
                 class="hidden fixed bottom-6 right-6 z-50 p-4 bg-accent-orange hover:bg-amber-600 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-110 active:scale-95">
                 <!-- Rocket/Up Arrow SVG -->
-                <svg class="w-6 h-6 text-white transform rotate-315" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2l-5 5h3v7h4V7h3l-5-5zM4 20h16v2H4z"/>
+                <svg class="w-6 h-6 text-white transform rotate-315" xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2l-5 5h3v7h4V7h3l-5-5zM4 20h16v2H4z" />
                 </svg>
             </button>
             <!-- END NEW: Floating Scroll-to-Top Rocket Button -->
@@ -977,13 +1023,15 @@
                             class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary">
                     </div>
                     <div>
-                        <label for="video-points" class="block text-sm font-medium mb-1">Points (Legacy Field - Not used for earning rate)</label>
+                        <label for="video-points" class="block text-sm font-medium mb-1">Points (Legacy Field - Not used
+                            for earning rate)</label>
                         <input type="number" id="video-points" name="videoPoints"
                             class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary"
                             placeholder="Optional. Earning is 1pt/60s.">
                     </div>
                     <div>
-                        <label for="watch-duration" class="block text-sm font-medium mb-1">Watch Duration (Seconds - MAX Earning Time)</label>
+                        <label for="watch-duration" class="block text-sm font-medium mb-1">Watch Duration (Seconds - MAX
+                            Earning Time)</label>
                         <input type="number" id="watch-duration" name="watchDuration" required
                             class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary"
                             placeholder="Required. Sets the maximum time (in seconds) to earn points.">
@@ -1073,225 +1121,228 @@
         </div>
     </div>
 
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script>
-    const tg = window.Telegram.WebApp;
-    const user = tg.initDataUnsafe.user;
-    // စမ်းသပ်ရန် userId (Telegram မှာ မဟုတ်ရင် ဒါကိုသုံးပါလိမ့်မယ်)
-    const userId = user ? user.id : "1856743644"; 
-    const backendUrl = "https://ping-rewards-bot.mr-ping2025.workers.dev"; 
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        const tg = window.Telegram.WebApp;
+        const user = tg.initDataUnsafe.user;
+        // စမ်းသပ်ရန် userId (Telegram မှာ မဟုတ်ရင် ဒါကိုသုံးပါလိမ့်မယ်)
+        const userId = user ? user.id : "1856743644";
+        const backendUrl = "https://ping-rewards-bot.mr-ping2025.workers.dev";
 
-    tg.expand();
+        tg.expand();
 
-    // Navigation Logic (ခလုပ်နှိပ်ရင် View ပြောင်းရန်)
-    document.addEventListener("DOMContentLoaded", () => {
-        // Nav Links များအားလုံးကို ရှာပြီး Click Event ထည့်မည်
-        const navLinks = document.querySelectorAll('.nav-link');
-        navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const targetId = link.getAttribute('data-target');
-                if(targetId) {
-                    showView(targetId);
-                    
-                    // Mobile တွင် Sidebar ကို Auto ပိတ်ရန်
-                    if(window.innerWidth < 768) {
-                       document.getElementById('sidebar').classList.remove('open');
-                       document.getElementById('backdrop').classList.remove('open');
+        // Navigation Logic (ခလုပ်နှိပ်ရင် View ပြောင်းရန်)
+        document.addEventListener("DOMContentLoaded", () => {
+            // Nav Links များအားလုံးကို ရှာပြီး Click Event ထည့်မည်
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = link.getAttribute('data-target');
+                    if (targetId) {
+                        showView(targetId);
+
+                        // Mobile တွင် Sidebar ကို Auto ပိတ်ရန်
+                        if (window.innerWidth < 768) {
+                            document.getElementById('sidebar').classList.remove('open');
+                            document.getElementById('backdrop').classList.remove('open');
+                        }
                     }
-                }
+                });
             });
+
+            // Mobile Menu Toggle
+            document.getElementById('menu-toggle').addEventListener('click', () => {
+                document.getElementById('sidebar').classList.add('open');
+                document.getElementById('backdrop').classList.add('open');
+            });
+
+            document.getElementById('backdrop').addEventListener('click', () => {
+                document.getElementById('sidebar').classList.remove('open');
+                document.getElementById('backdrop').classList.remove('open');
+            });
+
+            // Invite code copy buttons
+            setupCopyButtons();
+
+            // App စတင်မည်
+            initApp();
         });
 
-        // Mobile Menu Toggle
-        document.getElementById('menu-toggle').addEventListener('click', () => {
-            document.getElementById('sidebar').classList.add('open');
-            document.getElementById('backdrop').classList.add('open');
-        });
+        function showView(viewId) {
+            // View အားလုံးကို ဖျောက်မည်
+            document.querySelectorAll('.content-view').forEach(v => v.style.display = 'none');
+            // လိုချင်သော View ကို ပြမည်
+            const target = document.getElementById(viewId);
+            if (target) {
+                target.style.display = 'block';
 
-        document.getElementById('backdrop').addEventListener('click', () => {
-            document.getElementById('sidebar').classList.remove('open');
-            document.getElementById('backdrop').classList.remove('open');
-        });
-
-        // Invite code copy buttons
-        setupCopyButtons();
-        
-        // App စတင်မည်
-        initApp();
-    });
-
-    function showView(viewId) {
-        // View အားလုံးကို ဖျောက်မည်
-        document.querySelectorAll('.content-view').forEach(v => v.style.display = 'none');
-        // လိုချင်သော View ကို ပြမည်
-        const target = document.getElementById(viewId);
-        if (target) {
-            target.style.display = 'block';
-            document.getElementById('page-title').innerText = viewId.replace(/-/g, ' ').replace('view', '').toUpperCase();
+                // အခု HTML မှာ <span> id="page-title" လုပ်လိုက်တဲ့အတွက်
+                // ဒီကောင်က Button ကို သွားမဖျက်တော့ပါဘူး။ စာသားပဲ ပြောင်းသွားပါလိမ့်မယ်။
+                document.getElementById('page-title').innerText = viewId.replace(/-/g, ' ').replace('view', '').toUpperCase();
+            }
         }
-    }
 
-    async function initApp() {
-        // Loading ပြရန် (Optional)
-        try {
-            const userRes = await fetch(`${backendUrl}/api/get-user?id=${userId}`);
-            
-            // JSON parsing error မတက်အောင် စစ်ဆေးခြင်း
-            if (!userRes.ok) throw new Error("Failed to fetch user");
-            
-            const userData = await userRes.json();
+        async function initApp() {
+            // Loading ပြရန် (Optional)
+            try {
+                const userRes = await fetch(`${backendUrl}/api/get-user?id=${userId}`);
 
-            if (userData && !userData.error) {
-                // UI Update
-                document.getElementById('total-points-value').textContent = userData.points || 0;
-                document.getElementById('welcome-message').textContent = `Welcome, ${userData.name || 'User'}!`;
-                
-                // Invite Section Update
-                document.getElementById('referral-code-input').value = userData.referral_code || userId;
-                document.getElementById('referral-link-input').value = `https://t.me/PingRewords_bot?start=${userId}`;
+                // JSON parsing error မတက်အောင် စစ်ဆေးခြင်း
+                if (!userRes.ok) throw new Error("Failed to fetch user");
 
-                // Data များကို Load လုပ်ခြင်း
-                loadVideos();
-                loadTasks();
-                loadHistory(); // ဒါက အရေးကြီးပါတယ် (Backend မှာ endpoint ရှိရမယ်)
-                
+                const userData = await userRes.json();
+
+                if (userData && !userData.error) {
+                    // UI Update
+                    document.getElementById('total-points-value').textContent = userData.points || 0;
+                    document.getElementById('welcome-message').textContent = `Welcome, ${userData.name || 'User'}!`;
+
+                    // Invite Section Update
+                    document.getElementById('referral-code-input').value = userData.referral_code || userId;
+                    document.getElementById('referral-link-input').value = `https://t.me/PingRewords_bot?start=${userId}`;
+
+                    // Data များကို Load လုပ်ခြင်း
+                    loadVideos();
+                    loadTasks();
+                    loadHistory(); // ဒါက အရေးကြီးပါတယ် (Backend မှာ endpoint ရှိရမယ်)
+
+                    showView('user-dashboard-view');
+                } else {
+                    // User မရှိသေးလျှင် (Telegram Bot မှာ start အရင်လုပ်ခိုင်းပါ)
+                    alert("User not found! Please start the bot first.");
+                    document.getElementById('welcome-message').textContent = "Please Register via Bot";
+                }
+            } catch (err) {
+                console.error(err);
+                // alert("Connection Error or Backend not ready!");
+                // For testing only - remove in production
                 showView('user-dashboard-view');
-            } else {
-                // User မရှိသေးလျှင် (Telegram Bot မှာ start အရင်လုပ်ခိုင်းပါ)
-                alert("User not found! Please start the bot first.");
-                document.getElementById('welcome-message').textContent = "Please Register via Bot";
             }
-        } catch (err) {
-            console.error(err);
-            // alert("Connection Error or Backend not ready!");
-            // For testing only - remove in production
-            showView('user-dashboard-view'); 
         }
-    }
 
-    // --- Watch Videos Loading ---
-    async function loadVideos() {
-        try {
-            const res = await fetch(`${backendUrl}/api/get-videos`);
-            const videos = await res.json();
-            const grid = document.getElementById('video-grid');
-            
-            if(videos.length === 0) {
-                grid.innerHTML = '<p class="text-muted-text">No videos available.</p>';
-                return;
-            }
+        // --- Watch Videos Loading ---
+        async function loadVideos() {
+            try {
+                const res = await fetch(`${backendUrl}/api/get-videos`);
+                const videos = await res.json();
+                const grid = document.getElementById('video-grid');
 
-            grid.innerHTML = videos.map(v => `
+                if (videos.length === 0) {
+                    grid.innerHTML = '<p class="text-muted-text">No videos available.</p>';
+                    return;
+                }
+
+                grid.innerHTML = videos.map(v => `
                 <div class="video-card bg-card-bg p-4 rounded-xl border border-slate-700 cursor-pointer hover:border-primary transition" onclick="playVideo('${v.id}', '${v.video_url}', '${v.title}')">
                     <img src="https://img.youtube.com/vi/${getYouTubeId(v.video_url)}/hqdefault.jpg" class="w-full rounded-lg mb-2">
                     <h3 class="font-semibold text-sm line-clamp-2 text-white">${v.title}</h3>
                     <p class="text-xs text-muted-text mt-1">${v.category} • 1pt/60s</p>
                 </div>
             `).join('');
-        } catch (e) { console.error("Video Load Error", e); }
-    }
+            } catch (e) { console.error("Video Load Error", e); }
+        }
 
-    // --- Social Tasks Loading ---
-    async function loadTasks() {
-        try {
-            const res = await fetch(`${backendUrl}/api/get-tasks`);
-            const tasks = await res.json();
-            const grid = document.getElementById('social-tasks-grid');
-            
-            if(tasks.length === 0) {
-                grid.innerHTML = '<p class="text-muted-text">No tasks available.</p>';
-                return;
-            }
+        // --- Social Tasks Loading ---
+        async function loadTasks() {
+            try {
+                const res = await fetch(`${backendUrl}/api/get-tasks`);
+                const tasks = await res.json();
+                const grid = document.getElementById('social-tasks-grid');
 
-            grid.innerHTML = tasks.map(t => `
+                if (tasks.length === 0) {
+                    grid.innerHTML = '<p class="text-muted-text">No tasks available.</p>';
+                    return;
+                }
+
+                grid.innerHTML = tasks.map(t => `
                 <div class="card bg-card-bg p-6 rounded-xl border border-slate-700 text-center">
                     <h3 class="text-lg font-bold text-white">${t.title}</h3>
                     <p class="text-accent-green font-bold my-2">+${t.points} PTS</p>
                     <a href="${t.link}" target="_blank" onclick="completeTask('${t.id}', ${t.points}, '${t.title}')" class="inline-block bg-primary hover:bg-indigo-600 px-6 py-2 rounded-lg text-white font-bold transition">Complete Task</a>
                 </div>
             `).join('');
-        } catch (e) { console.error("Task Load Error", e); }
-    }
+            } catch (e) { console.error("Task Load Error", e); }
+        }
 
-    // --- Points History Loading ---
-    async function loadHistory() {
-        try {
-            const res = await fetch(`${backendUrl}/api/get-history?id=${userId}`);
-            const history = await res.json();
-            const table = document.getElementById('points-history-table');
-            
-            if(history.length === 0) {
-                table.innerHTML = '<tr><td colspan="3" class="p-4 text-center text-muted-text">No history yet.</td></tr>';
-                return;
-            }
+        // --- Points History Loading ---
+        async function loadHistory() {
+            try {
+                const res = await fetch(`${backendUrl}/api/get-history?id=${userId}`);
+                const history = await res.json();
+                const table = document.getElementById('points-history-table');
 
-            table.innerHTML = history.map(h => `
+                if (history.length === 0) {
+                    table.innerHTML = '<tr><td colspan="3" class="p-4 text-center text-muted-text">No history yet.</td></tr>';
+                    return;
+                }
+
+                table.innerHTML = history.map(h => `
                 <tr class="border-b border-slate-700">
                     <td class="p-4 text-xs text-muted-text">${new Date(h.created_at).toLocaleDateString()}</td>
                     <td class="p-4 text-sm text-white">${h.description}</td>
                     <td class="p-4 font-bold text-accent-green">+${h.points}</td>
                 </tr>
             `).join('');
-        } catch (e) { console.error("History Load Error", e); }
-    }
-
-    // --- Helper Functions ---
-    async function completeTask(taskId, points, title) {
-        // Prevent spam clicking logic needed here usually
-        try {
-            await fetch(`${backendUrl}/api/award-points`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId, amount: points, desc: `Social Task: ${title}` })
-            });
-            alert(`Success! You earned ${points} points.`);
-            // Refresh User Data
-            const userRes = await fetch(`${backendUrl}/api/get-user?id=${userId}`);
-            const userData = await userRes.json();
-            document.getElementById('total-points-value').textContent = userData.points;
-            loadHistory();
-        } catch(e) {
-            alert("Failed to award points.");
+            } catch (e) { console.error("History Load Error", e); }
         }
-    }
 
-    function getYouTubeId(url) {
-        const match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
-        return (match && match[2].length == 11) ? match[2] : null;
-    }
+        // --- Helper Functions ---
+        async function completeTask(taskId, points, title) {
+            // Prevent spam clicking logic needed here usually
+            try {
+                await fetch(`${backendUrl}/api/award-points`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId, amount: points, desc: `Social Task: ${title}` })
+                });
+                alert(`Success! You earned ${points} points.`);
+                // Refresh User Data
+                const userRes = await fetch(`${backendUrl}/api/get-user?id=${userId}`);
+                const userData = await userRes.json();
+                document.getElementById('total-points-value').textContent = userData.points;
+                loadHistory();
+            } catch (e) {
+                alert("Failed to award points.");
+            }
+        }
 
-    function setupCopyButtons() {
-        document.getElementById('copy-referral-btn').addEventListener('click', () => {
-            const code = document.getElementById('referral-code-input');
-            code.select();
-            document.execCommand('copy');
-            alert("Code copied!");
+        function getYouTubeId(url) {
+            const match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
+            return (match && match[2].length == 11) ? match[2] : null;
+        }
+
+        function setupCopyButtons() {
+            document.getElementById('copy-referral-btn').addEventListener('click', () => {
+                const code = document.getElementById('referral-code-input');
+                code.select();
+                document.execCommand('copy');
+                alert("Code copied!");
+            });
+            document.getElementById('copy-link-btn').addEventListener('click', () => {
+                const link = document.getElementById('referral-link-input');
+                link.select();
+                document.execCommand('copy');
+                alert("Link copied!");
+            });
+        }
+
+        // Video Player Logic (Simple)
+        window.playVideo = function (id, url, title) {
+            const embedUrl = `https://www.youtube.com/embed/${getYouTubeId(url)}?autoplay=1`;
+            document.getElementById('video-iframe').src = embedUrl;
+            document.getElementById('video-player-title').textContent = title;
+            showView('video-player-view');
+
+            // Start Timer Logic here if needed
+        }
+
+        document.getElementById('video-player-back-btn').addEventListener('click', () => {
+            document.getElementById('video-iframe').src = ""; // Stop video
+            showView('watch-videos-view');
         });
-        document.getElementById('copy-link-btn').addEventListener('click', () => {
-            const link = document.getElementById('referral-link-input');
-            link.select();
-            document.execCommand('copy');
-            alert("Link copied!");
-        });
-    }
 
-    // Video Player Logic (Simple)
-    window.playVideo = function(id, url, title) {
-        const embedUrl = `https://www.youtube.com/embed/${getYouTubeId(url)}?autoplay=1`;
-        document.getElementById('video-iframe').src = embedUrl;
-        document.getElementById('video-player-title').textContent = title;
-        showView('video-player-view');
-        
-        // Start Timer Logic here if needed
-    }
-    
-    document.getElementById('video-player-back-btn').addEventListener('click', () => {
-        document.getElementById('video-iframe').src = ""; // Stop video
-        showView('watch-videos-view');
-    });
-
-</script>
+    </script>
 </body>
 
 </html>
