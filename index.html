@@ -1346,6 +1346,77 @@
             showView('watch-videos-view');
         });
 
+        // --- Admin Dashboard Data Load ---
+async function fetchAdminDashboardData() {
+    try {
+        const res = await fetch(`${backendUrl}/api/get-admin-stats`);
+        const stats = await res.json();
+        document.getElementById('admin-total-users-value').innerText = stats.totalUsers;
+        document.getElementById('admin-total-videos-value').innerText = stats.totalVideos;
+        document.getElementById('admin-total-points-earned-value').innerText = stats.totalPoints;
+        document.getElementById('admin-total-payouts-value').innerText = `$${stats.totalPayouts}`;
+    } catch (e) { console.error("Stats Error", e); }
+}
+
+// --- Admin Manage Videos Table ---
+async function renderManageVideosTable() {
+    try {
+        const res = await fetch(`${backendUrl}/api/get-videos`);
+        const videos = await res.json();
+        const table = document.getElementById('videos-table');
+        table.innerHTML = videos.map(v => `
+            <tr class="hover:bg-slate-800/50">
+                <td class="p-4 font-semibold">${v.title}</td>
+                <td class="p-4">${v.category}</td>
+                <td class="p-4 text-accent-green">${v.watch_duration}s</td>
+                <td class="p-4">
+                    <button onclick="deleteVideo('${v.id}')" class="bg-red-600 px-3 py-1 rounded text-xs">Delete</button>
+                </td>
+            </tr>
+        `).join('');
+    } catch (e) { console.error(e); }
+}
+
+// --- Admin Manage Users Table ---
+async function fetchAllUsers() {
+    try {
+        const res = await fetch(`${backendUrl}/api/admin/users`);
+        const users = await res.json();
+        const tableBody = document.getElementById('users-table-body');
+        tableBody.innerHTML = users.map(u => `
+            <tr class="hover:bg-slate-800/50">
+                <td class="p-4 text-xs font-mono">${u.user_id}</td>
+                <td class="p-4">${u.name}</td>
+                <td class="p-4 text-sm ${u.role === 'admin' ? 'text-orange-500' : 'text-primary'}">${u.role}</td>
+                <td class="p-4 font-bold text-primary">${u.points}</td>
+                <td class="p-4"><button class="bg-slate-600 px-2 py-1 rounded text-xs">History</button></td>
+            </tr>
+        `).join('');
+    } catch (e) { console.error(e); }
+}
+
+// Video ဖျက်တဲ့ function
+async function deleteVideo(id) {
+    if(!confirm("Are you sure?")) return;
+    await fetch(`${backendUrl}/api/admin/delete-video?id=${id}`, { method: 'DELETE' });
+    renderManageVideosTable(); // Refresh
+}
+
+// Navigation ပြောင်းတဲ့အခါ data load ရန် အောက်ပါ code ကို ပြင်ပါ
+function showView(viewId) {
+    document.querySelectorAll('.content-view').forEach(v => v.style.display = 'none');
+    const target = document.getElementById(viewId);
+    if (target) {
+        target.style.display = 'block';
+        document.getElementById('page-title').innerText = viewId.replace(/-/g, ' ').replace('view', '').toUpperCase();
+        
+        // --- Admin views ဖြစ်ရင် data လှမ်းယူမယ် ---
+        if(viewId === 'admin-dashboard-view') fetchAdminDashboardData();
+        if(viewId === 'manage-videos-view') renderManageVideosTable();
+        if(viewId === 'manage-users-view') fetchAllUsers();
+    }
+}
+
     </script>
 </body>
 
