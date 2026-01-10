@@ -1,11 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ping Rewards</title>
-    <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -13,18 +11,12 @@
                 extend: {
                     colors: {
                         'primary': '#6366f1',
-                        'secondary': '#f9a8d4',
                         'background': '#0f172a',
                         'card-bg': '#1e293b',
                         'text-color': '#e2e8f0',
-                        'muted-text': '#94a3b8',
                         'accent-green': '#10b981',
-                        'accent-orange': '#f59e0b',
-                        'accent-purple': '#a855f7',
                     },
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    animation: { scroll: 'scroll 12s linear infinite' },
-                    keyframes: { scroll: { '0%': { transform: 'translateX(0)' }, '100%': { transform: 'translateX(-50%)' } } }
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
                 }
             }
         }
@@ -35,6 +27,7 @@
         .sidebar.open { transform: translateX(0); }
         .backdrop.open { display: block; }
         #app-content { overflow-y: auto; height: 100vh; }
+        .modal { background-color: rgba(0,0,0,0.8); }
     </style>
 </head>
 
@@ -56,10 +49,11 @@
                 <li><a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-primary/20" data-target="invite-and-earn-view">Invite & Earn</a></li>
                 <li><a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-primary/20" data-target="about-view">About</a></li>
                 
-                <!-- Admin Links (Hidden by default) -->
+                <!-- Admin Links -->
                 <hr class="my-4 border-slate-700 admin-link" style="display: none;">
-                <li class="admin-link" style="display: none;"><a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-primary/20" data-target="admin-dashboard-view">Admin Dashboard</a></li>
-                <li class="admin-link" style="display: none;"><a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-primary/20" data-target="manage-videos-view">Manage Videos</a></li>
+                <li class="admin-link" style="display: none;"><a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-primary/20 text-yellow-400" data-target="admin-dashboard-view">Admin Dashboard</a></li>
+                <li class="admin-link" style="display: none;"><a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-primary/20 text-yellow-400" data-target="manage-videos-view">Manage Videos</a></li>
+                <li class="admin-link" style="display: none;"><a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-primary/20 text-yellow-400" data-target="manage-tasks-view">Manage Tasks</a></li>
             </ul>
         </div>
 
@@ -67,7 +61,7 @@
 
         <!-- Main Content -->
         <div id="app-content" class="flex-grow p-4 md:p-6 transition-all duration-300 ease-in-out">
-            <!-- Header (Fixed for Menu Toggle) -->
+            <!-- Header -->
             <header class="flex justify-between items-center mb-6">
                 <h1 class="text-2xl md:text-3xl font-bold flex items-center">
                     <button id="menu-toggle" class="md:hidden p-2 mr-3 rounded-md bg-slate-700 text-white hover:bg-slate-600">
@@ -79,30 +73,21 @@
 
             <!-- 1. User Dashboard -->
             <div id="user-dashboard-view" class="content-view">
-                <div class="bg-yellow-400 text-black p-2 rounded mb-4 font-bold animate-pulse text-center">
-                    🎉 Important: Please read 'About' for rules first! 🎉
+                <div class="bg-yellow-400 text-black p-2 rounded mb-4 font-bold text-center">
+                     Please read 'About' for rules first!
                 </div>
                 <h2 id="welcome-message" class="text-xl font-semibold mb-4">Welcome!</h2>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">
-                    <div class="card bg-card-bg p-6 rounded-xl border border-slate-700">
+                    <div class="bg-card-bg p-6 rounded-xl border border-slate-700">
                         <h2 class="text-muted-text">Total Points</h2>
-                        <div class="text-4xl font-bold text-primary" id="total-points-value">Loading...</div>
+                        <div class="text-4xl font-bold text-primary" id="total-points-value">0</div>
                     </div>
-                </div>
-
-                <div class="card bg-card-bg p-6 rounded-xl border border-slate-700 flex justify-between items-center">
-                    <div>
-                        <h2 class="text-xl font-semibold">Cash Out</h2>
-                        <p class="text-muted-text">5000 Points = $1.00</p>
-                    </div>
-                    <button class="px-6 py-3 bg-primary text-white font-semibold rounded-lg">Cash Out</button>
                 </div>
             </div>
 
             <!-- 2. Watch Videos -->
             <div id="watch-videos-view" class="content-view" style="display: none;">
-                <h2 class="text-xl font-semibold mb-4">Watch Videos</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4" id="video-grid">
                     <p class="text-muted-text">Loading videos...</p>
                 </div>
@@ -119,7 +104,6 @@
 
             <!-- 4. Social Tasks -->
             <div id="social-tasks-view" class="content-view" style="display: none;">
-                <h2 class="text-xl font-semibold mb-4">Social Tasks</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="social-tasks-grid">
                     <p class="text-muted-text">Loading tasks...</p>
                 </div>
@@ -127,7 +111,6 @@
 
             <!-- 5. Points History -->
             <div id="points-history-view" class="content-view" style="display: none;">
-                <h2 class="text-xl font-semibold mb-4">History</h2>
                 <table class="w-full text-left table-auto bg-card-bg rounded-lg">
                     <tbody id="points-history-table" class="divide-y divide-slate-700"></tbody>
                 </table>
@@ -135,25 +118,23 @@
 
             <!-- 6. Invite & Earn -->
             <div id="invite-and-earn-view" class="content-view" style="display: none;">
-                <h2 class="text-xl font-semibold mb-4">Invite & Earn</h2>
                 <div class="bg-card-bg p-6 rounded-xl border border-slate-700 space-y-4">
-                    <div>
-                        <label>Referral Link</label>
-                        <input type="text" id="referral-link-input" readonly class="w-full bg-slate-700 p-2 rounded text-white">
-                    </div>
+                    <label>Referral Link</label>
+                    <input type="text" id="referral-link-input" readonly class="w-full bg-slate-700 p-2 rounded text-white">
                 </div>
             </div>
-
+            
             <!-- 7. About -->
             <div id="about-view" class="content-view" style="display: none;">
                 <h2 class="text-xl font-semibold mb-4">About Ping Rewards</h2>
-                <p>Welcome to Ping Rewards platform.</p>
+                <p>Welcome to Ping Rewards.</p>
             </div>
+
+            <!-- ================= ADMIN VIEWS ================= -->
 
             <!-- 8. ADMIN DASHBOARD -->
             <div id="admin-dashboard-view" class="content-view" style="display: none;">
-                <h2 class="text-2xl font-bold mb-6">ADMIN DASHBOARD</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-4 gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
                     <div class="bg-card-bg p-6 rounded-xl border border-slate-700">
                         <h3>Total Users</h3>
                         <div class="text-3xl font-bold" id="admin-total-users-value">0</div>
@@ -169,6 +150,51 @@
                 </div>
             </div>
 
+            <!-- 9. MANAGE VIDEOS (ADMIN) -->
+            <div id="manage-videos-view" class="content-view" style="display: none;">
+                <button onclick="document.getElementById('add-video-modal').style.display='flex'" class="mb-4 bg-accent-green px-4 py-2 rounded text-white font-bold">+ Add New Video</button>
+                <div id="manage-videos-list" class="space-y-2">Loading...</div>
+            </div>
+
+            <!-- 10. MANAGE TASKS (ADMIN) -->
+            <div id="manage-tasks-view" class="content-view" style="display: none;">
+                <button onclick="document.getElementById('add-task-modal').style.display='flex'" class="mb-4 bg-accent-green px-4 py-2 rounded text-white font-bold">+ Add New Task</button>
+                <div id="manage-tasks-list" class="space-y-2">Loading...</div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MODALS (Hidden by default) -->
+    <!-- Add Video Modal -->
+    <div id="add-video-modal" class="modal fixed inset-0 flex items-center justify-center z-[200] hidden">
+        <div class="bg-card-bg p-6 rounded-xl w-96 border border-slate-600">
+            <h3 class="text-xl font-bold mb-4">Add Video</h3>
+            <input type="text" id="new-video-title" placeholder="Title" class="w-full mb-2 p-2 bg-slate-700 rounded">
+            <input type="text" id="new-video-url" placeholder="YouTube URL" class="w-full mb-2 p-2 bg-slate-700 rounded">
+            <select id="new-video-cat" class="w-full mb-4 p-2 bg-slate-700 rounded">
+                <option value="General">General</option>
+                <option value="Gaming">Gaming</option>
+                <option value="Music">Music</option>
+            </select>
+            <div class="flex justify-end gap-2">
+                <button onclick="document.getElementById('add-video-modal').style.display='none'" class="px-4 py-2 bg-slate-600 rounded">Cancel</button>
+                <button onclick="addVideo()" class="px-4 py-2 bg-primary rounded">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Task Modal -->
+    <div id="add-task-modal" class="modal fixed inset-0 flex items-center justify-center z-[200] hidden">
+        <div class="bg-card-bg p-6 rounded-xl w-96 border border-slate-600">
+            <h3 class="text-xl font-bold mb-4">Add Task</h3>
+            <input type="text" id="new-task-title" placeholder="Title" class="w-full mb-2 p-2 bg-slate-700 rounded">
+            <input type="text" id="new-task-link" placeholder="Link URL" class="w-full mb-2 p-2 bg-slate-700 rounded">
+            <input type="number" id="new-task-points" placeholder="Points (e.g. 50)" class="w-full mb-4 p-2 bg-slate-700 rounded">
+            <div class="flex justify-end gap-2">
+                <button onclick="document.getElementById('add-task-modal').style.display='none'" class="px-4 py-2 bg-slate-600 rounded">Cancel</button>
+                <button onclick="addTask()" class="px-4 py-2 bg-primary rounded">Save</button>
+            </div>
         </div>
     </div>
 
@@ -177,19 +203,18 @@
     <script>
         const tg = window.Telegram.WebApp;
         const user = tg.initDataUnsafe.user;
-        const userId = user ? user.id : "1856743644"; // Your ID for testing
+        const userId = user ? user.id : "1856743644"; 
         const backendUrl = "https://ping-rewards-bot.mr-ping2025.workers.dev"; 
 
         tg.expand();
 
         document.addEventListener("DOMContentLoaded", () => {
-            // Navigation Logic
+            // Navigation
             document.querySelectorAll('.nav-link').forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
                     const targetId = link.getAttribute('data-target');
                     showView(targetId);
-                    // Close sidebar on mobile
                     if(window.innerWidth < 768) {
                        document.getElementById('sidebar').classList.remove('open');
                        document.getElementById('backdrop').classList.remove('open');
@@ -197,7 +222,7 @@
                 });
             });
 
-            // Mobile Menu Toggle
+            // Menu Toggle
             document.getElementById('menu-toggle').addEventListener('click', () => {
                 document.getElementById('sidebar').classList.add('open');
                 document.getElementById('backdrop').classList.add('open');
@@ -220,7 +245,6 @@
             const target = document.getElementById(viewId);
             if (target) {
                 target.style.display = 'block';
-                // Update Title Span Only
                 document.getElementById('page-title').innerText = viewId.replace(/-/g, ' ').replace('view', '').toUpperCase();
             }
         }
@@ -239,7 +263,9 @@
                     const adminIds = ["1856743644"]; 
                     if (adminIds.includes(String(userId))) {
                         document.querySelectorAll('.admin-link').forEach(el => el.style.display = 'block');
-                        loadAdminStats(); // Load admin data
+                        loadAdminStats();
+                        loadManageVideos(); // Admin Video List
+                        loadManageTasks();  // Admin Task List
                     }
                     // -------------------
 
@@ -250,9 +276,7 @@
                 } else {
                     alert("Please start the bot first!");
                 }
-            } catch (err) {
-                console.error("Init Error:", err);
-            }
+            } catch (err) { console.error("Init Error:", err); }
         }
 
         async function loadVideos() {
@@ -302,19 +326,6 @@
             } catch(e) { console.error(e); }
         }
 
-        // --- ADMIN STATS FUNCTION ---
-        async function loadAdminStats() {
-            try {
-                const res = await fetch(`${backendUrl}/api/get-admin-stats`);
-                const data = await res.json();
-                if (data) {
-                    document.getElementById('admin-total-users-value').innerText = data.totalUsers;
-                    document.getElementById('admin-total-videos-value').innerText = data.totalVideos;
-                    document.getElementById('admin-total-points-earned-value').innerText = data.totalPoints;
-                }
-            } catch (e) { console.error("Admin Load Error", e); }
-        }
-
         async function completeTask(id, points, title) {
             await fetch(`${backendUrl}/api/award-points`, {
                 method: 'POST',
@@ -322,6 +333,114 @@
             });
             alert("Points added!");
             initApp();
+        }
+
+        // --- ADMIN FUNCTIONS ---
+
+        async function loadAdminStats() {
+            const res = await fetch(`${backendUrl}/api/get-admin-stats`);
+            const data = await res.json();
+            if (data) {
+                document.getElementById('admin-total-users-value').innerText = data.totalUsers;
+                document.getElementById('admin-total-videos-value').innerText = data.totalVideos;
+                document.getElementById('admin-total-points-earned-value').innerText = data.totalPoints;
+            }
+        }
+
+        // Admin: Load Videos List
+        async function loadManageVideos() {
+            const res = await fetch(`${backendUrl}/api/get-videos`);
+            const videos = await res.json();
+            const list = document.getElementById('manage-videos-list');
+            list.innerHTML = videos.map(v => `
+                <div class="flex justify-between items-center bg-slate-800 p-3 rounded border border-slate-700">
+                    <div>
+                        <div class="font-bold text-sm">${v.title}</div>
+                        <div class="text-xs text-gray-400">${v.category}</div>
+                    </div>
+                    <button onclick="deleteVideo('${v.id}')" class="text-red-500 font-bold hover:text-red-400">DELETE</button>
+                </div>
+            `).join('');
+        }
+
+        // Admin: Add Video
+        async function addVideo() {
+            const title = document.getElementById('new-video-title').value;
+            const url = document.getElementById('new-video-url').value;
+            const category = document.getElementById('new-video-cat').value;
+            
+            if(!title || !url) return alert("Please fill all fields");
+
+            await fetch(`${backendUrl}/api/add-video`, {
+                method: 'POST',
+                body: JSON.stringify({ title, video_url: url, category })
+            });
+            
+            document.getElementById('add-video-modal').style.display = 'none';
+            alert("Video Added!");
+            loadManageVideos(); // Refresh Admin List
+            loadVideos();       // Refresh User List
+            loadAdminStats();
+        }
+
+        // Admin: Delete Video
+        async function deleteVideo(id) {
+            if(!confirm("Delete this video?")) return;
+            await fetch(`${backendUrl}/api/delete-video`, {
+                method: 'POST',
+                body: JSON.stringify({ id })
+            });
+            alert("Deleted!");
+            loadManageVideos();
+            loadVideos();
+            loadAdminStats();
+        }
+
+        // Admin: Load Tasks List
+        async function loadManageTasks() {
+            const res = await fetch(`${backendUrl}/api/get-tasks`);
+            const tasks = await res.json();
+            const list = document.getElementById('manage-tasks-list');
+            list.innerHTML = tasks.map(t => `
+                <div class="flex justify-between items-center bg-slate-800 p-3 rounded border border-slate-700">
+                    <div>
+                        <div class="font-bold text-sm">${t.title}</div>
+                        <div class="text-xs text-green-400">${t.points} PTS</div>
+                    </div>
+                    <button onclick="deleteTask('${t.id}')" class="text-red-500 font-bold hover:text-red-400">DELETE</button>
+                </div>
+            `).join('');
+        }
+
+        // Admin: Add Task
+        async function addTask() {
+            const title = document.getElementById('new-task-title').value;
+            const link = document.getElementById('new-task-link').value;
+            const points = document.getElementById('new-task-points').value;
+
+            if(!title || !link || !points) return alert("Please fill all fields");
+
+            await fetch(`${backendUrl}/api/add-task`, {
+                method: 'POST',
+                body: JSON.stringify({ title, link, points: parseInt(points) })
+            });
+
+            document.getElementById('add-task-modal').style.display = 'none';
+            alert("Task Added!");
+            loadManageTasks();
+            loadTasks();
+        }
+
+        // Admin: Delete Task
+        async function deleteTask(id) {
+            if(!confirm("Delete this task?")) return;
+            await fetch(`${backendUrl}/api/delete-task`, {
+                method: 'POST',
+                body: JSON.stringify({ id })
+            });
+            alert("Deleted!");
+            loadManageTasks();
+            loadTasks();
         }
 
         function getYouTubeId(url) {
