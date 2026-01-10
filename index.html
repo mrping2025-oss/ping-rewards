@@ -1183,43 +1183,47 @@
             }
         }
 
-        async function initApp() {
-            // Loading ပြရန် (Optional)
-            try {
-                const userRes = await fetch(`${backendUrl}/api/get-user?id=${userId}`);
+       async function initApp() {
+        try {
+            const userRes = await fetch(`${backendUrl}/api/get-user?id=${userId}`);
+            
+            if (!userRes.ok) throw new Error("Failed to fetch user");
+            
+            const userData = await userRes.json();
 
-                // JSON parsing error မတက်အောင် စစ်ဆေးခြင်း
-                if (!userRes.ok) throw new Error("Failed to fetch user");
+            if (userData && !userData.error) {
+                // UI Update
+                document.getElementById('total-points-value').textContent = userData.points || 0;
+                document.getElementById('welcome-message').textContent = `Welcome, ${userData.name || 'User'}!`;
+                
+                // Invite Section Update
+                document.getElementById('referral-code-input').value = userData.referral_code || userId;
+                document.getElementById('referral-link-input').value = `https://t.me/PingRewords_bot?start=${userId}`;
 
-                const userData = await userRes.json();
-
-                if (userData && !userData.error) {
-                    // UI Update
-                    document.getElementById('total-points-value').textContent = userData.points || 0;
-                    document.getElementById('welcome-message').textContent = `Welcome, ${userData.name || 'User'}!`;
-
-                    // Invite Section Update
-                    document.getElementById('referral-code-input').value = userData.referral_code || userId;
-                    document.getElementById('referral-link-input').value = `https://t.me/PingRewords_bot?start=${userId}`;
-
-                    // Data များကို Load လုပ်ခြင်း
-                    loadVideos();
-                    loadTasks();
-                    loadHistory(); // ဒါက အရေးကြီးပါတယ် (Backend မှာ endpoint ရှိရမယ်)
-
-                    showView('user-dashboard-view');
-                } else {
-                    // User မရှိသေးလျှင် (Telegram Bot မှာ start အရင်လုပ်ခိုင်းပါ)
-                    alert("User not found! Please start the bot first.");
-                    document.getElementById('welcome-message').textContent = "Please Register via Bot";
+                // --- ADMIN ဖွင့်နည်း (ဒီနေရာမှာ ပြင်ထားပါတယ်) ---
+                // "1856743644" နေရာမှာ မိတ်ဆွေရဲ့ Telegram ID အမှန်ကို ထည့်ပါ
+                const adminIds = ["1856743644"]; 
+                
+                if (adminIds.includes(String(userId))) {
+                    // Admin Link များကို ပြန်ဖော်မည်
+                    document.querySelectorAll('.admin-link').forEach(el => {
+                        el.style.display = 'block'; 
+                    });
                 }
-            } catch (err) {
-                console.error(err);
-                // alert("Connection Error or Backend not ready!");
-                // For testing only - remove in production
+                // ------------------------------------------
+
+                loadVideos();
+                loadTasks();
+                loadHistory();
+                
                 showView('user-dashboard-view');
+            } else {
+                alert("User not found! Please start the bot first.");
             }
+        } catch (err) {
+            console.error(err);
         }
+    }
 
         // --- Watch Videos Loading ---
         async function loadVideos() {
