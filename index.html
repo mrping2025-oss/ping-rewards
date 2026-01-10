@@ -1074,45 +1074,59 @@
         </div>
     </div>
 
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
-  const tg = window.Telegram.WebApp;
-  const user = tg.initDataUnsafe.user;
-  const userId = user ? user.id : "1856743644"; // User ID ကို Telegram ကနေ တိုက်ရိုက်ယူမယ်
-  const backendUrl = "https://သင့်ရဲ့-worker-url.workers.dev";
+    const tg = window.Telegram.WebApp;
+    const user = tg.initDataUnsafe.user;
+    const userId = user ? user.id : "1856743644"; // Test ID (နမူနာ)
+    const backendUrl = "https://ping-rewards-bot.mr-ping2025.workers.dev/"; // ပြင်ရန်
 
-  tg.expand();
+    tg.expand();
 
-  // User Data ကို Supabase ကနေ Worker တစ်ဆင့် ဆွဲယူမယ်
-  async function initApp() {
-    const response = await fetch(`${backendUrl}/api/get-user?id=${userId}`);
-    const userData = await response.json();
-
-    if (userData && !userData.error) {
-      document.getElementById('total-points-value').textContent = userData.points;
-      document.getElementById('welcome-message').textContent = `Welcome, ${userData.name}!`;
-    } else {
-      // User မရှိသေးရင် မှတ်ပုံတင်ခိုင်းမယ် (သို့) Bot မှာ register အရင်လုပ်ခိုင်းမယ်
-      alert("Please register in the bot first!");
-      tg.close();
+    // View switch လုပ်ပေးတဲ့ function
+    function showView(viewId) {
+        document.querySelectorAll('.content-view').forEach(v => v.style.display = 'none');
+        const targetView = document.getElementById(viewId);
+        if(targetView) targetView.style.display = 'block';
     }
-  }
 
-  // ဗီဒီယိုကြည့်ပြီးရင် point ပေါင်းဖို့ API ခေါ်မယ်
-  async function awardPoints(amount) {
-    await fetch(`${backendUrl}/api/update-points`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ 
-        userId: userId, 
-        amount: amount, 
-        description: "Watched Video" 
-      })
+    // App စဖွင့်ချင်း လုပ်ဆောင်ချက်
+    async function initApp() {
+        try {
+            const response = await fetch(`${backendUrl}/api/get-user?id=${userId}`);
+            const userData = await response.json();
+
+            if (userData && !userData.error) {
+                // UI မှာ point နဲ့ နာမည်ပြမယ်
+                document.getElementById('total-points-value').textContent = userData.points || 0;
+                document.getElementById('welcome-message').textContent = `Welcome, ${userData.name}!`;
+                
+                // Dashboard ကို ပေါ်အောင်လုပ်မယ်
+                showView('user-dashboard-view');
+            } else {
+                alert("Please register in the bot first!");
+                tg.close();
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Connection Error. Please try again.");
+        }
+    }
+
+    // Sidebar Menu နှိပ်ရင် ပြောင်းအောင်လုပ်မယ်
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = link.getAttribute('data-target');
+            showView(target);
+            
+            // Mobile မှာ menu ပိတ်ဖို့ (Optional)
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('backdrop').classList.remove('open');
+        });
     });
-    initApp(); // ပွိုင့်အသစ်ကို update လုပ်မယ်
-  }
 
-  window.onload = initApp;
+    window.onload = initApp;
 </script>
 </body>
 
