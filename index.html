@@ -1494,48 +1494,7 @@ document.getElementById('add-social-task-form').addEventListener('submit', async
         alert("Failed to save task.");
     }
 });
-        // --- Admin Manage Social Tasks Table ---
-async function renderManageSocialTasksTable() {
-    try {
-        const res = await fetch(`${backendUrl}/api/get-tasks`);
-        const tasks = await res.json();
-        const table = document.getElementById('social-tasks-table'); // HTML မှာ ရှိတဲ့ id နဲ့ ကိုက်ရပါမယ်
-        
-        if (!table) return;
-
-        if (tasks.length === 0) {
-            table.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-muted-text">No tasks found.</td></tr>';
-            return;
-        }
-
-        table.innerHTML = tasks.map(t => `
-            <tr class="hover:bg-slate-800/50">
-                <td class="p-4 font-semibold">${t.title}</td>
-                <td class="p-4">${t.platform}</td>
-                <td class="p-4 text-sm break-all"><a href="${t.link}" target="_blank" class="text-primary">${t.link.substring(0,20)}...</a></td>
-                <td class="p-4 text-accent-green">${t.points} PTS</td>
-                <td class="p-4">
-                    <button onclick="deleteTask('${t.id}')" class="bg-red-600 px-3 py-1 rounded text-xs">Delete</button>
-                </td>
-            </tr>
-        `).join('');
-    } catch (e) { console.error("Admin Task Table Error", e); }
-}
-
-// Task ဖျက်ရန် function
-async function deleteTask(id) {
-    if(!confirm("Are you sure you want to delete this task?")) return;
-    try {
-        await fetch(`${backendUrl}/api/admin/delete-task?id=${id}`, { method: 'DELETE' }); // Backend မှာ ဒီ API လိုပါမယ်
-        renderManageSocialTasksTable(); // Refresh list
-    } catch (e) { alert("Failed to delete task."); }
-}
-
-// showView function ထဲမှာ data load ဖို့ ထပ်ဖြည့်ပါ
-function showView(viewId) {
-    // ... အရင်ရှိပြီးသား code များ ...
-    if(viewId === 'manage-social-tasks-view') renderManageSocialTasksTable();
-}
+  
 // Modal ထဲက Cancel ခလုတ်တွေအတွက်
 document.querySelectorAll('.cancel-btn').forEach(btn => {
     btn.addEventListener('click', () => {
