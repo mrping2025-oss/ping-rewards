@@ -1170,18 +1170,24 @@
         });
 
         function showView(viewId) {
-            // View အားလုံးကို ဖျောက်မည်
-            document.querySelectorAll('.content-view').forEach(v => v.style.display = 'none');
-            // လိုချင်သော View ကို ပြမည်
-            const target = document.getElementById(viewId);
-            if (target) {
-                target.style.display = 'block';
+    // View အားလုံးကို ဖျောက်မည်
+    document.querySelectorAll('.content-view').forEach(v => v.style.display = 'none');
+    
+    // လိုချင်သော View ကို ပြမည်
+    const target = document.getElementById(viewId);
+    if (target) {
+        target.style.display = 'block';
+        document.getElementById('page-title').innerText = viewId.replace(/-/g, ' ').replace('view', '').toUpperCase();
 
-                // အခု HTML မှာ <span> id="page-title" လုပ်လိုက်တဲ့အတွက်
-                // ဒီကောင်က Button ကို သွားမဖျက်တော့ပါဘူး။ စာသားပဲ ပြောင်းသွားပါလိမ့်မယ်။
-                document.getElementById('page-title').innerText = viewId.replace(/-/g, ' ').replace('view', '').toUpperCase();
-            }
-        }
+        // --- ဒီအပိုင်းကို ဖြည့်စွက်ပါ ---
+        if (viewId === 'admin-dashboard-view') fetchAdminDashboardData();
+        if (viewId === 'manage-videos-view') renderManageVideosTable();
+        if (viewId === 'manage-users-view') fetchAllUsers();
+        
+        // Social Task List ပေါ်အောင် ဒီမှာ ခေါ်လိုက်တာပါ
+        if (viewId === 'manage-social-tasks-view') renderManageSocialTasksTable();
+    }
+}
 
         async function initApp() {
             try {
@@ -1394,12 +1400,11 @@ async function fetchAllUsers() {
         `).join('');
     } catch (e) { console.error(e); }
 }
-        // --- Admin Manage Social Tasks Table ---
 async function renderManageSocialTasksTable() {
     try {
         const res = await fetch(`${backendUrl}/api/get-tasks`);
         const tasks = await res.json();
-        const table = document.getElementById('social-tasks-table'); // HTML မှာ ရှိတဲ့ id နဲ့ ကိုက်ရပါမယ်
+        const table = document.getElementById('social-tasks-table'); 
         
         if (!table) return;
 
@@ -1415,27 +1420,22 @@ async function renderManageSocialTasksTable() {
                 <td class="p-4 text-sm break-all"><a href="${t.link}" target="_blank" class="text-primary">${t.link.substring(0,20)}...</a></td>
                 <td class="p-4 text-accent-green">${t.points} PTS</td>
                 <td class="p-4">
-                    <button onclick="deleteTask('${t.id}')" class="bg-red-600 px-3 py-1 rounded text-xs">Delete</button>
+                    <button onclick="deleteTask('${t.id}')" class="bg-red-600 px-3 py-1 rounded text-xs text-white">Delete</button>
                 </td>
             </tr>
         `).join('');
     } catch (e) { console.error("Admin Task Table Error", e); }
 }
 
-// Task ဖျက်ရန် function
+// ဒီကောင်လေးလည်း ပါရပါမယ် (Task ဖျက်ဖို့)
 async function deleteTask(id) {
     if(!confirm("Are you sure you want to delete this task?")) return;
     try {
-        await fetch(`${backendUrl}/api/admin/delete-task?id=${id}`, { method: 'DELETE' }); // Backend မှာ ဒီ API လိုပါမယ်
-        renderManageSocialTasksTable(); // Refresh list
+        await fetch(`${backendUrl}/api/admin/delete-task?id=${id}`, { method: 'DELETE' });
+        renderManageSocialTasksTable(); // ဖျက်ပြီးရင် list ကို update ပြန်လုပ်တာ
     } catch (e) { alert("Failed to delete task."); }
 }
 
-// showView function ထဲမှာ data load ဖို့ ထပ်ဖြည့်ပါ
-function showView(viewId) {
-    // ... အရင်ရှိပြီးသား code များ ...
-    if(viewId === 'manage-social-tasks-view') renderManageSocialTasksTable();
-}
 // Video ဖျက်တဲ့ function
 async function deleteVideo(id) {
     if(!confirm("Are you sure?")) return;
@@ -1443,20 +1443,7 @@ async function deleteVideo(id) {
     renderManageVideosTable(); // Refresh
 }
 
-// Navigation ပြောင်းတဲ့အခါ data load ရန် အောက်ပါ code ကို ပြင်ပါ
-function showView(viewId) {
-    document.querySelectorAll('.content-view').forEach(v => v.style.display = 'none');
-    const target = document.getElementById(viewId);
-    if (target) {
-        target.style.display = 'block';
-        document.getElementById('page-title').innerText = viewId.replace(/-/g, ' ').replace('view', '').toUpperCase();
-        
-        // --- Admin views ဖြစ်ရင် data လှမ်းယူမယ် ---
-        if(viewId === 'admin-dashboard-view') fetchAdminDashboardData();
-        if(viewId === 'manage-videos-view') renderManageVideosTable();
-        if(viewId === 'manage-users-view') fetchAllUsers();
-    }
-}
+
 // --- Modal ဖွင့်ရန်/ပိတ်ရန် Function များ ---
 function showModal(id) {
     document.getElementById(id).classList.remove('hidden');
@@ -1535,7 +1522,7 @@ document.getElementById('add-social-task-form').addEventListener('submit', async
         alert("Failed to save task.");
     }
 });
-  
+
 // Modal ထဲက Cancel ခလုတ်တွေအတွက်
 document.querySelectorAll('.cancel-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -1543,7 +1530,6 @@ document.querySelectorAll('.cancel-btn').forEach(btn => {
         hideModal('add-social-task-modal');
     });
 });
-
     </script>
 </body>
 
