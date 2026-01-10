@@ -1416,7 +1416,92 @@ function showView(viewId) {
         if(viewId === 'manage-users-view') fetchAllUsers();
     }
 }
+// --- Modal ဖွင့်ရန်/ပိတ်ရန် Function များ ---
+function showModal(id) {
+    document.getElementById(id).classList.remove('hidden');
+}
+function hideModal(id) {
+    document.getElementById(id).classList.add('hidden');
+}
 
+// --- Video အသစ်ထည့်ရန် ခလုတ်ကို Event ချိတ်ခြင်း ---
+document.getElementById('add-video-btn').addEventListener('click', () => {
+    document.getElementById('add-video-form').reset(); // Form ကို ရှင်းထုတ်မည်
+    showModal('add-video-modal');
+});
+
+// --- Video သိမ်းဆည်းခြင်း (Add New Video) ---
+document.getElementById('add-video-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    
+    const videoData = {
+        title: formData.get('videoTitle'),
+        description: formData.get('videoDescription'),
+        category: formData.get('videoCategory'),
+        video_url: formData.get('videoUrl'),
+        watch_duration: parseInt(formData.get('watchDuration'))
+    };
+
+    try {
+        const res = await fetch(`${backendUrl}/api/admin/manage-video`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(videoData)
+        });
+
+        if (res.ok) {
+            alert("Video added successfully!");
+            hideModal('add-video-modal');
+            renderManageVideosTable(); // ဇယားကို Refresh လုပ်မည်
+        }
+    } catch (err) {
+        alert("Failed to save video.");
+    }
+});
+
+// --- Task အသစ်ထည့်ရန် ခလုတ်ကို Event ချိတ်ခြင်း ---
+document.getElementById('add-social-task-btn').addEventListener('click', () => {
+    document.getElementById('add-social-task-form').reset();
+    showModal('add-social-task-modal');
+});
+
+// --- Task သိမ်းဆည်းခြင်း (Add New Task) ---
+document.getElementById('add-social-task-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    
+    const taskData = {
+        title: formData.get('taskTitle'),
+        platform: formData.get('taskPlatform'),
+        link: formData.get('taskLink'),
+        points: parseInt(formData.get('taskPoints'))
+    };
+
+    try {
+        const res = await fetch(`${backendUrl}/api/admin/manage-task`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(taskData)
+        });
+
+        if (res.ok) {
+            alert("Task added successfully!");
+            hideModal('add-social-task-modal');
+            loadTasks(); // Social Tasks list ကို Refresh လုပ်မည် (Admin ဘက်မှာ မရှိရင် function နာမည်စစ်ပါ)
+        }
+    } catch (err) {
+        alert("Failed to save task.");
+    }
+});
+
+// Modal ထဲက Cancel ခလုတ်တွေအတွက်
+document.querySelectorAll('.cancel-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        hideModal('add-video-modal');
+        hideModal('add-social-task-modal');
+    });
+});
     </script>
 </body>
 
