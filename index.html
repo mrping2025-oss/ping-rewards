@@ -1494,14 +1494,6 @@ document.getElementById('add-social-task-form').addEventListener('submit', async
         alert("Failed to save task.");
     }
 });
-
-// Modal ထဲက Cancel ခလုတ်တွေအတွက်
-document.querySelectorAll('.cancel-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        hideModal('add-video-modal');
-        hideModal('add-social-task-modal');
-    });
-});
         // --- Admin Manage Social Tasks Table ---
 async function renderManageSocialTasksTable() {
     try {
@@ -1544,6 +1536,14 @@ function showView(viewId) {
     // ... အရင်ရှိပြီးသား code များ ...
     if(viewId === 'manage-social-tasks-view') renderManageSocialTasksTable();
 }
+// Modal ထဲက Cancel ခလုတ်တွေအတွက်
+document.querySelectorAll('.cancel-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        hideModal('add-video-modal');
+        hideModal('add-social-task-modal');
+    });
+});
+
     </script>
 </body>
 
