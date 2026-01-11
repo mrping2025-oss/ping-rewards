@@ -436,7 +436,11 @@
                     <h2 class="text-xl font-semibold mb-4">🏆 Top Earners</h2>
                     <div id="leaderboard-container" class="space-y-3">
                         <!-- Leaderboard items will be dynamically rendered here by JS -->
-                        <div class="text-center text-muted-text p-4">Loading leaderboard...</div>
+                        <div class="text-center text-muted-text p-4">
+                            <div id="leaderboard-list" class="space-y-2">
+
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -484,7 +488,8 @@
                         class="flex-grow px-4 py-2 rounded-full bg-card-bg border border-slate-700 focus:outline-none focus:ring-2 focus:ring-primary placeholder-muted-text"
                         placeholder="Search videos...">
                     <!-- Mobile Scroll အတွက် flex-wrap ကို ဖြုတ်ပြီး overflow-x-auto ထည့်ထားပါတယ် -->
-                    <div class="flex overflow-x-auto pb-2 gap-2 w-full sm:w-auto sm:justify-end no-scrollbar" style="-webkit-overflow-scrolling: touch;">
+                    <div class="flex overflow-x-auto pb-2 gap-2 w-full sm:w-auto sm:justify-end no-scrollbar"
+                        style="-webkit-overflow-scrolling: touch;">
                         <button
                             class="filter-btn active px-4 py-2 rounded-full border border-primary bg-primary text-white text-sm hover:bg-primary/80 transition-all duration-300 whitespace-nowrap flex-shrink-0"
                             data-category="all">All</button>
@@ -1126,6 +1131,13 @@
                         <label for="payout-amount" class="block text-sm font-medium mb-1">Amount ($)</label>
                         <input type="number" id="payout-amount" name="payoutAmount" value="0.00" readonly
                             class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 text-muted-text cursor-not-allowed">
+                        <div>
+                            <label for="payout-phone" class="block text-sm font-medium mb-1">Phone Number
+                                (Kpay/Wave)</label>
+                            <input type="text" id="payout-phone" name="payoutPhone" required
+                                class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary"
+                                placeholder="09xxxxxxxxx">
+                        </div>
                     </div>
                     <div class="flex justify-end gap-2 pt-4">
                         <button type="button"
@@ -1148,7 +1160,7 @@
         const backendUrl = "https://ping-rewards-bot.mr-ping2025.workers.dev";
         let player;
         let isVideoPlaying = false;
-        let cachedVideos = []; 
+        let cachedVideos = [];
         const MAX_POINT_TIME = 600;
         let videoTimerInterval = null; // Timer ထိန်းဖို့
         let sessionPoints = 0;         // ဒီ video ကြည့်တုန်း ရတဲ့အမှတ်
@@ -1197,7 +1209,7 @@
                         b.classList.remove('bg-primary', 'text-white', 'border-primary');
                         b.classList.add('bg-card-bg', 'text-sm', 'border-slate-700');
                     });
-                    
+
                     // နှိပ်လိုက်တဲ့ ခလုတ်ကို Active ပြုလုပ်မယ်
                     btn.classList.remove('bg-card-bg', 'text-sm', 'border-slate-700');
                     btn.classList.add('bg-primary', 'text-white', 'border-primary');
@@ -1257,12 +1269,13 @@
                             el.style.display = 'block';
                         });
                     }
-                    
+
 
                     loadVideos();
                     loadTasks();
                     loadHistory();
                     loadReferralHistory();
+                    initApp();
 
                     showView('user-dashboard-view');
                 } else {
@@ -1457,6 +1470,22 @@
             } catch (e) {
                 console.error("Referral Load Error", e);
             }
+        }
+
+        async function loadLeaderboard() {
+            try {
+                const res = await fetch(`${backendUrl}/api/get-leaderboard`);
+                const topUsers = await res.json();
+                const list = document.getElementById('leaderboard-list');
+                const medals = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
+
+                list.innerHTML = topUsers.map((u, i) => `
+            <div class="flex justify-between items-center bg-slate-800 p-3 rounded-lg border border-slate-700">
+                <span class="font-bold text-white">${medals[i]} ${u.name}</span>
+                <span class="text-accent-green font-bold">${u.points} PTS</span>
+            </div>
+        `).join('');
+            } catch (e) { console.error("Leaderboard Error", e); }
         }
 
         function getYouTubeId(url) {
