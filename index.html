@@ -483,24 +483,25 @@
                     <input type="text" id="search-bar"
                         class="flex-grow px-4 py-2 rounded-full bg-card-bg border border-slate-700 focus:outline-none focus:ring-2 focus:ring-primary placeholder-muted-text"
                         placeholder="Search videos...">
-                    <div class="flex flex-wrap justify-center sm:justify-end gap-2">
+                    <!-- Mobile Scroll အတွက် flex-wrap ကို ဖြုတ်ပြီး overflow-x-auto ထည့်ထားပါတယ် -->
+                    <div class="flex overflow-x-auto pb-2 gap-2 w-full sm:w-auto sm:justify-end no-scrollbar" style="-webkit-overflow-scrolling: touch;">
                         <button
-                            class="filter-btn active px-4 py-2 rounded-full border border-primary bg-primary text-white text-sm hover:bg-primary/80 transition-all duration-300 hover:scale-105 active:scale-95"
+                            class="filter-btn active px-4 py-2 rounded-full border border-primary bg-primary text-white text-sm hover:bg-primary/80 transition-all duration-300 whitespace-nowrap flex-shrink-0"
                             data-category="all">All</button>
                         <button
-                            class="filter-btn px-4 py-2 rounded-full border border-slate-700 bg-card-bg text-sm hover:bg-slate-700 transition-all duration-300 hover:scale-105 active:scale-95"
+                            class="filter-btn px-4 py-2 rounded-full border border-slate-700 bg-card-bg text-sm hover:bg-slate-700 transition-all duration-300 whitespace-nowrap flex-shrink-0"
                             data-category="Nature">Nature</button>
                         <button
-                            class="filter-btn px-4 py-2 rounded-full border border-slate-700 bg-card-bg text-sm hover:bg-slate-700 transition-all duration-300 hover:scale-105 active:scale-95"
+                            class="filter-btn px-4 py-2 rounded-full border border-slate-700 bg-card-bg text-sm hover:bg-slate-700 transition-all duration-300 whitespace-nowrap flex-shrink-0"
                             data-category="Education">Education</button>
                         <button
-                            class="filter-btn px-4 py-2 rounded-full border border-slate-700 bg-card-bg text-sm hover:bg-slate-700 transition-all duration-300 hover:scale-105 active:scale-95"
+                            class="filter-btn px-4 py-2 rounded-full border border-slate-700 bg-card-bg text-sm hover:bg-slate-700 transition-all duration-300 whitespace-nowrap flex-shrink-0"
                             data-category="Travel">Travel</button>
                         <button
-                            class="filter-btn px-4 py-2 rounded-full border border-slate-700 bg-card-bg text-sm hover:bg-slate-700 transition-all duration-300 hover:scale-105 active:scale-95"
+                            class="filter-btn px-4 py-2 rounded-full border border-slate-700 bg-card-bg text-sm hover:bg-slate-700 transition-all duration-300 whitespace-nowrap flex-shrink-0"
                             data-category="Food">Food</button>
                         <button
-                            class="filter-btn px-4 py-2 rounded-full border border-slate-700 bg-card-bg text-sm hover:bg-slate-700 transition-all duration-300 hover:scale-105 active:scale-95"
+                            class="filter-btn px-4 py-2 rounded-full border border-slate-700 bg-card-bg text-sm hover:bg-slate-700 transition-all duration-300 whitespace-nowrap flex-shrink-0"
                             data-category="Gaming">Gaming</button>
                     </div>
                 </div>
@@ -1147,6 +1148,7 @@
         const backendUrl = "https://ping-rewards-bot.mr-ping2025.workers.dev";
         let player;
         let isVideoPlaying = false;
+        let cachedVideos = []; 
         const MAX_POINT_TIME = 600;
         let videoTimerInterval = null; // Timer ထိန်းဖို့
         let sessionPoints = 0;         // ဒီ video ကြည့်တုန်း ရတဲ့အမှတ်
@@ -1186,7 +1188,28 @@
 
             // Invite code copy buttons
             setupCopyButtons();
+            // Filter Button Logic
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // အရင် Active ဖြစ်နေတာတွေကို ဖယ်မယ်
+                    filterBtns.forEach(b => {
+                        b.classList.remove('bg-primary', 'text-white', 'border-primary');
+                        b.classList.add('bg-card-bg', 'text-sm', 'border-slate-700');
+                    });
+                    
+                    // နှိပ်လိုက်တဲ့ ခလုတ်ကို Active ပြုလုပ်မယ်
+                    btn.classList.remove('bg-card-bg', 'text-sm', 'border-slate-700');
+                    btn.classList.add('bg-primary', 'text-white', 'border-primary');
 
+                    // Filter လုပ်မယ်
+                    const category = btn.getAttribute('data-category');
+                    loadVideos(category);
+                });
+            });
+
+            // Invite code copy buttons... (မူရင်းကုဒ်များ)
+            setupCopyButtons();
             // App စတင်မည်
             initApp();
         });
@@ -1224,12 +1247,8 @@
                     document.getElementById('total-points-value').textContent = userData.points || 0;
                     document.getElementById('welcome-message').textContent = `Welcome, ${userData.name || 'User'}!`;
 
-                    // Invite Section Update
-                    document.getElementById('referral-code-input').value = userData.referral_code || userId;
-                    document.getElementById('referral-link-input').value = `https://t.me/PingRewords_bot?start=${userId}`;
-
-                    // --- ADMIN ဖွင့်နည်း (ဒီနေရာမှာ ပြင်ထားပါတယ်) ---
-                    // "1856743644" နေရာမှာ မိတ်ဆွေရဲ့ Telegram ID အမှန်ကို ထည့်ပါ
+                    const userName = user ? user.first_name : "Guest User";
+                    const userRes = await fetch(`${backendUrl}/api/get-user?id=${userId}&name=${userName}&ref=${startParam}`);
                     const adminIds = ["1856743644"];
 
                     if (adminIds.includes(String(userId))) {
@@ -1238,11 +1257,12 @@
                             el.style.display = 'block';
                         });
                     }
-                    // ------------------------------------------
+                    
 
                     loadVideos();
                     loadTasks();
                     loadHistory();
+                    loadReferralHistory();
 
                     showView('user-dashboard-view');
                 } else {
@@ -1253,19 +1273,35 @@
             }
         }
 
-        // --- Watch Videos Loading ---
-        async function loadVideos() {
+        // --- Watch Videos Loading (Updated with Filtering) ---
+        async function loadVideos(categoryFilter = 'all') {
             try {
-                const res = await fetch(`${backendUrl}/api/get-videos`);
-                const videos = await res.json();
+                // Data မရှိသေးရင် Server က လှမ်းယူမယ်၊ ရှိပြီးသားဆိုရင် Cache ကပဲ ယူသုံးမယ် (မြန်အောင်လို့ပါ)
+                if (cachedVideos.length === 0) {
+                    const res = await fetch(`${backendUrl}/api/get-videos`);
+                    cachedVideos = await res.json();
+                }
+
                 const grid = document.getElementById('video-grid');
 
-                if (videos.length === 0) {
+                if (cachedVideos.length === 0) {
                     grid.innerHTML = '<p class="text-muted-text">No videos available.</p>';
                     return;
                 }
 
-                grid.innerHTML = videos.map(v => `
+                // Filter Logic
+                let displayVideos = cachedVideos;
+                if (categoryFilter !== 'all') {
+                    displayVideos = cachedVideos.filter(v => v.category === categoryFilter);
+                }
+
+                // Video မရှိရင် ပြဖို့
+                if (displayVideos.length === 0) {
+                    grid.innerHTML = '<p class="text-muted-text col-span-full text-center">No videos found in this category.</p>';
+                    return;
+                }
+
+                grid.innerHTML = displayVideos.map(v => `
                 <div class="video-card bg-card-bg p-4 rounded-xl border border-slate-700 cursor-pointer hover:border-primary transition" onclick="playVideo('${v.id}', '${v.video_url}', '${v.title}')">
                     <img src="https://img.youtube.com/vi/${getYouTubeId(v.video_url)}/hqdefault.jpg" class="w-full rounded-lg mb-2">
                     <h3 class="font-semibold text-sm line-clamp-2 text-white">${v.title}</h3>
@@ -1398,6 +1434,30 @@
             } catch (e) { console.error("History Load Error", e); }
         }
 
+        // --- Referral History Loading (Invite List ဖော်ပြရန်) ---
+        async function loadReferralHistory() {
+            try {
+                const res = await fetch(`${backendUrl}/api/get-referrals?id=${userId}`);
+                const referrals = await res.json();
+                const table = document.getElementById('invited-users-table');
+
+                // Data မရှိရင် သို့မဟုတ် Error တက်ရင်
+                if (!referrals || referrals.length === 0) {
+                    table.innerHTML = '<tr><td colspan="2" class="p-4 text-center text-muted-text">သူငယ်ချင်းများ ဖိတ်ခေါ်ခြင်း မရှိသေးပါ။</td></tr>';
+                    return;
+                }
+
+                // Data ရှိရင် Table မှာ ထည့်မယ် (တစ်ယောက်ကို 50 Points ရတယ်လို့ တွက်ပြထားပါတယ်)
+                table.innerHTML = referrals.map(user => `
+                    <tr class="border-b border-slate-700">
+                        <td class="p-4 text-sm text-white font-semibold">${user.name || 'Unknown User'}</td>
+                        <td class="p-4 font-bold text-accent-green">+50</td>
+                    </tr>
+                `).join('');
+            } catch (e) {
+                console.error("Referral Load Error", e);
+            }
+        }
 
         function getYouTubeId(url) {
             const match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
