@@ -569,9 +569,8 @@
                 <div class="bg-card-bg p-0 rounded-xl shadow-md border border-slate-700">
                     <div class="aspect-video w-full rounded-xl overflow-hidden mb-4">
                         <!-- 'allow="autoplay"' attribute is added here, and autoplay will be added to URL in JS -->
-                        <iframe id="video-iframe" src="" frameborder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowfullscreen class="w-full h-full"></iframe>
+                        <!-- iframe နေရာမှာ div ပြောင်းလိုက်ပါ -->
+                        <div id="video-iframe" class="w-full h-full bg-black"></div>
                     </div>
 
                     <h2 class="text-2xl font-semibold mb-1" id="video-player-title"></h2>
@@ -1138,7 +1137,7 @@
             </div>
         </div>
     </div>
-
+    <script src="https://www.youtube.com/iframe_api"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
         const tg = window.Telegram.WebApp;
@@ -1276,11 +1275,21 @@
             } catch (e) { console.error("Video Load Error", e); }
         }
 
-        // --- Social Tasks Loading ---
+        // --- 1. Load Tasks Function (Updated: ID စစ်ဆေးမှု ပိုတိကျအောင် ပြင်ထားသည်) ---
         async function loadTasks() {
             try {
-                const res = await fetch(`${backendUrl}/api/get-tasks`);
-                const tasks = await res.json();
+                // (A) Task အကုန်ဆွဲထုတ်
+                const resTasks = await fetch(`${backendUrl}/api/get-tasks`);
+                const tasks = await resTasks.json();
+
+                // (B) User လုပ်ပြီးသား စာရင်းကို သွားတောင်း
+                const resCompleted = await fetch(`${backendUrl}/api/get-completed-tasks?userId=${userId}`);
+                const rawCompletedIds = await resCompleted.json();
+
+                // *** ပြင်ဆင်ချက်: ID အားလုံးကို String (စာသား) အဖြစ် ပြောင်းပြီးမှ မှတ်မယ် ***
+                // ဒါမှ 1 (number) နဲ့ "1" (string) မတူတာမျိုး ပြဿနာ မတက်တော့မှာပါ
+                const completedTaskIds = rawCompletedIds.map(id => String(id));
+
                 const grid = document.getElementById('social-tasks-grid');
 
                 if (tasks.length === 0) {
@@ -1288,15 +1297,84 @@
                     return;
                 }
 
-                grid.innerHTML = tasks.map(t => `
-                <div class="card bg-card-bg p-6 rounded-xl border border-slate-700 text-center">
-                    <h3 class="text-lg font-bold text-white">${t.title}</h3>
-                    <p class="text-accent-green font-bold my-2">+${t.points} PTS</p>
-                    <a href="${t.link}" target="_blank" onclick="completeTask('${t.id}', ${t.points}, '${t.title}')" class="inline-block bg-primary hover:bg-indigo-600 px-6 py-2 rounded-lg text-white font-bold transition">Complete Task</a>
-                </div>
-            `).join('');
+                grid.innerHTML = tasks.map(t => {
+                    // ID ကို String ပြောင်းပြီး တိုက်စစ်မယ်
+                    const isCompleted = completedTaskIds.includes(String(t.id));
+
+                    // လုပ်ပြီးရင် Button ပုံစံပြောင်းမယ်
+                    const btnClass = isCompleted
+                        ? "bg-slate-600 cursor-not-allowed text-slate-400"
+                        : "bg-primary hover:bg-indigo-600 text-white";
+
+                    const btnText = isCompleted ? "Completed ✅" : "Complete Task";
+
+                    // လုပ်ပြီးသားဆို onclick မထည့်တော့ဘူး (နှိပ်မရအောင်)
+                    // မလုပ်ရသေးရင် onclick ထည့်မယ်၊ 'this' ဆိုတာ နှိပ်လိုက်တဲ့ ခလုတ်ကို ကိုယ်စားပြုတယ်
+                    const btnAction = isCompleted
+                        ? ""
+                        : `onclick="completeTask('${t.id}', ${t.points}, '${t.title}', '${t.link}', this)"`;
+
+                    const linkTarget = isCompleted ? "" : `href="${t.link}" target="_blank"`;
+
+                    return `
+            <div class="card bg-card-bg p-6 rounded-xl border border-slate-700 text-center">
+                <h3 class="text-lg font-bold text-white">${t.title}</h3>
+                <p class="text-accent-green font-bold my-2">+${t.points} PTS</p>
+                <a ${linkTarget} ${btnAction} class="inline-block px-6 py-2 rounded-lg font-bold transition ${btnClass}">
+                    ${btnText}
+                </a>
+            </div>
+            `;
+                }).join('');
             } catch (e) { console.error("Task Load Error", e); }
         }
+
+        // --- 2. Complete Task Function (Updated: နှိပ်လိုက်တာနဲ့ ခလုတ်ပိတ်မည့် စနစ်ပါသည်) ---
+        async function completeTask(taskId, points, title, link, btnElement) {
+            // ခလုတ်ကို ချက်ချင်းပိတ်မယ် (ထပ်နှိပ်လို့ မရအောင်)
+            if (btnElement) {
+                btnElement.style.pointerEvents = "none"; // နှိပ်မရအောင်ပိတ်
+                btnElement.innerText = "Processing..."; // စာပြောင်း
+                btnElement.classList.add("opacity-50");
+            }
+
+            try {
+                const res = await fetch(`${backendUrl}/api/complete-social-task`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId, taskId, points, title })
+                });
+
+                const result = await res.json();
+
+                if (result.success) {
+                    alert(`Success! You earned ${points} points.`);
+
+                    // အမှတ် UI Update
+                    const currentPoints = parseInt(document.getElementById('total-points-value').innerText || "0");
+                    document.getElementById('total-points-value').innerText = currentPoints + points;
+
+                    // Database မှာ Update ဖြစ်သွားပြီမို့ List ကို ပြန်ဆွဲမယ်
+                    // (List ပြန်ဆွဲလိုက်ရင် ခလုတ်က Completed ✅ ဆိုပြီး အလိုလို ပြောင်းသွားပါလိမ့်မယ်)
+                    await loadTasks();
+                    loadHistory();
+                } else {
+                    // Already completed ဖြစ်နေရင် (သို့) Error တက်ရင်
+                    alert(result.message || "Task already completed.");
+                    await loadTasks(); // စာရင်းပြန်စစ်ခိုင်းလိုက်တာ ပိုသေချာပါတယ်
+                }
+
+            } catch (e) {
+                alert("Connection error.");
+                // Error တက်ရင် ခလုတ်ပြန်ဖွင့်ပေးမယ်
+                if (btnElement) {
+                    btnElement.style.pointerEvents = "auto";
+                    btnElement.innerText = "Complete Task";
+                    btnElement.classList.remove("opacity-50");
+                }
+            }
+        }
+
 
         // --- Points History Loading ---
         async function loadHistory() {
@@ -1320,25 +1398,6 @@
             } catch (e) { console.error("History Load Error", e); }
         }
 
-        // --- Helper Functions ---
-        async function completeTask(taskId, points, title) {
-            // Prevent spam clicking logic needed here usually
-            try {
-                await fetch(`${backendUrl}/api/award-points`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId, amount: points, desc: `Social Task: ${title}` })
-                });
-                alert(`Success! You earned ${points} points.`);
-                // Refresh User Data
-                const userRes = await fetch(`${backendUrl}/api/get-user?id=${userId}`);
-                const userData = await userRes.json();
-                document.getElementById('total-points-value').textContent = userData.points;
-                loadHistory();
-            } catch (e) {
-                alert("Failed to award points.");
-            }
-        }
 
         function getYouTubeId(url) {
             const match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
@@ -1392,24 +1451,24 @@
             startPointTimer();
         }
 
-       
-            function onPlayerStateChange(event) {
-                // (A) Video Play နေရင် --> isVideoPlaying ကို True ပေးမယ်
-                if (event.data === YT.PlayerState.PLAYING) {
-                    isVideoPlaying = true;
-                }
-                // (B) Pause, Buffering (သို့) တခြားအခြေအနေဆိုရင် --> False ပေးမယ် (အမှတ်မတက်တော့ဘူး)
-                else {
-                    isVideoPlaying = false;
-                }
 
-                // (C) Video ပြီးသွားရင် (ENDED) --> Auto Exit
-                if (event.data === YT.PlayerState.ENDED) {
-                    stopPointTimer();
-                    document.getElementById('video-player-back-btn').click();
-                    alert("Video Finished! You have earned your points.");
-                }
+        function onPlayerStateChange(event) {
+            // (A) Video Play နေရင် --> isVideoPlaying ကို True ပေးမယ်
+            if (event.data === YT.PlayerState.PLAYING) {
+                isVideoPlaying = true;
             }
+            // (B) Pause, Buffering (သို့) တခြားအခြေအနေဆိုရင် --> False ပေးမယ် (အမှတ်မတက်တော့ဘူး)
+            else {
+                isVideoPlaying = false;
+            }
+
+            // (C) Video ပြီးသွားရင် (ENDED) --> Auto Exit
+            if (event.data === YT.PlayerState.ENDED) {
+                stopPointTimer();
+                document.getElementById('video-player-back-btn').click();
+                alert("Video Finished! You have earned your points.");
+            }
+        }
 
         // Player Ready ဖြစ်ရင် Auto Play ခိုင်းမယ်
         function onPlayerReady(event) {
