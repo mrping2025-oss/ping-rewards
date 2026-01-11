@@ -107,41 +107,57 @@
             animation-play-state: paused;
         }
 
-        /* NEW: Circular Progress Bar Styles */
+        /* Floating Circle Container */
         .circular-progress-container {
             position: fixed;
-            bottom: 20px;
+            bottom: 80px;
+            /* အောက်ခြေနဲ့ နည်းနည်းခွာထား */
             right: 20px;
+            /* ညာဘက်ကပ် */
             z-index: 1001;
-            width: 80px;
-            height: 80px;
+            width: 70px;
+            height: 70px;
+            background-color: #1e293b;
+            /* Dark Background */
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: #1e293b;
-            /* card-bg */
-            border-radius: 50%;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-            border: 2px solid #6366f1;
-            /* primary */
+            /* အစမှာ ဖျောက်ထားမယ်၊ JS နဲ့မှ ပြမယ် */
+            display: none;
         }
 
+        /* အဝါရောင် လည်မည့် အဝိုင်း */
         .circular-progress {
-            width: 70px;
-            height: 70px;
+            position: relative;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
-            display: grid;
-            place-items: center;
-            background: conic-gradient(#f59e0b 0deg, #1e293b 0deg);
-            /* Amber color */
+            background: conic-gradient(#F59E0B 0deg, #334155 0deg);
+            /* အဝါရောင် (Yellow/Amber) */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* အတွင်းက စာသား (အမှတ်ပြမည့်နေရာ) */
+        .circular-progress::before {
+            content: "";
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #1e293b;
+            /* အလယ်က အပေါက် */
         }
 
         .progress-value {
-            position: absolute;
-            font-size: 1rem;
-            font-weight: 700;
-            color: #f59e0b;
-            /* Amber */
+            position: relative;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #F59E0B;
+            /* စာလုံးအရောင် အဝါ */
         }
 
         /* Make app-content scrollable on small screens */
@@ -541,10 +557,11 @@
                         src="//institutionnounreverend.com/c6affa5f0ae4df4d56203646aa9bf458/invoke.js"></script>
                 </div>
 
-                <!-- NEW: Floating Circular Points Tracker UI -->
-                <div id="circular-points-tracker" class="circular-progress-container hidden">
+                <!-- Video Player View ထဲမှာ ထည့်ရန် -->
+                <div id="circular-points-tracker" class="circular-progress-container">
                     <div id="progress-circle" class="circular-progress">
-                        <span id="progress-time-remaining" class="progress-value">60s</span>
+                        <!-- အမှတ်ပေါင်း ဘယ်လောက်ရပြီလဲ ပြမယ့်နေရာ -->
+                        <span id="progress-value-text" class="progress-value">+0</span>
                     </div>
                 </div>
                 <!-- END NEW: Floating Circular Points Tracker UI -->
@@ -902,12 +919,13 @@
                     <p class="text-muted-text mb-6">View user data, manage status, and edit information.</p>
                     <div class="overflow-x-auto rounded-lg">
                         <table class="w-full text-left table-auto">
+                            <!-- manage-users-view ထဲက Table Head အပိုင်း -->
                             <thead class="bg-slate-700 text-slate-400 uppercase text-xs">
                                 <tr>
                                     <th class="p-4 rounded-tl-lg">User ID</th>
                                     <th class="p-4">Name</th>
-                                    <th class="p-4">Email</th>
-                                    <th class="p-4">Role</th>
+                                    <th class="p-4">Phone</th> <!-- Email နေရာမှာ Phone ပြောင်းထည့်သည် -->
+                                    <th class="p-4">Payment</th> <!-- Role နေရာမှာ Payment ပြောင်းထည့်သည် -->
                                     <th class="p-4">Points</th>
                                     <th class="p-4 rounded-tr-lg">Actions</th>
                                 </tr>
@@ -1128,7 +1146,12 @@
         // စမ်းသပ်ရန် userId (Telegram မှာ မဟုတ်ရင် ဒါကိုသုံးပါလိမ့်မယ်)
         const userId = user ? user.id : "1856743644";
         const backendUrl = "https://ping-rewards-bot.mr-ping2025.workers.dev";
-
+        let player;
+        let isVideoPlaying = false;
+        const MAX_POINT_TIME = 600;
+        let videoTimerInterval = null; // Timer ထိန်းဖို့
+        let sessionPoints = 0;         // ဒီ video ကြည့်တုန်း ရတဲ့အမှတ်
+        let secondsCount = 0;          // စက္ကန့်ရေတွက်ဖို့
         tg.expand();
 
         // Navigation Logic (ခလုပ်နှိပ်ရင် View ပြောင်းရန်)
@@ -1170,24 +1193,24 @@
         });
 
         function showView(viewId) {
-    // View အားလုံးကို ဖျောက်မည်
-    document.querySelectorAll('.content-view').forEach(v => v.style.display = 'none');
-    
-    // လိုချင်သော View ကို ပြမည်
-    const target = document.getElementById(viewId);
-    if (target) {
-        target.style.display = 'block';
-        document.getElementById('page-title').innerText = viewId.replace(/-/g, ' ').replace('view', '').toUpperCase();
+            // View အားလုံးကို ဖျောက်မည်
+            document.querySelectorAll('.content-view').forEach(v => v.style.display = 'none');
 
-        // --- ဒီအပိုင်းကို ဖြည့်စွက်ပါ ---
-        if (viewId === 'admin-dashboard-view') fetchAdminDashboardData();
-        if (viewId === 'manage-videos-view') renderManageVideosTable();
-        if (viewId === 'manage-users-view') fetchAllUsers();
-        
-        // Social Task List ပေါ်အောင် ဒီမှာ ခေါ်လိုက်တာပါ
-        if (viewId === 'manage-social-tasks-view') renderManageSocialTasksTable();
-    }
-}
+            // လိုချင်သော View ကို ပြမည်
+            const target = document.getElementById(viewId);
+            if (target) {
+                target.style.display = 'block';
+                document.getElementById('page-title').innerText = viewId.replace(/-/g, ' ').replace('view', '').toUpperCase();
+
+                // --- ဒီအပိုင်းကို ဖြည့်စွက်ပါ ---
+                if (viewId === 'admin-dashboard-view') fetchAdminDashboardData();
+                if (viewId === 'manage-videos-view') renderManageVideosTable();
+                if (viewId === 'manage-users-view') fetchAllUsers();
+
+                // Social Task List ပေါ်အောင် ဒီမှာ ခေါ်လိုက်တာပါ
+                if (viewId === 'manage-social-tasks-view') renderManageSocialTasksTable();
+            }
+        }
 
         async function initApp() {
             try {
@@ -1337,40 +1360,152 @@
             });
         }
 
-        // Video Player Logic (Simple)
         window.playVideo = function (id, url, title) {
-            const embedUrl = `https://www.youtube.com/embed/${getYouTubeId(url)}?autoplay=1`;
-            document.getElementById('video-iframe').src = embedUrl;
+            const videoId = getYouTubeId(url);
             document.getElementById('video-player-title').textContent = title;
+
+            // View ကိုပြမယ်
             showView('video-player-view');
 
-            // Start Timer Logic here if needed
+            // Player အသစ်ဆောက်မလား၊ ရှိပြီးသားသုံးမလား စစ်မယ်
+            if (player) {
+                player.loadVideoById(videoId);
+            } else {
+                // Player မရှိသေးရင် အသစ်ဆောက်မယ်
+                player = new YT.Player('video-iframe', {
+                    height: '100%',
+                    width: '100%',
+                    videoId: videoId,
+                    playerVars: {
+                        'autoplay': 1,
+                        'playsinline': 1,
+                        'rel': 0
+                    },
+                    events: {
+                        'onReady': onPlayerReady,
+                        'onStateChange': onPlayerStateChange
+                    }
+                });
+            }
+
+            // Timer ကို စခေါ်မယ် (ဒါပေမယ့် Video Play မှ အလုပ်လုပ်မယ်)
+            startPointTimer();
+        }
+
+       
+            function onPlayerStateChange(event) {
+                // (A) Video Play နေရင် --> isVideoPlaying ကို True ပေးမယ်
+                if (event.data === YT.PlayerState.PLAYING) {
+                    isVideoPlaying = true;
+                }
+                // (B) Pause, Buffering (သို့) တခြားအခြေအနေဆိုရင် --> False ပေးမယ် (အမှတ်မတက်တော့ဘူး)
+                else {
+                    isVideoPlaying = false;
+                }
+
+                // (C) Video ပြီးသွားရင် (ENDED) --> Auto Exit
+                if (event.data === YT.PlayerState.ENDED) {
+                    stopPointTimer();
+                    document.getElementById('video-player-back-btn').click();
+                    alert("Video Finished! You have earned your points.");
+                }
+            }
+
+        // Player Ready ဖြစ်ရင် Auto Play ခိုင်းမယ်
+        function onPlayerReady(event) {
+            event.target.playVideo();
         }
 
         document.getElementById('video-player-back-btn').addEventListener('click', () => {
-            document.getElementById('video-iframe').src = ""; // Stop video
+            if (player) {
+                player.stopVideo();
+            }
+            stopPointTimer();
+            isVideoPlaying = false; // ထွက်လိုက်တာနဲ့ Playing ကို ပိတ်
             showView('watch-videos-view');
         });
-
         // --- Admin Dashboard Data Load ---
-async function fetchAdminDashboardData() {
-    try {
-        const res = await fetch(`${backendUrl}/api/get-admin-stats`);
-        const stats = await res.json();
-        document.getElementById('admin-total-users-value').innerText = stats.totalUsers;
-        document.getElementById('admin-total-videos-value').innerText = stats.totalVideos;
-        document.getElementById('admin-total-points-earned-value').innerText = stats.totalPoints;
-        document.getElementById('admin-total-payouts-value').innerText = `$${stats.totalPayouts}`;
-    } catch (e) { console.error("Stats Error", e); }
-}
+        async function fetchAdminDashboardData() {
+            try {
+                const res = await fetch(`${backendUrl}/api/get-admin-stats`);
+                const stats = await res.json();
+                document.getElementById('admin-total-users-value').innerText = stats.totalUsers;
+                document.getElementById('admin-total-videos-value').innerText = stats.totalVideos;
+                document.getElementById('admin-total-points-earned-value').innerText = stats.totalPoints;
+                document.getElementById('admin-total-payouts-value').innerText = `$${stats.totalPayouts}`;
+            } catch (e) { console.error("Stats Error", e); }
+        }
 
-// --- Admin Manage Videos Table ---
-async function renderManageVideosTable() {
-    try {
-        const res = await fetch(`${backendUrl}/api/get-videos`);
-        const videos = await res.json();
-        const table = document.getElementById('videos-table');
-        table.innerHTML = videos.map(v => `
+        function startPointTimer() {
+            // Timer အဟောင်းရှိရင် ဖျက်မယ်
+            if (videoTimerInterval) clearInterval(videoTimerInterval);
+
+            const circle = document.getElementById('progress-circle');
+            const text = document.getElementById('progress-value-text');
+            const container = document.getElementById('circular-points-tracker');
+
+            // Reset UI
+            container.style.display = 'flex';
+            secondsCount = 0;
+            sessionPoints = 0;
+            text.innerText = "+0";
+
+            // စစချင်းမှာ False ပေးထားမယ် (Video တကယ် Play မှ True ဖြစ်မယ်)
+            isVideoPlaying = false;
+
+            videoTimerInterval = setInterval(() => {
+                // *** ဒီနေရာက အရေးကြီးဆုံးပါ ***
+                // Video Play မနေဘူးဆိုရင် (Pause/Buffer) ဘာမှမလုပ်ဘဲ ကျော်သွားမယ်
+                if (!isVideoPlaying) return;
+
+                // ၁၀ မိနစ် (၆၀၀ စက္ကန့်) ကျော်သွားရင် အမှတ်ထပ်မပေးတော့ဘူး
+                if (secondsCount >= MAX_POINT_TIME) {
+                    clearInterval(videoTimerInterval);
+                    text.innerText = "MAX";
+                    text.style.color = "red";
+                    return;
+                }
+
+                secondsCount++;
+
+                // အဝိုင်းလည်ခြင်း Logic
+                let degrees = (secondsCount % 10) * 36;
+                if (secondsCount % 10 === 0) degrees = 360;
+                circle.style.background = `conic-gradient(#F59E0B ${degrees}deg, #334155 0deg)`;
+
+                // ၁၀ စက္ကန့်ပြည့်တိုင်း အမှတ်ပေးခြင်း
+                if (secondsCount > 0 && secondsCount % 10 === 0) {
+                    // Backend ပို့ခြင်း
+                    fetch(`${backendUrl}/api/award-points`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ userId: userId, amount: 1, desc: 'Video Reward' })
+                    }).catch(e => console.error(e));
+
+                    // UI ပြောင်းခြင်း
+                    sessionPoints++;
+                    text.innerText = `+${sessionPoints}`;
+
+                    // Dashboard အမှတ်ပေါင်းခြင်း
+                    let currentTotal = parseInt(document.getElementById('total-points-value').innerText || "0");
+                    document.getElementById('total-points-value').innerText = currentTotal + 1;
+                }
+
+            }, 1000);
+        }
+
+        function stopPointTimer() {
+            if (videoTimerInterval) clearInterval(videoTimerInterval);
+            document.getElementById('circular-points-tracker').style.display = 'none'; // အဝိုင်းပြန်ဖျောက်
+        }
+
+        // --- Admin Manage Videos Table ---
+        async function renderManageVideosTable() {
+            try {
+                const res = await fetch(`${backendUrl}/api/get-videos`);
+                const videos = await res.json();
+                const table = document.getElementById('videos-table');
+                table.innerHTML = videos.map(v => `
             <tr class="hover:bg-slate-800/50">
                 <td class="p-4 font-semibold">${v.title}</td>
                 <td class="p-4">${v.category}</td>
@@ -1380,156 +1515,185 @@ async function renderManageVideosTable() {
                 </td>
             </tr>
         `).join('');
-    } catch (e) { console.error(e); }
-}
-
-// --- Admin Manage Users Table ---
-async function fetchAllUsers() {
-    try {
-        const res = await fetch(`${backendUrl}/api/admin/users`);
-        const users = await res.json();
-        const tableBody = document.getElementById('users-table-body');
-        tableBody.innerHTML = users.map(u => `
-            <tr class="hover:bg-slate-800/50">
-                <td class="p-4 text-xs font-mono">${u.user_id}</td>
-                <td class="p-4">${u.name}</td>
-                <td class="p-4 text-sm ${u.role === 'admin' ? 'text-orange-500' : 'text-primary'}">${u.role}</td>
-                <td class="p-4 font-bold text-primary">${u.points}</td>
-                <td class="p-4"><button class="bg-slate-600 px-2 py-1 rounded text-xs">History</button></td>
-            </tr>
-        `).join('');
-    } catch (e) { console.error(e); }
-}
-async function renderManageSocialTasksTable() {
-    try {
-        const res = await fetch(`${backendUrl}/api/get-tasks`);
-        const tasks = await res.json();
-        const table = document.getElementById('social-tasks-table'); 
-        
-        if (!table) return;
-
-        if (tasks.length === 0) {
-            table.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-muted-text">No tasks found.</td></tr>';
-            return;
+            } catch (e) { console.error(e); }
         }
 
-        table.innerHTML = tasks.map(t => `
+        // --- Admin Manage Users Table (Updated) ---
+        async function fetchAllUsers() {
+            try {
+                const res = await fetch(`${backendUrl}/api/admin/users`);
+                const users = await res.json();
+                const tableBody = document.getElementById('users-table-body');
+
+                // Data မရှိရင်
+                if (!users || users.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="6" class="p-4 text-center">No users found.</td></tr>';
+                    return;
+                }
+
+                tableBody.innerHTML = users.map(u => `
+            <tr class="hover:bg-slate-800/50 border-b border-slate-700">
+                <td class="p-4 text-xs font-mono text-muted-text">${u.user_id}</td>
+                
+                <td class="p-4 font-semibold text-white">
+                    ${u.name || 'Unknown'}
+                </td>
+                
+                <!-- Phone Number ပြမည့်နေရာ -->
+                <td class="p-4 text-sm text-accent-orange">
+                    ${u.phone || '-'}
+                </td>
+                
+                <!-- Payment Method ပြမည့်နေရာ -->
+                <td class="p-4 text-sm text-blue-400">
+                    ${u.payment_method || '-'}
+                </td>
+                
+                <td class="p-4 font-bold text-accent-green">${u.points}</td>
+                
+                <td class="p-4">
+                    <button class="bg-slate-600 hover:bg-slate-500 text-white px-3 py-1 rounded text-xs transition-colors">
+                        History
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+            } catch (e) {
+                console.error("User Fetch Error:", e);
+                document.getElementById('users-table-body').innerHTML = '<tr><td colspan="6" class="p-4 text-center text-red-500">Error loading users.</td></tr>';
+            }
+        }
+
+        async function renderManageSocialTasksTable() {
+            try {
+                const res = await fetch(`${backendUrl}/api/get-tasks`);
+                const tasks = await res.json();
+                const table = document.getElementById('social-tasks-table');
+
+                if (!table) return;
+
+                if (tasks.length === 0) {
+                    table.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-muted-text">No tasks found.</td></tr>';
+                    return;
+                }
+
+                table.innerHTML = tasks.map(t => `
             <tr class="hover:bg-slate-800/50">
                 <td class="p-4 font-semibold">${t.title}</td>
                 <td class="p-4">${t.platform}</td>
-                <td class="p-4 text-sm break-all"><a href="${t.link}" target="_blank" class="text-primary">${t.link.substring(0,20)}...</a></td>
+                <td class="p-4 text-sm break-all"><a href="${t.link}" target="_blank" class="text-primary">${t.link.substring(0, 20)}...</a></td>
                 <td class="p-4 text-accent-green">${t.points} PTS</td>
                 <td class="p-4">
                     <button onclick="deleteTask('${t.id}')" class="bg-red-600 px-3 py-1 rounded text-xs text-white">Delete</button>
                 </td>
             </tr>
         `).join('');
-    } catch (e) { console.error("Admin Task Table Error", e); }
-}
+            } catch (e) { console.error("Admin Task Table Error", e); }
+        }
 
-// ဒီကောင်လေးလည်း ပါရပါမယ် (Task ဖျက်ဖို့)
-async function deleteTask(id) {
-    if(!confirm("Are you sure you want to delete this task?")) return;
-    try {
-        await fetch(`${backendUrl}/api/admin/delete-task?id=${id}`, { method: 'DELETE' });
-        renderManageSocialTasksTable(); // ဖျက်ပြီးရင် list ကို update ပြန်လုပ်တာ
-    } catch (e) { alert("Failed to delete task."); }
-}
+        // ဒီကောင်လေးလည်း ပါရပါမယ် (Task ဖျက်ဖို့)
+        async function deleteTask(id) {
+            if (!confirm("Are you sure you want to delete this task?")) return;
+            try {
+                await fetch(`${backendUrl}/api/admin/delete-task?id=${id}`, { method: 'DELETE' });
+                renderManageSocialTasksTable(); // ဖျက်ပြီးရင် list ကို update ပြန်လုပ်တာ
+            } catch (e) { alert("Failed to delete task."); }
+        }
 
-// Video ဖျက်တဲ့ function
-async function deleteVideo(id) {
-    if(!confirm("Are you sure?")) return;
-    await fetch(`${backendUrl}/api/admin/delete-video?id=${id}`, { method: 'DELETE' });
-    renderManageVideosTable(); // Refresh
-}
+        // Video ဖျက်တဲ့ function
+        async function deleteVideo(id) {
+            if (!confirm("Are you sure?")) return;
+            await fetch(`${backendUrl}/api/admin/delete-video?id=${id}`, { method: 'DELETE' });
+            renderManageVideosTable(); // Refresh
+        }
 
 
-// --- Modal ဖွင့်ရန်/ပိတ်ရန် Function များ ---
-function showModal(id) {
-    document.getElementById(id).classList.remove('hidden');
-}
-function hideModal(id) {
-    document.getElementById(id).classList.add('hidden');
-}
+        // --- Modal ဖွင့်ရန်/ပိတ်ရန် Function များ ---
+        function showModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+        }
+        function hideModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
 
-// --- Video အသစ်ထည့်ရန် ခလုတ်ကို Event ချိတ်ခြင်း ---
-document.getElementById('add-video-btn').addEventListener('click', () => {
-    document.getElementById('add-video-form').reset(); // Form ကို ရှင်းထုတ်မည်
-    showModal('add-video-modal');
-});
-
-// --- Video သိမ်းဆည်းခြင်း (Add New Video) ---
-document.getElementById('add-video-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    
-    const videoData = {
-        title: formData.get('videoTitle'),
-        description: formData.get('videoDescription'),
-        category: formData.get('videoCategory'),
-        video_url: formData.get('videoUrl'),
-        watch_duration: parseInt(formData.get('watchDuration'))
-    };
-
-    try {
-        const res = await fetch(`${backendUrl}/api/admin/manage-video`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(videoData)
+        // --- Video အသစ်ထည့်ရန် ခလုတ်ကို Event ချိတ်ခြင်း ---
+        document.getElementById('add-video-btn').addEventListener('click', () => {
+            document.getElementById('add-video-form').reset(); // Form ကို ရှင်းထုတ်မည်
+            showModal('add-video-modal');
         });
 
-        if (res.ok) {
-            alert("Video added successfully!");
-            hideModal('add-video-modal');
-            renderManageVideosTable(); // ဇယားကို Refresh လုပ်မည်
-        }
-    } catch (err) {
-        alert("Failed to save video.");
-    }
-});
+        // --- Video သိမ်းဆည်းခြင်း (Add New Video) ---
+        document.getElementById('add-video-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
 
-// --- Task အသစ်ထည့်ရန် ခလုတ်ကို Event ချိတ်ခြင်း ---
-document.getElementById('add-social-task-btn').addEventListener('click', () => {
-    document.getElementById('add-social-task-form').reset();
-    showModal('add-social-task-modal');
-});
+            const videoData = {
+                title: formData.get('videoTitle'),
+                description: formData.get('videoDescription'),
+                category: formData.get('videoCategory'),
+                video_url: formData.get('videoUrl'),
+                watch_duration: parseInt(formData.get('watchDuration'))
+            };
 
-// --- Task သိမ်းဆည်းခြင်း (Add New Task) ---
-document.getElementById('add-social-task-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    
-    const taskData = {
-        title: formData.get('taskTitle'),
-        platform: formData.get('taskPlatform'),
-        link: formData.get('taskLink'),
-        points: parseInt(formData.get('taskPoints'))
-    };
+            try {
+                const res = await fetch(`${backendUrl}/api/admin/manage-video`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(videoData)
+                });
 
-    try {
-        const res = await fetch(`${backendUrl}/api/admin/manage-task`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(taskData)
+                if (res.ok) {
+                    alert("Video added successfully!");
+                    hideModal('add-video-modal');
+                    renderManageVideosTable(); // ဇယားကို Refresh လုပ်မည်
+                }
+            } catch (err) {
+                alert("Failed to save video.");
+            }
         });
 
-        if (res.ok) {
-            alert("Task added successfully!");
-            hideModal('add-social-task-modal');
-            loadTasks(); // Social Tasks list ကို Refresh လုပ်မည် (Admin ဘက်မှာ မရှိရင် function နာမည်စစ်ပါ)
-        }
-    } catch (err) {
-        alert("Failed to save task.");
-    }
-});
+        // --- Task အသစ်ထည့်ရန် ခလုတ်ကို Event ချိတ်ခြင်း ---
+        document.getElementById('add-social-task-btn').addEventListener('click', () => {
+            document.getElementById('add-social-task-form').reset();
+            showModal('add-social-task-modal');
+        });
 
-// Modal ထဲက Cancel ခလုတ်တွေအတွက်
-document.querySelectorAll('.cancel-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        hideModal('add-video-modal');
-        hideModal('add-social-task-modal');
-    });
-});
+        // --- Task သိမ်းဆည်းခြင်း (Add New Task) ---
+        document.getElementById('add-social-task-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+
+            const taskData = {
+                title: formData.get('taskTitle'),
+                platform: formData.get('taskPlatform'),
+                link: formData.get('taskLink'),
+                points: parseInt(formData.get('taskPoints'))
+            };
+
+            try {
+                const res = await fetch(`${backendUrl}/api/admin/manage-task`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(taskData)
+                });
+
+                if (res.ok) {
+                    alert("Task added successfully!");
+                    hideModal('add-social-task-modal');
+                    loadTasks(); // Social Tasks list ကို Refresh လုပ်မည် (Admin ဘက်မှာ မရှိရင် function နာမည်စစ်ပါ)
+                }
+            } catch (err) {
+                alert("Failed to save task.");
+            }
+        });
+
+        // Modal ထဲက Cancel ခလုတ်တွေအတွက်
+        document.querySelectorAll('.cancel-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                hideModal('add-video-modal');
+                hideModal('add-social-task-modal');
+            });
+        });
     </script>
 </body>
 
