@@ -1152,15 +1152,15 @@
     </div>
 
 
-  <script src="https://www.youtube.com/iframe_api"></script>
+ <script src="https://www.youtube.com/iframe_api"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
         const tg = window.Telegram.WebApp;
         const user = tg.initDataUnsafe.user;
-        const userId = user ? user.id : "1856743644";
-        const startParam = tg.initDataUnsafe.start_param || ""; // Referral code အတွက်
-        const backendUrl = "https://ping-rewards-bot.mr-ping2025.workers.dev"; // သင့် Backend URL သေချာပါစေ
-        
+        const userId = user ? String(user.id) : "1856743644";
+        const startParam = tg.initDataUnsafe.start_param || "";
+        const backendUrl = "https://ping-rewards-bot.mr-ping2025.workers.dev"; // *** ဒီ URL မှန်မမှန် ပြန်စစ်ပေးပါ ***
+
         let player;
         let isVideoPlaying = false;
         let cachedVideos = [];
@@ -1172,46 +1172,27 @@
         tg.expand();
 
         document.addEventListener("DOMContentLoaded", () => {
-            const navLinks = document.querySelectorAll('.nav-link');
-            navLinks.forEach(link => {
+            // Navigation logic
+            document.querySelectorAll('.nav-link').forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
                     const targetId = link.getAttribute('data-target');
-                    if (targetId) {
-                        showView(targetId);
-                        if (window.innerWidth < 768) {
-                            document.getElementById('sidebar').classList.remove('open');
-                            document.getElementById('backdrop').classList.remove('open');
-                        }
-                    }
+                    if (targetId) showView(targetId);
                 });
             });
 
-            document.getElementById('menu-toggle').addEventListener('click', () => {
+            document.getElementById('menu-toggle').onclick = () => {
                 document.getElementById('sidebar').classList.add('open');
                 document.getElementById('backdrop').classList.add('open');
-            });
+            };
 
-            document.getElementById('backdrop').addEventListener('click', () => {
+            document.getElementById('backdrop').onclick = () => {
                 document.getElementById('sidebar').classList.remove('open');
                 document.getElementById('backdrop').classList.remove('open');
-            });
-
-            const filterBtns = document.querySelectorAll('.filter-btn');
-            filterBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    filterBtns.forEach(b => {
-                        b.classList.remove('bg-primary', 'text-white', 'border-primary');
-                        b.classList.add('bg-card-bg', 'text-sm', 'border-slate-700');
-                    });
-                    btn.classList.remove('bg-card-bg', 'text-sm', 'border-slate-700');
-                    btn.classList.add('bg-primary', 'text-white', 'border-primary');
-                    loadVideos(btn.getAttribute('data-category'));
-                });
-            });
+            };
 
             setupCopyButtons();
-            initApp(); // စတင်ပွင့်ချိန်မှာ တစ်ကြိမ်ပဲခေါ်မယ်
+            initApp();
         });
 
         function showView(viewId) {
@@ -1220,154 +1201,133 @@
             if (target) {
                 target.style.display = 'block';
                 document.getElementById('page-title').innerText = viewId.replace(/-/g, ' ').replace('view', '').toUpperCase();
-
+                
+                // View အလိုက် data ခေါ်ယူခြင်း
                 if (viewId === 'admin-dashboard-view') fetchAdminDashboardData();
                 if (viewId === 'manage-videos-view') renderManageVideosTable();
                 if (viewId === 'manage-users-view') fetchAllUsers();
                 if (viewId === 'manage-social-tasks-view') renderManageSocialTasksTable();
+                if (viewId === 'social-tasks-view') loadTasks(); // Task view ကိုနှိပ်ရင်လည်း ခေါ်ပေးမယ်
+            }
+            // Sidebar close on mobile
+            if (window.innerWidth < 768) {
+                document.getElementById('sidebar').classList.remove('open');
+                document.getElementById('backdrop').classList.remove('open');
             }
         }
 
         async function initApp() {
             try {
-                // User Registration & Fetch
-                const userName = user ? user.first_name : "Guest User";
-                const userRes = await fetch(`${backendUrl}/api/get-user?id=${userId}&name=${userName}&ref=${startParam}`);
-                const userData = await userRes.json();
+                const userName = user ? user.first_name : "User";
+                // User register/login
+                const res = await fetch(`${backendUrl}/api/get-user?id=${userId}&name=${userName}&ref=${startParam}`);
+                const userData = await res.json();
 
-                if (userData && !userData.error) {
+                if (userData) {
                     document.getElementById('total-points-value').textContent = userData.points || 0;
-                    document.getElementById('welcome-message').textContent = `Welcome, ${userData.name || 'User'}!`;
+                    document.getElementById('welcome-message').textContent = `Welcome, ${userData.name}!`;
                     
-                    // Referral UI Update
-                    document.getElementById('referral-code-input').value = userId;
-                    document.getElementById('referral-link-input').value = `https://t.me/PingRewords_bot?start=${userId}`;
-
-                    // Admin Check
-                    const adminIds = ["1856743644"];
-                    if (adminIds.includes(String(userId))) {
+                    // Admin links
+                    if (["1856743644"].includes(userId)) {
                         document.querySelectorAll('.admin-link').forEach(el => el.style.display = 'block');
                     }
 
-                    // Load Data
+                    // Load Initial Data
                     loadVideos();
                     loadTasks();
                     loadHistory();
                     loadReferralHistory();
-                    loadLeaderboard(); // Leaderboard ကို ဒီမှာခေါ်ထားပါတယ်
-
-                    showView('user-dashboard-view');
+                    loadLeaderboard();
                 }
             } catch (err) {
-                console.error("App Init Error:", err);
+                console.error("Init Error:", err);
             }
         }
 
-        async function loadVideos(categoryFilter = 'all') {
-            try {
-                if (cachedVideos.length === 0) {
-                    const res = await fetch(`${backendUrl}/api/get-videos`);
-                    cachedVideos = await res.json();
-                }
-                const grid = document.getElementById('video-grid');
-                let displayVideos = categoryFilter === 'all' ? cachedVideos : cachedVideos.filter(v => v.category === categoryFilter);
-                
-                if (displayVideos.length === 0) {
-                    grid.innerHTML = '<p class="text-muted-text col-span-full text-center">No videos found.</p>';
-                    return;
-                }
-
-                grid.innerHTML = displayVideos.map(v => `
-                    <div class="video-card bg-card-bg p-4 rounded-xl border border-slate-700 cursor-pointer hover:border-primary transition" onclick="playVideo('${v.id}', '${v.video_url}', '${v.title}')">
-                        <img src="https://img.youtube.com/vi/${getYouTubeId(v.video_url)}/hqdefault.jpg" class="w-full rounded-lg mb-2">
-                        <h3 class="font-semibold text-sm line-clamp-2 text-white">${v.title}</h3>
-                        <p class="text-xs text-muted-text mt-1">${v.category} • 1pt/60s</p>
-                    </div>
-                `).join('');
-            } catch (e) { console.error(e); }
-        }
-
+        // --- Social Tasks Loading (ပိုပြီး စနစ်တကျ ပြင်ထားသည်) ---
         async function loadTasks() {
+            const grid = document.getElementById('social-tasks-grid');
+            grid.innerHTML = '<div class="col-span-full text-center p-6">Loading tasks...</div>';
+
             try {
-                const [resTasks, resCompleted] = await Promise.all([
+                // Task list နဲ့ User လုပ်ပြီးသား list ကို တစ်ပြိုင်တည်းခေါ်မယ်
+                const [tasksRes, completedRes] = await Promise.all([
                     fetch(`${backendUrl}/api/get-tasks`),
                     fetch(`${backendUrl}/api/get-completed-tasks?userId=${userId}`)
                 ]);
-                const tasks = await resTasks.json();
-                const completedIds = await resCompleted.json();
-                const grid = document.getElementById('social-tasks-grid');
+
+                const tasks = await tasksRes.json();
+                const completedTaskIds = await completedRes.json();
+
+                console.log("Tasks:", tasks); // Debug အတွက် (F12 မှာ ကြည့်နိုင်သည်)
+                console.log("Completed IDs:", completedTaskIds);
+
+                if (!tasks || tasks.length === 0) {
+                    grid.innerHTML = '<div class="col-span-full text-center p-6">No tasks available right now.</div>';
+                    return;
+                }
 
                 grid.innerHTML = tasks.map(t => {
-                    const isCompleted = completedIds.map(id => String(id)).includes(String(t.id));
-                    const btnClass = isCompleted ? "bg-slate-600 cursor-not-allowed" : "bg-primary hover:bg-indigo-600";
-                    const btnText = isCompleted ? "Completed ✅" : "Complete Task";
-                    const btnAction = isCompleted ? "" : `onclick="completeTask('${t.id}', ${t.points}, '${t.title}', '${t.link}', this)"`;
-                    
+                    // ID ကို String ပြောင်းပြီး တိုက်စစ်မယ်
+                    const isCompleted = Array.isArray(completedTaskIds) && completedTaskIds.map(id => String(id)).includes(String(t.id));
+
                     return `
-                        <div class="card bg-card-bg p-6 rounded-xl border border-slate-700 text-center">
-                            <h3 class="text-lg font-bold text-white">${t.title}</h3>
-                            <p class="text-accent-green font-bold my-2">+${t.points} PTS</p>
-                            <button ${btnAction} class="inline-block px-6 py-2 rounded-lg font-bold transition text-white ${btnClass}">
-                                ${btnText}
-                            </button>
-                        </div>`;
+                        <div class="card bg-card-bg p-6 rounded-xl border border-slate-700 text-center shadow-lg">
+                            <div class="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <svg class="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                            </div>
+                            <h3 class="text-lg font-bold text-white mb-1">${t.title}</h3>
+                            <p class="text-accent-green font-bold mb-4">+${t.points} PTS</p>
+                            ${isCompleted ? 
+                                `<button class="w-full py-2 bg-slate-600 text-slate-400 rounded-lg font-bold cursor-not-allowed" disabled>Completed ✅</button>` : 
+                                `<button onclick="completeTask('${t.id}', ${t.points}, '${t.title}', '${t.link}', this)" class="w-full py-2 bg-primary hover:bg-indigo-600 text-white rounded-lg font-bold transition duration-200">Complete Task</button>`
+                            }
+                        </div>
+                    `;
                 }).join('');
-            } catch (e) { console.error(e); }
+
+            } catch (err) {
+                console.error("Load Tasks Error:", err);
+                grid.innerHTML = '<div class="col-span-full text-center text-red-500 p-6">Failed to load tasks. Please try again.</div>';
+            }
         }
 
         async function completeTask(taskId, points, title, link, btn) {
+            // Task link ကို အရင်ဖွင့်ပေးမယ်
             window.open(link, '_blank');
-            btn.innerText = "Processing...";
-            btn.style.pointerEvents = "none";
             
+            const originalText = btn.innerText;
+            btn.innerText = "Verifying...";
+            btn.disabled = true;
+
             try {
                 const res = await fetch(`${backendUrl}/api/complete-social-task`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userId, taskId, points, title })
                 });
+
                 const result = await res.json();
                 if (result.success) {
-                    alert(`Success! +${points} points.`);
-                    loadTasks();
-                    loadHistory();
-                    // Update header points
-                    const el = document.getElementById('total-points-value');
-                    el.innerText = parseInt(el.innerText) + points;
+                    btn.innerText = "Completed ✅";
+                    btn.className = "w-full py-2 bg-slate-600 text-slate-400 rounded-lg font-bold cursor-not-allowed";
+                    // Point update UI
+                    const pointEl = document.getElementById('total-points-value');
+                    pointEl.innerText = parseInt(pointEl.innerText) + points;
+                    loadHistory(); // History update
+                } else {
+                    alert(result.message || "Could not complete task.");
+                    btn.innerText = originalText;
+                    btn.disabled = false;
                 }
-            } catch (e) { console.error(e); }
+            } catch (e) {
+                alert("Connection error. Try again.");
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
         }
 
-        async function loadHistory() {
-            try {
-                const res = await fetch(`${backendUrl}/api/get-history?id=${userId}`);
-                const history = await res.json();
-                const table = document.getElementById('points-history-table');
-                table.innerHTML = history.map(h => `
-                    <tr class="border-b border-slate-700">
-                        <td class="p-4 text-xs text-muted-text">${new Date(h.created_at).toLocaleDateString()}</td>
-                        <td class="p-4 text-sm text-white">${h.description}</td>
-                        <td class="p-4 font-bold text-accent-green">+${h.points}</td>
-                    </tr>
-                `).join('');
-            } catch (e) { console.error(e); }
-        }
-
-        async function loadReferralHistory() {
-            try {
-                const res = await fetch(`${backendUrl}/api/get-referrals?id=${userId}`);
-                const referrals = await res.json();
-                const table = document.getElementById('invited-users-table');
-                if (referrals.length === 0) return;
-                table.innerHTML = referrals.map(u => `
-                    <tr class="border-b border-slate-700">
-                        <td class="p-4 text-sm text-white font-semibold">${u.name}</td>
-                        <td class="p-4 font-bold text-accent-green">+50</td>
-                    </tr>
-                `).join('');
-            } catch (e) { console.error(e); }
-        }
-
+        // --- ကျန်ရှိသော function များ (Leaderboard, Videos, etc.) ---
         async function loadLeaderboard() {
             try {
                 const res = await fetch(`${backendUrl}/api/get-leaderboard`);
@@ -1383,83 +1343,93 @@
             } catch (e) { console.error(e); }
         }
 
-        // --- YouTube & Timer Logic (မူလအတိုင်း ထားရှိပါသည်) ---
+        async function loadHistory() {
+            try {
+                const res = await fetch(`${backendUrl}/api/get-history?id=${userId}`);
+                const history = await res.json();
+                document.getElementById('points-history-table').innerHTML = history.map(h => `
+                    <tr class="border-b border-slate-700">
+                        <td class="p-4 text-xs text-muted-text">${new Date(h.created_at).toLocaleDateString()}</td>
+                        <td class="p-4 text-sm text-white">${h.description}</td>
+                        <td class="p-4 font-bold text-accent-green">+${h.points}</td>
+                    </tr>
+                `).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        async function loadReferralHistory() {
+            try {
+                const res = await fetch(`${backendUrl}/api/get-referrals?id=${userId}`);
+                const data = await res.json();
+                if (data.length > 0) {
+                    document.getElementById('invited-users-table').innerHTML = data.map(u => `
+                        <tr class="border-b border-slate-700">
+                            <td class="p-4 text-sm text-white font-semibold">${u.name}</td>
+                            <td class="p-4 font-bold text-accent-green">+50</td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        // YouTube ID helper
         function getYouTubeId(url) {
             const match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
             return (match && match[2].length == 11) ? match[2] : null;
         }
 
-        window.playVideo = function (id, url, title) {
-            const videoId = getYouTubeId(url);
-            document.getElementById('video-player-title').textContent = title;
+        // Video Player Logic ... (အရင်အတိုင်းထားနိုင်သည်)
+        window.playVideo = function(id, url, title) {
+            const vid = getYouTubeId(url);
+            document.getElementById('video-player-title').innerText = title;
             showView('video-player-view');
             if (player) {
-                player.loadVideoById(videoId);
+                player.loadVideoById(vid);
             } else {
                 player = new YT.Player('video-iframe', {
-                    height: '100%', width: '100%', videoId: videoId,
+                    height: '100%', width: '100%', videoId: vid,
                     playerVars: { 'autoplay': 1, 'playsinline': 1 },
-                    events: { 'onStateChange': onPlayerStateChange }
+                    events: { 'onStateChange': (e) => { isVideoPlaying = (e.data === 1); } }
                 });
             }
             startPointTimer();
         }
 
-        function onPlayerStateChange(event) {
-            isVideoPlaying = (event.data === YT.PlayerState.PLAYING);
-            if (event.data === YT.PlayerState.ENDED) {
-                stopPointTimer();
-                showView('watch-videos-view');
-            }
-        }
-
         function startPointTimer() {
             if (videoTimerInterval) clearInterval(videoTimerInterval);
-            const container = document.getElementById('circular-points-tracker');
-            const text = document.getElementById('progress-value-text');
-            const circle = document.getElementById('progress-circle');
-            container.style.display = 'flex';
+            document.getElementById('circular-points-tracker').style.display = 'flex';
             secondsCount = 0; sessionPoints = 0;
             videoTimerInterval = setInterval(() => {
                 if (!isVideoPlaying) return;
                 secondsCount++;
-                let degrees = (secondsCount % 10) * 36;
-                circle.style.background = `conic-gradient(#F59E0B ${degrees || 360}deg, #334155 0deg)`;
+                document.getElementById('progress-circle').style.background = `conic-gradient(#F59E0B ${(secondsCount % 10) * 36 || 360}deg, #334155 0deg)`;
                 if (secondsCount % 10 === 0) {
                     fetch(`${backendUrl}/api/award-points`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ userId, amount: 1, desc: 'Video Reward' })
                     });
                     sessionPoints++;
-                    text.innerText = `+${sessionPoints}`;
-                    const el = document.getElementById('total-points-value');
-                    el.innerText = parseInt(el.innerText) + 1;
+                    document.getElementById('progress-value-text').innerText = `+${sessionPoints}`;
+                    const p = document.getElementById('total-points-value');
+                    p.innerText = parseInt(p.innerText) + 1;
                 }
             }, 1000);
         }
 
-        function stopPointTimer() {
-            clearInterval(videoTimerInterval);
-            document.getElementById('circular-points-tracker').style.display = 'none';
-        }
-
         function setupCopyButtons() {
             document.getElementById('copy-referral-btn').onclick = () => {
-                navigator.clipboard.writeText(document.getElementById('referral-code-input').value);
-                alert("Copied!");
+                navigator.clipboard.writeText(userId); alert("Referral Code Copied!");
             };
             document.getElementById('copy-link-btn').onclick = () => {
-                navigator.clipboard.writeText(document.getElementById('referral-link-input').value);
-                alert("Copied!");
+                navigator.clipboard.writeText(`https://t.me/PingRewords_bot?start=${userId}`); alert("Referral Link Copied!");
             };
         }
 
-        // Admin functions (မူလအတိုင်း) ...
-        async function fetchAdminDashboardData() { /* ... */ }
-        async function fetchAllUsers() { /* ... */ }
-        async function renderManageVideosTable() { /* ... */ }
-        async function renderManageSocialTasksTable() { /* ... */ }
+        // Admin functions (Empty placeholders to avoid errors)
+        async function fetchAdminDashboardData() {}
+        async function renderManageVideosTable() {}
+        async function fetchAllUsers() {}
+        async function renderManageSocialTasksTable() {}
 
     </script>
 </body>
