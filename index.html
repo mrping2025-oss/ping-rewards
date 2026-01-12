@@ -280,6 +280,39 @@
                 <span class="text-xs text-white">Help</span>
             </a>
             
+            <!-- ================= ADMIN BUTTONS (Admin Only) ================= -->
+            
+            <!-- 1. Admin Dashboard -->
+            <button onclick="showView('admin-dashboard-view'); document.getElementById('more-menu-modal').classList.add('hidden')" 
+                class="admin-link flex flex-col items-center p-4 bg-red-900/50 border border-red-700 rounded-xl hover:bg-red-800" 
+                style="display:none;"> <!-- display:none နဲ့ စစချင်း ဖွက်ထားမယ် -->
+                <svg class="w-8 h-8 mb-2 text-red-400" fill="currentColor" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+                <span class="text-xs text-white">Dashboard</span>
+            </button>
+
+            <!-- 2. Manage Videos -->
+            <button onclick="showView('manage-videos-view'); document.getElementById('more-menu-modal').classList.add('hidden')" 
+                class="admin-link flex flex-col items-center p-4 bg-red-900/50 border border-red-700 rounded-xl hover:bg-red-800" 
+                style="display:none;">
+                <svg class="w-8 h-8 mb-2 text-red-400" fill="currentColor" viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>
+                <span class="text-xs text-white">Videos</span>
+            </button>
+
+            <!-- 3. Manage Tasks -->
+            <button onclick="showView('manage-social-tasks-view'); document.getElementById('more-menu-modal').classList.add('hidden')" 
+                class="admin-link flex flex-col items-center p-4 bg-red-900/50 border border-red-700 rounded-xl hover:bg-red-800" 
+                style="display:none;">
+                <svg class="w-8 h-8 mb-2 text-red-400" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                <span class="text-xs text-white">Tasks</span>
+            </button>
+
+            <!-- 4. Manage Users -->
+            <button onclick="showView('manage-users-view'); document.getElementById('more-menu-modal').classList.add('hidden')" 
+                class="admin-link flex flex-col items-center p-4 bg-red-900/50 border border-red-700 rounded-xl hover:bg-red-800" 
+                style="display:none;">
+                <svg class="w-8 h-8 mb-2 text-red-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                <span class="text-xs text-white">Users</span>
+            </button>
              <!-- Admin (Only show if needed via JS logic) -->
             <button id="mobile-admin-btn" onclick="showView('admin-dashboard-view'); document.getElementById('more-menu-modal').classList.add('hidden')" class="flex flex-col items-center p-4 bg-slate-700 rounded-xl hover:bg-slate-600 admin-link" style="display:none;">
                 <svg class="w-8 h-8 mb-2 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
@@ -1262,7 +1295,7 @@
                     // Admin Check
                     const adminIds = ["1856743644"];
                     if (adminIds.includes(String(userId))) {
-                        document.querySelectorAll('.admin-link').forEach(el => el.style.display = 'block');
+                        document.querySelectorAll('.admin-link').forEach(el => el.style.display = 'flex');
                     }
 
                     // Load Data
@@ -1561,7 +1594,260 @@
 
 
         // Admin functions (မူလအတိုင်း) ...
-        async function fetchAdminDashboardData() { /* ... */ }
+        // --- Admin Functions ---
+
+        async function fetchAdminDashboardData() {
+            try {
+                // Backend မှ Data လှမ်းယူမယ်
+                const res = await fetch(`${backendUrl}/api/get-admin-stats`);
+                const data = await res.json();
+
+                if (data) {
+                    // UI ပေါ်မှာ ဂဏန်းတွေ ပြမယ်
+                    document.getElementById('admin-total-users-value').innerText = data.totalUsers || 0;
+                    document.getElementById('admin-total-videos-value').innerText = data.totalVideos || 0;
+                    document.getElementById('admin-total-points-earned-value').innerText = data.totalPoints || 0;
+                    // ငွေပမာဏ ရှေ့မှာ $ သင်္ကေတခံမယ်
+                    document.getElementById('admin-total-payouts-value').innerText = `$${data.totalPayouts || "0.00"}`;
+                }
+            } catch (err) {
+                console.error("Failed to load admin stats:", err);
+            }
+        }
+
+        // Manage Videos Table ဆွဲထုတ်ခြင်း
+        async function renderManageVideosTable() {
+            try {
+                const res = await fetch(`${backendUrl}/api/get-videos`);
+                const videos = await res.json();
+                const tbody = document.getElementById('videos-table');
+                
+                if(!videos || videos.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-muted-text">No videos found.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = videos.map(v => `
+                    <tr class="border-b border-slate-700">
+                        <td class="p-4 text-white font-medium">${v.title}</td>
+                        <td class="p-4 text-muted-text">${v.category}</td>
+                        <td class="p-4 text-accent-green">${v.points || 0}</td>
+                        <td class="p-4 flex gap-2">
+                             <button onclick="deleteVideo('${v.id}')" class="px-3 py-1 bg-red-600 hover:bg-red-500 rounded text-white text-xs">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (e) { console.error(e); }
+        }
+        
+        // Video ဖျက်သည့် Function
+        async function deleteVideo(id) {
+            if(!confirm("Are you sure?")) return;
+            await fetch(`${backendUrl}/api/admin/delete-video?id=${id}`, { method: 'DELETE' });
+            renderManageVideosTable(); // Table ကို Refresh လုပ်
+        }
+
+        // Manage Social Tasks Table ဆွဲထုတ်ခြင်း
+        async function renderManageSocialTasksTable() {
+             try {
+                const res = await fetch(`${backendUrl}/api/get-tasks`);
+                const tasks = await res.json();
+                const tbody = document.getElementById('social-tasks-table');
+
+                if(!tasks || tasks.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-muted-text">No tasks found.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = tasks.map(t => `
+                    <tr class="border-b border-slate-700">
+                        <td class="p-4 text-white font-medium">${t.title}</td>
+                        <td class="p-4 text-muted-text">${t.platform}</td>
+                        <td class="p-4 text-blue-400 truncate max-w-[150px]"><a href="${t.link}" target="_blank">${t.link}</a></td>
+                        <td class="p-4 text-accent-green">${t.points}</td>
+                        <td class="p-4">
+                            <button onclick="deleteTask('${t.id}')" class="px-3 py-1 bg-red-600 hover:bg-red-500 rounded text-white text-xs">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        // Task ဖျက်သည့် Function
+        async function deleteTask(id) {
+            if(!confirm("Are you sure?")) return;
+            await fetch(`${backendUrl}/api/admin/delete-task?id=${id}`, { method: 'DELETE' });
+            renderManageSocialTasksTable();
+        }
+
+        // Users အားလုံး ဆွဲထုတ်ခြင်း (Manage Users View)
+        async function fetchAllUsers() {
+             try {
+                const res = await fetch(`${backendUrl}/api/admin/users`);
+                const users = await res.json();
+                const tbody = document.getElementById('users-table-body');
+                
+                // Admin တွေရဲ့ ID (မဖော်ပြချင်ရင် ဖယ်ထားလို့ရသည်)
+                const adminIds = ["1856743644"]; 
+
+                tbody.innerHTML = users.map(u => `
+                    <tr class="border-b border-slate-700">
+                        <td class="p-4 text-xs text-muted-text font-mono">${u.user_id}</td>
+                        <td class="p-4 text-white">${u.name} ${adminIds.includes(u.user_id) ? '<span class="text-xs bg-primary px-1 rounded ml-1">Admin</span>' : ''}</td>
+                        <td class="p-4 text-muted-text">-</td>
+                        <td class="p-4 text-muted-text">-</td>
+                        <td class="p-4 text-accent-green font-bold">${u.points}</td>
+                        <td class="p-4 text-xs text-slate-500">View Only</td>
+                    </tr>
+                `).join('');
+            } catch (e) { console.error(e); }
+        }
+        // ==========================================
+// ADMIN MANAGEMENT LOGIC (Add & Save)
+// ==========================================
+
+document.addEventListener("DOMContentLoaded", () => {
+    
+    // --- 1. MANAGE VIDEOS ---
+
+    // "Add New Video" ခလုတ်နှိပ်ရင် Modal ဖွင့်မယ်
+    const addVideoBtn = document.getElementById('add-video-btn');
+    if(addVideoBtn) {
+        addVideoBtn.addEventListener('click', () => {
+            document.getElementById('add-video-form').reset(); // ဖောင်အဟောင်းရှင်းမယ်
+            document.getElementById('add-video-modal').classList.remove('hidden');
+        });
+    }
+
+    // Video Form "Save" နှိပ်ရင် Backend ကိုပို့မယ်
+    const videoForm = document.getElementById('add-video-form');
+    if(videoForm) {
+        videoForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // ခလုတ်ကို Loading ပြောင်းမယ်
+            const saveBtn = videoForm.querySelector('.save-btn');
+            const originalText = saveBtn.innerText;
+            saveBtn.innerText = "Saving...";
+            saveBtn.disabled = true;
+
+            const formData = {
+                title: document.getElementById('video-title').value,
+                description: document.getElementById('video-description').value,
+                category: document.getElementById('video-category').value,
+                video_url: document.getElementById('video-url').value,
+                // points column မသုံးတော့ပေမယ့် compatibility အတွက် 0 ထည့်ထားမယ်
+                points: parseInt(document.getElementById('video-points').value) || 0,
+                // duration (seconds) ကို description ထဲမှာ တွဲထည့်လိုက်မယ် (Backend Table မပြင်ချင်ရင်)
+                // သို့မဟုတ် column အသစ်မရှိရင် ဒီအတိုင်းထားပါ။ 
+                // ဒီမှာတော့ points logic ကို frontend timer နဲ့ပဲသွားထားလို့ URL နဲ့ Title က အရေးကြီးပါတယ်။
+            };
+
+            try {
+                const res = await fetch(`${backendUrl}/api/admin/manage-video`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                
+                if(res.ok) {
+                    alert("Video added successfully!");
+                    document.getElementById('add-video-modal').classList.add('hidden');
+                    renderManageVideosTable(); // Table ကို Refresh လုပ်မယ်
+                } else {
+                    alert("Error adding video.");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Connection failed.");
+            } finally {
+                saveBtn.innerText = originalText;
+                saveBtn.disabled = false;
+            }
+        });
+    }
+
+
+    // --- 2. MANAGE SOCIAL TASKS ---
+
+    // "Add New Task" ခလုတ်နှိပ်ရင် Modal ဖွင့်မယ်
+    const addTaskBtn = document.getElementById('add-social-task-btn');
+    if(addTaskBtn) {
+        addTaskBtn.addEventListener('click', () => {
+            document.getElementById('add-social-task-form').reset();
+            document.getElementById('add-social-task-modal').classList.remove('hidden');
+        });
+    }
+
+    // Task Form "Save" နှိပ်ရင် Backend ကိုပို့မယ်
+    const taskForm = document.getElementById('add-social-task-form');
+    if(taskForm) {
+        taskForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const saveBtn = taskForm.querySelector('.save-btn');
+            const originalText = saveBtn.innerText;
+            saveBtn.innerText = "Saving...";
+            saveBtn.disabled = true;
+
+            const formData = {
+                title: document.getElementById('social-task-title').value,
+                platform: document.getElementById('social-task-platform').value,
+                link: document.getElementById('social-task-link').value,
+                points: parseInt(document.getElementById('social-task-points').value)
+            };
+
+            try {
+                const res = await fetch(`${backendUrl}/api/admin/manage-task`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                if(res.ok) {
+                    alert("Task added successfully!");
+                    document.getElementById('add-social-task-modal').classList.add('hidden');
+                    renderManageSocialTasksTable(); // Table Refresh
+                } else {
+                    alert("Error adding task.");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Connection failed.");
+            } finally {
+                saveBtn.innerText = originalText;
+                saveBtn.disabled = false;
+            }
+        });
+    }
+
+    // --- 3. COMMON MODAL CLOSING ---
+    // Cancel ခလုတ်တွေနှိပ်ရင် Modal ပိတ်မယ်
+    document.querySelectorAll('.cancel-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.modal-overlay').forEach(modal => modal.classList.add('hidden'));
+        });
+    });
+
+    // --- 4. MANAGE USERS SEARCH ---
+    // User ရှာတဲ့ Search Box အလုပ်လုပ်အောင်
+    const userSearchInput = document.getElementById('manage-users-search');
+    if(userSearchInput) {
+        userSearchInput.addEventListener('keyup', (e) => {
+            const term = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#users-table-body tr');
+            
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                if(text.includes(term)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    }
+});
         async function fetchAllUsers() { /* ... */ }
         async function renderManageVideosTable() { /* ... */ }
         async function renderManageSocialTasksTable() { /* ... */ }
