@@ -213,120 +213,196 @@
     <!-- Main Application Container (Visible initially for guest mode) -->
     <div id="app-container" class="view flex flex-col md:flex-row w-full min-h-screen" style="display: flex;">
         <!-- Bottom Navigation Bar -->
-<div class="fixed bottom-0 left-0 z-50 w-full h-16 bg-slate-800 border-t border-slate-700">
-    <div class="grid h-full max-w-lg grid-cols-5 mx-auto font-medium">
-        
-        <!-- 1. Home (Dashboard) -->
-        <button type="button" onclick="showView('user-dashboard-view')" class="inline-flex flex-col items-center justify-center px-5 hover:bg-slate-700 group">
-            <svg class="w-6 h-6 mb-1 text-gray-400 group-hover:text-primary transition duration-200" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>
-            <span class="text-xs text-gray-400 group-hover:text-primary">Home</span>
-        </button>
+        <div class="fixed bottom-0 left-0 z-50 w-full h-16 bg-slate-800 border-t border-slate-700">
+            <div class="grid h-full max-w-lg grid-cols-5 mx-auto font-medium">
 
-        <!-- 2. Video -->
-        <button type="button" onclick="showView('watch-videos-view')" class="inline-flex flex-col items-center justify-center px-5 hover:bg-slate-700 group">
-            <svg class="w-6 h-6 mb-1 text-gray-400 group-hover:text-pink-500 transition duration-200" fill="currentColor" viewBox="0 0 24 24"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
-            <span class="text-xs text-gray-400 group-hover:text-pink-500">Video</span>
-        </button>
+                <!-- 1. Home (Dashboard) -->
+                <button type="button" onclick="showView('user-dashboard-view')"
+                    class="inline-flex flex-col items-center justify-center px-5 hover:bg-slate-700 group">
+                    <svg class="w-6 h-6 mb-1 text-gray-400 group-hover:text-primary transition duration-200"
+                        fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                            d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z">
+                        </path>
+                    </svg>
+                    <span class="text-xs text-gray-400 group-hover:text-primary">Home</span>
+                </button>
 
-        <!-- 3. Tasks -->
-        <button type="button" onclick="showView('social-tasks-view')" class="inline-flex flex-col items-center justify-center px-5 hover:bg-slate-700 group">
-            <svg class="w-6 h-6 mb-1 text-gray-400 group-hover:text-green-500 transition duration-200" fill="currentColor" viewBox="0 0 24 24"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-11 4c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2V8c0-1.1.9-2 2-2h4c1.1 0 2 .9 2 2v2zm-2 5c-.55 0-1-.45-1-1v-1h2v1c0 .55-.45 1-1 1zm4 0c-.55 0-1-.45-1-1v-1h2v1c0 .55-.45 1-1 1zm4 0c-.55 0-1-.45-1-1v-1h2v1c0 .55-.45 1-1 1zm-8-3c0 .55-.45 1-1 1s-1-.45-1-1v-1h2v1z"/></svg>
-            <span class="text-xs text-gray-400 group-hover:text-green-500">Tasks</span>
-        </button>
+                <!-- 2. Video -->
+                <button type="button" onclick="showView('watch-videos-view')"
+                    class="inline-flex flex-col items-center justify-center px-5 hover:bg-slate-700 group">
+                    <svg class="w-6 h-6 mb-1 text-gray-400 group-hover:text-pink-500 transition duration-200"
+                        fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
+                    </svg>
+                    <span class="text-xs text-gray-400 group-hover:text-pink-500">Video</span>
+                </button>
 
-        <!-- 4. Invite -->
-        <button type="button" onclick="showView('invite-and-earn-view')" class="inline-flex flex-col items-center justify-center px-5 hover:bg-slate-700 group">
-            <svg class="w-6 h-6 mb-1 text-gray-400 group-hover:text-yellow-500 transition duration-200" fill="currentColor" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-            <span class="text-xs text-gray-400 group-hover:text-yellow-500">Invite</span>
-        </button>
+                <!-- 3. Tasks -->
+                <button type="button" onclick="showView('social-tasks-view')"
+                    class="inline-flex flex-col items-center justify-center px-5 hover:bg-slate-700 group">
+                    <svg class="w-6 h-6 mb-1 text-gray-400 group-hover:text-green-500 transition duration-200"
+                        fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-11 4c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2V8c0-1.1.9-2 2-2h4c1.1 0 2 .9 2 2v2zm-2 5c-.55 0-1-.45-1-1v-1h2v1c0 .55-.45 1-1 1zm4 0c-.55 0-1-.45-1-1v-1h2v1c0 .55-.45 1-1 1zm4 0c-.55 0-1-.45-1-1v-1h2v1c0 .55-.45 1-1 1zm-8-3c0 .55-.45 1-1 1s-1-.45-1-1v-1h2v1z" />
+                    </svg>
+                    <span class="text-xs text-gray-400 group-hover:text-green-500">Tasks</span>
+                </button>
 
-        <!-- 5. Menu (Opens More Options) -->
-        <button type="button" onclick="document.getElementById('more-menu-modal').classList.remove('hidden')" class="inline-flex flex-col items-center justify-center px-5 hover:bg-slate-700 group">
-            <svg class="w-6 h-6 mb-1 text-gray-400 group-hover:text-white transition duration-200" fill="currentColor" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
-            <span class="text-xs text-gray-400 group-hover:text-white">Menu</span>
-        </button>
-    </div>
-</div>
+                <!-- 4. Invite -->
+                <button type="button" onclick="showView('invite-and-earn-view')"
+                    class="inline-flex flex-col items-center justify-center px-5 hover:bg-slate-700 group">
+                    <svg class="w-6 h-6 mb-1 text-gray-400 group-hover:text-yellow-500 transition duration-200"
+                        fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
+                    </svg>
+                    <span class="text-xs text-gray-400 group-hover:text-yellow-500">Invite</span>
+                </button>
 
-<!-- More Menu Modal (ကျန်တဲ့ ခလုတ်တွေ ဒီထဲထည့်မယ်) -->
-<div id="more-menu-modal" class="fixed inset-0 bg-black bg-opacity-80 z-[2000] hidden flex flex-col justify-end">
-    <!-- Close Area (အပေါ်က အလွတ်နေရာနှိပ်ရင် ပိတ်မယ်) -->
-    <div class="flex-grow" onclick="document.getElementById('more-menu-modal').classList.add('hidden')"></div>
-    
-    <div class="bg-card-bg rounded-t-2xl p-6 border-t border-slate-700 animate-[slideUp_0.3s_ease-out]">
-        <div class="flex justify-between items-center mb-6">
-            <h3 class="text-xl font-bold text-white">More Options</h3>
-            <button onclick="document.getElementById('more-menu-modal').classList.add('hidden')" class="p-2 bg-slate-700 rounded-full">
-                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
+                <!-- 5. Menu (Opens More Options) -->
+                <button type="button" onclick="document.getElementById('more-menu-modal').classList.remove('hidden')"
+                    class="inline-flex flex-col items-center justify-center px-5 hover:bg-slate-700 group">
+                    <svg class="w-6 h-6 mb-1 text-gray-400 group-hover:text-white transition duration-200"
+                        fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
+                    </svg>
+                    <span class="text-xs text-gray-400 group-hover:text-white">Menu</span>
+                </button>
+            </div>
         </div>
-        
-        <div class="grid grid-cols-3 gap-4">
-            <!-- Points History -->
-            <button onclick="showView('points-history-view'); document.getElementById('more-menu-modal').classList.add('hidden')" class="flex flex-col items-center p-4 bg-slate-700 rounded-xl hover:bg-slate-600">
-                <svg class="w-8 h-8 mb-2 text-primary" fill="currentColor" viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
-                <span class="text-xs text-white">History</span>
-            </button>
 
-            <!-- About -->
-            <button onclick="showView('about-view'); document.getElementById('more-menu-modal').classList.add('hidden')" class="flex flex-col items-center p-4 bg-slate-700 rounded-xl hover:bg-slate-600">
-                <svg class="w-8 h-8 mb-2 text-blue-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-                <span class="text-xs text-white">About</span>
-            </button>
+        <!-- More Menu Modal (ကျန်တဲ့ ခလုတ်တွေ ဒီထဲထည့်မယ်) -->
+        <div id="more-menu-modal"
+            class="fixed inset-0 bg-black bg-opacity-80 z-[2000] hidden flex flex-col justify-end">
+            <!-- Close Area (အပေါ်က အလွတ်နေရာနှိပ်ရင် ပိတ်မယ်) -->
+            <div class="flex-grow" onclick="document.getElementById('more-menu-modal').classList.add('hidden')"></div>
 
-            <!-- Help -->
-            <a href="https://t.me/Mr_PingGP" target="_blank" class="flex flex-col items-center p-4 bg-slate-700 rounded-xl hover:bg-slate-600">
-                <svg class="w-8 h-8 mb-2 text-pink-400" fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM9 11H7V9h2v2zm4 0h-2V9h2v2zm4 0h-2V9h2v2z"/></svg>
-                <span class="text-xs text-white">Help</span>
-            </a>
-            
-            <!-- ================= ADMIN BUTTONS (Admin Only) ================= -->
-            
-            <!-- 1. Admin Dashboard -->
-            <button onclick="showView('admin-dashboard-view'); document.getElementById('more-menu-modal').classList.add('hidden')" 
-                class="admin-link flex flex-col items-center p-4 bg-red-900/50 border border-red-700 rounded-xl hover:bg-red-800" 
-                style="display:none;"> <!-- display:none နဲ့ စစချင်း ဖွက်ထားမယ် -->
-                <svg class="w-8 h-8 mb-2 text-red-400" fill="currentColor" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
-                <span class="text-xs text-white">Dashboard</span>
-            </button>
+            <div class="bg-card-bg rounded-t-2xl p-6 border-t border-slate-700 animate-[slideUp_0.3s_ease-out]">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-white">More Options</h3>
+                    <button onclick="document.getElementById('more-menu-modal').classList.add('hidden')"
+                        class="p-2 bg-slate-700 rounded-full">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
 
-            <!-- 2. Manage Videos -->
-            <button onclick="showView('manage-videos-view'); document.getElementById('more-menu-modal').classList.add('hidden')" 
-                class="admin-link flex flex-col items-center p-4 bg-red-900/50 border border-red-700 rounded-xl hover:bg-red-800" 
-                style="display:none;">
-                <svg class="w-8 h-8 mb-2 text-red-400" fill="currentColor" viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>
-                <span class="text-xs text-white">Videos</span>
-            </button>
+                <div class="grid grid-cols-3 gap-4">
+                    <!-- Points History -->
+                    <button
+                        onclick="showView('points-history-view'); document.getElementById('more-menu-modal').classList.add('hidden')"
+                        class="flex flex-col items-center p-4 bg-slate-700 rounded-xl hover:bg-slate-600">
+                        <svg class="w-8 h-8 mb-2 text-primary" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z" />
+                        </svg>
+                        <span class="text-xs text-white">History</span>
+                    </button>
 
-            <!-- 3. Manage Tasks -->
-            <button onclick="showView('manage-social-tasks-view'); document.getElementById('more-menu-modal').classList.add('hidden')" 
-                class="admin-link flex flex-col items-center p-4 bg-red-900/50 border border-red-700 rounded-xl hover:bg-red-800" 
-                style="display:none;">
-                <svg class="w-8 h-8 mb-2 text-red-400" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-                <span class="text-xs text-white">Tasks</span>
-            </button>
+                    <!-- About -->
+                    <button
+                        onclick="showView('about-view'); document.getElementById('more-menu-modal').classList.add('hidden')"
+                        class="flex flex-col items-center p-4 bg-slate-700 rounded-xl hover:bg-slate-600">
+                        <svg class="w-8 h-8 mb-2 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+                        </svg>
+                        <span class="text-xs text-white">About</span>
+                    </button>
 
-            <!-- 4. Manage Users -->
-            <button onclick="showView('manage-users-view'); document.getElementById('more-menu-modal').classList.add('hidden')" 
-                class="admin-link flex flex-col items-center p-4 bg-red-900/50 border border-red-700 rounded-xl hover:bg-red-800" 
-                style="display:none;">
-                <svg class="w-8 h-8 mb-2 text-red-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                <span class="text-xs text-white">Users</span>
-            </button>
-             <!-- Admin (Only show if needed via JS logic) -->
-            <button id="mobile-admin-btn" onclick="showView('admin-dashboard-view'); document.getElementById('more-menu-modal').classList.add('hidden')" class="flex flex-col items-center p-4 bg-slate-700 rounded-xl hover:bg-slate-600 admin-link" style="display:none;">
-                <svg class="w-8 h-8 mb-2 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                <span class="text-xs text-white">Admin</span>
-            </button>
+                    <!-- Help -->
+                    <a href="https://t.me/Mr_PingGP" target="_blank"
+                        class="flex flex-col items-center p-4 bg-slate-700 rounded-xl hover:bg-slate-600">
+                        <svg class="w-8 h-8 mb-2 text-pink-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM9 11H7V9h2v2zm4 0h-2V9h2v2zm4 0h-2V9h2v2z" />
+                        </svg>
+                        <span class="text-xs text-white">Help</span>
+                    </a>
+
+                    <!-- ================= ADMIN BUTTONS (Admin Only) ================= -->
+
+                    <!-- 1. Admin Dashboard -->
+                    <button
+                        onclick="showView('admin-dashboard-view'); document.getElementById('more-menu-modal').classList.add('hidden')"
+                        class="admin-link flex flex-col items-center p-4 bg-red-900/50 border border-red-700 rounded-xl hover:bg-red-800"
+                        style="display:none;"> <!-- display:none နဲ့ စစချင်း ဖွက်ထားမယ် -->
+                        <svg class="w-8 h-8 mb-2 text-red-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" />
+                        </svg>
+                        <span class="text-xs text-white">Dashboard</span>
+                    </button>
+
+                    <!-- 2. Manage Videos -->
+                    <button
+                        onclick="showView('manage-videos-view'); document.getElementById('more-menu-modal').classList.add('hidden')"
+                        class="admin-link flex flex-col items-center p-4 bg-red-900/50 border border-red-700 rounded-xl hover:bg-red-800"
+                        style="display:none;">
+                        <svg class="w-8 h-8 mb-2 text-red-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z" />
+                        </svg>
+                        <span class="text-xs text-white">Videos</span>
+                    </button>
+
+                    <!-- 3. Manage Tasks -->
+                    <button
+                        onclick="showView('manage-social-tasks-view'); document.getElementById('more-menu-modal').classList.add('hidden')"
+                        class="admin-link flex flex-col items-center p-4 bg-red-900/50 border border-red-700 rounded-xl hover:bg-red-800"
+                        style="display:none;">
+                        <svg class="w-8 h-8 mb-2 text-red-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+                        </svg>
+                        <span class="text-xs text-white">Tasks</span>
+                    </button>
+
+                    <!-- 4. Manage Users -->
+                    <button
+                        onclick="showView('manage-users-view'); document.getElementById('more-menu-modal').classList.add('hidden')"
+                        class="admin-link flex flex-col items-center p-4 bg-red-900/50 border border-red-700 rounded-xl hover:bg-red-800"
+                        style="display:none;">
+                        <svg class="w-8 h-8 mb-2 text-red-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                        </svg>
+                        <span class="text-xs text-white">Users</span>
+                    </button>
+                    <!-- 5. Manage Payouts -->
+                    <button
+                        onclick="showView('manage-payouts-view'); document.getElementById('more-menu-modal').classList.add('hidden')"
+                        class="admin-link flex flex-col items-center p-4 bg-red-900/50 border border-red-700 rounded-xl hover:bg-red-800"
+                        style="display:none;">
+                        <svg class="w-8 h-8 mb-2 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.15-1.46-3.27-3.4h1.96c.1 1.05.69 1.64 1.83 1.64.93 0 1.6-.48 1.6-1.1 0-.61-.67-.96-1.81-1.27-1.49-.41-3.35-1.07-3.35-3.31 0-1.68 1.28-2.99 2.84-3.41V5h2.67v1.9c1.7.35 2.96 1.48 3.1 3.23h-1.97c-.12-.86-.62-1.32-1.57-1.32-.96 0-1.48.47-1.48 1.07 0 .58.74.88 1.95 1.21 1.49.4 3.33 1.09 3.33 3.4-.01 1.76-1.33 3.03-2.96 3.42z" />
+                        </svg>
+                        <span class="text-xs text-white">Payouts</span>
+                    </button>
+                    <!-- Admin (Only show if needed via JS logic) -->
+                    <button id="mobile-admin-btn"
+                        onclick="showView('admin-dashboard-view'); document.getElementById('more-menu-modal').classList.add('hidden')"
+                        class="flex flex-col items-center p-4 bg-slate-700 rounded-xl hover:bg-slate-600 admin-link"
+                        style="display:none;">
+                        <svg class="w-8 h-8 mb-2 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                        </svg>
+                        <span class="text-xs text-white">Admin</span>
+                    </button>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
 
         <div id="backdrop" class="backdrop fixed inset-0 bg-black bg-opacity-50 z-[99] hidden md:hidden"></div>
 
         <!-- Main Content Area -->
         <!-- mb-16 ထည့်လိုက်တာက အောက်ဆုံးက Nav Bar နဲ့ ကွယ်မနေအောင်ပါ -->
-<div id="app-content" class="flex-grow p-4 md:p-6 pb-24 w-full h-screen overflow-y-auto">
+        <div id="app-content" class="flex-grow p-4 md:p-6 pb-24 w-full h-screen overflow-y-auto">
             <header class="flex justify-between items-center mb-6">
                 <h1 class="text-2xl md:text-3xl font-bold flex items-center">
                     <!-- Button ကို ID မတပ်ထားတဲ့ h1 အောက်မှာပဲ ထားမယ် -->
@@ -926,7 +1002,28 @@
                     </div>
                 </div>
             </div>
-
+            <!-- Manage Payouts View -->
+            <div id="manage-payouts-view" class="content-view" style="display: none;">
+                <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
+                    <h2 class="text-xl font-semibold mb-4">Manage Payout Requests</h2>
+                    <div class="overflow-x-auto rounded-lg">
+                        <table class="w-full text-left table-auto">
+                            <thead class="bg-slate-700 text-slate-400 uppercase text-xs">
+                                <tr>
+                                    <th class="p-4 rounded-tl-lg">User ID</th>
+                                    <th class="p-4">Amount</th>
+                                    <th class="p-4">Method / Phone</th>
+                                    <th class="p-4">Status</th>
+                                    <th class="p-4 rounded-tr-lg">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="payouts-table-body" class="divide-y divide-slate-700">
+                                <!-- JS will populate this -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
             <!-- NEW: Floating Scroll-to-Top Rocket Button (Hidden by default) -->
             <button id="scroll-to-top-btn"
                 class="hidden fixed bottom-6 right-6 z-50 p-4 bg-accent-orange hover:bg-amber-600 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-110 active:scale-95">
@@ -1142,7 +1239,8 @@
         const tg = window.Telegram.WebApp;
         const user = tg.initDataUnsafe.user;
         const userId = user ? user.id : "1856743644";
-        const startParam = tg.initDataUnsafe.start_param || ""; // Referral code အတွက်
+        const urlParams = new URLSearchParams(window.location.search);
+        const startParam = tg.initDataUnsafe.start_param || urlParams.get('start') || "";
         const backendUrl = "https://ping-rewards-bot.mr-ping2025.workers.dev"; // သင့် Backend URL သေချာပါစေ
 
         let player;
@@ -1172,41 +1270,41 @@
             });
 
             // Cashout Form Submit လုပ်တဲ့ အပိုင်း
-        document.getElementById('cashout-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "1856743644";
-            const method = document.getElementById('payment-method').value;
-            const amount = document.getElementById('payout-amount').value;
-            const phone = document.getElementById('payout-phone').value;
-            const submitBtn = document.getElementById('cashout-submit-btn');
+            document.getElementById('cashout-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
 
-            // ခလုတ်ကို Loading ပြောင်းမယ်
-            submitBtn.innerText = "Processing...";
-            submitBtn.disabled = true;
+                const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "1856743644";
+                const method = document.getElementById('payment-method').value;
+                const amount = document.getElementById('payout-amount').value;
+                const phone = document.getElementById('payout-phone').value;
+                const submitBtn = document.getElementById('cashout-submit-btn');
 
-            try {
-                const res = await fetch(`${backendUrl}/api/cashout`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId, amount, method, phone })
-                });
+                // ခလုတ်ကို Loading ပြောင်းမယ်
+                submitBtn.innerText = "Processing...";
+                submitBtn.disabled = true;
 
-                if (res.ok) {
-                    alert("ငွေထုတ်ယူမှု တောင်းဆိုချက် အောင်မြင်ပါသည်။ ၄၈ နာရီအတွင်း စစ်ဆေးပေးပါမည်။");
-                    document.getElementById('cashout-modal').classList.add('hidden');
-                    initApp(); // Dashboard က Point တွေကို refresh လုပ်မယ်
-                } else {
-                    alert("အမှားတစ်ခု ဖြစ်သွားပါသည်။ နောက်မှ ထပ်စမ်းကြည့်ပါ။");
+                try {
+                    const res = await fetch(`${backendUrl}/api/cashout`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ userId, amount, method, phone })
+                    });
+
+                    if (res.ok) {
+                        alert("ငွေထုတ်ယူမှု တောင်းဆိုချက် အောင်မြင်ပါသည်။ ၄၈ နာရီအတွင်း စစ်ဆေးပေးပါမည်။");
+                        document.getElementById('cashout-modal').classList.add('hidden');
+                        initApp(); // Dashboard က Point တွေကို refresh လုပ်မယ်
+                    } else {
+                        alert("အမှားတစ်ခု ဖြစ်သွားပါသည်။ နောက်မှ ထပ်စမ်းကြည့်ပါ။");
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert("ချိတ်ဆက်မှု အမှားဖြစ်နေပါသည်။");
+                } finally {
+                    submitBtn.innerText = "Submit Request";
+                    submitBtn.disabled = false;
                 }
-            } catch (err) {
-                console.error(err);
-                alert("ချိတ်ဆက်မှု အမှားဖြစ်နေပါသည်။");
-            } finally {
-                submitBtn.innerText = "Submit Request";
-                submitBtn.disabled = false;
-            }
-        });
+            });
 
             document.getElementById('cashout-button').addEventListener('click', () => {
                 const pts = parseInt(document.getElementById('total-points-value').innerText);
@@ -1269,6 +1367,9 @@
                 if (viewId === 'user-dashboard-view') {
                     const pts = parseInt(document.getElementById('total-points-value').innerText) || 0;
                     document.getElementById('estimated-earnings-value').textContent = `$${(pts / 10000).toFixed(2)}`;
+                }
+                if (viewId === 'manage-payouts-view') {
+                    fetchPayouts();
                 }
                 if (viewId === 'admin-dashboard-view') fetchAdminDashboardData();
                 if (viewId === 'manage-videos-view') renderManageVideosTable();
@@ -1621,8 +1722,8 @@
                 const res = await fetch(`${backendUrl}/api/get-videos`);
                 const videos = await res.json();
                 const tbody = document.getElementById('videos-table');
-                
-                if(!videos || videos.length === 0) {
+
+                if (!videos || videos.length === 0) {
                     tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-muted-text">No videos found.</td></tr>`;
                     return;
                 }
@@ -1639,22 +1740,22 @@
                 `).join('');
             } catch (e) { console.error(e); }
         }
-        
+
         // Video ဖျက်သည့် Function
         async function deleteVideo(id) {
-            if(!confirm("Are you sure?")) return;
+            if (!confirm("Are you sure?")) return;
             await fetch(`${backendUrl}/api/admin/delete-video?id=${id}`, { method: 'DELETE' });
             renderManageVideosTable(); // Table ကို Refresh လုပ်
         }
 
         // Manage Social Tasks Table ဆွဲထုတ်ခြင်း
         async function renderManageSocialTasksTable() {
-             try {
+            try {
                 const res = await fetch(`${backendUrl}/api/get-tasks`);
                 const tasks = await res.json();
                 const tbody = document.getElementById('social-tasks-table');
 
-                if(!tasks || tasks.length === 0) {
+                if (!tasks || tasks.length === 0) {
                     tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-muted-text">No tasks found.</td></tr>`;
                     return;
                 }
@@ -1675,20 +1776,20 @@
 
         // Task ဖျက်သည့် Function
         async function deleteTask(id) {
-            if(!confirm("Are you sure?")) return;
+            if (!confirm("Are you sure?")) return;
             await fetch(`${backendUrl}/api/admin/delete-task?id=${id}`, { method: 'DELETE' });
             renderManageSocialTasksTable();
         }
 
         // Users အားလုံး ဆွဲထုတ်ခြင်း (Manage Users View)
         async function fetchAllUsers() {
-             try {
+            try {
                 const res = await fetch(`${backendUrl}/api/admin/users`);
                 const users = await res.json();
                 const tbody = document.getElementById('users-table-body');
-                
+
                 // Admin တွေရဲ့ ID (မဖော်ပြချင်ရင် ဖယ်ထားလို့ရသည်)
-                const adminIds = ["1856743644"]; 
+                const adminIds = ["1856743644"];
 
                 tbody.innerHTML = users.map(u => `
                     <tr class="border-b border-slate-700">
@@ -1702,153 +1803,211 @@
                 `).join('');
             } catch (e) { console.error(e); }
         }
+
+
+
         // ==========================================
-// ADMIN MANAGEMENT LOGIC (Add & Save)
-// ==========================================
+        // ADMIN MANAGEMENT LOGIC (Add & Save)
+        // ==========================================
 
-document.addEventListener("DOMContentLoaded", () => {
-    
-    // --- 1. MANAGE VIDEOS ---
+        document.addEventListener("DOMContentLoaded", () => {
 
-    // "Add New Video" ခလုတ်နှိပ်ရင် Modal ဖွင့်မယ်
-    const addVideoBtn = document.getElementById('add-video-btn');
-    if(addVideoBtn) {
-        addVideoBtn.addEventListener('click', () => {
-            document.getElementById('add-video-form').reset(); // ဖောင်အဟောင်းရှင်းမယ်
-            document.getElementById('add-video-modal').classList.remove('hidden');
-        });
-    }
+            // --- 1. MANAGE VIDEOS ---
 
-    // Video Form "Save" နှိပ်ရင် Backend ကိုပို့မယ်
-    const videoForm = document.getElementById('add-video-form');
-    if(videoForm) {
-        videoForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            // ခလုတ်ကို Loading ပြောင်းမယ်
-            const saveBtn = videoForm.querySelector('.save-btn');
-            const originalText = saveBtn.innerText;
-            saveBtn.innerText = "Saving...";
-            saveBtn.disabled = true;
-
-            const formData = {
-                title: document.getElementById('video-title').value,
-                description: document.getElementById('video-description').value,
-                category: document.getElementById('video-category').value,
-                video_url: document.getElementById('video-url').value,
-                // points column မသုံးတော့ပေမယ့် compatibility အတွက် 0 ထည့်ထားမယ်
-                points: parseInt(document.getElementById('video-points').value) || 0,
-                // duration (seconds) ကို description ထဲမှာ တွဲထည့်လိုက်မယ် (Backend Table မပြင်ချင်ရင်)
-                // သို့မဟုတ် column အသစ်မရှိရင် ဒီအတိုင်းထားပါ။ 
-                // ဒီမှာတော့ points logic ကို frontend timer နဲ့ပဲသွားထားလို့ URL နဲ့ Title က အရေးကြီးပါတယ်။
-            };
-
-            try {
-                const res = await fetch(`${backendUrl}/api/admin/manage-video`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formData)
+            // "Add New Video" ခလုတ်နှိပ်ရင် Modal ဖွင့်မယ်
+            const addVideoBtn = document.getElementById('add-video-btn');
+            if (addVideoBtn) {
+                addVideoBtn.addEventListener('click', () => {
+                    document.getElementById('add-video-form').reset(); // ဖောင်အဟောင်းရှင်းမယ်
+                    document.getElementById('add-video-modal').classList.remove('hidden');
                 });
-                
-                if(res.ok) {
-                    alert("Video added successfully!");
-                    document.getElementById('add-video-modal').classList.add('hidden');
-                    renderManageVideosTable(); // Table ကို Refresh လုပ်မယ်
-                } else {
-                    alert("Error adding video.");
-                }
-            } catch (err) {
-                console.error(err);
-                alert("Connection failed.");
-            } finally {
-                saveBtn.innerText = originalText;
-                saveBtn.disabled = false;
             }
-        });
-    }
 
+            // Video Form "Save" နှိပ်ရင် Backend ကိုပို့မယ်
+            const videoForm = document.getElementById('add-video-form');
+            if (videoForm) {
+                videoForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
 
-    // --- 2. MANAGE SOCIAL TASKS ---
+                    // ခလုတ်ကို Loading ပြောင်းမယ်
+                    const saveBtn = videoForm.querySelector('.save-btn');
+                    const originalText = saveBtn.innerText;
+                    saveBtn.innerText = "Saving...";
+                    saveBtn.disabled = true;
 
-    // "Add New Task" ခလုတ်နှိပ်ရင် Modal ဖွင့်မယ်
-    const addTaskBtn = document.getElementById('add-social-task-btn');
-    if(addTaskBtn) {
-        addTaskBtn.addEventListener('click', () => {
-            document.getElementById('add-social-task-form').reset();
-            document.getElementById('add-social-task-modal').classList.remove('hidden');
-        });
-    }
+                    const formData = {
+                        title: document.getElementById('video-title').value,
+                        description: document.getElementById('video-description').value,
+                        category: document.getElementById('video-category').value,
+                        video_url: document.getElementById('video-url').value,
+                        // points column မသုံးတော့ပေမယ့် compatibility အတွက် 0 ထည့်ထားမယ်
+                        points: parseInt(document.getElementById('video-points').value) || 0,
+                        // duration (seconds) ကို description ထဲမှာ တွဲထည့်လိုက်မယ် (Backend Table မပြင်ချင်ရင်)
+                        // သို့မဟုတ် column အသစ်မရှိရင် ဒီအတိုင်းထားပါ။ 
+                        // ဒီမှာတော့ points logic ကို frontend timer နဲ့ပဲသွားထားလို့ URL နဲ့ Title က အရေးကြီးပါတယ်။
+                    };
 
-    // Task Form "Save" နှိပ်ရင် Backend ကိုပို့မယ်
-    const taskForm = document.getElementById('add-social-task-form');
-    if(taskForm) {
-        taskForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
+                    try {
+                        const res = await fetch(`${backendUrl}/api/admin/manage-video`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(formData)
+                        });
 
-            const saveBtn = taskForm.querySelector('.save-btn');
-            const originalText = saveBtn.innerText;
-            saveBtn.innerText = "Saving...";
-            saveBtn.disabled = true;
-
-            const formData = {
-                title: document.getElementById('social-task-title').value,
-                platform: document.getElementById('social-task-platform').value,
-                link: document.getElementById('social-task-link').value,
-                points: parseInt(document.getElementById('social-task-points').value)
-            };
-
-            try {
-                const res = await fetch(`${backendUrl}/api/admin/manage-task`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formData)
+                        if (res.ok) {
+                            alert("Video added successfully!");
+                            document.getElementById('add-video-modal').classList.add('hidden');
+                            renderManageVideosTable(); // Table ကို Refresh လုပ်မယ်
+                        } else {
+                            alert("Error adding video.");
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        alert("Connection failed.");
+                    } finally {
+                        saveBtn.innerText = originalText;
+                        saveBtn.disabled = false;
+                    }
                 });
-
-                if(res.ok) {
-                    alert("Task added successfully!");
-                    document.getElementById('add-social-task-modal').classList.add('hidden');
-                    renderManageSocialTasksTable(); // Table Refresh
-                } else {
-                    alert("Error adding task.");
-                }
-            } catch (err) {
-                console.error(err);
-                alert("Connection failed.");
-            } finally {
-                saveBtn.innerText = originalText;
-                saveBtn.disabled = false;
             }
-        });
-    }
 
-    // --- 3. COMMON MODAL CLOSING ---
-    // Cancel ခလုတ်တွေနှိပ်ရင် Modal ပိတ်မယ်
-    document.querySelectorAll('.cancel-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.modal-overlay').forEach(modal => modal.classList.add('hidden'));
-        });
-    });
 
-    // --- 4. MANAGE USERS SEARCH ---
-    // User ရှာတဲ့ Search Box အလုပ်လုပ်အောင်
-    const userSearchInput = document.getElementById('manage-users-search');
-    if(userSearchInput) {
-        userSearchInput.addEventListener('keyup', (e) => {
-            const term = e.target.value.toLowerCase();
-            const rows = document.querySelectorAll('#users-table-body tr');
-            
-            rows.forEach(row => {
-                const text = row.innerText.toLowerCase();
-                if(text.includes(term)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
+            // --- 2. MANAGE SOCIAL TASKS ---
+
+            // "Add New Task" ခလုတ်နှိပ်ရင် Modal ဖွင့်မယ်
+            const addTaskBtn = document.getElementById('add-social-task-btn');
+            if (addTaskBtn) {
+                addTaskBtn.addEventListener('click', () => {
+                    document.getElementById('add-social-task-form').reset();
+                    document.getElementById('add-social-task-modal').classList.remove('hidden');
+                });
+            }
+
+            // Task Form "Save" နှိပ်ရင် Backend ကိုပို့မယ်
+            const taskForm = document.getElementById('add-social-task-form');
+            if (taskForm) {
+                taskForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+
+                    const saveBtn = taskForm.querySelector('.save-btn');
+                    const originalText = saveBtn.innerText;
+                    saveBtn.innerText = "Saving...";
+                    saveBtn.disabled = true;
+
+                    const formData = {
+                        title: document.getElementById('social-task-title').value,
+                        platform: document.getElementById('social-task-platform').value,
+                        link: document.getElementById('social-task-link').value,
+                        points: parseInt(document.getElementById('social-task-points').value)
+                    };
+
+                    try {
+                        const res = await fetch(`${backendUrl}/api/admin/manage-task`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(formData)
+                        });
+
+                        if (res.ok) {
+                            alert("Task added successfully!");
+                            document.getElementById('add-social-task-modal').classList.add('hidden');
+                            renderManageSocialTasksTable(); // Table Refresh
+                        } else {
+                            alert("Error adding task.");
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        alert("Connection failed.");
+                    } finally {
+                        saveBtn.innerText = originalText;
+                        saveBtn.disabled = false;
+                    }
+                });
+            }
+
+            // --- 3. COMMON MODAL CLOSING ---
+            // Cancel ခလုတ်တွေနှိပ်ရင် Modal ပိတ်မယ်
+            document.querySelectorAll('.cancel-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.modal-overlay').forEach(modal => modal.classList.add('hidden'));
+                });
             });
+
+            // --- 4. MANAGE USERS SEARCH ---
+            // User ရှာတဲ့ Search Box အလုပ်လုပ်အောင်
+            const userSearchInput = document.getElementById('manage-users-search');
+            if (userSearchInput) {
+                userSearchInput.addEventListener('keyup', (e) => {
+                    const term = e.target.value.toLowerCase();
+                    const rows = document.querySelectorAll('#users-table-body tr');
+
+                    rows.forEach(row => {
+                        const text = row.innerText.toLowerCase();
+                        if (text.includes(term)) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                });
+            }
         });
-    }
-});
-       
+
+        // Payouts ဇယားဆွဲထုတ်ရန်
+        async function fetchPayouts() {
+            try {
+                const res = await fetch(`${backendUrl}/api/admin/payouts`);
+                const payouts = await res.json();
+                const tbody = document.getElementById('payouts-table-body');
+                if (!tbody) return;
+
+                if (!payouts || payouts.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-muted-text">No requests found.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = payouts.map(p => {
+                    let statusColor = 'text-yellow-400';
+                    if (p.status === 'paid') statusColor = 'text-green-400';
+                    if (p.status === 'rejected') statusColor = 'text-red-400';
+
+                    // Paid/Rejected ဖြစ်ပြီးရင် Action ခလုတ်တွေ မပြတော့ဘူး
+                    const actions = p.status === 'pending' ? `
+                        <button onclick="handlePayout('${p.id}', 'paid', '${p.user_id}', '${p.amount}')" class="px-2 py-1 bg-green-600 hover:bg-green-500 rounded text-white text-xs mr-2">Approve</button>
+                        <button onclick="handlePayout('${p.id}', 'rejected', '${p.user_id}', '${p.amount}')" class="px-2 py-1 bg-red-600 hover:bg-red-500 rounded text-white text-xs">Reject</button>
+                    ` : `<span class="text-xs text-slate-500">Completed</span>`;
+
+                    return `
+                    <tr class="border-b border-slate-700 hover:bg-slate-800/50">
+                        <td class="p-4 text-xs font-mono text-muted-text">${p.user_id}</td>
+                        <td class="p-4 text-white font-bold">$${p.amount}</td>
+                        <td class="p-4 text-sm text-muted-text">
+                            <div class="text-white">${p.method}</div>
+                            <div class="text-xs">${p.phone}</div>
+                        </td>
+                        <td class="p-4 text-xs font-bold uppercase ${statusColor}">${p.status}</td>
+                        <td class="p-4">${actions}</td>
+                    </tr>
+                `}).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        // Approve/Reject လုပ်ရန်
+        async function handlePayout(payoutId, status, userId, amount) {
+            if (!confirm(`Mark this request as ${status.toUpperCase()}?`)) return;
+
+            try {
+                const res = await fetch(`${backendUrl}/api/admin/handle-payout`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ payoutId, status, userId, amount })
+                });
+                if (res.ok) {
+                    alert("Updated successfully!");
+                    fetchPayouts(); // Refresh table
+                }
+            } catch (e) { console.error(e); alert("Error updating status"); }
+        }
 
     </script>
 </body>
