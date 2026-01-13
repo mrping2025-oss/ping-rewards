@@ -251,15 +251,16 @@
                     <span class="text-xs text-gray-400 group-hover:text-green-500">Tasks</span>
                 </button>
 
-                <!-- 4. Invite -->
-                <button type="button" onclick="showView('invite-and-earn-view')"
+                <!-- 4. Watch Ad (Replaces Invite) -->
+                <button type="button" onclick="showAdsgramAd()"
                     class="inline-flex flex-col items-center justify-center px-5 hover:bg-slate-700 group">
+                    <!-- TV Icon -->
                     <svg class="w-6 h-6 mb-1 text-gray-400 group-hover:text-yellow-500 transition duration-200"
                         fill="currentColor" viewBox="0 0 24 24">
                         <path
-                            d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
+                            d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5c0-1.1-.9-2-2-2zm0 14H3V5h18v12zm-5-6l-7 4V7z" />
                     </svg>
-                    <span class="text-xs text-gray-400 group-hover:text-yellow-500">Invite</span>
+                    <span class="text-xs text-gray-400 group-hover:text-yellow-500">ADS</span>
                 </button>
 
                 <!-- 5. Menu (Opens More Options) -->
@@ -327,15 +328,15 @@
 
                     <!-- ================= ADMIN BUTTONS (Admin Only) ================= -->
 
-                    <!-- 1. Admin Dashboard -->
+                    <!-- Invite & Earn (Moved to Menu) -->
                     <button
-                        onclick="showView('admin-dashboard-view'); document.getElementById('more-menu-modal').classList.add('hidden')"
-                        class="admin-link flex flex-col items-center p-4 bg-red-900/50 border border-red-700 rounded-xl hover:bg-red-800"
-                        style="display:none;"> <!-- display:none နဲ့ စစချင်း ဖွက်ထားမယ် -->
-                        <svg class="w-8 h-8 mb-2 text-red-400" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" />
+                        onclick="showView('invite-and-earn-view'); document.getElementById('more-menu-modal').classList.add('hidden')"
+                        class="flex flex-col items-center p-4 bg-slate-700 rounded-xl hover:bg-slate-600">
+                        <svg class="w-8 h-8 mb-2 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
                         </svg>
-                        <span class="text-xs text-white">Dashboard</span>
+                        <span class="text-xs text-white">Invite</span>
                     </button>
 
                     <!-- 2. Manage Videos -->
@@ -484,10 +485,10 @@
                     <h2 class="text-xl font-semibold mb-4">Quick Actions</h2>
                     <!-- Watch Ad Button -->
                     <div class="mb-5">
-                        <button  onclick="showAdsgramAd()"
-                        class="w-full mt-4 py-4 bg-yellow-500 hover:bg-yellow-600 text-black font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 transition-transform active:scale-95">
-                        📺 Watch Ad to Get +50 Points
-                    </button>
+                        <button onclick="showAdsgramAd()"
+                            class="w-full mt-4 py-4 bg-yellow-500 hover:bg-yellow-600 text-black font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 transition-transform active:scale-95">
+                            📺 Watch Ad to Get +50 Points
+                        </button>
                     </div>
                     <div class="flex flex-wrap gap-4">
                         <a href="#"
@@ -1990,40 +1991,47 @@
                 `}).join('');
             } catch (e) { console.error(e); }
         }
-        
-        // Adsgram ကို သင့် Unit ID (21063) နဲ့ ချိတ်ဆက်ခြင်း
-const AdController = window.Adsgram ? window.Adsgram.init({ blockId: "21063" }) : null;
 
-async function showAdsgramAd() {
-    if (!AdController) {
-        alert("Ad SDK loading... Please wait.");
-        return;
-    }
+        // ✅ ဒီကုဒ်အသစ်ကို ပြန်ထည့်ပါ ✅
+        // Adsgram Controller ကို အရင် ကြေညာထားမယ် (Init မလုပ်သေးဘူး)
+        let AdController;
 
-    try {
-        // ကြော်ငြာကို ပြသမယ်
-        const result = await AdController.show();
-        
-        // ကြော်ငြာကြည့်တာ အောင်မြင်ရင် (result.done က true ဖြစ်ရင်)
-        if (result.done) {
-            alert("ဂုဏ်ယူပါတယ်။ အမှတ် ၅၀ ရရှိပါပြီ။");
-            
-            // Dashboard က Point တွေကို Update ဖြစ်သွားအောင် App ကို Refresh လုပ်ခိုင်းမယ်
-            if (typeof initApp === "function") {
-                setTimeout(initApp, 2000); 
+        async function showAdsgramAd() {
+            // Button နှိပ်မှ Adsgram ရှိမရှိ စစ်မယ်။
+            // AdController က မရှိသေးဘူး၊ ဒါပေမဲ့ window.Adsgram က ရောက်နေပြီဆိုရင် Init လုပ်မယ်
+            if (!AdController && window.Adsgram) {
+                AdController = window.Adsgram.init({ blockId: "21063" });
+            }
+
+            // Init လုပ်ပြီးတာတောင် AdController က မရှိသေးရင်တော့ SDK လုံးဝမတက်သေးတာ (သို့) AdBlock မိနေတာ ဖြစ်နိုင်တယ်
+            if (!AdController) {
+                alert("Adsgram SDK Loading... ကျေးဇူးပြု၍ ခဏစောင့်ပြီး ပြန်လည်ကြိုးစားပါ။ (အင်တာနက်ဖွင့်ထားပါ)");
+                return;
+            }
+
+            try {
+                // ကြော်ငြာကို ပြသမယ်
+                const result = await AdController.show();
+
+                // ကြော်ငြာကြည့်တာ အောင်မြင်ရင် (result.done က true ဖြစ်ရင်)
+                if (result.done) {
+                    alert("ဂုဏ်ယူပါတယ်။ အမှတ် ၅၀ ရရှိပါပြီ။");
+
+                    // Dashboard က Point တွေကို Update ဖြစ်သွားအောင် App ကို Refresh လုပ်ခိုင်းမယ်
+                    if (typeof initApp === "function") {
+                        setTimeout(initApp, 1000);
+                    }
+                }
+            } catch (error) {
+                // အကယ်၍ ကြော်ငြာပြဖို့ မရှိသေးရင် (Fill Rate မပြည့်ရင်)
+                if (error.error === 'not_filled') {
+                    alert("ယခုအချိန်တွင် ကြည့်ရှုရန် ကြော်ငြာမရှိသေးပါ။ ခဏနေမှ ထပ်စမ်းကြည့်ပါ။");
+                } else {
+                    console.error("Adsgram Error:", error);
+                    alert("Ad error: " + JSON.stringify(error));
+                }
             }
         }
-    } catch (error) {
-        // အကယ်၍ ကြော်ငြာပြဖို့ မရှိသေးရင် (Fill Rate မပြည့်ရင်)
-        if (error.error === 'not_filled') {
-            alert("ယခုအချိန်တွင် ကြည့်ရှုရန် ကြော်ငြာမရှိသေးပါ။ ခဏနေမှ ထပ်စမ်းကြည့်ပါ။");
-        } else {
-            console.error("Adsgram Error:", error);
-            alert("Ad error occurred. Please try again later.");
-        }
-    }
-}
-
         // Approve/Reject လုပ်ရန်
         async function handlePayout(payoutId, status, userId, amount) {
             if (!confirm(`Mark this request as ${status.toUpperCase()}?`)) return;
