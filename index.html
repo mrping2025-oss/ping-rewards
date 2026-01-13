@@ -58,7 +58,6 @@
 
     </script>
     <style>
-        /* General Styles for the entire app */
         body {
             font-family: 'Inter', sans-serif;
             background-color: #0f172a;
@@ -87,7 +86,6 @@
             background-color: rgba(0, 0, 0, 0.7);
         }
 
-        /* Animation */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
         @keyframes scroll {
@@ -108,41 +106,32 @@
             animation-play-state: paused;
         }
 
-        /* Floating Circle Container */
         .circular-progress-container {
             position: fixed;
             bottom: 80px;
-            /* အောက်ခြေနဲ့ နည်းနည်းခွာထား */
             right: 20px;
-            /* ညာဘက်ကပ် */
             z-index: 1001;
             width: 70px;
             height: 70px;
             background-color: #1e293b;
-            /* Dark Background */
             border-radius: 50%;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
             display: flex;
             justify-content: center;
             align-items: center;
-            /* အစမှာ ဖျောက်ထားမယ်၊ JS နဲ့မှ ပြမယ် */
             display: none;
         }
 
-        /* အဝါရောင် လည်မည့် အဝိုင်း */
         .circular-progress {
             position: relative;
             width: 60px;
             height: 60px;
             border-radius: 50%;
             background: conic-gradient(#F59E0B 0deg, #334155 0deg);
-            /* အဝါရောင် (Yellow/Amber) */
             display: flex;
             justify-content: center;
             align-items: center;
         }
-
-        /* အတွင်းက စာသား (အမှတ်ပြမည့်နေရာ) */
         .circular-progress::before {
             content: "";
             position: absolute;
@@ -150,7 +139,6 @@
             height: 50px;
             border-radius: 50%;
             background-color: #1e293b;
-            /* အလယ်က အပေါက် */
         }
 
         .progress-value {
@@ -158,10 +146,7 @@
             font-size: 0.9rem;
             font-weight: bold;
             color: #F59E0B;
-            /* စာလုံးအရောင် အဝါ */
         }
-
-        /* Make app-content scrollable on small screens */
         #app-content {
             overflow-y: auto;
             height: 100vh;
@@ -209,15 +194,9 @@
             </div>
         </div>
     </div>
-    <!-- END: Login Page View -->
-
-    <!-- Main Application Container (Visible initially for guest mode) -->
     <div id="app-container" class="view flex flex-col md:flex-row w-full min-h-screen" style="display: flex;">
-        <!-- Bottom Navigation Bar -->
         <div class="fixed bottom-0 left-0 z-50 w-full h-16 bg-slate-800 border-t border-slate-700">
             <div class="grid h-full max-w-lg grid-cols-5 mx-auto font-medium">
-
-                <!-- 1. Home (Dashboard) -->
                 <button type="button" onclick="showView('user-dashboard-view')"
                     class="inline-flex flex-col items-center justify-center px-5 hover:bg-slate-700 group">
                     <svg class="w-6 h-6 mb-1 text-gray-400 group-hover:text-primary transition duration-200"
@@ -228,8 +207,6 @@
                     </svg>
                     <span class="text-xs text-gray-400 group-hover:text-primary">Home</span>
                 </button>
-
-                <!-- 2. Video -->
                 <button type="button" onclick="showView('watch-videos-view')"
                     class="inline-flex flex-col items-center justify-center px-5 hover:bg-slate-700 group">
                     <svg class="w-6 h-6 mb-1 text-gray-400 group-hover:text-pink-500 transition duration-200"
@@ -274,11 +251,8 @@
                 </button>
             </div>
         </div>
-
-        <!-- More Menu Modal (ကျန်တဲ့ ခလုတ်တွေ ဒီထဲထည့်မယ်) -->
         <div id="more-menu-modal"
             class="fixed inset-0 bg-black bg-opacity-80 z-[2000] hidden flex flex-col justify-end">
-            <!-- Close Area (အပေါ်က အလွတ်နေရာနှိပ်ရင် ပိတ်မယ်) -->
             <div class="flex-grow" onclick="document.getElementById('more-menu-modal').classList.add('hidden')"></div>
 
             <div class="bg-card-bg rounded-t-2xl p-6 border-t border-slate-700 animate-[slideUp_0.3s_ease-out]">
@@ -294,7 +268,6 @@
                 </div>
 
                 <div class="grid grid-cols-3 gap-4">
-                    <!-- Points History -->
                     <button
                         onclick="showView('points-history-view'); document.getElementById('more-menu-modal').classList.add('hidden')"
                         class="flex flex-col items-center p-4 bg-slate-700 rounded-xl hover:bg-slate-600">
@@ -325,10 +298,6 @@
                         </svg>
                         <span class="text-xs text-white">Help</span>
                     </a>
-
-                    <!-- ================= ADMIN BUTTONS (Admin Only) ================= -->
-
-                    <!-- Invite & Earn (Moved to Menu) -->
                     <button
                         onclick="showView('invite-and-earn-view'); document.getElementById('more-menu-modal').classList.add('hidden')"
                         class="flex flex-col items-center p-4 bg-slate-700 rounded-xl hover:bg-slate-600">
@@ -401,18 +370,13 @@
         </div>
 
         <div id="backdrop" class="backdrop fixed inset-0 bg-black bg-opacity-50 z-[99] hidden md:hidden"></div>
-
-        <!-- Main Content Area -->
-        <!-- mb-16 ထည့်လိုက်တာက အောက်ဆုံးက Nav Bar နဲ့ ကွယ်မနေအောင်ပါ -->
         <div id="app-content" class="flex-grow p-2 md:p-6 pb-24 w-full h-screen overflow-y-auto">
             <header class="flex justify-between items-center mb-6">
                 <h1 class="text-2xl md:text-3xl font-bold flex items-center">
-                    <!-- Button ကို ID မတပ်ထားတဲ့ h1 အောက်မှာပဲ ထားမယ် -->
                     <button id="menu-toggle"
                         class="md:hidden p-2 -ml-2 mr-2 rounded-md bg-slate-700 text-white hover:bg-slate-600 transition-colors duration-200">
                         <span class="text-[#FFD700] font-bold rounded-full">P</span>
                     </button>
-                    <!-- စာသားအတွက် သီးသန့် span လုပ်ပြီး id="page-title" ကို ဒီမှာပြောင်းတပ်မယ် -->
                     <span id="page-title">Dashboard</span>
                 </h1>
                 <div id="header-meta" class="hidden md:flex items-center space-x-4">
@@ -532,7 +496,6 @@
                     <input type="text" id="search-bar"
                         class="flex-grow px-4 py-2 rounded-full bg-card-bg border border-slate-700 focus:outline-none focus:ring-2 focus:ring-primary placeholder-muted-text"
                         placeholder="Search videos...">
-                    <!-- Mobile Scroll အတွက် flex-wrap ကို ဖြုတ်ပြီး overflow-x-auto ထည့်ထားပါတယ် -->
                     <div class="flex overflow-x-auto pb-2 gap-2 w-full sm:w-auto sm:justify-end no-scrollbar"
                         style="-webkit-overflow-scrolling: touch;">
                         <button
@@ -598,11 +561,8 @@
                     <script type="text/javascript"
                         src="//institutionnounreverend.com/c6affa5f0ae4df4d56203646aa9bf458/invoke.js"></script>
                 </div>
-
-                <!-- Video Player View ထဲမှာ ထည့်ရန် -->
                 <div id="circular-points-tracker" class="circular-progress-container">
                     <div id="progress-circle" class="circular-progress">
-                        <!-- အမှတ်ပေါင်း ဘယ်လောက်ရပြီလဲ ပြမယ့်နေရာ -->
                         <span id="progress-value-text" class="progress-value">+0</span>
                     </div>
                 </div>
@@ -610,8 +570,6 @@
 
                 <div class="bg-card-bg p-0 rounded-xl shadow-md border border-slate-700">
                     <div class="aspect-video w-full rounded-xl overflow-hidden mb-4">
-                        <!-- 'allow="autoplay"' attribute is added here, and autoplay will be added to URL in JS -->
-                        <!-- iframe နေရာမှာ div ပြောင်းလိုက်ပါ -->
                         <div id="video-iframe" class="w-full h-full bg-black"></div>
                     </div>
                     <div class="flex flex-row items-center gap-6 mb-4 px-4">
@@ -984,13 +942,12 @@
                     <p class="text-muted-text mb-6">View user data, manage status, and edit information.</p>
                     <div class="overflow-x-auto rounded-lg">
                         <table class="w-full text-left table-auto">
-                            <!-- manage-users-view ထဲက Table Head အပိုင်း -->
                             <thead class="bg-slate-700 text-slate-400 uppercase text-xs">
                                 <tr>
                                     <th class="p-4 rounded-tl-lg">User ID</th>
                                     <th class="p-4">Name</th>
-                                    <th class="p-4">Phone</th> <!-- Email နေရာမှာ Phone ပြောင်းထည့်သည် -->
-                                    <th class="p-4">Payment</th> <!-- Role နေရာမှာ Payment ပြောင်းထည့်သည် -->
+                                    <th class="p-4">Phone</th> 
+                                    <th class="p-4">Payment</th> 
                                     <th class="p-4">Points</th>
                                     <th class="p-4 rounded-tr-lg">Actions</th>
                                 </tr>
@@ -1024,7 +981,6 @@
                     </div>
                 </div>
             </div>
-            <!-- NEW: Floating Scroll-to-Top Rocket Button (Hidden by default) -->
             <button id="scroll-to-top-btn"
                 class="hidden fixed bottom-6 right-6 z-50 p-4 bg-accent-orange hover:bg-amber-600 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-110 active:scale-95">
                 <!-- Rocket/Up Arrow SVG -->
@@ -1033,10 +989,7 @@
                     <path d="M12 2l-5 5h3v7h4V7h3l-5-5zM4 20h16v2H4z" />
                 </svg>
             </button>
-            <!-- END NEW: Floating Scroll-to-Top Rocket Button -->
         </div>
-
-        <!-- Modal for Cash Out Confirmation Message -->
         <div id="cashout-message-modal"
             class="modal-overlay fixed inset-0 flex justify-center items-center z-[1000] hidden">
             <div class="modal-content bg-card-bg p-8 rounded-xl w-11/12 max-w-lg shadow-2xl border border-slate-700">
@@ -1066,8 +1019,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Modal for Viewing User History / Payout History -->
         <div id="history-modal" class="modal-overlay fixed inset-0 flex justify-center items-center z-[1000] hidden">
             <div class="modal-content bg-card-bg p-8 rounded-xl w-11/12 max-w-3xl shadow-2xl border border-slate-700">
                 <h3 id="history-modal-title" class="text-xl font-semibold mb-4"></h3>
@@ -1327,9 +1278,9 @@
             });
 
             document.getElementById('video-player-back-btn').addEventListener('click', () => {
-                stopPointTimer(); // Point သိမ်းမယ်
-                if (player) player.stopVideo(); // Video ကို ရပ်မယ်
-                showView('watch-videos-view'); // Dashboard ပြန်သွားမယ်
+                stopPointTimer(); 
+                if (player) player.stopVideo(); 
+                showView('watch-videos-view'); 
             });
             const filterBtns = document.querySelectorAll('.filter-btn');
             filterBtns.forEach(btn => {
@@ -1345,11 +1296,10 @@
             });
 
             setupCopyButtons();
-            initApp(); // စတင်ပွင့်ချိန်မှာ တစ်ကြိမ်ပဲခေါ်မယ်
+            initApp(); 
         });
 
         function showView(viewId) {
-            // Video Player ကနေ ထွက်ရင် Point သိမ်းမယ်
             const currentPlayerView = document.getElementById('video-player-view');
             if (currentPlayerView && currentPlayerView.style.display === 'block' && viewId !== 'video-player-view') {
                 stopPointTimer();
@@ -1405,7 +1355,7 @@
                     loadHistory();
                     loadReferralHistory();
                     loadLeaderboard();
-                    updateWatchCount(); // Leaderboard ကို ဒီမှာခေါ်ထားပါတယ်
+                    updateWatchCount(); 
 
                     showView('user-dashboard-view');
                 }
@@ -1416,23 +1366,20 @@
 
         async function loadVideos(categoryFilter = 'all') {
             try {
-                // 1. ဗီဒီယိုအားလုံးကို ယူမယ်
+                
                 if (cachedVideos.length === 0) {
                     const res = await fetch(`${backendUrl}/api/get-videos`);
                     cachedVideos = await res.json();
                 }
 
-                // 2. User ရဲ့ ၄၈ နာရီအတွင်း ကြည့်ထားတဲ့ ရာဇဝင်ကို ယူမယ်
                 const historyRes = await fetch(`${backendUrl}/api/get-watch-history?userId=${userId}`);
                 const history = await historyRes.json();
 
-                // ကြည့်ပြီးသား ဗီဒီယို Title တွေကို List လုပ်မယ်
                 const watchedTitles = history.map(h => h.description.replace('Watched: ', ''));
 
                 const grid = document.getElementById('video-grid');
                 let displayVideos = categoryFilter === 'all' ? [...cachedVideos] : cachedVideos.filter(v => v.category === categoryFilter);
 
-                // 3. ဗီဒီယိုတွေကို စီမယ် (မကြည့်ရသေးတာ အပေါ်၊ Cooldown မိနေတာ အောက်)
                 displayVideos.sort((a, b) => {
                     const aWatched = watchedTitles.includes(a.title);
                     const bWatched = watchedTitles.includes(b.title);
@@ -1491,20 +1438,18 @@
         }
 
         async function completeTask(taskId, points, title, link, btn) {
-            // 1. Link ကိုဖွင့်မယ်
+          
             window.open(link, '_blank');
 
-            // 2. Button ကို Loading ပြောင်းမယ်
             const originalText = btn.innerText;
             btn.innerText = "Checking...";
             btn.style.pointerEvents = "none";
             btn.classList.remove("bg-primary");
             btn.classList.add("bg-slate-500");
 
-            // 3. 5 စက္ကန့်လောက် စောင့်ခိုင်းမယ် (Fake Verification Delay)
             setTimeout(async () => {
                 try {
-                    // points parameter ကို မထည့်တော့ပါ (Backend က DB ထဲကနေပဲ ယူတော့မှာမို့လို့ပါ)
+                    
                     const res = await fetch(`${backendUrl}/api/complete-social-task`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -1513,7 +1458,6 @@
                     const result = await res.json();
 
                     if (result.success) {
-                        // Backend က ပြန်ပေးတဲ့ earned points ကို သုံးမယ်
                         alert(`Success! Task Completed. +${result.earned} points.`);
 
                         // UI Update
@@ -1527,7 +1471,6 @@
                         // Refresh Logs
                         loadHistory();
                     } else {
-                        // မအောင်မြင်ရင်
                         alert(result.message || "Something went wrong!");
                         btn.innerText = originalText;
                         btn.style.pointerEvents = "auto";
@@ -1539,7 +1482,7 @@
                     btn.innerText = originalText;
                     btn.style.pointerEvents = "auto";
                 }
-            }, 5000); // 5000 ms = 5 seconds delay
+            }, 5000); 
         }
 
         async function loadHistory() {
@@ -1570,7 +1513,6 @@
                 <td class="p-4 font-bold text-accent-green">+100</td> 
             </tr>
         `).join('');
-                // ဒီမှာ +100 လို့ ပြင်လိုက်ပါတယ်
             } catch (e) { console.error(e); }
         }
 
@@ -1589,7 +1531,7 @@
             } catch (e) { console.error(e); }
         }
 
-        // --- YouTube & Timer Logic (မူလအတိုင်း ထားရှိပါသည်) ---
+        
         function getYouTubeId(url) {
             const match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
             return (match && match[2].length == 11) ? match[2] : null;
@@ -1664,23 +1606,19 @@
             }
         }
 
-        // History ထဲက ဗီဒီယိုကြည့်ထားတဲ့ အရေအတွက်ကို ရေတွက်ပြဖို့
         async function updateWatchCount() {
             try {
                 const res = await fetch(`${backendUrl}/api/get-history?id=${userId}`);
                 const history = await res.json();
 
-                // Description ထဲမှာ "Watched:" ဆိုတာ ပါတဲ့ အရေအတွက်ကို ရေတွက်မယ်
                 const watchCount = history.filter(h => h.description && h.description.includes('Watched:')).length;
 
-                // UI မှာ အရေအတွက် ပြောင်းပေးမယ်
                 document.getElementById('videos-watched-value').innerText = watchCount;
             } catch (e) {
                 console.error("Error updating watch count:", e);
             }
         }
 
-        // ဒီ function ကို initApp ထဲမှာ ခေါ်ပေးပါ
         updateWatchCount();
         function setupCopyButtons() {
             document.getElementById('copy-referral-btn').onclick = () => {
@@ -1694,21 +1632,17 @@
         }
 
 
-        // Admin functions (မူလအတိုင်း) ...
-        // --- Admin Functions ---
 
         async function fetchAdminDashboardData() {
             try {
-                // Backend မှ Data လှမ်းယူမယ်
                 const res = await fetch(`${backendUrl}/api/get-admin-stats`);
                 const data = await res.json();
 
                 if (data) {
-                    // UI ပေါ်မှာ ဂဏန်းတွေ ပြမယ်
                     document.getElementById('admin-total-users-value').innerText = data.totalUsers || 0;
                     document.getElementById('admin-total-videos-value').innerText = data.totalVideos || 0;
                     document.getElementById('admin-total-points-earned-value').innerText = data.totalPoints || 0;
-                    // ငွေပမာဏ ရှေ့မှာ $ သင်္ကေတခံမယ်
+                  
                     document.getElementById('admin-total-payouts-value').innerText = `$${data.totalPayouts || "0.00"}`;
                 }
             } catch (err) {
@@ -1716,7 +1650,6 @@
             }
         }
 
-        // Manage Videos Table ဆွဲထုတ်ခြင်း
         async function renderManageVideosTable() {
             try {
                 const res = await fetch(`${backendUrl}/api/get-videos`);
@@ -1741,14 +1674,12 @@
             } catch (e) { console.error(e); }
         }
 
-        // Video ဖျက်သည့် Function
         async function deleteVideo(id) {
             if (!confirm("Are you sure?")) return;
             await fetch(`${backendUrl}/api/admin/delete-video?id=${id}`, { method: 'DELETE' });
-            renderManageVideosTable(); // Table ကို Refresh လုပ်
+            renderManageVideosTable(); 
         }
 
-        // Manage Social Tasks Table ဆွဲထုတ်ခြင်း
         async function renderManageSocialTasksTable() {
             try {
                 const res = await fetch(`${backendUrl}/api/get-tasks`);
@@ -1774,21 +1705,19 @@
             } catch (e) { console.error(e); }
         }
 
-        // Task ဖျက်သည့် Function
+
         async function deleteTask(id) {
             if (!confirm("Are you sure?")) return;
             await fetch(`${backendUrl}/api/admin/delete-task?id=${id}`, { method: 'DELETE' });
             renderManageSocialTasksTable();
         }
 
-        // Users အားလုံး ဆွဲထုတ်ခြင်း (Manage Users View)
         async function fetchAllUsers() {
             try {
                 const res = await fetch(`${backendUrl}/api/admin/users`);
                 const users = await res.json();
                 const tbody = document.getElementById('users-table-body');
 
-                // Admin တွေရဲ့ ID (မဖော်ပြချင်ရင် ဖယ်ထားလို့ရသည်)
                 const adminIds = ["1856743644"];
 
                 tbody.innerHTML = users.map(u => `
@@ -1805,31 +1734,21 @@
         }
 
 
-
-        // ==========================================
-        // ADMIN MANAGEMENT LOGIC (Add & Save)
-        // ==========================================
-
         document.addEventListener("DOMContentLoaded", () => {
 
-            // --- 1. MANAGE VIDEOS ---
-
-            // "Add New Video" ခလုတ်နှိပ်ရင် Modal ဖွင့်မယ်
             const addVideoBtn = document.getElementById('add-video-btn');
             if (addVideoBtn) {
                 addVideoBtn.addEventListener('click', () => {
-                    document.getElementById('add-video-form').reset(); // ဖောင်အဟောင်းရှင်းမယ်
+                    document.getElementById('add-video-form').reset(); 
                     document.getElementById('add-video-modal').classList.remove('hidden');
                 });
             }
 
-            // Video Form "Save" နှိပ်ရင် Backend ကိုပို့မယ်
             const videoForm = document.getElementById('add-video-form');
             if (videoForm) {
                 videoForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
 
-                    // ခလုတ်ကို Loading ပြောင်းမယ်
                     const saveBtn = videoForm.querySelector('.save-btn');
                     const originalText = saveBtn.innerText;
                     saveBtn.innerText = "Saving...";
@@ -1840,11 +1759,9 @@
                         description: document.getElementById('video-description').value,
                         category: document.getElementById('video-category').value,
                         video_url: document.getElementById('video-url').value,
-                        // points column မသုံးတော့ပေမယ့် compatibility အတွက် 0 ထည့်ထားမယ်
+                      
                         points: parseInt(document.getElementById('video-points').value) || 0,
-                        // duration (seconds) ကို description ထဲမှာ တွဲထည့်လိုက်မယ် (Backend Table မပြင်ချင်ရင်)
-                        // သို့မဟုတ် column အသစ်မရှိရင် ဒီအတိုင်းထားပါ။ 
-                        // ဒီမှာတော့ points logic ကို frontend timer နဲ့ပဲသွားထားလို့ URL နဲ့ Title က အရေးကြီးပါတယ်။
+                        
                     };
 
                     try {
@@ -1857,7 +1774,7 @@
                         if (res.ok) {
                             alert("Video added successfully!");
                             document.getElementById('add-video-modal').classList.add('hidden');
-                            renderManageVideosTable(); // Table ကို Refresh လုပ်မယ်
+                            renderManageVideosTable(); 
                         } else {
                             alert("Error adding video.");
                         }
@@ -1872,9 +1789,6 @@
             }
 
 
-            // --- 2. MANAGE SOCIAL TASKS ---
-
-            // "Add New Task" ခလုတ်နှိပ်ရင် Modal ဖွင့်မယ်
             const addTaskBtn = document.getElementById('add-social-task-btn');
             if (addTaskBtn) {
                 addTaskBtn.addEventListener('click', () => {
@@ -1883,7 +1797,6 @@
                 });
             }
 
-            // Task Form "Save" နှိပ်ရင် Backend ကိုပို့မယ်
             const taskForm = document.getElementById('add-social-task-form');
             if (taskForm) {
                 taskForm.addEventListener('submit', async (e) => {
@@ -1925,16 +1838,12 @@
                 });
             }
 
-            // --- 3. COMMON MODAL CLOSING ---
-            // Cancel ခလုတ်တွေနှိပ်ရင် Modal ပိတ်မယ်
             document.querySelectorAll('.cancel-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     document.querySelectorAll('.modal-overlay').forEach(modal => modal.classList.add('hidden'));
                 });
             });
 
-            // --- 4. MANAGE USERS SEARCH ---
-            // User ရှာတဲ့ Search Box အလုပ်လုပ်အောင်
             const userSearchInput = document.getElementById('manage-users-search');
             if (userSearchInput) {
                 userSearchInput.addEventListener('keyup', (e) => {
@@ -1953,7 +1862,6 @@
             }
         });
 
-        // Payouts ဇယားဆွဲထုတ်ရန်
         async function fetchPayouts() {
             try {
                 const res = await fetch(`${backendUrl}/api/admin/payouts`);
@@ -1971,7 +1879,6 @@
                     if (p.status === 'paid') statusColor = 'text-green-400';
                     if (p.status === 'rejected') statusColor = 'text-red-400';
 
-                    // Paid/Rejected ဖြစ်ပြီးရင် Action ခလုတ်တွေ မပြတော့ဘူး
                     const actions = p.status === 'pending' ? `
                         <button onclick="handlePayout('${p.id}', 'paid', '${p.user_id}', '${p.amount}')" class="px-2 py-1 bg-green-600 hover:bg-green-500 rounded text-white text-xs mr-2">Approve</button>
                         <button onclick="handlePayout('${p.id}', 'rejected', '${p.user_id}', '${p.amount}')" class="px-2 py-1 bg-red-600 hover:bg-red-500 rounded text-white text-xs">Reject</button>
@@ -1992,38 +1899,30 @@
             } catch (e) { console.error(e); }
         }
 
-        // ✅ ဒီကုဒ်အသစ်ကို ပြန်ထည့်ပါ ✅
-        // Adsgram Controller ကို အရင် ကြေညာထားမယ် (Init မလုပ်သေးဘူး)
         let AdController;
 
         async function showAdsgramAd() {
-            // Button နှိပ်မှ Adsgram ရှိမရှိ စစ်မယ်။
-            // AdController က မရှိသေးဘူး၊ ဒါပေမဲ့ window.Adsgram က ရောက်နေပြီဆိုရင် Init လုပ်မယ်
             if (!AdController && window.Adsgram) {
                 AdController = window.Adsgram.init({ blockId: "21063" });
             }
 
-            // Init လုပ်ပြီးတာတောင် AdController က မရှိသေးရင်တော့ SDK လုံးဝမတက်သေးတာ (သို့) AdBlock မိနေတာ ဖြစ်နိုင်တယ်
             if (!AdController) {
                 alert("Adsgram SDK Loading... ကျေးဇူးပြု၍ ခဏစောင့်ပြီး ပြန်လည်ကြိုးစားပါ။ (အင်တာနက်ဖွင့်ထားပါ)");
                 return;
             }
 
             try {
-                // ကြော်ငြာကို ပြသမယ်
+               
                 const result = await AdController.show();
 
-                // ကြော်ငြာကြည့်တာ အောင်မြင်ရင် (result.done က true ဖြစ်ရင်)
                 if (result.done) {
                     alert("ဂုဏ်ယူပါတယ်။ အမှတ် ၅၀ ရရှိပါပြီ။");
 
-                    // Dashboard က Point တွေကို Update ဖြစ်သွားအောင် App ကို Refresh လုပ်ခိုင်းမယ်
                     if (typeof initApp === "function") {
                         setTimeout(initApp, 1000);
                     }
                 }
             } catch (error) {
-                // အကယ်၍ ကြော်ငြာပြဖို့ မရှိသေးရင် (Fill Rate မပြည့်ရင်)
                 if (error.error === 'not_filled') {
                     alert("ယခုအချိန်တွင် ကြည့်ရှုရန် ကြော်ငြာမရှိသေးပါ။ ခဏနေမှ ထပ်စမ်းကြည့်ပါ။");
                 } else {
@@ -2032,7 +1931,7 @@
                 }
             }
         }
-        // Approve/Reject လုပ်ရန်
+     
         async function handlePayout(payoutId, status, userId, amount) {
             if (!confirm(`Mark this request as ${status.toUpperCase()}?`)) return;
 
@@ -2044,7 +1943,7 @@
                 });
                 if (res.ok) {
                     alert("Updated successfully!");
-                    fetchPayouts(); // Refresh table
+                    fetchPayouts(); 
                 }
             } catch (e) { console.error(e); alert("Error updating status"); }
         }
