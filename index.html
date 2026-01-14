@@ -608,11 +608,22 @@
                     </div>
 
 
-                    <!-- Adstr2-->
-                    <div class="mt-4">
-                        <script
-                            src="https://ancestorheadquarters.com/25/d1/54/25d154cfe2cdfcc85914d10a0b4a6eae.js"></script>
-                    </div>
+                                          
+                        <div id="adstr2-container" class="mt-4"></div>
+                        
+                        <script type="text/javascript">
+                            setTimeout(function() {
+                                var script = document.createElement('script');
+                                script.src = 'https://ancestorheadquarters.com/25/d1/54/25d154cfe2cdfcc85914d10a0b4a6eae.js';
+                                
+                               
+                                var container = document.getElementById('adstr2-container');
+                                if (container) {
+                                    container.appendChild(script);
+                                    console.log("Adstr2 loaded after 3 minutes.");
+                                }
+                            }, 180000); // 180000 ms = ၃ မိနစ်
+                        </script>
                     <!-- Adstr2 End-->
                     <script async="async" data-cfasync="false"
                         src="https://ancestorheadquarters.com/5fae19ca63dcfa0b73c6e2395f27545a/invoke.js"></script>
