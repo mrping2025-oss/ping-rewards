@@ -1976,76 +1976,111 @@
             } catch (e) { console.error(e); }
         }
 
-     
-let AdController; 
-
-// ၂။ Website စပွင့်တာနဲ့ Adsgram ကို အဆင်သင့်ဖြစ်အောင် လုပ်ခိုင်းထားမယ်
-document.addEventListener('DOMContentLoaded', () => {
-    if (window.Adsgram) {
-        AdController = window.Adsgram.init({
-            blockId: "21063", 
-            debug: true // 🔥 စမ်းသပ်ရန် Test Mode ဖွင့်ထားသည် (အဆင်ပြေမှ false ပြောင်းပါ)
-        });
-        console.log("Adsgram Initialized in Test Mode");
-    } else {
-        console.error("Adsgram SDK script not loaded yet.");
-    }
-});
-
-// ၃။ Button နှိပ်မှ အလုပ်လုပ်မည့် Function
-async function showAdsgramAd() {
-    // အကယ်၍ အပေါ်မှာ Init မလုပ်ရသေးရင် (Network ကြောင့်)၊ အခုမှ ထပ်စမ်းမယ်
-    if (!AdController && window.Adsgram) {
-        AdController = window.Adsgram.init({ blockId: "21063", debug: true });
-    }
-
-    // ဒါတောင် မရှိသေးရင်တော့ Script လုံးဝမတက်တာ (Net error / Adblock)
-    if (!AdController) {
-        alert("Adsgram စနစ် မတက်သေးပါ။ အင်တာနက်လိုင်း ကောင်းမကောင်း စစ်ဆေးပြီး ၁၀ စက္ကန့်ခန့် စောင့်ပေးပါ။");
-        return;
-    }
-
-    try {
-        // ကြော်ငြာပြမည်
-        const result = await AdController.show();
-
-        // ကြော်ငြာကြည့်ပြီးသွားရင် (Done)
-        if (result.done) {
-            alert("✅ ဂုဏ်ယူပါတယ်။ အမှတ် ၃၀ ရရှိပါပြီ။ (Test Mode)");
             
-            // Backend ကို အမှတ်ထည့်ပေးဖို့ လှမ်းပြောမယ်
-             // ၁။ User ရှိမရှိ အရင်စစ်မယ်
-             const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "1856743644";
-             
-             // Server S2S Callback က ပိုစိတ်ချရပေမယ့်၊ UI မှာ ချက်ချင်းတက်ချင်ရင် ဒါသုံးပါ
-             await fetch(`${backendUrl}/api/award-points`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    userId: userId, 
-                    amount: 30, 
-                    desc: "Adsgram: Watched Video" 
-                })
-             });
-
-            // UI Refresh
-            if (typeof initApp === "function") {
-                initApp(); 
+            let AdController;
+            const ADSGRAM_BLOCK_ID = "21063";
+            
+            // ၁။ SDK ကို အတင်း Download ဆွဲခိုင်းမည့် Function
+            function loadAdsgramScript() {
+                return new Promise((resolve, reject) => {
+                    // ရှိပြီးသားဆိုရင် ပြန်မဆွဲတော့ဘူး
+                    if (window.Adsgram) {
+                        resolve();
+                        return;
+                    }
+            
+                    // Script Tag ကို Javascript နဲ့ ဖန်တီးပြီး ထည့်မယ်
+                    const script = document.createElement('script');
+                    script.src = "https://adsgram.ai/sdk/v1/adsgram-sdk.js";
+                    script.async = true;
+                    
+                    script.onload = () => {
+                        console.log("✅ Adsgram SDK Loaded Successfully");
+                        resolve();
+                    };
+                    
+                    script.onerror = (e) => {
+                        console.error("❌ Failed to load Adsgram SDK", e);
+                        reject(e);
+                    };
+            
+                    document.head.appendChild(script);
+                });
             }
-        }
-    } catch (error) {
-        // Error ကို စစ်မယ်
-        console.error("Adsgram Error:", error);
-        
-        if (error.error === 'not_filled') {
-            alert("⚠️ ကြည့်ရှုရန် ကြော်ငြာမရှိသေးပါ။ (No Ads Available)");
-        } else if (error.error === 'user_hangup') {
-             // User က ကြော်ငြာကို ပိတ်လိုက်ရင် ဘာမှ မပြဘူး
-        } else {
-            alert("Error: " + JSON.stringify(error));
-        }
-    }
-}
+            
+            // ၂။ Page ပွင့်တာနဲ့ Script ကို စောင့်မယ်၊ ပြီးရင် Init လုပ်မယ်
+            document.addEventListener('DOMContentLoaded', async () => {
+                try {
+                    await loadAdsgramScript();
+                    if (window.Adsgram) {
+                        AdController = window.Adsgram.init({
+                            blockId: ADSGRAM_BLOCK_ID,
+                            debug: true // 🔥 Test Mode
+                        });
+                    }
+                } catch (e) {
+                    console.log("Auto-init failed, will try again on button click.");
+                }
+            });
+            
+            // ၃။ Button နှိပ်မှ အလုပ်လုပ်မည့် Function
+            async function showAdsgramAd() {
+                const btn = document.querySelector('button[onclick="showAdsgramAd()"]');
+                if(btn) btn.disabled = true; // နှိပ်ပြီးရင် ခဏပိတ်ထားမယ်
+            
+                try {
+                    // SDK မရှိသေးရင် အခုချက်ချင်း ဆွဲထည့်မယ်
+                    if (!window.Adsgram) {
+                        await loadAdsgramScript();
+                    }
+            
+                    // Controller မရှိသေးရင် Init လုပ်မယ်
+                    if (!AdController && window.Adsgram) {
+                        AdController = window.Adsgram.init({ 
+                            blockId: ADSGRAM_BLOCK_ID, 
+                            debug: true 
+                        });
+                    }
+            
+                    if (!AdController) {
+                        alert("⚠️ Adsgram စနစ် ချိတ်ဆက်၍ မရပါ။ (Internet Connection စစ်ဆေးပါ)");
+                        if(btn) btn.disabled = false;
+                        return;
+                    }
+            
+                    // ကြော်ငြာပြမယ်
+                    const result = await AdController.show();
+            
+                    if (result.done) {
+                        alert("✅ ဂုဏ်ယူပါတယ်။ အမှတ် ၃၀ ရရှိပါပြီ။ (Test Mode)");
+                        
+                        // Backend Point Update
+                        const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "1856743644";
+                        
+                        await fetch(`${backendUrl}/api/award-points`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ 
+                                userId: userId, 
+                                amount: 30, 
+                                desc: "Adsgram: Watched Video" 
+                            })
+                        });
+            
+                        if (typeof initApp === "function") initApp(); 
+                    }
+                } catch (error) {
+                    console.error("Adsgram Error:", error);
+                    
+                    if (error.error === 'not_filled') {
+                        alert("⚠️ ကြည့်ရှုရန် ကြော်ငြာမရှိသေးပါ။ (No Ads Available)");
+                    } else {
+                        alert("Error: " + JSON.stringify(error));
+                    }
+                } finally {
+                    if(btn) btn.disabled = false; // ခလုတ်ပြန်ဖွင့်မယ်
+                }
+            }
         // Approve/Reject လုပ်ရန်
         async function handlePayout(payoutId, status, userId, amount) {
             if (!confirm(`Mark this request as ${status.toUpperCase()}?`)) return;
