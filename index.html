@@ -209,6 +209,9 @@
             </div>
         </div>
     </div>
+    <!-- END: Login Page View -->
+
+    <!-- Main Application Container (Visible initially for guest mode) -->
     <div id="app-container" class="view flex flex-col md:flex-row w-full min-h-screen" style="display: flex;">
         <!-- Bottom Navigation Bar -->
         <div class="fixed bottom-0 left-0 z-50 w-full h-16 bg-slate-800 border-t border-slate-700">
@@ -480,13 +483,6 @@
 
                 <div class="quick-actions mb-6">
                     <h2 class="text-xl font-semibold mb-4">Quick Actions</h2>
-                    <!-- Watch Ad Button -->
-                    <div class="mb-5">
-                        <button onclick="showAdsgramAd()"
-                            class="w-full mt-4 py-4 bg-yellow-500 hover:bg-yellow-600 text-black font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 transition-transform active:scale-95">
-                            📺 Watch Ad to Get +50 Points
-                        </button>
-                    </div>
                     <div class="flex flex-wrap gap-4">
                         <a href="#"
                             class="nav-link user-link px-6 py-3 bg-card-bg border border-slate-700 rounded-lg text-text-color hover:bg-slate-700 transition-colors duration-200"
@@ -1989,46 +1985,47 @@
             } catch (e) { console.error(e); }
         }
 
-        // ✅ ဒီကုဒ်အသစ်ကို ပြန်ထည့်ပါ ✅
-        // Adsgram Controller ကို အရင် ကြေညာထားမယ် (Init မလုပ်သေးဘူး)
-        let AdController;
+       // Global Variable အဖြစ် အပေါ်ဆုံးနားမှာ ကြေညာထားပါ
+let AdController;
 
-        async function showAdsgramAd() {
-            // Button နှိပ်မှ Adsgram ရှိမရှိ စစ်မယ်။
-            // AdController က မရှိသေးဘူး၊ ဒါပေမဲ့ window.Adsgram က ရောက်နေပြီဆိုရင် Init လုပ်မယ်
-            if (!AdController && window.Adsgram) {
-                AdController = window.Adsgram.init({ blockId: "21063" });
-            }
+async function showAdsgramAd() {
+    // Debug: true ထည့်ထားမှ Error အတိအကျကို Console မှာ မြင်ရမယ်
+    if (!AdController && window.Adsgram) {
+        AdController = window.Adsgram.init({ 
+            blockId: "21063", // ⚠️ ဒီနေရာမှာ သင့် Adsgram Dashboard က ရတဲ့ ID အမှန်ကို ထည့်ပါ
+            debug: true       // ⚠️ Debug mode ဖွင့်လိုက်ပါ
+        });
+    }
 
-            // Init လုပ်ပြီးတာတောင် AdController က မရှိသေးရင်တော့ SDK လုံးဝမတက်သေးတာ (သို့) AdBlock မိနေတာ ဖြစ်နိုင်တယ်
-            if (!AdController) {
-                alert("Adsgram SDK Loading... ကျေးဇူးပြု၍ ခဏစောင့်ပြီး ပြန်လည်ကြိုးစားပါ။ (အင်တာနက်ဖွင့်ထားပါ)");
-                return;
-            }
+    if (!AdController) {
+        alert("Adsgram SDK မပွင့်သေးပါ။ အင်တာနက် စစ်ဆေးပါ သို့မဟုတ် Refresh လုပ်ပါ။");
+        return;
+    }
 
-            try {
-                // ကြော်ငြာကို ပြသမယ်
-                const result = await AdController.show();
+    try {
+        const result = await AdController.show();
 
-                // ကြော်ငြာကြည့်တာ အောင်မြင်ရင် (result.done က true ဖြစ်ရင်)
-                if (result.done) {
-                    alert("ဂုဏ်ယူပါတယ်။ အမှတ် ၅၀ ရရှိပါပြီ။");
-
-                    // Dashboard က Point တွေကို Update ဖြစ်သွားအောင် App ကို Refresh လုပ်ခိုင်းမယ်
-                    if (typeof initApp === "function") {
-                        setTimeout(initApp, 1000);
-                    }
-                }
-            } catch (error) {
-                // အကယ်၍ ကြော်ငြာပြဖို့ မရှိသေးရင် (Fill Rate မပြည့်ရင်)
-                if (error.error === 'not_filled') {
-                    alert("ယခုအချိန်တွင် ကြည့်ရှုရန် ကြော်ငြာမရှိသေးပါ။ ခဏနေမှ ထပ်စမ်းကြည့်ပါ။");
-                } else {
-                    console.error("Adsgram Error:", error);
-                    alert("Ad error: " + JSON.stringify(error));
-                }
-            }
+        if (result.done) {
+            // Backend ကို အမှတ်ထည့်ခိုင်းခြင်း (Frontend ကနေ လှမ်းခေါ်ပြထားတာပါ၊ 
+            // အမှန်က Backend S2S Callback က ပိုစိတ်ချရပါတယ်)
+            alert("Congratulations! +30 Points");
+            
+            // App ကို Refresh လုပ်မယ် (Point တိုးတာ မြင်ရအောင်)
+            setTimeout(initApp, 1000);
         }
+    } catch (error) {
+        // Error အကြောင်းရင်းကို အတိအကျ ဖော်ပြခိုင်းမယ်
+        console.error("Adsgram Error Details:", error);
+        
+        if (error.error === 'not_filled') {
+            alert("Sorry, No ads available right now (No Fill).");
+        } else if (error.error === 'load_timeout') {
+            alert("Internet နှေးနေလို့ ကြော်ငြာဆွဲမရပါ။ (Timeout)");
+        } else {
+            alert("Error: " + JSON.stringify(error));
+        }
+    }
+}
         // Approve/Reject လုပ်ရန်
         async function handlePayout(payoutId, status, userId, amount) {
             if (!confirm(`Mark this request as ${status.toUpperCase()}?`)) return;
@@ -2048,5 +2045,5 @@
 
     </script>
 </body>
-</html>
 
+</html>
