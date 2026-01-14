@@ -1976,24 +1976,32 @@
             } catch (e) { console.error(e); }
         }
 
-       // Global Variable အနေဖြင့် ကြေညာထားမည်
-let AdController;
+     
+let AdController; 
 
-// Page စပွင့်တာနဲ့ Adsgram ကို Init လုပ်ထားမည်
+// ၂။ Website စပွင့်တာနဲ့ Adsgram ကို အဆင်သင့်ဖြစ်အောင် လုပ်ခိုင်းထားမယ်
 document.addEventListener('DOMContentLoaded', () => {
     if (window.Adsgram) {
         AdController = window.Adsgram.init({
-            blockId: "21063", // Dashboard မှ ID (မှန်ပါတယ်)
-            debug: true       // 🔥 အရေးကြီးသည် - စမ်းသပ်နေစဉ် True ထားပါ။ 
-                              // အစစ်လွှတ်တော့မယ်ဆိုမှ false ပြန်ပြောင်းပါ သို့မဟုတ် ဖြုတ်လိုက်ပါ။
+            blockId: "21063", 
+            debug: true // 🔥 စမ်းသပ်ရန် Test Mode ဖွင့်ထားသည် (အဆင်ပြေမှ false ပြောင်းပါ)
         });
+        console.log("Adsgram Initialized in Test Mode");
+    } else {
+        console.error("Adsgram SDK script not loaded yet.");
     }
 });
 
+// ၃။ Button နှိပ်မှ အလုပ်လုပ်မည့် Function
 async function showAdsgramAd() {
-    // AdController မရှိသေးရင် (Block မိနေတာမျိုးဆိုရင်)
+    // အကယ်၍ အပေါ်မှာ Init မလုပ်ရသေးရင် (Network ကြောင့်)၊ အခုမှ ထပ်စမ်းမယ်
+    if (!AdController && window.Adsgram) {
+        AdController = window.Adsgram.init({ blockId: "21063", debug: true });
+    }
+
+    // ဒါတောင် မရှိသေးရင်တော့ Script လုံးဝမတက်တာ (Net error / Adblock)
     if (!AdController) {
-        alert("Adsgram Loading... ခဏစောင့်ပြီး ပြန်စမ်းပါ သို့မဟုတ် အင်တာနက်စစ်ဆေးပါ။");
+        alert("Adsgram စနစ် မတက်သေးပါ။ အင်တာနက်လိုင်း ကောင်းမကောင်း စစ်ဆေးပြီး ၁၀ စက္ကန့်ခန့် စောင့်ပေးပါ။");
         return;
     }
 
@@ -2003,14 +2011,26 @@ async function showAdsgramAd() {
 
         // ကြော်ငြာကြည့်ပြီးသွားရင် (Done)
         if (result.done) {
-            alert("ဂုဏ်ယူပါတယ်။ အမှတ် ၃၀ ရရှိပါပြီ။ (Test Ad)");
+            alert("✅ ဂုဏ်ယူပါတယ်။ အမှတ် ၃၀ ရရှိပါပြီ။ (Test Mode)");
             
-            // Backend ကို အမှတ်ထည့်ဖို့ လှမ်းပြောမယ် (Optional)
-            // Adsgram Dashboard က Reward URL ထည့်ထားပြီးသားမို့ Server-to-Server ပို့ပေးမှာပါ
-            // ဒါပေမဲ့ UI မှာ အမှတ်ချက်ချင်းတိုးချင်ရင် initApp() ခေါ်ပါ
-            
+            // Backend ကို အမှတ်ထည့်ပေးဖို့ လှမ်းပြောမယ်
+             // ၁။ User ရှိမရှိ အရင်စစ်မယ်
+             const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "1856743644";
+             
+             // Server S2S Callback က ပိုစိတ်ချရပေမယ့်၊ UI မှာ ချက်ချင်းတက်ချင်ရင် ဒါသုံးပါ
+             await fetch(`${backendUrl}/api/award-points`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    userId: userId, 
+                    amount: 30, 
+                    desc: "Adsgram: Watched Video" 
+                })
+             });
+
+            // UI Refresh
             if (typeof initApp === "function") {
-                initApp(); // အမှတ် Refresh လုပ်မယ်
+                initApp(); 
             }
         }
     } catch (error) {
@@ -2018,7 +2038,7 @@ async function showAdsgramAd() {
         console.error("Adsgram Error:", error);
         
         if (error.error === 'not_filled') {
-            alert("ကြည့်ရှုရန် ကြော်ငြာမရှိသေးပါ။ (No Ads Available right now)");
+            alert("⚠️ ကြည့်ရှုရန် ကြော်ငြာမရှိသေးပါ။ (No Ads Available)");
         } else if (error.error === 'user_hangup') {
              // User က ကြော်ငြာကို ပိတ်လိုက်ရင် ဘာမှ မပြဘူး
         } else {
