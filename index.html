@@ -548,24 +548,18 @@
                             data-category="Gaming">Gaming</button>
                     </div>
                 </div>
-                <!-- Ad Placement at the Top of Video Grid -->
+                <!-- AdsTR0 -->
                 <div>
                     <script>
-                        const delayInMilliseconds = 1000;
-
-                        function loadAdScript() {
-                            const script = document.createElement('script');
-                            script.type = 'text/javascript';
-                            script.src = '//institutionnounreverend.com/25/d1/54/25d154cfe2cdfcc85914d10a0b4a6eae.js';
-                            const targetDiv = document.querySelector('.flex.justify-center.mb-4');
-                            if (targetDiv) {
-                                targetDiv.appendChild(script);
-                            } else {
-                                document.body.appendChild(script);
-                            }
-                        }
-                        setTimeout(loadAdScript, delayInMilliseconds);
+                        atOptions = {
+                            'key': 'c6affa5f0ae4df4d56203646aa9bf458',
+                            'format': 'iframe',
+                            'height': 50,
+                            'width': 320,
+                            'params': {}
+                        };
                     </script>
+                    <script src="https://ancestorheadquarters.com/c6affa5f0ae4df4d56203646aa9bf458/invoke.js"></script>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8"
@@ -575,22 +569,18 @@
 
             </div>
 
-            <!-- Video Player View (Updated) -->
+            <!-- ADSTR1 -->
             <div id="video-player-view" class="content-view" style="display: none;">
-                <!-- Ad Placement under the 'Back to Videos' button -->
-                <div class="my-4">
-                    <script type="text/javascript">
-                        atOptions = {
-                            'key': 'c6affa5f0ae4df4d56203646aa9bf458',
-                            'format': 'iframe',
-                            'height': 50,
-                            'width': 320,
-                            'params': {}
-                        };
-                    </script>
-                    <script type="text/javascript"
-                        src="//institutionnounreverend.com/c6affa5f0ae4df4d56203646aa9bf458/invoke.js"></script>
-                </div>
+                <script>
+                    atOptions = {
+                        'key': 'c6affa5f0ae4df4d56203646aa9bf458',
+                        'format': 'iframe',
+                        'height': 50,
+                        'width': 320,
+                        'params': {}
+                    };
+                </script>
+                <script src="https://ancestorheadquarters.com/c6affa5f0ae4df4d56203646aa9bf458/invoke.js"></script>
 
                 <!-- Video Player View ထဲမှာ ထည့်ရန် -->
                 <div id="circular-points-tracker" class="circular-progress-container">
@@ -603,8 +593,6 @@
 
                 <div class="bg-card-bg p-0 rounded-xl shadow-md border border-slate-700">
                     <div class="aspect-video w-full rounded-xl overflow-hidden mb-4">
-                        <!-- 'allow="autoplay"' attribute is added here, and autoplay will be added to URL in JS -->
-                        <!-- iframe နေရာမှာ div ပြောင်းလိုက်ပါ -->
                         <div id="video-iframe" class="w-full h-full bg-black"></div>
                     </div>
                     <div class="flex flex-row items-center gap-6 mb-4 px-4">
@@ -620,12 +608,15 @@
                     </div>
 
 
-                    <!-- Ad 2 Placement (Below Get Summary Button) -->
+                    <!-- Adstr2-->
                     <div class="mt-4">
-                        <script async="async" data-cfasync="false"
-                            src="//institutionnounreverend.com/5fae19ca63dcfa0b73c6e2395f27545a/invoke.js"></script>
-                        <div id="container-5fae19ca63dcfa0b73c6e2395f27545a"></div>
+                        <script
+                            src="https://ancestorheadquarters.com/25/d1/54/25d154cfe2cdfcc85914d10a0b4a6eae.js"></script>
                     </div>
+                    <!-- Adstr2 End-->
+                    <script async="async" data-cfasync="false"
+                        src="https://ancestorheadquarters.com/5fae19ca63dcfa0b73c6e2395f27545a/invoke.js"></script>
+                    <div id="container-5fae19ca63dcfa0b73c6e2395f27545a"></div>
                 </div>
             </div>
 
@@ -1985,47 +1976,46 @@
             } catch (e) { console.error(e); }
         }
 
-       // Global Variable အဖြစ် အပေါ်ဆုံးနားမှာ ကြေညာထားပါ
-let AdController;
+        // ✅ ဒီကုဒ်အသစ်ကို ပြန်ထည့်ပါ ✅
+        // Adsgram Controller ကို အရင် ကြေညာထားမယ် (Init မလုပ်သေးဘူး)
+        let AdController;
 
-async function showAdsgramAd() {
-    // Debug: true ထည့်ထားမှ Error အတိအကျကို Console မှာ မြင်ရမယ်
-    if (!AdController && window.Adsgram) {
-        AdController = window.Adsgram.init({ 
-            blockId: "21063", // ⚠️ ဒီနေရာမှာ သင့် Adsgram Dashboard က ရတဲ့ ID အမှန်ကို ထည့်ပါ
-            debug: true       // ⚠️ Debug mode ဖွင့်လိုက်ပါ
-        });
-    }
+        async function showAdsgramAd() {
+            // Button နှိပ်မှ Adsgram ရှိမရှိ စစ်မယ်။
+            // AdController က မရှိသေးဘူး၊ ဒါပေမဲ့ window.Adsgram က ရောက်နေပြီဆိုရင် Init လုပ်မယ်
+            if (!AdController && window.Adsgram) {
+                AdController = window.Adsgram.init({ blockId: "21063" });
+            }
 
-    if (!AdController) {
-        alert("Adsgram SDK မပွင့်သေးပါ။ အင်တာနက် စစ်ဆေးပါ သို့မဟုတ် Refresh လုပ်ပါ။");
-        return;
-    }
+            // Init လုပ်ပြီးတာတောင် AdController က မရှိသေးရင်တော့ SDK လုံးဝမတက်သေးတာ (သို့) AdBlock မိနေတာ ဖြစ်နိုင်တယ်
+            if (!AdController) {
+                alert("Adsgram SDK Loading... ကျေးဇူးပြု၍ ခဏစောင့်ပြီး ပြန်လည်ကြိုးစားပါ။ (အင်တာနက်ဖွင့်ထားပါ)");
+                return;
+            }
 
-    try {
-        const result = await AdController.show();
+            try {
+                // ကြော်ငြာကို ပြသမယ်
+                const result = await AdController.show();
 
-        if (result.done) {
-            // Backend ကို အမှတ်ထည့်ခိုင်းခြင်း (Frontend ကနေ လှမ်းခေါ်ပြထားတာပါ၊ 
-            // အမှန်က Backend S2S Callback က ပိုစိတ်ချရပါတယ်)
-            alert("Congratulations! +30 Points");
-            
-            // App ကို Refresh လုပ်မယ် (Point တိုးတာ မြင်ရအောင်)
-            setTimeout(initApp, 1000);
+                // ကြော်ငြာကြည့်တာ အောင်မြင်ရင် (result.done က true ဖြစ်ရင်)
+                if (result.done) {
+                    alert("ဂုဏ်ယူပါတယ်။ အမှတ် ၃၀ ရရှိပါပြီ။");
+
+                    // Dashboard က Point တွေကို Update ဖြစ်သွားအောင် App ကို Refresh လုပ်ခိုင်းမယ်
+                    if (typeof initApp === "function") {
+                        setTimeout(initApp, 1000);
+                    }
+                }
+            } catch (error) {
+                // အကယ်၍ ကြော်ငြာပြဖို့ မရှိသေးရင် (Fill Rate မပြည့်ရင်)
+                if (error.error === 'not_filled') {
+                    alert("ယခုအချိန်တွင် ကြည့်ရှုရန် ကြော်ငြာမရှိသေးပါ။ ခဏနေမှ ထပ်စမ်းကြည့်ပါ။");
+                } else {
+                    console.error("Adsgram Error:", error);
+                    alert("Ad error: " + JSON.stringify(error));
+                }
+            }
         }
-    } catch (error) {
-        // Error အကြောင်းရင်းကို အတိအကျ ဖော်ပြခိုင်းမယ်
-        console.error("Adsgram Error Details:", error);
-        
-        if (error.error === 'not_filled') {
-            alert("Sorry, No ads available right now (No Fill).");
-        } else if (error.error === 'load_timeout') {
-            alert("Internet နှေးနေလို့ ကြော်ငြာဆွဲမရပါ။ (Timeout)");
-        } else {
-            alert("Error: " + JSON.stringify(error));
-        }
-    }
-}
         // Approve/Reject လုပ်ရန်
         async function handlePayout(payoutId, status, userId, amount) {
             if (!confirm(`Mark this request as ${status.toUpperCase()}?`)) return;
