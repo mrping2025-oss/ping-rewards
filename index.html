@@ -8,6 +8,7 @@
         content="Ping Rewards သည် Watch video , Complete social tasks , Earn points , Get rewards , Cash out platform တစ်ခုဖြစ်သည်။">
     <meta name="keywords"
         content="Ping Rewards, Money Making, Earn Money, Watch Videos, Social Tasks, Points, Rewards, Cash Out, Online Earning, Video Rewards, Task Completion, Referral Program">
+    <meta name="monetag" content="8ae5d8b8976c2a3ef2e37b1a8a5d219a">
     <meta property="og:description"
         content="Ping Rewards သည် video ကြည့်ခြင်းနှင့် social tasks ပြုလုပ်ခြင်းအားဖြင့် အွန်လိုင်းတွင်ပိုက်ဆံရှာဖွေရန်အတွက် platform တစ်ခုဖြစ်သည်။">
     <!-- NAMO TASSA BHAGAVATO ARAHATO SAMMA SAMBUDDHASSa -->
@@ -20,6 +21,7 @@
     <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://adsgram.ai/sdk/v1/adsgram-sdk.js"></script>
+    <script src='//libtl.com/sdk.js' data-zone='10474083' data-sdk='show_10474083'></script>
     <script>
         tailwind.config = {
             theme: {
@@ -251,18 +253,17 @@
                     <span class="text-xs text-gray-400 group-hover:text-green-500">Tasks</span>
                 </button>
 
-                <!-- 4. Watch Ad (Replaces Invite) -->
-                <button type="button" onclick="showAdsgramAd()"
+                <!-- 4. Bonus (Monetag Ad) -->
+                <button type="button" onclick="showMonetagAd(event)"
                     class="inline-flex flex-col items-center justify-center px-5 hover:bg-slate-700 group">
-                    <!-- TV Icon -->
+                    <!-- Gift/Video Icon -->
                     <svg class="w-6 h-6 mb-1 text-gray-400 group-hover:text-yellow-500 transition duration-200"
                         fill="currentColor" viewBox="0 0 24 24">
                         <path
-                            d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5c0-1.1-.9-2-2-2zm0 14H3V5h18v12zm-5-6l-7 4V7z" />
+                            d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z" />
                     </svg>
-                    <span class="text-xs text-gray-400 group-hover:text-yellow-500">ADS</span>
+                    <span class="text-[10px] text-gray-400 group-hover:text-yellow-500">Bonus</span>
                 </button>
-
                 <!-- 5. Menu (Opens More Options) -->
                 <button type="button" onclick="document.getElementById('more-menu-modal').classList.remove('hidden')"
                     class="inline-flex flex-col items-center justify-center px-5 hover:bg-slate-700 group">
@@ -304,7 +305,15 @@
                         </svg>
                         <span class="text-xs text-white">History</span>
                     </button>
-
+                    <button
+                        onclick="showAdsgramAd(); document.getElementById('more-menu-modal').classList.add('hidden')"
+                        class="flex flex-col items-center p-4 bg-slate-700 rounded-xl hover:bg-slate-600">
+                        <svg class="w-8 h-8 mb-2 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5c0-1.1-.9-2-2-2zm0 14H3V5h18v12zm-5-6l-7 4V7z" />
+                        </svg>
+                        <span class="text-xs text-white">ADS 1</span>
+                    </button>
                     <!-- About -->
                     <button
                         onclick="showView('about-view'); document.getElementById('more-menu-modal').classList.add('hidden')"
@@ -549,7 +558,7 @@
                     </div>
                 </div>
                 <!-- AdsTR0 -->
-                <div>
+                <div class="mb-6 flex flex-col items-center">
                     <script>
                         atOptions = {
                             'key': 'c6affa5f0ae4df4d56203646aa9bf458',
@@ -571,16 +580,19 @@
 
             <!-- ADSTR1 -->
             <div id="video-player-view" class="content-view" style="display: none;">
-                <script>
-                    atOptions = {
-                        'key': 'c6affa5f0ae4df4d56203646aa9bf458',
-                        'format': 'iframe',
-                        'height': 50,
-                        'width': 320,
-                        'params': {}
-                    };
-                </script>
-                <script src="https://ancestorheadquarters.com/c6affa5f0ae4df4d56203646aa9bf458/invoke.js"></script>
+                <div class="mb-6 flex flex-col items-center">
+                    <script>
+                        atOptions = {
+                            'key': 'c6affa5f0ae4df4d56203646aa9bf458',
+                            'format': 'iframe',
+                            'height': 50,
+                            'width': 320,
+                            'params': {}
+                        };
+                    </script>
+                    <script src="https://ancestorheadquarters.com/c6affa5f0ae4df4d56203646aa9bf458/invoke.js"></script>
+
+                </div>
 
                 <!-- Video Player View ထဲမှာ ထည့်ရန် -->
                 <div id="circular-points-tracker" class="circular-progress-container">
@@ -607,8 +619,24 @@
                         <h2 class="text-2xl font-semibold" id="video-player-title">Video Title</h2>
                     </div>
                     <!-- Adstr2 End-->
-                    <script async="async" data-cfasync="false" src="https://ancestorheadquarters.com/5fae19ca63dcfa0b73c6e2395f27545a/invoke.js"></script>
-                    <div id="container-5fae19ca63dcfa0b73c6e2395f27545a"></div>
+                    <!-- Video Player အောက်မှာ ထည့်ရန် -->
+                    <div class="mt-6 flex flex-col items-center">
+                        <div class="bg-card-bg p-2 rounded-xl border border-slate-700 shadow-md">
+                            <!-- သင်၏ Ad Code ကို ဒီမှာထည့်ပါ -->
+                            <script>
+                                atOptions = {
+                                    'key': 'ab011a6fcf341e920b5fe999724cbf9f',
+                                    'format': 'iframe',
+                                    'height': 250,
+                                    'width': 300,
+                                    'params': {}
+                                };
+                            </script>
+                            <script
+                                src="https://ancestorheadquarters.com/ab011a6fcf341e920b5fe999724cbf9f/invoke.js"></script>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -1246,16 +1274,19 @@
             });
 
             // Cashout Form Submit လုပ်တဲ့ အပိုင်း
+            // indexF.html ထဲက cashout-form submit အပိုင်းမှာ ဒါလေး ထည့်ပြင်ပါ
             document.getElementById('cashout-form').addEventListener('submit', async (e) => {
                 e.preventDefault();
 
                 const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "1856743644";
+                // --- နာမည်ကို ယူတဲ့ ကုဒ်အသစ် ---
+                const userName = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.first_name : "Unknown User";
+
                 const method = document.getElementById('payment-method').value;
                 const amount = document.getElementById('payout-amount').value;
                 const phone = document.getElementById('payout-phone').value;
                 const submitBtn = document.getElementById('cashout-submit-btn');
 
-                // ခလုတ်ကို Loading ပြောင်းမယ်
                 submitBtn.innerText = "Processing...";
                 submitBtn.disabled = true;
 
@@ -1263,19 +1294,19 @@
                     const res = await fetch(`${backendUrl}/api/cashout`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ userId, amount, method, phone })
+                        // --- body ထဲမှာ userName ကိုပါ ထည့်ပေးလိုက်ပါ ---
+                        body: JSON.stringify({ userId, userName, amount, method, phone })
                     });
 
                     if (res.ok) {
-                        alert("ငွေထုတ်ယူမှု တောင်းဆိုချက် အောင်မြင်ပါသည်။ ၄၈ နာရီအတွင်း စစ်ဆေးပေးပါမည်။");
+                        alert("ငွေထုတ်ယူမှု တောင်းဆိုချက် အောင်မြင်ပါသည်။");
                         document.getElementById('cashout-modal').classList.add('hidden');
-                        initApp(); // Dashboard က Point တွေကို refresh လုပ်မယ်
+                        initApp();
                     } else {
-                        alert("အမှားတစ်ခု ဖြစ်သွားပါသည်။ နောက်မှ ထပ်စမ်းကြည့်ပါ။");
+                        alert("အမှားတစ်ခု ဖြစ်သွားပါသည်။");
                     }
                 } catch (err) {
                     console.error(err);
-                    alert("ချိတ်ဆက်မှု အမှားဖြစ်နေပါသည်။");
                 } finally {
                     submitBtn.innerText = "Submit Request";
                     submitBtn.disabled = false;
@@ -1398,17 +1429,14 @@
                     cachedVideos = await res.json();
                 }
 
-                // 2. User ရဲ့ ၄၈ နာရီအတွင်း ကြည့်ထားတဲ့ ရာဇဝင်ကို ယူမယ်
                 const historyRes = await fetch(`${backendUrl}/api/get-watch-history?userId=${userId}`);
                 const history = await historyRes.json();
 
-                // ကြည့်ပြီးသား ဗီဒီယို Title တွေကို List လုပ်မယ်
                 const watchedTitles = history.map(h => h.description.replace('Watched: ', ''));
 
                 const grid = document.getElementById('video-grid');
                 let displayVideos = categoryFilter === 'all' ? [...cachedVideos] : cachedVideos.filter(v => v.category === categoryFilter);
 
-                // 3. ဗီဒီယိုတွေကို စီမယ် (မကြည့်ရသေးတာ အပေါ်၊ Cooldown မိနေတာ အောက်)
                 displayVideos.sort((a, b) => {
                     const aWatched = watchedTitles.includes(a.title);
                     const bWatched = watchedTitles.includes(b.title);
@@ -1470,14 +1498,12 @@
             // 1. Link ကိုဖွင့်မယ်
             window.open(link, '_blank');
 
-            // 2. Button ကို Loading ပြောင်းမယ်
             const originalText = btn.innerText;
             btn.innerText = "Checking...";
             btn.style.pointerEvents = "none";
             btn.classList.remove("bg-primary");
             btn.classList.add("bg-slate-500");
 
-            // 3. 5 စက္ကန့်လောက် စောင့်ခိုင်းမယ် (Fake Verification Delay)
             setTimeout(async () => {
                 try {
                     // points parameter ကို မထည့်တော့ပါ (Backend က DB ထဲကနေပဲ ယူတော့မှာမို့လို့ပါ)
@@ -1489,7 +1515,6 @@
                     const result = await res.json();
 
                     if (result.success) {
-                        // Backend က ပြန်ပေးတဲ့ earned points ကို သုံးမယ်
                         alert(`Success! Task Completed. +${result.earned} points.`);
 
                         // UI Update
@@ -1565,7 +1590,6 @@
             } catch (e) { console.error(e); }
         }
 
-        // --- YouTube & Timer Logic (မူလအတိုင်း ထားရှိပါသည်) ---
         function getYouTubeId(url) {
             const match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
             return (match && match[2].length == 11) ? match[2] : null;
@@ -1640,13 +1664,11 @@
             }
         }
 
-        // History ထဲက ဗီဒီယိုကြည့်ထားတဲ့ အရေအတွက်ကို ရေတွက်ပြဖို့
         async function updateWatchCount() {
             try {
                 const res = await fetch(`${backendUrl}/api/get-history?id=${userId}`);
                 const history = await res.json();
 
-                // Description ထဲမှာ "Watched:" ဆိုတာ ပါတဲ့ အရေအတွက်ကို ရေတွက်မယ်
                 const watchCount = history.filter(h => h.description && h.description.includes('Watched:')).length;
 
                 // UI မှာ အရေအတွက် ပြောင်းပေးမယ်
@@ -1656,7 +1678,6 @@
             }
         }
 
-        // ဒီ function ကို initApp ထဲမှာ ခေါ်ပေးပါ
         updateWatchCount();
         function setupCopyButtons() {
             document.getElementById('copy-referral-btn').onclick = () => {
@@ -1669,9 +1690,6 @@
             };
         }
 
-
-        // Admin functions (မူလအတိုင်း) ...
-        // --- Admin Functions ---
 
         async function fetchAdminDashboardData() {
             try {
@@ -1717,14 +1735,12 @@
             } catch (e) { console.error(e); }
         }
 
-        // Video ဖျက်သည့် Function
         async function deleteVideo(id) {
             if (!confirm("Are you sure?")) return;
             await fetch(`${backendUrl}/api/admin/delete-video?id=${id}`, { method: 'DELETE' });
             renderManageVideosTable(); // Table ကို Refresh လုပ်
         }
 
-        // Manage Social Tasks Table ဆွဲထုတ်ခြင်း
         async function renderManageSocialTasksTable() {
             try {
                 const res = await fetch(`${backendUrl}/api/get-tasks`);
@@ -1757,14 +1773,12 @@
             renderManageSocialTasksTable();
         }
 
-        // Users အားလုံး ဆွဲထုတ်ခြင်း (Manage Users View)
         async function fetchAllUsers() {
             try {
                 const res = await fetch(`${backendUrl}/api/admin/users`);
                 const users = await res.json();
                 const tbody = document.getElementById('users-table-body');
 
-                // Admin တွေရဲ့ ID (မဖော်ပြချင်ရင် ဖယ်ထားလို့ရသည်)
                 const adminIds = ["1856743644"];
 
                 tbody.innerHTML = users.map(u => `
@@ -1780,11 +1794,9 @@
             } catch (e) { console.error(e); }
         }
 
+
         document.addEventListener("DOMContentLoaded", () => {
 
-            // --- 1. MANAGE VIDEOS ---
-
-            // "Add New Video" ခလုတ်နှိပ်ရင် Modal ဖွင့်မယ်
             const addVideoBtn = document.getElementById('add-video-btn');
             if (addVideoBtn) {
                 addVideoBtn.addEventListener('click', () => {
@@ -1793,13 +1805,11 @@
                 });
             }
 
-            // Video Form "Save" နှိပ်ရင် Backend ကိုပို့မယ်
             const videoForm = document.getElementById('add-video-form');
             if (videoForm) {
                 videoForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
 
-                    // ခလုတ်ကို Loading ပြောင်းမယ်
                     const saveBtn = videoForm.querySelector('.save-btn');
                     const originalText = saveBtn.innerText;
                     saveBtn.innerText = "Saving...";
@@ -1810,11 +1820,7 @@
                         description: document.getElementById('video-description').value,
                         category: document.getElementById('video-category').value,
                         video_url: document.getElementById('video-url').value,
-                        // points column မသုံးတော့ပေမယ့် compatibility အတွက် 0 ထည့်ထားမယ်
                         points: parseInt(document.getElementById('video-points').value) || 0,
-                        // duration (seconds) ကို description ထဲမှာ တွဲထည့်လိုက်မယ် (Backend Table မပြင်ချင်ရင်)
-                        // သို့မဟုတ် column အသစ်မရှိရင် ဒီအတိုင်းထားပါ။ 
-                        // ဒီမှာတော့ points logic ကို frontend timer နဲ့ပဲသွားထားလို့ URL နဲ့ Title က အရေးကြီးပါတယ်။
                     };
 
                     try {
@@ -1841,10 +1847,6 @@
                 });
             }
 
-
-            // --- 2. MANAGE SOCIAL TASKS ---
-
-            // "Add New Task" ခလုတ်နှိပ်ရင် Modal ဖွင့်မယ်
             const addTaskBtn = document.getElementById('add-social-task-btn');
             if (addTaskBtn) {
                 addTaskBtn.addEventListener('click', () => {
@@ -1853,7 +1855,6 @@
                 });
             }
 
-            // Task Form "Save" နှိပ်ရင် Backend ကိုပို့မယ်
             const taskForm = document.getElementById('add-social-task-form');
             if (taskForm) {
                 taskForm.addEventListener('submit', async (e) => {
@@ -1895,16 +1896,12 @@
                 });
             }
 
-            // --- 3. COMMON MODAL CLOSING ---
-            // Cancel ခလုတ်တွေနှိပ်ရင် Modal ပိတ်မယ်
             document.querySelectorAll('.cancel-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     document.querySelectorAll('.modal-overlay').forEach(modal => modal.classList.add('hidden'));
                 });
             });
 
-            // --- 4. MANAGE USERS SEARCH ---
-            // User ရှာတဲ့ Search Box အလုပ်လုပ်အောင်
             const userSearchInput = document.getElementById('manage-users-search');
             if (userSearchInput) {
                 userSearchInput.addEventListener('keyup', (e) => {
@@ -1922,8 +1919,6 @@
                 });
             }
         });
-
-        // Payouts ဇယားဆွဲထုတ်ရန်
         async function fetchPayouts() {
             try {
                 const res = await fetch(`${backendUrl}/api/admin/payouts`);
@@ -1940,8 +1935,6 @@
                     let statusColor = 'text-yellow-400';
                     if (p.status === 'paid') statusColor = 'text-green-400';
                     if (p.status === 'rejected') statusColor = 'text-red-400';
-
-                    // Paid/Rejected ဖြစ်ပြီးရင် Action ခလုတ်တွေ မပြတော့ဘူး
                     const actions = p.status === 'pending' ? `
                         <button onclick="handlePayout('${p.id}', 'paid', '${p.user_id}', '${p.amount}')" class="px-2 py-1 bg-green-600 hover:bg-green-500 rounded text-white text-xs mr-2">Approve</button>
                         <button onclick="handlePayout('${p.id}', 'rejected', '${p.user_id}', '${p.amount}')" class="px-2 py-1 bg-red-600 hover:bg-red-500 rounded text-white text-xs">Reject</button>
@@ -1962,112 +1955,147 @@
             } catch (e) { console.error(e); }
         }
 
-            
-            let AdController;
-            const ADSGRAM_BLOCK_ID = "21063";
-            
-            // ၁။ SDK ကို အတင်း Download ဆွဲခိုင်းမည့် Function
-            function loadAdsgramScript() {
-                return new Promise((resolve, reject) => {
-                    // ရှိပြီးသားဆိုရင် ပြန်မဆွဲတော့ဘူး
-                    if (window.Adsgram) {
-                        resolve();
-                        return;
-                    }
-            
-                    // Script Tag ကို Javascript နဲ့ ဖန်တီးပြီး ထည့်မယ်
-                    const script = document.createElement('script');
-                    script.src = "https://adsgram.ai/sdk/v1/adsgram-sdk.js";
-                    script.async = true;
-                    
-                    script.onload = () => {
-                        console.log("✅ Adsgram SDK Loaded Successfully");
-                        resolve();
-                    };
-                    
-                    script.onerror = (e) => {
-                        console.error("❌ Failed to load Adsgram SDK", e);
-                        reject(e);
-                    };
-            
-                    document.head.appendChild(script);
-                });
-            }
-            
-            // ၂။ Page ပွင့်တာနဲ့ Script ကို စောင့်မယ်၊ ပြီးရင် Init လုပ်မယ်
-            document.addEventListener('DOMContentLoaded', async () => {
-                try {
-                    await loadAdsgramScript();
-                    if (window.Adsgram) {
-                        AdController = window.Adsgram.init({
-                            blockId: ADSGRAM_BLOCK_ID,
-                            debug: true // 🔥 Test Mode
-                        });
-                    }
-                } catch (e) {
-                    console.log("Auto-init failed, will try again on button click.");
+
+        let AdController;
+        const ADSGRAM_BLOCK_ID = "21063";
+        function loadAdsgramScript() {
+            return new Promise((resolve, reject) => {
+                if (window.Adsgram) {
+                    resolve();
+                    return;
                 }
+
+                const script = document.createElement('script');
+                script.src = "https://adsgram.ai/sdk/v1/adsgram-sdk.js";
+                script.async = true;
+
+                script.onload = () => {
+                    console.log("✅ Adsgram SDK Loaded Successfully");
+                    resolve();
+                };
+
+                script.onerror = (e) => {
+                    console.error("❌ Failed to load Adsgram SDK", e);
+                    reject(e);
+                };
+
+                document.head.appendChild(script);
             });
-            
-            // ၃။ Button နှိပ်မှ အလုပ်လုပ်မည့် Function
-            async function showAdsgramAd() {
-                const btn = document.querySelector('button[onclick="showAdsgramAd()"]');
-                if(btn) btn.disabled = true; // နှိပ်ပြီးရင် ခဏပိတ်ထားမယ်
-            
-                try {
-                    // SDK မရှိသေးရင် အခုချက်ချင်း ဆွဲထည့်မယ်
-                    if (!window.Adsgram) {
-                        await loadAdsgramScript();
-                    }
-            
-                    // Controller မရှိသေးရင် Init လုပ်မယ်
-                    if (!AdController && window.Adsgram) {
-                        AdController = window.Adsgram.init({ 
-                            blockId: ADSGRAM_BLOCK_ID, 
-                            debug: true 
-                        });
-                    }
-            
-                    if (!AdController) {
-                        alert("⚠️ Adsgram စနစ် ချိတ်ဆက်၍ မရပါ။ (Internet Connection စစ်ဆေးပါ)");
-                        if(btn) btn.disabled = false;
-                        return;
-                    }
-            
-                    // ကြော်ငြာပြမယ်
-                    const result = await AdController.show();
-            
-                    if (result.done) {
-                        alert("✅ ဂုဏ်ယူပါတယ်။ အမှတ် ၃၀ ရရှိပါပြီ။ (Test Mode)");
-                        
-                        // Backend Point Update
-                        const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "1856743644";
-                        
+        }
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                await loadAdsgramScript();
+                if (window.Adsgram) {
+                    AdController = window.Adsgram.init({
+                        blockId: ADSGRAM_BLOCK_ID,
+                        debug: true // 🔥 Test Mode
+                    });
+                }
+            } catch (e) {
+                console.log("Auto-init failed, will try again on button click.");
+            }
+        });
+
+        async function showAdsgramAd() {
+            const btn = document.querySelector('button[onclick="showAdsgramAd()"]');
+            if (btn) btn.disabled = true; // နှိပ်ပြီးရင် ခဏပိတ်ထားမယ်
+
+            try {
+                if (!window.Adsgram) {
+                    await loadAdsgramScript();
+                }
+
+                if (!AdController && window.Adsgram) {
+                    AdController = window.Adsgram.init({
+                        blockId: ADSGRAM_BLOCK_ID,
+                        debug: true
+                    });
+                }
+
+                if (!AdController) {
+                    alert("⚠️ Adsgram စနစ် ချိတ်ဆက်၍ မရပါ။ (Internet Connection စစ်ဆေးပါ)");
+                    if (btn) btn.disabled = false;
+                    return;
+                }
+
+                const result = await AdController.show();
+
+                if (result.done) {
+                    alert("✅ ဂုဏ်ယူပါတယ်။ အမှတ် ၃၀ ရရှိပါပြီ။ (Test Mode)");
+                    const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "1856743644";
+
+                    await fetch(`${backendUrl}/api/award-points`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            userId: userId,
+                            amount: 30,
+                            desc: "Adsgram: Watched Video"
+                        })
+                    });
+
+                    if (typeof initApp === "function") initApp();
+                }
+            } catch (error) {
+                console.error("Adsgram Error:", error);
+
+                if (error.error === 'not_filled') {
+                    alert("⚠️ ကြည့်ရှုရန် ကြော်ငြာမရှိသေးပါ။ (No Ads Available)");
+                } else {
+                    alert("Error: " + JSON.stringify(error));
+                }
+            } finally {
+                if (btn) btn.disabled = false; // ခလုတ်ပြန်ဖွင့်မယ်
+            }
+        }
+
+        // Monetag အတွက် Cooldown သိမ်းမည့် variable
+        let lastAdTime = 0;
+
+        async function showMonetagAd(event) {
+            const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "1856743644";
+            const currentTime = Date.now();
+            if (currentTime - lastAdTime < 60000) {
+                const timeLeft = Math.ceil((60000 - (currentTime - lastAdTime)) / 1000);
+                alert(`⚠️ ကျေးဇူးပြု၍ ${timeLeft} စက္ကန့် ခဏစောင့်ပေးပါ။`);
+                return;
+            }
+
+            const btn = event.currentTarget;
+            if (btn) btn.disabled = true;
+
+            try {
+                if (typeof show_10474083 === 'function') {
+                    show_10474083().then(async () => {
+                        lastAdTime = Date.now();
+
+                        alert('✅ ဂုဏ်ယူပါတယ်။ ဗီဒီယိုကြည့်ပြီးလို့ အမှတ် ၂၀ ရရှိပါပြီ။');
                         await fetch(`${backendUrl}/api/award-points`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ 
-                                userId: userId, 
-                                amount: 30, 
-                                desc: "Adsgram: Watched Video" 
+                            body: JSON.stringify({
+                                userId: userId,
+                                amount: 20,
+                                desc: "Monetag: Watched Bonus Ad"
                             })
                         });
-            
-                        if (typeof initApp === "function") initApp(); 
-                    }
-                } catch (error) {
-                    console.error("Adsgram Error:", error);
-                    
-                    if (error.error === 'not_filled') {
-                        alert("⚠️ ကြည့်ရှုရန် ကြော်ငြာမရှိသေးပါ။ (No Ads Available)");
-                    } else {
-                        alert("Error: " + JSON.stringify(error));
-                    }
-                } finally {
-                    if(btn) btn.disabled = false; // ခလုတ်ပြန်ဖွင့်မယ်
+
+                        if (typeof initApp === "function") initApp();
+
+                    }).catch(err => {
+                        console.error("Monetag Error:", err);
+                        alert("⚠️ ကြော်ငြာပြသရန် အဆင်မပြေသေးပါ။");
+                    });
+                } else {
+                    alert("⚠️ ကြော်ငြာစနစ် Loading ဖြစ်နေဆဲပါ။");
                 }
+            } catch (e) {
+                console.error(e);
+            } finally {
+                if (btn) btn.disabled = false;
             }
-        // Approve/Reject လုပ်ရန်
+        }
+
         async function handlePayout(payoutId, status, userId, amount) {
             if (!confirm(`Mark this request as ${status.toUpperCase()}?`)) return;
 
