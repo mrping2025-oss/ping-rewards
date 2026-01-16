@@ -1,66 +1,2090 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Ping Rewards သည် Watch video , Complete social tasks , Earn points , Get rewards , Cash out platform တစ်ခုဖြစ်သည်။">
+    <meta name="keywords"
+        content="Ping Rewards, Money Making, Earn Money, Watch Videos, Social Tasks, Points, Rewards, Cash Out, Online Earning, Video Rewards, Task Completion, Referral Program">
+    <meta property="og:description"
+        content="Ping Rewards သည် video ကြည့်ခြင်းနှင့် social tasks ပြုလုပ်ခြင်းအားဖြင့် အွန်လိုင်းတွင်ပိုက်ဆံရှာဖွေရန်အတွက် platform တစ်ခုဖြစ်သည်။">
+    <!-- NAMO TASSA BHAGAVATO ARAHATO SAMMA SAMBUDDHASSa -->
+    <title>Ping Rewards</title>
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%236366f1' d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9v-4h2.5c1.38 0 2.5-1.12 2.5-2.5S12.88 7 11.5 7H9v-2h2.5C14.43 5 16 6.57 16 8.5S14.43 12 11.5 12H9v4h4v-2z'/%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://adsgram.ai/sdk/v1/adsgram-sdk.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#6366f1',  /* Indigo */
+                        'secondary': '#f9a8d4', /* Pink */
+                        'background': '#0f172a', /* Slate 900 */
+                        'card-bg': '#1e293b', /* Slate 800 */
+                        'text-color': '#e2e8f0', /* Slate 200 */
+                        'muted-text': '#94a3b8', /* Slate 400 */
+                        'accent-green': '#10b981', /* Emerald */
+                        'accent-orange': '#f59e0b', /* Amber */
+                        'accent-purple': '#a855f7', /* Purple */
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    keyframes: {
+                        spin: {
+                            '0%': { transform: 'rotate(0deg)' },
+                            '100%': { transform: 'rotate(360deg)' },
+                        },
+                        coinFly: {
+                            '0%': { transform: 'translateY(0) scale(1)', opacity: '1' },
+                            '100%': { transform: 'translateY(-100px) scale(0.5)', opacity: '0' },
+                        }
+                    },
+                    animation: {
+                        spin: 'spin 1s linear infinite',
+                        coin: 'coinFly 1s ease-in-out forwards',
+                    }
+                }
+            }
+        }
+
+    </script>
     <style>
-        /* Mobile Friendly Container */
-        .container {
-            width: 90%;
-            margin: 10px auto;
-            padding: 15px;
-            background: #fdf2f2;
-            border-radius: 12px;
-            border-left: 5px solid #e74c3c;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        /* General Styles for the entire app */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #e2e8f0;
+            margin: 0;
+            overflow-x: hidden;
         }
 
-        .fade-animation {
-            font-family: sans-serif;
-            /* Mobile မှာ စာလုံးမကြီးလွန်းအောင် 16px-18px ထားတာ အကောင်းဆုံးပါ */
-            font-size: 18px; 
-            color: #e74c3c;
-            text-align: center;
-            font-weight: bold;
-            line-height: 1.5;
-            animation: fadeInOut 4s infinite;
+        .sidebar.open {
+            transform: translateX(0);
         }
 
-        @keyframes fadeInOut {
-            0% { opacity: 0; transform: scale(0.95); }
-            50% { opacity: 1; transform: scale(1); }
-            100% { opacity: 0; transform: scale(0.95); }
+        .backdrop.open {
+            display: block;
         }
 
-        /* Marquee Section */
-        .marquee-box {
-            width: 100%;
+        .no-scroll {
             overflow: hidden;
-            background: #2c3e50;
-            padding: 12px 0;
-            margin-top: 20px;
         }
 
-        .marquee-text {
-            color: #ffffff;
-            font-size: 16px;
-            font-family: sans-serif;
-            white-space: nowrap;
+        .coin-icon {
+            animation: coinFly 1s ease-in-out forwards;
+        }
+
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        /* Animation */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        @keyframes scroll {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        .animate-scroll {
+            animation: scroll 12s linear infinite;
+        }
+
+        .animate-scroll:hover {
+            animation-play-state: paused;
+        }
+
+        /* Floating Circle Container */
+        .circular-progress-container {
+            position: fixed;
+            bottom: 80px;
+            /* အောက်ခြေနဲ့ နည်းနည်းခွာထား */
+            right: 20px;
+            /* ညာဘက်ကပ် */
+            z-index: 1001;
+            width: 70px;
+            height: 70px;
+            background-color: #1e293b;
+            /* Dark Background */
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* အစမှာ ဖျောက်ထားမယ်၊ JS နဲ့မှ ပြမယ် */
+            display: none;
+        }
+
+        /* အဝါရောင် လည်မည့် အဝိုင်း */
+        .circular-progress {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: conic-gradient(#F59E0B 0deg, #334155 0deg);
+            /* အဝါရောင် (Yellow/Amber) */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* အတွင်းက စာသား (အမှတ်ပြမည့်နေရာ) */
+        .circular-progress::before {
+            content: "";
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #1e293b;
+            /* အလယ်က အပေါက် */
+        }
+
+        .progress-value {
+            position: relative;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #F59E0B;
+            /* စာလုံးအရောင် အဝါ */
+        }
+
+        /* Make app-content scrollable on small screens */
+        #app-content {
+            overflow-y: auto;
+            height: 100vh;
         }
     </style>
 </head>
-<body>
 
-    <div class="container">
-        <div class="fade-animation">
-            ကြော်ငြာတွေ မတင်ထားဘဲ ခဏခဏ တက်နေတဲ့ လူတွေအတွက် ခဏလေး စောင့်ပေးလိုက်ကြရအောင်ဗျာ။
+<body class="bg-background text-text-color">
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay"
+        class="fixed inset-0 bg-background bg-opacity-70 flex justify-center items-center z-[1002] transition-opacity duration-300 opacity-0 pointer-events-none">
+        <div class="animate-spin rounded-full h-12 w-12 border-4 border-text-color border-t-primary"></div>
+    </div>
+
+    <!-- START: Login Page View (This is shown only when user needs to log in) -->
+    <div id="login-page" class="view flex justify-center items-center min-h-screen p-4" style="display: none;">
+        <div class="w-full max-w-sm text-center">
+            <div class="mb-8">
+                <!-- New Logo SVG: Letter 'P' -->
+                <svg class="w-20 h-20 mx-auto fill-primary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9v-4h2.5c1.38 0 2.5-1.12 2.5-2.5S12.88 7 11.5 7H9v-2h2.5C14.43 5 16 6.57 16 8.5S14.43 12 11.5 12H9v4h4v-2z" />
+                </svg>
+                <div class="text-2xl font-bold mt-2">Ping Rewards</div>
+                <div class="text-muted-text mt-1">Get rewarded for watching videos.</div>
+            </div>
+            <div class="bg-card-bg p-8 rounded-xl shadow-lg border border-slate-700">
+                <h2 class="text-xl font-semibold mb-6">Welcome to Ping Rewards</h2>
+                <p id="login-message" class="text-red-500 text-sm mb-4" style="display: none;"></p>
+                <button id="google-sign-in-btn"
+                    class="w-full py-3 bg-primary hover:bg-indigo-600 text-white font-semibold rounded-lg transition-colors duration-300 flex items-center justify-center gap-3">
+                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path fill="#ffffff"
+                            d="M22.4 12.2c0-.7-.1-1.3-.2-1.9H12v3.8h5.3c-.2 1.2-.8 2.2-1.6 3l3.2 2.5c2.1-1.9 3.4-4.7 3.4-8.4z" />
+                        <path fill="#ffffff"
+                            d="M12 22c3.2 0 5.9-1.1 7.8-3l-3.2-2.5c-1 1.2-2.3 1.9-4.6 1.9-3.5 0-6.5-2.4-7.6-5.6l-3.3 2.5c1.4 2.8 4.4 4.8 7.9 4.8z" />
+                        <path fill="#ffffff"
+                            d="M4.4 12.2c0-1.6.4-3.1 1.2-4.4L2.3 5.4C.9 7.7 0 10 0 12.2c0 2.2.9 4.5 2.3 6.8l3.3-2.4c-.8-1.3-1.2-2.8-1-1.4z" />
+                        <path fill="#ffffff"
+                            d="M12 4.1c1.8 0 3.3.6 4.6 1.8L19.4 3C17.5 1.1 14.8 0 12 0c-3.5 0-6.5 2-7.9 4.8l3.3 2.4C8.7 5.7 10.2 5 12 5z" />
+                    </svg>
+                    Sign in with Google
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- END: Login Page View -->
+
+    <!-- Main Application Container (Visible initially for guest mode) -->
+    <div id="app-container" class="view flex flex-col md:flex-row w-full min-h-screen" style="display: flex;">
+        <!-- Bottom Navigation Bar -->
+        <div class="fixed bottom-0 left-0 z-50 w-full h-16 bg-slate-800 border-t border-slate-700">
+            <div class="grid h-full max-w-lg grid-cols-5 mx-auto font-medium">
+
+                <!-- 1. Home (Dashboard) -->
+                <button type="button" onclick="showView('user-dashboard-view')"
+                    class="inline-flex flex-col items-center justify-center px-5 hover:bg-slate-700 group">
+                    <svg class="w-6 h-6 mb-1 text-gray-400 group-hover:text-primary transition duration-200"
+                        fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                            d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z">
+                        </path>
+                    </svg>
+                    <span class="text-xs text-gray-400 group-hover:text-primary">Home</span>
+                </button>
+
+                <!-- 2. Video -->
+                <button type="button" onclick="showView('watch-videos-view')"
+                    class="inline-flex flex-col items-center justify-center px-5 hover:bg-slate-700 group">
+                    <svg class="w-6 h-6 mb-1 text-gray-400 group-hover:text-pink-500 transition duration-200"
+                        fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
+                    </svg>
+                    <span class="text-xs text-gray-400 group-hover:text-pink-500">Video</span>
+                </button>
+
+                <!-- 3. Tasks -->
+                <button type="button" onclick="showView('social-tasks-view')"
+                    class="inline-flex flex-col items-center justify-center px-5 hover:bg-slate-700 group">
+                    <svg class="w-6 h-6 mb-1 text-gray-400 group-hover:text-green-500 transition duration-200"
+                        fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-11 4c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2V8c0-1.1.9-2 2-2h4c1.1 0 2 .9 2 2v2zm-2 5c-.55 0-1-.45-1-1v-1h2v1c0 .55-.45 1-1 1zm4 0c-.55 0-1-.45-1-1v-1h2v1c0 .55-.45 1-1 1zm4 0c-.55 0-1-.45-1-1v-1h2v1c0 .55-.45 1-1 1zm-8-3c0 .55-.45 1-1 1s-1-.45-1-1v-1h2v1z" />
+                    </svg>
+                    <span class="text-xs text-gray-400 group-hover:text-green-500">Tasks</span>
+                </button>
+
+                <!-- 4. Watch Ad (Replaces Invite) -->
+                <button type="button" onclick="showAdsgramAd()"
+                    class="inline-flex flex-col items-center justify-center px-5 hover:bg-slate-700 group">
+                    <!-- TV Icon -->
+                    <svg class="w-6 h-6 mb-1 text-gray-400 group-hover:text-yellow-500 transition duration-200"
+                        fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5c0-1.1-.9-2-2-2zm0 14H3V5h18v12zm-5-6l-7 4V7z" />
+                    </svg>
+                    <span class="text-xs text-gray-400 group-hover:text-yellow-500">ADS</span>
+                </button>
+
+                <!-- 5. Menu (Opens More Options) -->
+                <button type="button" onclick="document.getElementById('more-menu-modal').classList.remove('hidden')"
+                    class="inline-flex flex-col items-center justify-center px-5 hover:bg-slate-700 group">
+                    <svg class="w-6 h-6 mb-1 text-gray-400 group-hover:text-white transition duration-200"
+                        fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
+                    </svg>
+                    <span class="text-xs text-gray-400 group-hover:text-white">Menu</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- More Menu Modal (ကျန်တဲ့ ခလုတ်တွေ ဒီထဲထည့်မယ်) -->
+        <div id="more-menu-modal"
+            class="fixed inset-0 bg-black bg-opacity-80 z-[2000] hidden flex flex-col justify-end">
+            <!-- Close Area (အပေါ်က အလွတ်နေရာနှိပ်ရင် ပိတ်မယ်) -->
+            <div class="flex-grow" onclick="document.getElementById('more-menu-modal').classList.add('hidden')"></div>
+
+            <div class="bg-card-bg rounded-t-2xl p-6 border-t border-slate-700 animate-[slideUp_0.3s_ease-out]">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-white">More Options</h3>
+                    <button onclick="document.getElementById('more-menu-modal').classList.add('hidden')"
+                        class="p-2 bg-slate-700 rounded-full">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4">
+                    <!-- Points History -->
+                    <button
+                        onclick="showView('points-history-view'); document.getElementById('more-menu-modal').classList.add('hidden')"
+                        class="flex flex-col items-center p-4 bg-slate-700 rounded-xl hover:bg-slate-600">
+                        <svg class="w-8 h-8 mb-2 text-primary" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z" />
+                        </svg>
+                        <span class="text-xs text-white">History</span>
+                    </button>
+
+                    <!-- About -->
+                    <button
+                        onclick="showView('about-view'); document.getElementById('more-menu-modal').classList.add('hidden')"
+                        class="flex flex-col items-center p-4 bg-slate-700 rounded-xl hover:bg-slate-600">
+                        <svg class="w-8 h-8 mb-2 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+                        </svg>
+                        <span class="text-xs text-white">About</span>
+                    </button>
+
+                    <!-- Help -->
+                    <a href="https://t.me/Mr_PingGP" target="_blank"
+                        class="flex flex-col items-center p-4 bg-slate-700 rounded-xl hover:bg-slate-600">
+                        <svg class="w-8 h-8 mb-2 text-pink-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM9 11H7V9h2v2zm4 0h-2V9h2v2zm4 0h-2V9h2v2z" />
+                        </svg>
+                        <span class="text-xs text-white">Help</span>
+                    </a>
+
+                    <!-- ================= ADMIN BUTTONS (Admin Only) ================= -->
+
+                    <!-- Invite & Earn (Moved to Menu) -->
+                    <button
+                        onclick="showView('invite-and-earn-view'); document.getElementById('more-menu-modal').classList.add('hidden')"
+                        class="flex flex-col items-center p-4 bg-slate-700 rounded-xl hover:bg-slate-600">
+                        <svg class="w-8 h-8 mb-2 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
+                        </svg>
+                        <span class="text-xs text-white">Invite</span>
+                    </button>
+
+                    <!-- 2. Manage Videos -->
+                    <button
+                        onclick="showView('manage-videos-view'); document.getElementById('more-menu-modal').classList.add('hidden')"
+                        class="admin-link flex flex-col items-center p-4 bg-red-900/50 border border-red-700 rounded-xl hover:bg-red-800"
+                        style="display:none;">
+                        <svg class="w-8 h-8 mb-2 text-red-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z" />
+                        </svg>
+                        <span class="text-xs text-white">Videos</span>
+                    </button>
+
+                    <!-- 3. Manage Tasks -->
+                    <button
+                        onclick="showView('manage-social-tasks-view'); document.getElementById('more-menu-modal').classList.add('hidden')"
+                        class="admin-link flex flex-col items-center p-4 bg-red-900/50 border border-red-700 rounded-xl hover:bg-red-800"
+                        style="display:none;">
+                        <svg class="w-8 h-8 mb-2 text-red-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+                        </svg>
+                        <span class="text-xs text-white">Tasks</span>
+                    </button>
+
+                    <!-- 4. Manage Users -->
+                    <button
+                        onclick="showView('manage-users-view'); document.getElementById('more-menu-modal').classList.add('hidden')"
+                        class="admin-link flex flex-col items-center p-4 bg-red-900/50 border border-red-700 rounded-xl hover:bg-red-800"
+                        style="display:none;">
+                        <svg class="w-8 h-8 mb-2 text-red-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                        </svg>
+                        <span class="text-xs text-white">Users</span>
+                    </button>
+                    <!-- 5. Manage Payouts -->
+                    <button
+                        onclick="showView('manage-payouts-view'); document.getElementById('more-menu-modal').classList.add('hidden')"
+                        class="admin-link flex flex-col items-center p-4 bg-red-900/50 border border-red-700 rounded-xl hover:bg-red-800"
+                        style="display:none;">
+                        <svg class="w-8 h-8 mb-2 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.15-1.46-3.27-3.4h1.96c.1 1.05.69 1.64 1.83 1.64.93 0 1.6-.48 1.6-1.1 0-.61-.67-.96-1.81-1.27-1.49-.41-3.35-1.07-3.35-3.31 0-1.68 1.28-2.99 2.84-3.41V5h2.67v1.9c1.7.35 2.96 1.48 3.1 3.23h-1.97c-.12-.86-.62-1.32-1.57-1.32-.96 0-1.48.47-1.48 1.07 0 .58.74.88 1.95 1.21 1.49.4 3.33 1.09 3.33 3.4-.01 1.76-1.33 3.03-2.96 3.42z" />
+                        </svg>
+                        <span class="text-xs text-white">Payouts</span>
+                    </button>
+                    <!-- Admin (Only show if needed via JS logic) -->
+                    <button id="mobile-admin-btn"
+                        onclick="showView('admin-dashboard-view'); document.getElementById('more-menu-modal').classList.add('hidden')"
+                        class="flex flex-col items-center p-4 bg-slate-700 rounded-xl hover:bg-slate-600 admin-link"
+                        style="display:none;">
+                        <svg class="w-8 h-8 mb-2 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                        </svg>
+                        <span class="text-xs text-white">Admin</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="backdrop" class="backdrop fixed inset-0 bg-black bg-opacity-50 z-[99] hidden md:hidden"></div>
+
+        <!-- Main Content Area -->
+        <!-- mb-16 ထည့်လိုက်တာက အောက်ဆုံးက Nav Bar နဲ့ ကွယ်မနေအောင်ပါ -->
+        <div id="app-content" class="flex-grow p-2 md:p-6 pb-24 w-full h-screen overflow-y-auto">
+            <header class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl md:text-3xl font-bold flex items-center">
+                    <!-- Button ကို ID မတပ်ထားတဲ့ h1 အောက်မှာပဲ ထားမယ် -->
+                    <button id="menu-toggle"
+                        class="md:hidden p-2 -ml-2 mr-2 rounded-md bg-slate-700 text-white hover:bg-slate-600 transition-colors duration-200">
+                        <span class="text-[#FFD700] font-bold rounded-full">P</span>
+                    </button>
+                    <!-- စာသားအတွက် သီးသန့် span လုပ်ပြီး id="page-title" ကို ဒီမှာပြောင်းတပ်မယ် -->
+                    <span id="page-title">Dashboard</span>
+                </h1>
+                <div id="header-meta" class="hidden md:flex items-center space-x-4">
+                    <!-- Header meta info -->
+                </div>
+            </header>
+
+            <!-- User Dashboard View -->
+            <div id="user-dashboard-view" class="content-view" style="display: none;">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                    <div
+                        class="card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 col-span-1 lg:col-span-3 flex flex-col md:flex-row justify-between items-center">
+                        <!-- Container -->
+                        <div
+                            class="w-full max-w-7xl overflow-hidden bg-yellow-400 border-y-0 border-yellow-600 py-0 shadow-2xl rounded-4">
+                            <div class="flex animate-scroll min-w-max">
+                                <span
+                                    class="text-sm sm:text-sm font-extrabold text-gray-900 uppercase tracking-wide whitespace-nowrap px-0">
+                                    🎉 အရေးကြီးသည် About ကို နိပ်ပြီး စည်းကမ်းချက်ကို အရင်ဖတ်ပေးပါ 🎉
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                </span>
+                                <span
+                                    class="text-sm sm:text-sm font-extrabold text-gray-900 uppercase tracking-wide whitespace-nowrap px-0">
+                                    🎉 Important: Please click 'About' and read the rules first. 🎉
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                </span>
+
+                            </div>
+                        </div>
+                        <!-- Container -->
+                        <div>
+
+
+                            <h2 id="welcome-message" class="text-xl font-semibold mb-2"></h2>
+                            <p class="text-muted-text">Ready to earn more points? Let's start watching some videos.</p>
+                        </div>
+                        <a href="#"
+                            class="nav-link user-link mt-4 md:mt-0 px-6 py-3 bg-primary hover:bg-indigo-600 text-white font-semibold rounded-lg transition-colors duration-300 whitespace-nowrap"
+                            data-target="watch-videos-view">
+                            Watch Now
+                        </a>
+                    </div>
+                    <div class="card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
+                        <h2 class="text-lg font-semibold mb-2 text-muted-text">Total Points</h2>
+                        <div class="text-4xl font-bold text-primary" id="total-points-value">0</div>
+                    </div>
+                    <div class="card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
+                        <h2 class="text-lg font-semibold mb-2 text-muted-text">Estimated Earnings</h2>
+                        <div class="text-4xl font-bold text-accent-green" id="estimated-earnings-value">$0.00</div>
+                    </div>
+                    <div class="card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
+                        <h2 class="text-lg font-semibold mb-2 text-muted-text">Videos Watched</h2>
+                        <div class="text-4xl font-bold text-accent-purple" id="videos-watched-value">0</div>
+                    </div>
+                </div>
+                <!-- Leaderboard Section -->
+                <div class="mt-6">
+                    <h2 class="text-xl font-semibold mb-4">🏆 Top Earners</h2>
+                    <div id="leaderboard-container" class="space-y-3">
+                        <!-- Leaderboard items will be dynamically rendered here by JS -->
+                        <div class="text-center text-muted-text p-4">
+                            <div id="leaderboard-list" class="space-y-2">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quick-actions mb-6">
+                    <h2 class="text-xl font-semibold mb-4">Quick Actions</h2>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="#"
+                            class="nav-link user-link px-6 py-3 bg-card-bg border border-slate-700 rounded-lg text-text-color hover:bg-slate-700 transition-colors duration-200"
+                            data-target="watch-videos-view">
+                            Watch Videos
+                        </a>
+                        <a href="#"
+                            class="nav-link user-link px-6 py-3 bg-card-bg border border-slate-700 rounded-lg text-text-color hover:bg-slate-700 transition-colors duration-200"
+                            data-target="points-history-view">
+                            View History
+                        </a>
+                        <a href="#"
+                            class="nav-link user-link px-6 py-3 bg-card-bg border border-slate-700 rounded-lg text-text-color hover:bg-slate-700 transition-colors duration-200"
+                            data-target="social-tasks-view">
+                            Complete Tasks
+                        </a>
+                    </div>
+                </div>
+
+                <div
+                    class="card bg-card-bg p-6 mb-[100px] rounded-xl shadow-md border border-slate-700 flex flex-col md:flex-row justify-between items-center">
+                    <div>
+                        <h2 class="text-xl font-semibold mb-2">Cash Out Points</h2>
+                        <p class="text-muted-text">10000 Points = $1.00</p>
+                        <p class="text-muted-text">Keep watching to increase your earnings.</p>
+                    </div>
+
+                    <button
+                        class="cashout-btn mt-4 md:mt-0 px-6 py-3 bg-primary text-white font-semibold rounded-lg transition-colors duration-300 whitespace-nowrap"
+                        id="cashout-button">
+                        Cash Out
+                    </button>
+                </div>
+            </div>
+
+            <!-- Watch Videos View -->
+            <div id="watch-videos-view" class="content-view" style="display: none;">
+
+                <div class="flex flex-col sm:flex-row gap-4 mb-6">
+                    <input type="text" id="search-bar"
+                        class="flex-grow px-4 py-2 rounded-full bg-card-bg border border-slate-700 focus:outline-none focus:ring-2 focus:ring-primary placeholder-muted-text"
+                        placeholder="Search videos...">
+                    <!-- Mobile Scroll အတွက် flex-wrap ကို ဖြုတ်ပြီး overflow-x-auto ထည့်ထားပါတယ် -->
+                    <div class="flex overflow-x-auto pb-2 gap-2 w-full sm:w-auto sm:justify-end no-scrollbar"
+                        style="-webkit-overflow-scrolling: touch;">
+                        <button
+                            class="filter-btn active px-4 py-2 rounded-full border border-primary bg-primary text-white text-sm hover:bg-primary/80 transition-all duration-300 whitespace-nowrap flex-shrink-0"
+                            data-category="all">All</button>
+                        <button
+                            class="filter-btn px-4 py-2 rounded-full border border-slate-700 bg-card-bg text-sm hover:bg-slate-700 transition-all duration-300 whitespace-nowrap flex-shrink-0"
+                            data-category="Nature">Nature</button>
+                        <button
+                            class="filter-btn px-4 py-2 rounded-full border border-slate-700 bg-card-bg text-sm hover:bg-slate-700 transition-all duration-300 whitespace-nowrap flex-shrink-0"
+                            data-category="Education">Education</button>
+                        <button
+                            class="filter-btn px-4 py-2 rounded-full border border-slate-700 bg-card-bg text-sm hover:bg-slate-700 transition-all duration-300 whitespace-nowrap flex-shrink-0"
+                            data-category="Travel">Travel</button>
+                        <button
+                            class="filter-btn px-4 py-2 rounded-full border border-slate-700 bg-card-bg text-sm hover:bg-slate-700 transition-all duration-300 whitespace-nowrap flex-shrink-0"
+                            data-category="Food">Food</button>
+                        <button
+                            class="filter-btn px-4 py-2 rounded-full border border-slate-700 bg-card-bg text-sm hover:bg-slate-700 transition-all duration-300 whitespace-nowrap flex-shrink-0"
+                            data-category="Gaming">Gaming</button>
+                    </div>
+                </div>
+                <!-- AdsTR0 -->
+                <div>
+                    <script>
+                        atOptions = {
+                            'key': 'c6affa5f0ae4df4d56203646aa9bf458',
+                            'format': 'iframe',
+                            'height': 50,
+                            'width': 320,
+                            'params': {}
+                        };
+                    </script>
+                    <script src="https://ancestorheadquarters.com/c6affa5f0ae4df4d56203646aa9bf458/invoke.js"></script>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8"
+                    id="video-grid">
+                    <!-- Video cards  -->
+                </div>
+
+            </div>
+
+            <!-- ADSTR1 -->
+            <div id="video-player-view" class="content-view" style="display: none;">
+                <script>
+                    atOptions = {
+                        'key': 'c6affa5f0ae4df4d56203646aa9bf458',
+                        'format': 'iframe',
+                        'height': 50,
+                        'width': 320,
+                        'params': {}
+                    };
+                </script>
+                <script src="https://ancestorheadquarters.com/c6affa5f0ae4df4d56203646aa9bf458/invoke.js"></script>
+
+                <!-- Video Player View ထဲမှာ ထည့်ရန် -->
+                <div id="circular-points-tracker" class="circular-progress-container">
+                    <div id="progress-circle" class="circular-progress">
+                        <!-- အမှတ်ပေါင်း ဘယ်လောက်ရပြီလဲ ပြမယ့်နေရာ -->
+                        <span id="progress-value-text" class="progress-value">+0</span>
+                    </div>
+                </div>
+                <!-- END NEW: Floating Circular Points Tracker UI -->
+
+                <div class="bg-card-bg p-0 rounded-xl shadow-md border border-slate-700">
+                    <div class="aspect-video w-full rounded-xl overflow-hidden mb-4">
+                        <div id="video-iframe" class="w-full h-full bg-black"></div>
+                    </div>
+                    <div class="flex flex-row items-center gap-6 mb-4 px-4">
+                        <button id="video-player-back-btn"
+                            class="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-indigo-600 rounded-lg text-white font-semibold transition-colors duration-200">
+                            <svg class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                viewBox="0 0 24 24">
+                                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+                            </svg>
+                            Back
+                        </button>
+                        <h2 class="text-2xl font-semibold" id="video-player-title">Video Title</h2>
+                    </div>
+                    <!-- Adstr2 End-->
+                    <script async="async" data-cfasync="false" src="https://ancestorheadquarters.com/5fae19ca63dcfa0b73c6e2395f27545a/invoke.js"></script>
+                    <div id="container-5fae19ca63dcfa0b73c6e2395f27545a"></div>
+                </div>
+            </div>
+
+            <!-- Social Tasks View -->
+            <div id="social-tasks-view" class="content-view" style="display: none;">
+                <h2 class="text-xl font-semibold mb-4">Complete Social Tasks</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="social-tasks-grid">
+                    <!-- Social task cards  -->
+                    <div class="col-span-full text-center text-muted-text p-6">Loading tasks...</div>
+                </div>
+            </div>
+
+            <!-- Points History View -->
+            <div id="points-history-view" class="content-view" style="display: none;">
+                <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
+                    <h2 class="text-xl font-semibold mb-4">Points History</h2>
+                    <p class="text-muted-text mb-6">A record of all the points you have earned.</p>
+                    <div class="overflow-x-auto rounded-lg">
+                        <table class="w-full text-left table-auto">
+                            <thead class="bg-slate-700 text-slate-400 uppercase text-xs">
+                                <tr>
+                                    <th class="p-4 rounded-tl-lg">Date</th>
+                                    <th class="p-4">Description</th>
+                                    <th class="p-4 rounded-tr-lg">Points</th>
+                                </tr>
+                            </thead>
+                            <tbody id="points-history-table" class="divide-y divide-slate-700">
+                                <!-- Table rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Invite & Earn View  -->
+
+            <div id="invite-and-earn-view" class="content-view" style="display: none;">
+                <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 mb-6">
+                    <h2 class="text-xl font-semibold mb-4 text-primary">သူငယ်ချင်းများကို ဖိတ်ခေါ်ပြီး အမှတ်များရယူပါ
+                        (Invite & Earn)</h2>
+                    <p class="text-muted-text mb-6">သင်၏ ကိုယ်ပိုင်ဖိတ်ခေါ်ကုဒ် (Referral Code) ကို အသုံးပြု၍
+                        သူငယ်ချင်းများကို ဖိတ်ခေါ်ပါ။ သူငယ်ချင်းတစ်ဦး အကောင့်ဖွင့်တိုင်း အမှတ် **100** ရရှိမည်။</p>
+                    <!-- UPDATED  100 -->
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">သင့်ရဲ့ ဖိတ်ခေါ်ကုဒ် (Your Referral
+                                Code)</label>
+                            <div class="flex">
+                                <input type="text" id="referral-code-input" value="Loading..." readonly
+                                    class="flex-grow px-4 py-3 rounded-l-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary text-text-color font-mono tracking-wider">
+                                <button id="copy-referral-btn"
+                                    class="px-4 py-3 bg-accent-green hover:bg-emerald-600 rounded-r-lg text-white font-semibold transition-colors duration-200 flex items-center gap-2">
+                                    <svg class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 24 24">
+                                        <path
+                                            d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+                                    </svg>
+                                    Copy
+                                </button>
+                            </div>
+                            <p id="copy-status" class="text-sm mt-2 text-primary" style="display:none;">
+                                ကုဒ်ကူးယူပြီးပါပြီ။</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium mb-2">သင့်ရဲ့ ဖိတ်ခေါ်လင့် (Your Referral
+                                Link)</label>
+                            <div class="flex">
+                                <input type="text" id="referral-link-input" value="Loading..." readonly
+                                    class="flex-grow px-4 py-3 rounded-l-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary text-text-color text-sm">
+                                <button id="copy-link-btn"
+                                    class="px-4 py-3 bg-accent-green hover:bg-emerald-600 rounded-r-lg text-white font-semibold transition-colors duration-200 flex items-center gap-2">
+                                    <svg class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 24 24">
+                                        <path
+                                            d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+                                    </svg>
+                                    Copy
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="pt-4">
+                            <h3 class="text-lg font-semibold mb-2">ဖိတ်ခေါ်မှု မှတ်တမ်း (Invite History)</h3>
+                            <div class="bg-slate-700/50 p-4 rounded-lg overflow-x-auto">
+                                <table class="w-full text-left table-auto">
+                                    <thead class="text-slate-400 uppercase text-xs">
+                                        <tr>
+                                            <th class="p-2">အသုံးပြုသူ</th>
+                                            <th class="p-2">ရရှိခဲ့သည့် အမှတ်</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="invited-users-table">
+                                        <tr>
+                                            <td colspan="2" class="p-2 text-center text-muted-text">သူငယ်ချင်းများ
+                                                ဖိတ်ခေါ်ခြင်း မရှိသေးပါ။</td>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Invite & Earn View-->
+
+            <!-- About View -->
+            <div id="about-view" class="content-view" style="display: none;">
+                <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
+                    <h2 class="text-2xl font-bold mb-4 text-primary">Ping Rewards အကြောင်း</h2>
+                    <p class="text-muted-text mb-6">Ping Rewards ကို အသုံးပြုပြီး ဗီဒီယိုကြည့်ရင်း၊ Task
+                        များလုပ်ဆောင်ရင်း အမှတ်များစုဆောင်းကာ ငွေသားအဖြစ် ထုတ်ယူနိုင်ပါသည်။</p>
+
+                    <div class="space-y-6 text-text-color">
+                        <!-- အပိုင်း (၁) -->
+                        <section>
+                            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                                <span class="bg-primary/20 text-primary px-2 py-1 rounded">၁</span>
+                                အမှတ်ရယူနည်းလမ်းများ
+                            </h3>
+                            <ul class="list-disc list-inside mt-2 space-y-2 ml-4 text-sm md:text-base">
+                                <li><span class="font-semibold text-accent-orange">Watch Videos:</span>
+                                    ဗီဒီယိုကြည့်ရှုပါ (၁၀ စက္ကန့်လျှင် ၁ မှတ် ရရှိပါမည်)။</li>
+                                <li><span class="font-semibold text-accent-green">Social Tasks:</span> Facebook,
+                                    Telegram, YouTube စသည်တို့ကို Follow/Join လုပ်ပြီး အမှတ်များရယူပါ။</li>
+                                <li><span class="font-semibold text-primary">Invite & Earn:</span> သူငယ်ချင်းကို
+                                    ဖိတ်ခေါ်ပြီး တစ်ဦးလျှင် ၁၀၀ မှတ် ရယူပါ။</li>
+                            </ul>
+                        </section>
+
+                        <!-- အပိုင်း (၂) -->
+                        <section>
+                            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                                <span class="bg-primary/20 text-primary px-2 py-1 rounded">၂</span>
+                                ငွေထုတ်ယူခြင်း (Cash Out)
+                            </h3>
+                            <ul class="list-disc list-inside mt-2 space-y-2 ml-4 text-sm md:text-base">
+                                <li>အနည်းဆုံးအမှတ် <span class="text-white font-bold">10000 Points</span> ပြည့်ပါက
+                                    ငွေထုတ်နိုင်ပါသည်။</li>
+                                <li>1,0000 Points လျှင် <span class="text-white font-bold">$1.00</span> နှင့်
+                                    ညီမျှပါသည်။</li>
+                                <li>KBZ Pay, Wave Pay နှင့် Binance (USDT) တို့ဖြင့် ထုတ်ယူနိုင်ပါသည်။</li>
+                                <li>ငွေထုတ်ယူပြီး <span class="text-accent-orange font-semibold">၂၄ နာရီမှ ၄၈
+                                        နာရီအတွင်း</span> လူကြီးမင်းတို့ထံ ပေးပို့ပေးသွားမည်ဖြစ်ပါသည်။</li>
+                            </ul>
+                        </section>
+
+                        <!-- အပိုင်း (၃) -->
+                        <section class="bg-red-500/10 p-4 rounded-lg border border-red-500/30">
+                            <h3 class="text-lg font-bold text-red-400 flex items-center gap-2">
+                                ⚠️ တင်းကြပ်သော စည်းကမ်းချက်များ
+                            </h3>
+                            <ul class="list-disc list-inside mt-2 space-y-2 ml-4 text-xs md:text-sm text-red-200">
+                                <li>တစ်ဦးလျှင် အကောင့်တစ်ခုသာ အသုံးပြုရပါမည်။</li>
+                                <li>VPN အသုံးပြုခြင်းကို လုံးဝ (လုံးဝ) ခွင့်မပြုပါ။</li>
+                                <li>ဗီဒီယိုများကို Fake View (Bot) များဖြင့် ကြည့်ရှုခြင်း တွေ့ရှိပါက
+                                    အကောင့်ပိတ်သိမ်းပါမည်။</li>
+                                <li>Social Task များကို အမှန်တကယ် လုပ်ဆောင်ရပါမည် (Check ပြန်လုပ်ပါသည်)။</li>
+                                <li>စည်းကမ်းဖောက်ဖျက်ထားသော အကောင့်များ၏ ငွေထုတ်ယူမှုများကို ပယ်ဖျက်သွားပါမည်။</li>
+                            </ul>
+                        </section>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Dashboard View -->
+            <div id="admin-dashboard-view" class="content-view" style="display: none;">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6" id="admin-dashboard-grid">
+                    <div
+                        class="stat-card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 flex items-center">
+                        <div
+                            class="flex-shrink-0 w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 fill-primary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path
+                                    d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                            </svg>
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="text-lg font-semibold text-muted-text">Total Users</h3>
+                            <div class="text-3xl font-bold" id="admin-total-users-value">0</div>
+                        </div>
+                    </div>
+                    <div
+                        class="stat-card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 flex items-center">
+                        <div
+                            class="flex-shrink-0 w-12 h-12 rounded-full bg-accent-purple/20 flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 fill-accent-purple" xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24">
+                                <path
+                                    d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
+                            </svg>
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="text-lg font-semibold text-muted-text">Total Videos</h3>
+                            <div class="text-3xl font-bold" id="admin-total-videos-value">0</div>
+                        </div>
+                    </div>
+                    <div
+                        class="stat-card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 flex items-center">
+                        <div
+                            class="flex-shrink-0 w-12 h-12 rounded-full bg-accent-green/20 flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 fill-accent-green" xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24">
+                                <path
+                                    d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4V8h16v10zm-12-7h4v2H8v-2zm-2-2v6h12V6H6z" />
+                            </svg>
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="text-lg font-semibold text-muted-text">Total Points Earned</h3>
+                            <div class="text-3xl font-bold" id="admin-total-points-earned-value">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 flex items-center cursor-pointer"
+                        id="admin-payouts-card">
+                        <div
+                            class="flex-shrink-0 w-12 h-12 rounded-full bg-accent-orange/20 flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 fill-accent-orange" xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24">
+                                <path
+                                    d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4V8h16v10zm-12-7h4v2H8v-2zm-2-2v6h12V6H6z" />
+                            </svg>
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="text-lg font-semibold text-muted-text">Total Payouts</h3>
+                            <div class="text-3xl font-bold" id="admin-total-payouts-value">$0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
+                    <h2 class="text-xl font-semibold mb-4">Weekly Watch History (Hours)</h2>
+                    <div class="relative h-64 flex items-end pb-8 border-l-2 border-b-2 border-slate-600">
+                        <span class="absolute left-0 top-0 text-sm text-muted-text -ml-6 -mt-2">8</span>
+                        <span class="absolute left-0 bottom-0 text-sm text-muted-text -ml-6 -mb-4">0</span>
+                        <div class="bar-chart flex items-end h-full w-full" id="weekly-watch-chart">
+                            <!-- Bars -->
+                            <div class="w-1/7 h-1/2 mx-1 bg-primary rounded-t-full transition-all duration-500 ease-in-out relative group"
+                                style="height: 50%;">
+                                <span
+                                    class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-sm text-muted-text">Mon</span>
+                            </div>
+                            <div class="w-1/7 h-[38%] mx-1 bg-primary rounded-t-full transition-all duration-500 ease-in-out relative group"
+                                style="height: 38%;">
+                                <span
+                                    class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-sm text-muted-text">Tue</span>
+                            </div>
+                            <div class="w-1/7 h-[60%] mx-1 bg-primary rounded-t-full transition-all duration-500 ease-in-out relative group"
+                                style="height: 60%;">
+                                <span
+                                    class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-sm text-muted-text">Wed</span>
+                            </div>
+                            <div class="w-1/7 h-[54%] mx-1 bg-primary rounded-t-full transition-all duration-500 ease-in-out relative group"
+                                style="height: 54%;">
+                                <span
+                                    class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-sm text-muted-text">Thu</span>
+                            </div>
+                            <div class="w-1/7 h-[70%] mx-1 bg-primary rounded-t-full transition-all duration-500 ease-in-out relative group"
+                                style="height: 70%;">
+                                <span
+                                    class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-sm text-muted-text">Fri</span>
+                            </div>
+                            <div class="w-1/7 h-[98%] mx-1 bg-primary rounded-t-full transition-all duration-500 ease-in-out relative group"
+                                style="height: 98%;">
+                                <span
+                                    class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-sm text-muted-text">Sat</span>
+                            </div>
+                            <div class="w-1/7 h-[85%] mx-1 bg-primary rounded-t-full transition-all duration-500 ease-in-out relative group"
+                                style="height: 85%;">
+                                <span
+                                    class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-sm text-muted-text">Sun</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manage Videos View (Updated with Search) -->
+            <div id="manage-videos-view" class="content-view" style="display: none;">
+                <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
+                    <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+                        <h2 class="text-xl font-semibold whitespace-nowrap">Manage Videos</h2>
+                        <input type="text" id="manage-videos-search"
+                            class="flex-grow max-w-md px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary placeholder-muted-text"
+                            placeholder="Search videos by title or category...">
+                        <button id="add-video-btn"
+                            class="px-4 py-2 bg-primary hover:bg-indigo-600 rounded-lg text-white font-semibold transition-colors duration-200 whitespace-nowrap">
+                            Add New Video
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto rounded-lg">
+                        <table class="w-full text-left table-auto">
+                            <thead class="bg-slate-700 text-slate-400 uppercase text-xs">
+                                <tr>
+                                    <th class="p-4 rounded-tl-lg">Title</th>
+                                    <th class="p-4">Category</th>
+                                    <th class="p-4">Points</th>
+                                    <th class="p-4 rounded-tr-lg">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="videos-table" class="divide-y divide-slate-700">
+                                <!-- Table rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manage Social Tasks View (Updated with Search) -->
+            <div id="manage-social-tasks-view" class="content-view" style="display: none;">
+                <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
+                    <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+                        <h2 class="text-xl font-semibold whitespace-nowrap">Manage Social Tasks</h2>
+                        <input type="text" id="manage-social-tasks-search"
+                            class="flex-grow max-w-md px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary placeholder-muted-text"
+                            placeholder="Search social tasks by title or platform...">
+                        <button id="add-social-task-btn"
+                            class="px-4 py-2 bg-primary hover:bg-indigo-600 rounded-lg text-white font-semibold transition-colors duration-200 whitespace-nowrap">
+                            Add New Task
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto rounded-lg">
+                        <table class="w-full text-left table-auto">
+                            <thead class="bg-slate-700 text-slate-400 uppercase text-xs">
+                                <tr>
+                                    <th class="p-4 rounded-tl-lg">Task Title</th>
+                                    <th class="p-4">Platform</th>
+                                    <th class="p-4">Link</th>
+                                    <th class="p-4">Points</th>
+                                    <th class="p-4 rounded-tr-lg">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="social-tasks-table" class="divide-y divide-slate-700">
+                                <!-- Table rows  -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manage Users View (Updated with Search) -->
+            <div id="manage-users-view" class="content-view" style="display: none;">
+                <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
+                    <h2 class="text-xl font-semibold mb-2">Manage Users</h2>
+                    <input type="text" id="manage-users-search"
+                        class="w-full px-4 py-2 mb-4 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary placeholder-muted-text"
+                        placeholder="Search users by name, email or ID...">
+                    <p class="text-muted-text mb-6">View user data, manage status, and edit information.</p>
+                    <div class="overflow-x-auto rounded-lg">
+                        <table class="w-full text-left table-auto">
+                            <!-- manage-users-view ထဲက Table Head အပိုင်း -->
+                            <thead class="bg-slate-700 text-slate-400 uppercase text-xs">
+                                <tr>
+                                    <th class="p-4 rounded-tl-lg">User ID</th>
+                                    <th class="p-4">Name</th>
+                                    <th class="p-4">Phone</th> <!-- Email နေရာမှာ Phone ပြောင်းထည့်သည် -->
+                                    <th class="p-4">Payment</th> <!-- Role နေရာမှာ Payment ပြောင်းထည့်သည် -->
+                                    <th class="p-4">Points</th>
+                                    <th class="p-4 rounded-tr-lg">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-table-body" class="divide-y divide-slate-700">
+                                <!-- User rows  -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- Manage Payouts View -->
+            <div id="manage-payouts-view" class="content-view" style="display: none;">
+                <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
+                    <h2 class="text-xl font-semibold mb-4">Manage Payout Requests</h2>
+                    <div class="overflow-x-auto rounded-lg">
+                        <table class="w-full text-left table-auto">
+                            <thead class="bg-slate-700 text-slate-400 uppercase text-xs">
+                                <tr>
+                                    <th class="p-4 rounded-tl-lg">User ID</th>
+                                    <th class="p-4">Amount</th>
+                                    <th class="p-4">Method / Phone</th>
+                                    <th class="p-4">Status</th>
+                                    <th class="p-4 rounded-tr-lg">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="payouts-table-body" class="divide-y divide-slate-700">
+                                <!-- JS will populate this -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- NEW: Floating Scroll-to-Top Rocket Button (Hidden by default) -->
+            <button id="scroll-to-top-btn"
+                class="hidden fixed bottom-6 right-6 z-50 p-4 bg-accent-orange hover:bg-amber-600 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-110 active:scale-95">
+                <!-- Rocket/Up Arrow SVG -->
+                <svg class="w-6 h-6 text-white transform rotate-315" xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2l-5 5h3v7h4V7h3l-5-5zM4 20h16v2H4z" />
+                </svg>
+            </button>
+            <!-- END NEW: Floating Scroll-to-Top Rocket Button -->
+        </div>
+
+        <!-- Modal for Cash Out Confirmation Message -->
+        <div id="cashout-message-modal"
+            class="modal-overlay fixed inset-0 flex justify-center items-center z-[1000] hidden">
+            <div class="modal-content bg-card-bg p-8 rounded-xl w-11/12 max-w-lg shadow-2xl border border-slate-700">
+                <h3 class="text-xl font-semibold mb-4">Cash Out Request</h3>
+                <p id="cashout-message-text" class="text-muted-text mb-6">You need 5000 points to cash out.</p>
+                <div class="flex justify-end gap-2">
+                    <button type="button"
+                        class="px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg text-white font-semibold transition-colors duration-200"
+                        id="cashout-message-close-btn">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal for Delete Confirmation -->
+        <div id="delete-confirm-modal"
+            class="modal-overlay fixed inset-0 flex justify-center items-center z-[1000] hidden">
+            <div class="modal-content bg-card-bg p-8 rounded-xl w-11/12 max-w-lg shadow-2xl border border-slate-700">
+                <h3 id="delete-modal-title" class="text-xl font-semibold mb-4">Are you sure you want to delete this?
+                </h3>
+                <p class="text-muted-text mb-6">This action cannot be undone.</p>
+                <div class="flex justify-end gap-2">
+                    <button type="button"
+                        class="cancel-btn px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg text-white font-semibold transition-colors duration-200">Cancel</button>
+                    <button type="button"
+                        class="px-4 py-2 bg-red-600 hover:bg-red-500 rounded-lg text-white font-semibold transition-colors duration-200"
+                        id="confirm-delete-btn">Delete</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal for Viewing User History / Payout History -->
+        <div id="history-modal" class="modal-overlay fixed inset-0 flex justify-center items-center z-[1000] hidden">
+            <div class="modal-content bg-card-bg p-8 rounded-xl w-11/12 max-w-3xl shadow-2xl border border-slate-700">
+                <h3 id="history-modal-title" class="text-xl font-semibold mb-4"></h3>
+                <div id="history-modal-content" class="overflow-y-auto max-h-[70vh] rounded-lg">
+                    <table class="w-full text-left table-auto">
+                        <thead class="bg-slate-700 text-slate-400 uppercase text-xs">
+                            <tr id="history-table-header">
+                                <!-- Table headers  -->
+                            </tr>
+                        </thead>
+                        <tbody id="history-table-body" class="divide-y divide-slate-700">
+                            <!-- History rows  -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="flex justify-end gap-2 mt-6">
+                    <button type="button"
+                        class="px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg text-white font-semibold transition-colors duration-200"
+                        id="history-modal-close-btn">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal for Adding/Editing Videos  -->
+        <div id="add-video-modal" class="modal-overlay fixed inset-0 flex justify-center items-center z-[1000] hidden">
+            <div class="modal-content bg-card-bg p-8 rounded-xl w-11/12 max-w-lg shadow-2xl border border-slate-700">
+                <h3 id="modal-title" class="text-xl font-semibold mb-4">Add New Video</h3>
+                <form id="add-video-form" class="modal-form space-y-4">
+                    <div>
+                        <label for="video-title" class="block text-sm font-medium mb-1">Video Title</label>
+                        <input type="text" id="video-title" name="videoTitle" required
+                            class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    <div>
+                        <label for="video-description" class="block text-sm font-medium mb-1">Description</label>
+                        <textarea id="video-description" name="videoDescription" rows="3" required
+                            class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
+                    </div>
+                    <div>
+                        <label for="video-category" class="block text-sm font-medium mb-1">Category</label>
+                        <select id="video-category" name="videoCategory" required
+                            class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary">
+                            <option value="YouTube">YouTube</option>
+                            <option value="TikTok">TikTok</option>
+                            <option value="Facebook">Facebook</option>
+                            <option value="Nature">Nature</option>
+                            <option value="Education">Education</option>
+                            <option value="Travel">Travel</option>
+                            <option value="Food">Food</option>
+                            <option value="Gaming">Gaming</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="video-url" class="block text-sm font-medium mb-1">Video URL (YouTube Embed
+                            Link)</label>
+                        <input type="text" id="video-url" name="videoUrl" required
+                            class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    <div>
+                        <label for="video-points" class="block text-sm font-medium mb-1">Points (Legacy Field - Not used
+                            for earning rate)</label>
+                        <input type="number" id="video-points" name="videoPoints"
+                            class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary"
+                            placeholder="Optional. Earning is 1pt/60s.">
+                    </div>
+                    <div>
+                        <label for="watch-duration" class="block text-sm font-medium mb-1">Watch Duration (Seconds - MAX
+                            Earning Time)</label>
+                        <input type="number" id="watch-duration" name="watchDuration" required
+                            class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary"
+                            placeholder="Required. Sets the maximum time (in seconds) to earn points.">
+                    </div>
+                    <div class="flex justify-end gap-2 pt-4">
+                        <button type="button"
+                            class="cancel-btn px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg text-white font-semibold transition-colors duration-200">Cancel</button>
+                        <button type="submit"
+                            class="save-btn px-4 py-2 bg-primary hover:bg-indigo-600 rounded-lg text-white font-semibold transition-colors duration-200">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal for Adding/Editing Social Tasks -->
+        <div id="add-social-task-modal"
+            class="modal-overlay fixed inset-0 flex justify-center items-center z-[1000] hidden">
+            <div class="modal-content bg-card-bg p-8 rounded-xl w-11/12 max-w-lg shadow-2xl border border-slate-700">
+                <h3 id="social-task-modal-title" class="text-xl font-semibold mb-4">Add New Social Task</h3>
+                <form id="add-social-task-form" class="modal-form space-y-4">
+                    <div>
+                        <label for="social-task-title" class="block text-sm font-medium mb-1">Task Title</label>
+                        <input type="text" id="social-task-title" name="taskTitle" required
+                            class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    <div>
+                        <label for="social-task-platform" class="block text-sm font-medium mb-1">Platform</label>
+                        <select id="social-task-platform" name="taskPlatform" required
+                            class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary">
+                            <option value="YouTube">YouTube</option>
+                            <option value="Facebook">Facebook</option>
+                            <option value="TikTok">TikTok</option>
+                            <option value="Telegram">Telegram</option>
+                            <option value="Twitter">Twitter</option>
+                            <option value="Web">Web</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="social-task-link" class="block text-sm font-medium mb-1">Link URL</label>
+                        <input type="url" id="social-task-link" name="taskLink" required
+                            class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    <div>
+                        <label for="social-task-points" class="block text-sm font-medium mb-1">Points</label>
+                        <input type="number" id="social-task-points" name="taskPoints" required
+                            class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    <div class="flex justify-end gap-2 pt-4">
+                        <button type="button"
+                            class="cancel-btn px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg text-white font-semibold transition-colors duration-200">Cancel</button>
+                        <button type="submit"
+                            class="save-btn px-4 py-2 bg-primary hover:bg-indigo-600 rounded-lg text-white font-semibold transition-colors duration-200">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Cash Out Modal  -->
+        <div id="cashout-modal" class="modal-overlay fixed inset-0 flex justify-center items-center z-[1000] hidden">
+            <div class="modal-content bg-card-bg p-8 rounded-xl w-11/12 max-w-lg shadow-2xl border border-slate-700">
+                <h3 class="text-xl font-semibold mb-4">Cash Out Request</h3>
+                <form id="cashout-form" class="modal-form space-y-4">
+                    <p class="text-muted-text">Please enter your payment details to receive your earnings.</p>
+                    <div>
+                        <label for="payment-method" class="block text-sm font-medium mb-1">Payment Method</label>
+                        <select id="payment-method" name="paymentMethod"
+                            class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary">
+                            <option value="KBZ Pay">KBZ Pay</option>
+                            <option value="Wave Pay">Wave Pay</option>
+                            <option value="Binance Pay">Binance Pay</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="payout-amount" class="block text-sm font-medium mb-1">Amount ($)</label>
+                        <input type="number" id="payout-amount" name="payoutAmount" value="0.00" readonly
+                            class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 text-muted-text cursor-not-allowed">
+                        <div>
+                            <label for="payout-phone" class="block text-sm font-medium mb-1">Phone Number
+                                (Kpay/Wave)</label>
+                            <input type="text" id="payout-phone" name="payoutPhone" required
+                                class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary"
+                                placeholder="09xxxxxxxxx">
+                        </div>
+                    </div>
+                    <div class="flex justify-end gap-2 pt-4">
+                        <button type="button"
+                            class="cancel-btn px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg text-white font-semibold transition-colors duration-200">Cancel</button>
+                        <button type="submit"
+                            class="save-btn px-4 py-2 bg-primary hover:bg-indigo-600 rounded-lg text-white font-semibold transition-colors duration-200"
+                            id="cashout-submit-btn">Submit Request</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
-    <div class="marquee-box">
-        <marquee behavior="scroll" direction="left" scrollamount="5" class="marquee-text">
-            ကြော်ငြာတွေ မတင်ထားဘဲ ခဏခဏ တက်နေတဲ့ လူတွေအတွက် ခဏလေး စောင့်ပေးလိုက်ကြရအောင်ဗျာ။
-        </marquee>
-    </div>
 
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        const tg = window.Telegram.WebApp;
+        const user = tg.initDataUnsafe.user;
+        const userId = user ? user.id : null;
+        const urlParams = new URLSearchParams(window.location.search);
+        const startParam = tg.initDataUnsafe.start_param || urlParams.get('start') || "";
+        const backendUrl = "https://ping-rewards-bot.mr-ping2025.workers.dev"; // သင့် Backend URL သေချာပါစေ
+
+        let player;
+        let isVideoPlaying = false;
+        let cachedVideos = [];
+        const MAX_POINT_TIME = 600;
+        let videoTimerInterval = null;
+        let sessionPoints = 0;
+        let secondsCount = 0;
+
+        tg.expand();
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = link.getAttribute('data-target');
+                    if (targetId) {
+                        showView(targetId);
+                        if (window.innerWidth < 768) {
+                            document.getElementById('sidebar').classList.remove('open');
+                            document.getElementById('backdrop').classList.remove('open');
+                        }
+                    }
+                });
+            });
+
+            // Cashout Form Submit လုပ်တဲ့ အပိုင်း
+            document.getElementById('cashout-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "1856743644";
+                const method = document.getElementById('payment-method').value;
+                const amount = document.getElementById('payout-amount').value;
+                const phone = document.getElementById('payout-phone').value;
+                const submitBtn = document.getElementById('cashout-submit-btn');
+
+                // ခလုတ်ကို Loading ပြောင်းမယ်
+                submitBtn.innerText = "Processing...";
+                submitBtn.disabled = true;
+
+                try {
+                    const res = await fetch(`${backendUrl}/api/cashout`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ userId, amount, method, phone })
+                    });
+
+                    if (res.ok) {
+                        alert("ငွေထုတ်ယူမှု တောင်းဆိုချက် အောင်မြင်ပါသည်။ ၄၈ နာရီအတွင်း စစ်ဆေးပေးပါမည်။");
+                        document.getElementById('cashout-modal').classList.add('hidden');
+                        initApp(); // Dashboard က Point တွေကို refresh လုပ်မယ်
+                    } else {
+                        alert("အမှားတစ်ခု ဖြစ်သွားပါသည်။ နောက်မှ ထပ်စမ်းကြည့်ပါ။");
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert("ချိတ်ဆက်မှု အမှားဖြစ်နေပါသည်။");
+                } finally {
+                    submitBtn.innerText = "Submit Request";
+                    submitBtn.disabled = false;
+                }
+            });
+
+            document.getElementById('cashout-button').addEventListener('click', () => {
+                const pts = parseInt(document.getElementById('total-points-value').innerText);
+                if (pts < 10000) {
+                    alert("ငွေထုတ်ရန် အနည်းဆုံး ၁၀,၀၀၀ မှတ် လိုအပ်ပါသည်။");
+                } else {
+                    document.getElementById('payout-amount').value = (pts / 10000).toFixed(2);
+                    document.getElementById('cashout-modal').classList.remove('hidden');
+                }
+            });
+
+            document.getElementById('menu-toggle').addEventListener('click', () => {
+                document.getElementById('sidebar').classList.add('open');
+                document.getElementById('backdrop').classList.add('open');
+            });
+
+            document.getElementById('backdrop').addEventListener('click', () => {
+                document.getElementById('sidebar').classList.remove('open');
+                document.getElementById('backdrop').classList.remove('open');
+            });
+
+            document.getElementById('video-player-back-btn').addEventListener('click', () => {
+                stopPointTimer(); // Point သိမ်းမယ်
+                if (player) player.stopVideo(); // Video ကို ရပ်မယ်
+                showView('watch-videos-view'); // Dashboard ပြန်သွားမယ်
+            });
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterBtns.forEach(b => {
+                        b.classList.remove('bg-primary', 'text-white', 'border-primary');
+                        b.classList.add('bg-card-bg', 'text-sm', 'border-slate-700');
+                    });
+                    btn.classList.remove('bg-card-bg', 'text-sm', 'border-slate-700');
+                    btn.classList.add('bg-primary', 'text-white', 'border-primary');
+                    loadVideos(btn.getAttribute('data-category'));
+                });
+            });
+
+            setupCopyButtons();
+            initApp(); // စတင်ပွင့်ချိန်မှာ တစ်ကြိမ်ပဲခေါ်မယ်
+        });
+
+        function showView(viewId) {
+            // Video Player ကနေ ထွက်ရင် Point သိမ်းမယ်
+            const currentPlayerView = document.getElementById('video-player-view');
+            if (currentPlayerView && currentPlayerView.style.display === 'block' && viewId !== 'video-player-view') {
+                stopPointTimer();
+                if (player && player.stopVideo) player.stopVideo();
+                tg.BackButton.hide();
+            }
+
+            document.querySelectorAll('.content-view').forEach(v => v.style.display = 'none');
+            const target = document.getElementById(viewId);
+            if (target) {
+                target.style.display = 'block';
+                document.getElementById('page-title').innerText = viewId.replace(/-/g, ' ').replace('view', '').toUpperCase();
+
+                // Dashboard ရောက်ရင် Point ကို ဒေါ်လာနဲ့ တွက်ပြဖို့
+                if (viewId === 'user-dashboard-view') {
+                    const pts = parseInt(document.getElementById('total-points-value').innerText) || 0;
+                    document.getElementById('estimated-earnings-value').textContent = `$${(pts / 10000).toFixed(2)}`;
+                }
+                if (viewId === 'manage-payouts-view') {
+                    fetchPayouts();
+                }
+                if (viewId === 'admin-dashboard-view') fetchAdminDashboardData();
+                if (viewId === 'manage-videos-view') renderManageVideosTable();
+                if (viewId === 'manage-users-view') fetchAllUsers();
+                if (viewId === 'manage-social-tasks-view') renderManageSocialTasksTable();
+            }
+        }
+
+        async function initApp() {
+            try {
+                // User Registration & Fetch
+                const userName = user ? user.first_name : "Guest User";
+                const userRes = await fetch(`${backendUrl}/api/get-user?id=${userId}&name=${userName}&ref=${startParam}`);
+                const userData = await userRes.json();
+
+                if (userData && !userData.error) {
+                    document.getElementById('total-points-value').textContent = userData.points || 0;
+                    document.getElementById('welcome-message').textContent = `Welcome, ${userData.name || 'User'}!`;
+
+                    // Referral UI Update
+                    document.getElementById('referral-code-input').value = userId;
+                    document.getElementById('referral-link-input').value = `https://t.me/PingRewords_bot?start=${userId}`;
+
+                    // Admin Check
+                    const adminIds = ["1856743644"];
+                    if (adminIds.includes(String(userId))) {
+                        document.querySelectorAll('.admin-link').forEach(el => el.style.display = 'flex');
+                    }
+
+                    // Load Data
+                    loadVideos();
+                    loadTasks();
+                    loadHistory();
+                    loadReferralHistory();
+                    loadLeaderboard();
+                    updateWatchCount(); // Leaderboard ကို ဒီမှာခေါ်ထားပါတယ်
+
+                    showView('user-dashboard-view');
+                }
+            } catch (err) {
+                console.error("App Init Error:", err);
+            }
+        }
+
+        async function loadVideos(categoryFilter = 'all') {
+            try {
+                // 1. ဗီဒီယိုအားလုံးကို ယူမယ်
+                if (cachedVideos.length === 0) {
+                    const res = await fetch(`${backendUrl}/api/get-videos`);
+                    cachedVideos = await res.json();
+                }
+
+                // 2. User ရဲ့ ၄၈ နာရီအတွင်း ကြည့်ထားတဲ့ ရာဇဝင်ကို ယူမယ်
+                const historyRes = await fetch(`${backendUrl}/api/get-watch-history?userId=${userId}`);
+                const history = await historyRes.json();
+
+                // ကြည့်ပြီးသား ဗီဒီယို Title တွေကို List လုပ်မယ်
+                const watchedTitles = history.map(h => h.description.replace('Watched: ', ''));
+
+                const grid = document.getElementById('video-grid');
+                let displayVideos = categoryFilter === 'all' ? [...cachedVideos] : cachedVideos.filter(v => v.category === categoryFilter);
+
+                // 3. ဗီဒီယိုတွေကို စီမယ် (မကြည့်ရသေးတာ အပေါ်၊ Cooldown မိနေတာ အောက်)
+                displayVideos.sort((a, b) => {
+                    const aWatched = watchedTitles.includes(a.title);
+                    const bWatched = watchedTitles.includes(b.title);
+                    return aWatched - bWatched;
+                });
+
+                if (displayVideos.length === 0) {
+                    grid.innerHTML = '<p class="text-muted-text col-span-full text-center">No videos found.</p>';
+                    return;
+                }
+
+                grid.innerHTML = displayVideos.map(v => {
+                    const isOnCooldown = watchedTitles.includes(v.title);
+                    const cardClass = isOnCooldown ? "opacity-50 grayscale pointer-events-none" : "hover:border-primary cursor-pointer";
+                    const badge = isOnCooldown ? `<span class="absolute top-2 right-2 bg-red-600 text-white text-[10px] px-2 py-1 rounded">48h Cooldown</span>` : "";
+
+                    return `
+                        <div class="video-card relative bg-card-bg p-0 rounded-xl border border-slate-700 transition ${cardClass}" 
+                             onclick="${isOnCooldown ? '' : `playVideo('${v.id}', '${v.video_url}', '${v.title}')`}">
+                            ${badge}
+                            <img src="https://img.youtube.com/vi/${getYouTubeId(v.video_url)}/hqdefault.jpg" class="w-full rounded-lg mb-2">
+                            <h3 class="font-semibold text-sm line-clamp-2 text-white">${v.title}</h3>
+                            <p class="text-xs text-muted-text mt-1">${v.category} • ${isOnCooldown ? 'Locked' : 'Available'}</p>
+                        </div>
+                    `;
+                }).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        async function loadTasks() {
+            try {
+                const [resTasks, resCompleted] = await Promise.all([
+                    fetch(`${backendUrl}/api/get-tasks`),
+                    fetch(`${backendUrl}/api/get-completed-tasks?userId=${userId}`)
+                ]);
+                const tasks = await resTasks.json();
+                const completedIds = await resCompleted.json();
+                const grid = document.getElementById('social-tasks-grid');
+
+                grid.innerHTML = tasks.map(t => {
+                    const isCompleted = completedIds.map(id => String(id)).includes(String(t.id));
+                    const btnClass = isCompleted ? "bg-slate-600 cursor-not-allowed" : "bg-primary hover:bg-indigo-600";
+                    const btnText = isCompleted ? "Completed ✅" : "Complete Task";
+                    const btnAction = isCompleted ? "" : `onclick="completeTask('${t.id}', ${t.points}, '${t.title}', '${t.link}', this)"`;
+
+                    return `
+                        <div class="card bg-card-bg p-6 rounded-xl border border-slate-700 text-center">
+                            <h3 class="text-lg font-bold text-white">${t.title}</h3>
+                            <p class="text-accent-green font-bold my-2">+${t.points} PTS</p>
+                            <button ${btnAction} class="inline-block px-6 py-2 rounded-lg font-bold transition text-white ${btnClass}">
+                                ${btnText}
+                            </button>
+                        </div>`;
+                }).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        async function completeTask(taskId, points, title, link, btn) {
+            // 1. Link ကိုဖွင့်မယ်
+            window.open(link, '_blank');
+
+            // 2. Button ကို Loading ပြောင်းမယ်
+            const originalText = btn.innerText;
+            btn.innerText = "Checking...";
+            btn.style.pointerEvents = "none";
+            btn.classList.remove("bg-primary");
+            btn.classList.add("bg-slate-500");
+
+            // 3. 5 စက္ကန့်လောက် စောင့်ခိုင်းမယ် (Fake Verification Delay)
+            setTimeout(async () => {
+                try {
+                    // points parameter ကို မထည့်တော့ပါ (Backend က DB ထဲကနေပဲ ယူတော့မှာမို့လို့ပါ)
+                    const res = await fetch(`${backendUrl}/api/complete-social-task`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ userId, taskId, title })
+                    });
+                    const result = await res.json();
+
+                    if (result.success) {
+                        // Backend က ပြန်ပေးတဲ့ earned points ကို သုံးမယ်
+                        alert(`Success! Task Completed. +${result.earned} points.`);
+
+                        // UI Update
+                        btn.innerText = "Completed ✅";
+                        btn.className = "inline-block px-6 py-2 rounded-lg font-bold transition text-white bg-slate-600 cursor-not-allowed";
+
+                        // Total Points Update
+                        const el = document.getElementById('total-points-value');
+                        el.innerText = parseInt(el.innerText) + result.earned;
+
+                        // Refresh Logs
+                        loadHistory();
+                    } else {
+                        // မအောင်မြင်ရင်
+                        alert(result.message || "Something went wrong!");
+                        btn.innerText = originalText;
+                        btn.style.pointerEvents = "auto";
+                        btn.classList.add("bg-primary");
+                        btn.classList.remove("bg-slate-500");
+                    }
+                } catch (e) {
+                    console.error(e);
+                    btn.innerText = originalText;
+                    btn.style.pointerEvents = "auto";
+                }
+            }, 5000); // 5000 ms = 5 seconds delay
+        }
+
+        async function loadHistory() {
+            try {
+                const res = await fetch(`${backendUrl}/api/get-history?id=${userId}`);
+                const history = await res.json();
+                const table = document.getElementById('points-history-table');
+                table.innerHTML = history.map(h => `
+                    <tr class="border-b border-slate-700">
+                        <td class="p-4 text-xs text-muted-text">${new Date(h.created_at).toLocaleDateString()}</td>
+                        <td class="p-4 text-sm text-white">${h.description}</td>
+                        <td class="p-4 font-bold text-accent-green">+${h.points}</td>
+                    </tr>
+                `).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        async function loadReferralHistory() {
+            try {
+                const res = await fetch(`${backendUrl}/api/get-referrals?id=${userId}`);
+                const referrals = await res.json();
+                const table = document.getElementById('invited-users-table');
+                if (referrals.length === 0) return;
+
+                table.innerHTML = referrals.map(u => `
+            <tr class="border-b border-slate-700">
+                <td class="p-4 text-sm text-white font-semibold">${u.name}</td>
+                <td class="p-4 font-bold text-accent-green">+100</td> 
+            </tr>
+        `).join('');
+                // ဒီမှာ +100 လို့ ပြင်လိုက်ပါတယ်
+            } catch (e) { console.error(e); }
+        }
+
+        async function loadLeaderboard() {
+            try {
+                const res = await fetch(`${backendUrl}/api/get-leaderboard`);
+                const topUsers = await res.json();
+                const list = document.getElementById('leaderboard-list');
+                const medals = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
+                list.innerHTML = topUsers.map((u, i) => `
+                    <div class="flex justify-between items-center bg-slate-800 p-3 rounded-lg border border-slate-700">
+                        <span class="font-bold text-white">${medals[i]} ${u.name}</span>
+                        <span class="text-accent-green font-bold">${u.points} PTS</span>
+                    </div>
+                `).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        // --- YouTube & Timer Logic (မူလအတိုင်း ထားရှိပါသည်) ---
+        function getYouTubeId(url) {
+            const match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
+            return (match && match[2].length == 11) ? match[2] : null;
+        }
+
+        window.playVideo = function (id, url, title) {
+            const videoId = getYouTubeId(url);
+            document.getElementById('video-player-title').textContent = title;
+
+            tg.BackButton.show();
+            tg.onEvent('backButtonClicked', () => { showView('watch-videos-view'); });
+
+            showView('video-player-view');
+            if (player && player.loadVideoById) {
+                player.loadVideoById(videoId);
+            } else {
+                player = new YT.Player('video-iframe', {
+                    height: '100%', width: '100%', videoId: videoId,
+                    playerVars: { 'autoplay': 1, 'playsinline': 1 },
+                    events: { 'onStateChange': onPlayerStateChange }
+                });
+            }
+            startPointTimer();
+        }
+
+        function onPlayerStateChange(event) {
+            isVideoPlaying = (event.data === YT.PlayerState.PLAYING);
+            if (event.data === YT.PlayerState.ENDED) {
+                stopPointTimer();
+                showView('watch-videos-view');
+            }
+        }
+
+        function startPointTimer() {
+            if (videoTimerInterval) clearInterval(videoTimerInterval);
+            const container = document.getElementById('circular-points-tracker');
+            const text = document.getElementById('progress-value-text');
+            const circle = document.getElementById('progress-circle');
+            container.style.display = 'flex';
+            secondsCount = 0; sessionPoints = 0;
+            videoTimerInterval = setInterval(() => {
+                if (!isVideoPlaying) return;
+                secondsCount++;
+                let degrees = (secondsCount % 10) * 36;
+                circle.style.background = `conic-gradient(#F59E0B ${degrees || 360}deg, #334155 0deg)`;
+                if (secondsCount % 10 === 0) {
+                    sessionPoints++;
+                    text.innerText = `+${sessionPoints}`;
+                    const el = document.getElementById('total-points-value');
+                    const newPts = parseInt(el.innerText) + 1;
+                    el.innerText = newPts;
+                    document.getElementById('estimated-earnings-value').textContent = `$${(newPts / 10000).toFixed(2)}`;
+                }
+            }, 1000);
+        }
+
+        async function stopPointTimer() {
+            if (videoTimerInterval) { clearInterval(videoTimerInterval); videoTimerInterval = null; }
+            document.getElementById('circular-points-tracker').style.display = 'none';
+
+            if (sessionPoints > 0) {
+                const videoTitle = document.getElementById('video-player-title').textContent;
+                const earned = sessionPoints; sessionPoints = 0;
+                await fetch(`${backendUrl}/api/award-points`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId, amount: earned, desc: `Watched: ${videoTitle}` })
+                });
+                loadHistory();
+                updateWatchCount();
+                setTimeout(() => loadVideos(), 1000);
+            }
+        }
+
+        // History ထဲက ဗီဒီယိုကြည့်ထားတဲ့ အရေအတွက်ကို ရေတွက်ပြဖို့
+        async function updateWatchCount() {
+            try {
+                const res = await fetch(`${backendUrl}/api/get-history?id=${userId}`);
+                const history = await res.json();
+
+                // Description ထဲမှာ "Watched:" ဆိုတာ ပါတဲ့ အရေအတွက်ကို ရေတွက်မယ်
+                const watchCount = history.filter(h => h.description && h.description.includes('Watched:')).length;
+
+                // UI မှာ အရေအတွက် ပြောင်းပေးမယ်
+                document.getElementById('videos-watched-value').innerText = watchCount;
+            } catch (e) {
+                console.error("Error updating watch count:", e);
+            }
+        }
+
+        // ဒီ function ကို initApp ထဲမှာ ခေါ်ပေးပါ
+        updateWatchCount();
+        function setupCopyButtons() {
+            document.getElementById('copy-referral-btn').onclick = () => {
+                navigator.clipboard.writeText(document.getElementById('referral-code-input').value);
+                alert("Copied!");
+            };
+            document.getElementById('copy-link-btn').onclick = () => {
+                navigator.clipboard.writeText(document.getElementById('referral-link-input').value);
+                alert("Copied!");
+            };
+        }
+
+
+        // Admin functions (မူလအတိုင်း) ...
+        // --- Admin Functions ---
+
+        async function fetchAdminDashboardData() {
+            try {
+                // Backend မှ Data လှမ်းယူမယ်
+                const res = await fetch(`${backendUrl}/api/get-admin-stats`);
+                const data = await res.json();
+
+                if (data) {
+                    // UI ပေါ်မှာ ဂဏန်းတွေ ပြမယ်
+                    document.getElementById('admin-total-users-value').innerText = data.totalUsers || 0;
+                    document.getElementById('admin-total-videos-value').innerText = data.totalVideos || 0;
+                    document.getElementById('admin-total-points-earned-value').innerText = data.totalPoints || 0;
+                    // ငွေပမာဏ ရှေ့မှာ $ သင်္ကေတခံမယ်
+                    document.getElementById('admin-total-payouts-value').innerText = `$${data.totalPayouts || "0.00"}`;
+                }
+            } catch (err) {
+                console.error("Failed to load admin stats:", err);
+            }
+        }
+
+        // Manage Videos Table ဆွဲထုတ်ခြင်း
+        async function renderManageVideosTable() {
+            try {
+                const res = await fetch(`${backendUrl}/api/get-videos`);
+                const videos = await res.json();
+                const tbody = document.getElementById('videos-table');
+
+                if (!videos || videos.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-muted-text">No videos found.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = videos.map(v => `
+                    <tr class="border-b border-slate-700">
+                        <td class="p-4 text-white font-medium">${v.title}</td>
+                        <td class="p-4 text-muted-text">${v.category}</td>
+                        <td class="p-4 text-accent-green">${v.points || 0}</td>
+                        <td class="p-4 flex gap-2">
+                             <button onclick="deleteVideo('${v.id}')" class="px-3 py-1 bg-red-600 hover:bg-red-500 rounded text-white text-xs">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        // Video ဖျက်သည့် Function
+        async function deleteVideo(id) {
+            if (!confirm("Are you sure?")) return;
+            await fetch(`${backendUrl}/api/admin/delete-video?id=${id}`, { method: 'DELETE' });
+            renderManageVideosTable(); // Table ကို Refresh လုပ်
+        }
+
+        // Manage Social Tasks Table ဆွဲထုတ်ခြင်း
+        async function renderManageSocialTasksTable() {
+            try {
+                const res = await fetch(`${backendUrl}/api/get-tasks`);
+                const tasks = await res.json();
+                const tbody = document.getElementById('social-tasks-table');
+
+                if (!tasks || tasks.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-muted-text">No tasks found.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = tasks.map(t => `
+                    <tr class="border-b border-slate-700">
+                        <td class="p-4 text-white font-medium">${t.title}</td>
+                        <td class="p-4 text-muted-text">${t.platform}</td>
+                        <td class="p-4 text-blue-400 truncate max-w-[150px]"><a href="${t.link}" target="_blank">${t.link}</a></td>
+                        <td class="p-4 text-accent-green">${t.points}</td>
+                        <td class="p-4">
+                            <button onclick="deleteTask('${t.id}')" class="px-3 py-1 bg-red-600 hover:bg-red-500 rounded text-white text-xs">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        // Task ဖျက်သည့် Function
+        async function deleteTask(id) {
+            if (!confirm("Are you sure?")) return;
+            await fetch(`${backendUrl}/api/admin/delete-task?id=${id}`, { method: 'DELETE' });
+            renderManageSocialTasksTable();
+        }
+
+        // Users အားလုံး ဆွဲထုတ်ခြင်း (Manage Users View)
+        async function fetchAllUsers() {
+            try {
+                const res = await fetch(`${backendUrl}/api/admin/users`);
+                const users = await res.json();
+                const tbody = document.getElementById('users-table-body');
+
+                // Admin တွေရဲ့ ID (မဖော်ပြချင်ရင် ဖယ်ထားလို့ရသည်)
+                const adminIds = ["1856743644"];
+
+                tbody.innerHTML = users.map(u => `
+                    <tr class="border-b border-slate-700">
+                        <td class="p-4 text-xs text-muted-text font-mono">${u.user_id}</td>
+                        <td class="p-4 text-white">${u.name} ${adminIds.includes(u.user_id) ? '<span class="text-xs bg-primary px-1 rounded ml-1">Admin</span>' : ''}</td>
+                        <td class="p-4 text-muted-text">-</td>
+                        <td class="p-4 text-muted-text">-</td>
+                        <td class="p-4 text-accent-green font-bold">${u.points}</td>
+                        <td class="p-4 text-xs text-slate-500">View Only</td>
+                    </tr>
+                `).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+
+            // --- 1. MANAGE VIDEOS ---
+
+            // "Add New Video" ခလုတ်နှိပ်ရင် Modal ဖွင့်မယ်
+            const addVideoBtn = document.getElementById('add-video-btn');
+            if (addVideoBtn) {
+                addVideoBtn.addEventListener('click', () => {
+                    document.getElementById('add-video-form').reset(); // ဖောင်အဟောင်းရှင်းမယ်
+                    document.getElementById('add-video-modal').classList.remove('hidden');
+                });
+            }
+
+            // Video Form "Save" နှိပ်ရင် Backend ကိုပို့မယ်
+            const videoForm = document.getElementById('add-video-form');
+            if (videoForm) {
+                videoForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+
+                    // ခလုတ်ကို Loading ပြောင်းမယ်
+                    const saveBtn = videoForm.querySelector('.save-btn');
+                    const originalText = saveBtn.innerText;
+                    saveBtn.innerText = "Saving...";
+                    saveBtn.disabled = true;
+
+                    const formData = {
+                        title: document.getElementById('video-title').value,
+                        description: document.getElementById('video-description').value,
+                        category: document.getElementById('video-category').value,
+                        video_url: document.getElementById('video-url').value,
+                        // points column မသုံးတော့ပေမယ့် compatibility အတွက် 0 ထည့်ထားမယ်
+                        points: parseInt(document.getElementById('video-points').value) || 0,
+                        // duration (seconds) ကို description ထဲမှာ တွဲထည့်လိုက်မယ် (Backend Table မပြင်ချင်ရင်)
+                        // သို့မဟုတ် column အသစ်မရှိရင် ဒီအတိုင်းထားပါ။ 
+                        // ဒီမှာတော့ points logic ကို frontend timer နဲ့ပဲသွားထားလို့ URL နဲ့ Title က အရေးကြီးပါတယ်။
+                    };
+
+                    try {
+                        const res = await fetch(`${backendUrl}/api/admin/manage-video`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(formData)
+                        });
+
+                        if (res.ok) {
+                            alert("Video added successfully!");
+                            document.getElementById('add-video-modal').classList.add('hidden');
+                            renderManageVideosTable(); // Table ကို Refresh လုပ်မယ်
+                        } else {
+                            alert("Error adding video.");
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        alert("Connection failed.");
+                    } finally {
+                        saveBtn.innerText = originalText;
+                        saveBtn.disabled = false;
+                    }
+                });
+            }
+
+
+            // --- 2. MANAGE SOCIAL TASKS ---
+
+            // "Add New Task" ခလုတ်နှိပ်ရင် Modal ဖွင့်မယ်
+            const addTaskBtn = document.getElementById('add-social-task-btn');
+            if (addTaskBtn) {
+                addTaskBtn.addEventListener('click', () => {
+                    document.getElementById('add-social-task-form').reset();
+                    document.getElementById('add-social-task-modal').classList.remove('hidden');
+                });
+            }
+
+            // Task Form "Save" နှိပ်ရင် Backend ကိုပို့မယ်
+            const taskForm = document.getElementById('add-social-task-form');
+            if (taskForm) {
+                taskForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+
+                    const saveBtn = taskForm.querySelector('.save-btn');
+                    const originalText = saveBtn.innerText;
+                    saveBtn.innerText = "Saving...";
+                    saveBtn.disabled = true;
+
+                    const formData = {
+                        title: document.getElementById('social-task-title').value,
+                        platform: document.getElementById('social-task-platform').value,
+                        link: document.getElementById('social-task-link').value,
+                        points: parseInt(document.getElementById('social-task-points').value)
+                    };
+
+                    try {
+                        const res = await fetch(`${backendUrl}/api/admin/manage-task`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(formData)
+                        });
+
+                        if (res.ok) {
+                            alert("Task added successfully!");
+                            document.getElementById('add-social-task-modal').classList.add('hidden');
+                            renderManageSocialTasksTable(); // Table Refresh
+                        } else {
+                            alert("Error adding task.");
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        alert("Connection failed.");
+                    } finally {
+                        saveBtn.innerText = originalText;
+                        saveBtn.disabled = false;
+                    }
+                });
+            }
+
+            // --- 3. COMMON MODAL CLOSING ---
+            // Cancel ခလုတ်တွေနှိပ်ရင် Modal ပိတ်မယ်
+            document.querySelectorAll('.cancel-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.modal-overlay').forEach(modal => modal.classList.add('hidden'));
+                });
+            });
+
+            // --- 4. MANAGE USERS SEARCH ---
+            // User ရှာတဲ့ Search Box အလုပ်လုပ်အောင်
+            const userSearchInput = document.getElementById('manage-users-search');
+            if (userSearchInput) {
+                userSearchInput.addEventListener('keyup', (e) => {
+                    const term = e.target.value.toLowerCase();
+                    const rows = document.querySelectorAll('#users-table-body tr');
+
+                    rows.forEach(row => {
+                        const text = row.innerText.toLowerCase();
+                        if (text.includes(term)) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                });
+            }
+        });
+
+        // Payouts ဇယားဆွဲထုတ်ရန်
+        async function fetchPayouts() {
+            try {
+                const res = await fetch(`${backendUrl}/api/admin/payouts`);
+                const payouts = await res.json();
+                const tbody = document.getElementById('payouts-table-body');
+                if (!tbody) return;
+
+                if (!payouts || payouts.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-muted-text">No requests found.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = payouts.map(p => {
+                    let statusColor = 'text-yellow-400';
+                    if (p.status === 'paid') statusColor = 'text-green-400';
+                    if (p.status === 'rejected') statusColor = 'text-red-400';
+
+                    // Paid/Rejected ဖြစ်ပြီးရင် Action ခလုတ်တွေ မပြတော့ဘူး
+                    const actions = p.status === 'pending' ? `
+                        <button onclick="handlePayout('${p.id}', 'paid', '${p.user_id}', '${p.amount}')" class="px-2 py-1 bg-green-600 hover:bg-green-500 rounded text-white text-xs mr-2">Approve</button>
+                        <button onclick="handlePayout('${p.id}', 'rejected', '${p.user_id}', '${p.amount}')" class="px-2 py-1 bg-red-600 hover:bg-red-500 rounded text-white text-xs">Reject</button>
+                    ` : `<span class="text-xs text-slate-500">Completed</span>`;
+
+                    return `
+                    <tr class="border-b border-slate-700 hover:bg-slate-800/50">
+                        <td class="p-4 text-xs font-mono text-muted-text">${p.user_id}</td>
+                        <td class="p-4 text-white font-bold">$${p.amount}</td>
+                        <td class="p-4 text-sm text-muted-text">
+                            <div class="text-white">${p.method}</div>
+                            <div class="text-xs">${p.phone}</div>
+                        </td>
+                        <td class="p-4 text-xs font-bold uppercase ${statusColor}">${p.status}</td>
+                        <td class="p-4">${actions}</td>
+                    </tr>
+                `}).join('');
+            } catch (e) { console.error(e); }
+        }
+
+            
+            let AdController;
+            const ADSGRAM_BLOCK_ID = "21063";
+            
+            // ၁။ SDK ကို အတင်း Download ဆွဲခိုင်းမည့် Function
+            function loadAdsgramScript() {
+                return new Promise((resolve, reject) => {
+                    // ရှိပြီးသားဆိုရင် ပြန်မဆွဲတော့ဘူး
+                    if (window.Adsgram) {
+                        resolve();
+                        return;
+                    }
+            
+                    // Script Tag ကို Javascript နဲ့ ဖန်တီးပြီး ထည့်မယ်
+                    const script = document.createElement('script');
+                    script.src = "https://adsgram.ai/sdk/v1/adsgram-sdk.js";
+                    script.async = true;
+                    
+                    script.onload = () => {
+                        console.log("✅ Adsgram SDK Loaded Successfully");
+                        resolve();
+                    };
+                    
+                    script.onerror = (e) => {
+                        console.error("❌ Failed to load Adsgram SDK", e);
+                        reject(e);
+                    };
+            
+                    document.head.appendChild(script);
+                });
+            }
+            
+            // ၂။ Page ပွင့်တာနဲ့ Script ကို စောင့်မယ်၊ ပြီးရင် Init လုပ်မယ်
+            document.addEventListener('DOMContentLoaded', async () => {
+                try {
+                    await loadAdsgramScript();
+                    if (window.Adsgram) {
+                        AdController = window.Adsgram.init({
+                            blockId: ADSGRAM_BLOCK_ID,
+                            debug: true // 🔥 Test Mode
+                        });
+                    }
+                } catch (e) {
+                    console.log("Auto-init failed, will try again on button click.");
+                }
+            });
+            
+            // ၃။ Button နှိပ်မှ အလုပ်လုပ်မည့် Function
+            async function showAdsgramAd() {
+                const btn = document.querySelector('button[onclick="showAdsgramAd()"]');
+                if(btn) btn.disabled = true; // နှိပ်ပြီးရင် ခဏပိတ်ထားမယ်
+            
+                try {
+                    // SDK မရှိသေးရင် အခုချက်ချင်း ဆွဲထည့်မယ်
+                    if (!window.Adsgram) {
+                        await loadAdsgramScript();
+                    }
+            
+                    // Controller မရှိသေးရင် Init လုပ်မယ်
+                    if (!AdController && window.Adsgram) {
+                        AdController = window.Adsgram.init({ 
+                            blockId: ADSGRAM_BLOCK_ID, 
+                            debug: true 
+                        });
+                    }
+            
+                    if (!AdController) {
+                        alert("⚠️ Adsgram စနစ် ချိတ်ဆက်၍ မရပါ။ (Internet Connection စစ်ဆေးပါ)");
+                        if(btn) btn.disabled = false;
+                        return;
+                    }
+            
+                    // ကြော်ငြာပြမယ်
+                    const result = await AdController.show();
+            
+                    if (result.done) {
+                        alert("✅ ဂုဏ်ယူပါတယ်။ အမှတ် ၃၀ ရရှိပါပြီ။ (Test Mode)");
+                        
+                        // Backend Point Update
+                        const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "1856743644";
+                        
+                        await fetch(`${backendUrl}/api/award-points`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ 
+                                userId: userId, 
+                                amount: 30, 
+                                desc: "Adsgram: Watched Video" 
+                            })
+                        });
+            
+                        if (typeof initApp === "function") initApp(); 
+                    }
+                } catch (error) {
+                    console.error("Adsgram Error:", error);
+                    
+                    if (error.error === 'not_filled') {
+                        alert("⚠️ ကြည့်ရှုရန် ကြော်ငြာမရှိသေးပါ။ (No Ads Available)");
+                    } else {
+                        alert("Error: " + JSON.stringify(error));
+                    }
+                } finally {
+                    if(btn) btn.disabled = false; // ခလုတ်ပြန်ဖွင့်မယ်
+                }
+            }
+        // Approve/Reject လုပ်ရန်
+        async function handlePayout(payoutId, status, userId, amount) {
+            if (!confirm(`Mark this request as ${status.toUpperCase()}?`)) return;
+
+            try {
+                const res = await fetch(`${backendUrl}/api/admin/handle-payout`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ payoutId, status, userId, amount })
+                });
+                if (res.ok) {
+                    alert("Updated successfully!");
+                    fetchPayouts(); // Refresh table
+                }
+            } catch (e) { console.error(e); alert("Error updating status"); }
+        }
+
+    </script>
 </body>
+
 </html>
