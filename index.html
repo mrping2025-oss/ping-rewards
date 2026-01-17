@@ -559,7 +559,7 @@
                     </div>
                 </div>
                 <!-- AdsTR0 -->
-             
+
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8"
                     id="video-grid">
@@ -569,7 +569,9 @@
             </div>
 
             <!-- ADSTR1 -->
-            
+
+            <div id="video-player-view" class="content-view" style="display: none;">
+
 
                 <!-- Video Player View ထဲမှာ ထည့်ရန် -->
                 <div id="circular-points-tracker" class="circular-progress-container">
@@ -603,6 +605,18 @@
             <!-- Social Tasks View -->
             <div id="social-tasks-view" class="content-view" style="display: none;">
                 <h2 class="text-xl font-semibold mb-4">Complete Social Tasks</h2>
+                <div
+                    class="card bg-card-bg p-6 mb-2 rounded-xl border border-primary text-center shadow-lg relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-primary text-white text-[10px] px-2 py-1 rounded-bl-lg">DAILY
+                    </div>
+                    <h3 class="text-lg font-bold text-white">🚀 Adsterra Extra Bonus</h3>
+                    <p class="text-accent-orange font-bold my-1">+10 PTS</p>
+                    <p id="quick-task-status" class="text-[11px] text-muted-text mb-4">Loading limit...</p>
+                    <button id="quick-task-btn" onclick="handleQuickTask(this)"
+                        class="w-full py-2 rounded-lg font-bold transition text-white bg-primary hover:bg-indigo-600">
+                        Start Task (20s)
+                    </button>
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="social-tasks-grid">
                     <!-- Social task cards  -->
                     <div class="col-span-full text-center text-muted-text p-6">Loading tasks...</div>
@@ -2067,6 +2081,92 @@
             }
         }
 
+        // Daily Limit အတွက် Variables များ
+        let quickTaskLimit = 10;
+        let storageKey = "quick_task_data";
+
+        // Page စဖွင့်တာနဲ့ Limit ကို စစ်ဆေးမယ်
+        document.addEventListener("DOMContentLoaded", updateQuickTaskUI);
+
+        function updateQuickTaskUI() {
+            const statusText = document.getElementById('quick-task-status');
+            const btn = document.getElementById('quick-task-btn');
+            const data = JSON.parse(localStorage.getItem(storageKey)) || { count: 0, date: new Date().toLocaleDateString() };
+
+            // ရက်စွဲ အသစ်ဖြစ်သွားရင် Count ကို ၀ ပြန်ထားမယ်
+            if (data.date !== new Date().toLocaleDateString()) {
+                data.count = 0;
+                data.date = new Date().toLocaleDateString();
+                localStorage.setItem(storageKey, JSON.stringify(data));
+            }
+
+            const remaining = quickTaskLimit - data.count;
+            statusText.innerText = `Remaining: ${remaining}/10 today`;
+
+            if (remaining <= 0) {
+                btn.disabled = true;
+                btn.innerText = "Limit Reached";
+                btn.classList.replace('bg-primary', 'bg-slate-600');
+            }
+        }
+
+        async function handleQuickTask(btn) {
+            const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "1856743644";
+            const adLink = "https://ancestorheadquarters.com/uguk0ijgk?key=1d1112cd2a77794d91e2a616bcbfa116"; // Adsterra 
+
+            // ၁။ Link ကို ဖွင့်မယ်
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.openLink(adLink);
+            } else {
+                window.open(adLink, '_blank');
+            }
+
+            // ၂။ Timer စတင်မယ်
+            btn.disabled = true;
+            let timeLeft = 20; // ၂၀ စက္ကန့် ကြည့်ခိုင်းမယ်
+            const originalText = btn.innerText;
+
+            const timerInterval = setInterval(async () => {
+                btn.innerText = `Wait ${timeLeft}s...`;
+                timeLeft--;
+
+                if (timeLeft < 0) {
+                    clearInterval(timerInterval);
+                    btn.innerText = "Verifying...";
+
+                    try {
+                        // ၃။ Backend ဆီ Point ပို့မယ်
+                        const res = await fetch(`${backendUrl}/api/award-points`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                userId: userId,
+                                amount: 10,
+                                desc: "Daily Task: Adsterra Visit"
+                            })
+                        });
+
+                        if (res.ok) {
+                            // ၄။ အောင်မြင်ရင် Local Count တိုးမယ်
+                            let data = JSON.parse(localStorage.getItem(storageKey));
+                            data.count++;
+                            localStorage.setItem(storageKey, JSON.stringify(data));
+
+                            alert("✅ ဂုဏ်ယူပါတယ်။ အမှတ် ၁၀ ရရှိပါပြီ။");
+                            updateQuickTaskUI(); // UI ကို Update လုပ်မယ်
+                            if (typeof initApp === "function") initApp();
+                        }
+                    } catch (e) {
+                        console.error(e);
+                        alert("❌ Connection Error.");
+                    } finally {
+                        btn.innerText = "Start Task (20s)";
+                        btn.disabled = false;
+                        updateQuickTaskUI();
+                    }
+                }
+            }, 1000);
+        }
         // Popup အတွက် Cooldown သိမ်းရန်
         let lastPopupTime = 0;
 
