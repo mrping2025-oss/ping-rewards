@@ -232,14 +232,15 @@
                 </button>
 
                 <!-- 2. Video -->
-                <button type="button" onclick="showView('watch-videos-view')"
+                <button type="button" onclick="showMonetagPopupAd()"
                     class="inline-flex flex-col items-center justify-center px-5 hover:bg-slate-700 group">
-                    <svg class="w-6 h-6 mb-1 text-gray-400 group-hover:text-pink-500 transition duration-200"
+                    <!-- Star Icon (Daily Bonus အတွက်) -->
+                    <svg class="w-6 h-6 mb-1 text-gray-400 group-hover:text-pink-400 transition duration-200"
                         fill="currentColor" viewBox="0 0 24 24">
                         <path
-                            d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
+                            d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
                     </svg>
-                    <span class="text-xs text-gray-400 group-hover:text-pink-500">Video</span>
+                    <span class="text-[10px] text-gray-400 group-hover:text-pink-400">Daily</span>
                 </button>
 
                 <!-- 3. Tasks -->
@@ -619,23 +620,6 @@
                         <h2 class="text-2xl font-semibold" id="video-player-title">Video Title</h2>
                     </div>
                     <!-- Adstr2 End-->
-                    <!-- Video Player အောက်မှာ ထည့်ရန် -->
-                    <div class="mt-6 flex flex-col items-center">
-                        <div class="bg-card-bg p-2 rounded-xl border border-slate-700 shadow-md">
-                            <!-- သင်၏ Ad Code ကို ဒီမှာထည့်ပါ -->
-                            <script>
-                                atOptions = {
-                                    'key': 'ab011a6fcf341e920b5fe999724cbf9f',
-                                    'format': 'iframe',
-                                    'height': 250,
-                                    'width': 300,
-                                    'params': {}
-                                };
-                            </script>
-                            <script
-                                src="https://ancestorheadquarters.com/ab011a6fcf341e920b5fe999724cbf9f/invoke.js"></script>
-                        </div>
-                    </div>
 
                 </div>
             </div>
@@ -1405,7 +1389,18 @@
                     if (adminIds.includes(String(userId))) {
                         document.querySelectorAll('.admin-link').forEach(el => el.style.display = 'flex');
                     }
-
+                    if (typeof show_10474083 === 'function') {
+                        show_10474083({
+                            type: 'inApp',
+                            inAppSettings: {
+                                frequency: 2,   // ၆ မိနစ်မှာ ၂ ကြိမ်
+                                capping: 0.1,   // ၀.၁ နာရီ (၆ မိနစ်)
+                                interval: 30,   // ကြော်ငြာကြား ၃၀ စက္ကန့်ခြား
+                                timeout: 5,     // ၅ စက္ကန့်နေမှ စပြ
+                                everyPage: false
+                            }
+                        });
+                    }
                     // Load Data
                     loadVideos();
                     loadTasks();
@@ -2096,6 +2091,49 @@
             }
         }
 
+        // Popup အတွက် Cooldown သိမ်းရန်
+        let lastPopupTime = 0;
+
+        async function showMonetagPopupAd() {
+            const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "1856743644";
+            const currentTime = Date.now();
+
+            // ၂ မိနစ် Cooldown ထားပါမယ် (Popup က ခဏခဏပေါ်ရင် User စိတ်ညစ်တတ်လို့ပါ)
+            if (currentTime - lastPopupTime < 120000) {
+                const timeLeft = Math.ceil((120000 - (currentTime - lastPopupTime)) / 1000);
+                alert(`⚠️ Popup အတွက် ${timeLeft} စက္ကန့် ခဏစောင့်ပေးပါ။`);
+                return;
+            }
+
+            try {
+                if (typeof show_10474083 === 'function') {
+                    // 'pop' parameter ထည့်ပြီး Popup အနေနဲ့ ခေါ်ယူပါမယ်
+                    show_10474083('pop').then(async () => {
+                        lastPopupTime = Date.now();
+                        alert('✅ ဂုဏ်ယူပါတယ်။ ကြော်ငြာကြည့်ပြီးလို့ အမှတ် ၁၅ ရရှိပါပြီ။');
+
+                        // Backend ဆီ Point ၁၅ မှတ် ပို့မယ်
+                        await fetch(`${backendUrl}/api/award-points`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                userId: userId,
+                                amount: 15, // Popup အတွက် ၁၅ မှတ်
+                                desc: "Monetag: Rewarded Popup"
+                            })
+                        });
+
+                        if (typeof initApp === "function") initApp();
+
+                    }).catch(e => {
+                        console.error("Popup Error:", e);
+                        alert("⚠️ ကြော်ငြာပြသရန် အဆင်မပြေသေးပါ။");
+                    });
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
         async function handlePayout(payoutId, status, userId, amount) {
             if (!confirm(`Mark this request as ${status.toUpperCase()}?`)) return;
 
