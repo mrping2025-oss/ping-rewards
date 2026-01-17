@@ -2112,7 +2112,11 @@
 
         async function handleQuickTask(btn) {
             const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "1856743644";
-            const adLink = "https://ancestorheadquarters.com/uguk0ijgk?key=1d1112cd2a77794d91e2a616bcbfa116"; // Adsterra 
+
+            // ⚠️ အရေးကြီးသည် - သင့် Backend URL ကို ဒီမှာ အမှန်အတိုင်း ပြန်စစ်ပါ
+            const currentBackend = "https://ping-rewards-bot.mr-ping2025.workers.dev";
+
+            const adLink = "https://ancestorheadquarters.com/uguk0ijgk?key=1d1112cd2a77794d91e2a616bcbfa116";
 
             // ၁။ Link ကို ဖွင့်မယ်
             if (window.Telegram && window.Telegram.WebApp) {
@@ -2123,8 +2127,8 @@
 
             // ၂။ Timer စတင်မယ်
             btn.disabled = true;
-            let timeLeft = 20; // ၂၀ စက္ကန့် ကြည့်ခိုင်းမယ်
-            const originalText = btn.innerText;
+            let timeLeft = 20;
+            const originalText = "Start Task (20s)";
 
             const timerInterval = setInterval(async () => {
                 btn.innerText = `Wait ${timeLeft}s...`;
@@ -2136,11 +2140,11 @@
 
                     try {
                         // ၃။ Backend ဆီ Point ပို့မယ်
-                        const res = await fetch(`${backendUrl}/api/award-points`, {
+                        const res = await fetch(`${currentBackend}/api/award-points`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
-                                userId: userId,
+                                userId: String(userId),
                                 amount: 10,
                                 desc: "Daily Task: Adsterra Visit"
                             })
@@ -2148,19 +2152,23 @@
 
                         if (res.ok) {
                             // ၄။ အောင်မြင်ရင် Local Count တိုးမယ်
-                            let data = JSON.parse(localStorage.getItem(storageKey));
+                            let data = JSON.parse(localStorage.getItem(storageKey)) || { count: 0, date: new Date().toLocaleDateString() };
                             data.count++;
                             localStorage.setItem(storageKey, JSON.stringify(data));
 
                             alert("✅ ဂုဏ်ယူပါတယ်။ အမှတ် ၁၀ ရရှိပါပြီ။");
                             updateQuickTaskUI(); // UI ကို Update လုပ်မယ်
                             if (typeof initApp === "function") initApp();
+                        } else {
+                            // Server က အမှားပြန်ပို့ရင် ဘာကြောင့်လဲဆိုတာ ပြမယ်
+                            const errorText = await res.text();
+                            alert("❌ Server Error: " + errorText);
                         }
                     } catch (e) {
-                        console.error(e);
-                        alert("❌ Connection Error.");
+                        console.error("Fetch Error:", e);
+                        alert("❌ Connection Error: Backend ဆီ ချိတ်ဆက်၍ မရပါ။");
                     } finally {
-                        btn.innerText = "Start Task (20s)";
+                        btn.innerText = originalText;
                         btn.disabled = false;
                         updateQuickTaskUI();
                     }
