@@ -465,13 +465,10 @@
                             Watch Now
                         </a>
                     </div>
-                    <div class="card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
-                        <h2 class="text-lg font-semibold mb-2 text-muted-text">Total Points</h2>
-                        <div class="text-4xl font-bold text-primary" id="total-points-value">0</div>
-                    </div>
-                    <div class="card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
-                        <h2 class="text-lg font-semibold mb-2 text-muted-text">Estimated Earnings</h2>
-                        <div class="text-4xl font-bold text-accent-green" id="estimated-earnings-value">$0.00</div>
+                    <div
+                        class="card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 col-span-1 sm:col-span-2">
+                        <h2 class="text-lg font-semibold mb-2 text-muted-text">Total Balance</h2>
+                        <div class="text-4xl font-bold text-primary" id="total-points-value">$0.00000</div>
                     </div>
                     <div class="card bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
                         <h2 class="text-lg font-semibold mb-2 text-muted-text">Videos Watched</h2>
@@ -515,8 +512,8 @@
                 <div
                     class="card bg-card-bg p-6 mb-[100px] rounded-xl shadow-md border border-slate-700 flex flex-col md:flex-row justify-between items-center">
                     <div>
-                        <h2 class="text-xl font-semibold mb-2">Cash Out Points</h2>
-                        <p class="text-muted-text">10000 Points = $1.00</p>
+                        <h2 class="text-muted-text">Cash Out Balance</h2>
+                        <p class="text-muted-text">Min Cashout: $1.00 USD</p>
                         <p class="text-muted-text">Keep watching to increase your earnings.</p>
                     </div>
 
@@ -610,7 +607,7 @@
                     <div class="absolute top-0 right-0 bg-primary text-white text-[10px] px-2 py-1 rounded-bl-lg">DAILY
                     </div>
                     <h3 class="text-lg font-bold text-white">🚀 Adsterra Extra Bonus</h3>
-                    <p class="text-accent-orange font-bold my-1">+10 PTS</p>
+                    <p class="text-accent-orange font-bold my-1">+$0.00020</p>
                     <p id="quick-task-status" class="text-[11px] text-muted-text mb-4">Loading limit...</p>
                     <button id="quick-task-btn" onclick="handleQuickTask(this)"
                         class="w-full py-2 rounded-lg font-bold transition text-white bg-primary hover:bg-indigo-600">
@@ -652,8 +649,8 @@
                     <h2 class="text-xl font-semibold mb-4 text-primary">သူငယ်ချင်းများကို ဖိတ်ခေါ်ပြီး အမှတ်များရယူပါ
                         (Invite & Earn)</h2>
                     <p class="text-muted-text mb-6">သင်၏ ကိုယ်ပိုင်ဖိတ်ခေါ်ကုဒ် (Referral Code) ကို အသုံးပြု၍
-                        သူငယ်ချင်းများကို ဖိတ်ခေါ်ပါ။ သူငယ်ချင်းတစ်ဦး အကောင့်ဖွင့်တိုင်း အမှတ် **100** ရရှိမည်။</p>
-                    <!-- UPDATED  100 -->
+                        သူငယ်ချင်းများကို ဖိတ်ခေါ်ပါ။ သူငယ်ချင်းတစ်ဦး အကောင့်ဖွင့်တိုင်း <span
+                            class="text-white font-bold">$0.00200</span> ရရှိမည်။</p>
 
                     <div class="space-y-4">
                         <div>
@@ -723,23 +720,26 @@
             <div id="about-view" class="content-view" style="display: none;">
                 <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
                     <h2 class="text-2xl font-bold mb-4 text-primary">Ping Rewards အကြောင်း</h2>
-                    <p class="text-muted-text mb-6">Ping Rewards ကို အသုံးပြုပြီး ဗီဒီယိုကြည့်ရင်း၊ Task
-                        များလုပ်ဆောင်ရင်း အမှတ်များစုဆောင်းကာ ငွေသားအဖြစ် ထုတ်ယူနိုင်ပါသည်။</p>
+                    <p class="text-muted-text mb-6">Ping Rewards တွင် ဗီဒီယိုကြည့်ရင်း၊ Task များလုပ်ဆောင်ရင်း
+                        တိုက်ရိုက် USD ($) များ စုဆောင်းကာ ငွေသားအဖြစ် ထုတ်ယူနိုင်ပါသည်။</p>
 
                     <div class="space-y-6 text-text-color">
                         <!-- အပိုင်း (၁) -->
                         <section>
                             <h3 class="text-lg font-bold text-white flex items-center gap-2">
                                 <span class="bg-primary/20 text-primary px-2 py-1 rounded">၁</span>
-                                အမှတ်ရယူနည်းလမ်းများ
+                                ဝင်ငွေရယူနည်းလမ်းများ
                             </h3>
                             <ul class="list-disc list-inside mt-2 space-y-2 ml-4 text-sm md:text-base">
                                 <li><span class="font-semibold text-accent-orange">Watch Videos:</span>
-                                    ဗီဒီယိုကြည့်ရှုပါ (၁၀ စက္ကန့်လျှင် ၁ မှတ် ရရှိပါမည်)။</li>
+                                    ဗီဒီယိုကြည့်ရှုပါ (၁၀ စက္ကန့်လျှင် <span
+                                        class="text-white font-bold">$0.00002</span> တိုက်ရိုက်တိုးပါမည်)။</li>
                                 <li><span class="font-semibold text-accent-green">Social Tasks:</span> Facebook,
-                                    Telegram, YouTube စသည်တို့ကို Follow/Join လုပ်ပြီး အမှတ်များရယူပါ။</li>
+                                    Telegram, YouTube စသည်တို့ကို Follow/Join လုပ်ပြီး သတ်မှတ်ထားသော USD ပမာဏများ ရယူပါ။
+                                </li>
                                 <li><span class="font-semibold text-primary">Invite & Earn:</span> သူငယ်ချင်းကို
-                                    ဖိတ်ခေါ်ပြီး တစ်ဦးလျှင် ၁၀၀ မှတ် ရယူပါ။</li>
+                                    ဖိတ်ခေါ်ပြီး တစ်ဦးလျှင် <span class="text-white font-bold">$0.00200</span> ရယူပါ။
+                                </li>
                             </ul>
                         </section>
 
@@ -750,10 +750,8 @@
                                 ငွေထုတ်ယူခြင်း (Cash Out)
                             </h3>
                             <ul class="list-disc list-inside mt-2 space-y-2 ml-4 text-sm md:text-base">
-                                <li>အနည်းဆုံးအမှတ် <span class="text-white font-bold">10000 Points</span> ပြည့်ပါက
+                                <li>အနည်းဆုံးလက်ကျန်ငွေ <span class="text-white font-bold">$1.00</span> ပြည့်ပါက
                                     ငွေထုတ်နိုင်ပါသည်။</li>
-                                <li>1,0000 Points လျှင် <span class="text-white font-bold">$1.00</span> နှင့်
-                                    ညီမျှပါသည်။</li>
                                 <li>KBZ Pay, Wave Pay နှင့် Binance (USDT) တို့ဖြင့် ထုတ်ယူနိုင်ပါသည်။</li>
                                 <li>ငွေထုတ်ယူပြီး <span class="text-accent-orange font-semibold">၂၄ နာရီမှ ၄၈
                                         နာရီအတွင်း</span> လူကြီးမင်းတို့ထံ ပေးပို့ပေးသွားမည်ဖြစ်ပါသည်။</li>
@@ -767,10 +765,11 @@
                             </h3>
                             <ul class="list-disc list-inside mt-2 space-y-2 ml-4 text-xs md:text-sm text-red-200">
                                 <li>တစ်ဦးလျှင် အကောင့်တစ်ခုသာ အသုံးပြုရပါမည်။</li>
-                                <li>VPN အသုံးပြုခြင်းကို လုံးဝ (လုံးဝ) ခွင့်မပြုပါ။</li>
+                                <li>VPN အသုံးပြုခြင်းကို လုံးဝ (လုံးဝ) ခွင့်မပြုပါ။ VPN သုံးစွဲမှု တွေ့ရှိပါက
+                                    ငွေထုတ်ပေးမည် မဟုတ်ပါ။</li>
                                 <li>ဗီဒီယိုများကို Fake View (Bot) များဖြင့် ကြည့်ရှုခြင်း တွေ့ရှိပါက
                                     အကောင့်ပိတ်သိမ်းပါမည်။</li>
-                                <li>Social Task များကို အမှန်တကယ် လုပ်ဆောင်ရပါမည် (Check ပြန်လုပ်ပါသည်)။</li>
+                                <li>Social Task များကို အမှန်တကယ် လုပ်ဆောင်ရပါမည် (Admin မှ စစ်ဆေးပါသည်)။</li>
                                 <li>စည်းကမ်းဖောက်ဖျက်ထားသော အကောင့်များ၏ ငွေထုတ်ယူမှုများကို ပယ်ဖျက်သွားပါမည်။</li>
                             </ul>
                         </section>
@@ -1220,7 +1219,10 @@
         const urlParams = new URLSearchParams(window.location.search);
         const startParam = tg.initDataUnsafe.start_param || urlParams.get('start') || "";
         const backendUrl = "https://ping-rewards-bot.mr-ping2025.workers.dev"; // သင့် Backend URL သေချာပါစေ
-
+        function formatToUSD(points) {
+            return (points / 50000).toFixed(5);
+        }
+        let userData = {};
         let player;
         let isVideoPlaying = false;
         let cachedVideos = [];
@@ -1288,11 +1290,12 @@
             });
 
             document.getElementById('cashout-button').addEventListener('click', () => {
-                const pts = parseInt(document.getElementById('total-points-value').innerText);
-                if (pts < 10000) {
-                    alert("ငွေထုတ်ရန် အနည်းဆုံး ၁၀,၀၀၀ မှတ် လိုအပ်ပါသည်။");
+                const currentUSD = (userData.points / 50000);
+
+                if (currentUSD < 1.00) {
+                    alert("ငွေထုတ်ရန် အနည်းဆုံး $1.00 လိုအပ်ပါသည်။");
                 } else {
-                    document.getElementById('payout-amount').value = (pts / 10000).toFixed(2);
+                    document.getElementById('payout-amount').value = currentUSD.toFixed(2);
                     document.getElementById('cashout-modal').classList.remove('hidden');
                 }
             });
@@ -1345,9 +1348,9 @@
                 document.getElementById('page-title').innerText = viewId.replace(/-/g, ' ').replace('view', '').toUpperCase();
 
                 // Dashboard ရောက်ရင် Point ကို ဒေါ်လာနဲ့ တွက်ပြဖို့
-                if (viewId === 'user-dashboard-view') {
-                    const pts = parseInt(document.getElementById('total-points-value').innerText) || 0;
-                    document.getElementById('estimated-earnings-value').textContent = `$${(pts / 10000).toFixed(2)}`;
+                if (viewId === 'user-dashboard-view' && userData.points !== undefined) {
+                    const earningsEl = document.getElementById('estimated-earnings-value');
+                    if (earningsEl) earningsEl.textContent = `$${(userData.points / 50000).toFixed(2)}`;
                 }
                 if (viewId === 'manage-payouts-view') {
                     fetchPayouts();
@@ -1364,10 +1367,10 @@
                 // User Registration & Fetch
                 const userName = user ? user.first_name : "Guest User";
                 const userRes = await fetch(`${backendUrl}/api/get-user?id=${userId}&name=${userName}&ref=${startParam}`);
-                const userData = await userRes.json();
+                userData = await userRes.json();
 
                 if (userData && !userData.error) {
-                    document.getElementById('total-points-value').textContent = userData.points || 0;
+                    document.getElementById('total-points-value').textContent = `$${formatToUSD(userData.points || 0)}`;
                     document.getElementById('welcome-message').textContent = `Welcome, ${userData.name || 'User'}!`;
 
                     // Referral UI Update
@@ -1470,7 +1473,7 @@
                     return `
                         <div class="card bg-card-bg p-6 rounded-xl border border-slate-700 text-center">
                             <h3 class="text-lg font-bold text-white">${t.title}</h3>
-                            <p class="text-accent-green font-bold my-2">+${t.points} PTS</p>
+                            <p class="text-accent-green font-bold my-2">+$${(t.points / 50000).toFixed(5)}</p>
                             <button ${btnAction} class="inline-block px-6 py-2 rounded-lg font-bold transition text-white ${btnClass}">
                                 ${btnText}
                             </button>
@@ -1537,7 +1540,7 @@
                     <tr class="border-b border-slate-700">
                         <td class="p-4 text-xs text-muted-text">${new Date(h.created_at).toLocaleDateString()}</td>
                         <td class="p-4 text-sm text-white">${h.description}</td>
-                        <td class="p-4 font-bold text-accent-green">+${h.points}</td>
+                        <td class="p-4 font-bold text-accent-green">+$${formatToUSD(h.points)}</td>
                     </tr>
                 `).join('');
             } catch (e) { console.error(e); }
@@ -1553,10 +1556,10 @@
                 table.innerHTML = referrals.map(u => `
             <tr class="border-b border-slate-700">
                 <td class="p-4 text-sm text-white font-semibold">${u.name}</td>
-                <td class="p-4 font-bold text-accent-green">+100</td> 
+                <!-- အမှတ် ၁၀၀ အစား $0.00200 လို့ ပြပါမယ် -->
+                <td class="p-4 font-bold text-accent-green">+$0.00200</td> 
             </tr>
         `).join('');
-                // ဒီမှာ +100 လို့ ပြင်လိုက်ပါတယ်
             } catch (e) { console.error(e); }
         }
 
@@ -1569,7 +1572,7 @@
                 list.innerHTML = topUsers.map((u, i) => `
                     <div class="flex justify-between items-center bg-slate-800 p-3 rounded-lg border border-slate-700">
                         <span class="font-bold text-white">${medals[i]} ${u.name}</span>
-                        <span class="text-accent-green font-bold">${u.points} PTS</span>
+                       <span class="text-accent-green font-bold">$${formatToUSD(u.points)}</span>
                     </div>
                 `).join('');
             } catch (e) { console.error(e); }
@@ -1608,25 +1611,29 @@
             }
         }
 
+
         function startPointTimer() {
             if (videoTimerInterval) clearInterval(videoTimerInterval);
             const container = document.getElementById('circular-points-tracker');
             const text = document.getElementById('progress-value-text');
             const circle = document.getElementById('progress-circle');
             container.style.display = 'flex';
-            secondsCount = 0; sessionPoints = 0;
+
+            secondsCount = 0;
+            sessionPoints = 0; // session တစ်ခုချင်းစီအတွက် အမှတ်ကို ၀ ကစမယ်
+
             videoTimerInterval = setInterval(() => {
                 if (!isVideoPlaying) return;
                 secondsCount++;
+
                 let degrees = (secondsCount % 10) * 36;
                 circle.style.background = `conic-gradient(#F59E0B ${degrees || 360}deg, #334155 0deg)`;
+
                 if (secondsCount % 10 === 0) {
                     sessionPoints++;
-                    text.innerText = `+${sessionPoints}`;
-                    const el = document.getElementById('total-points-value');
-                    const newPts = parseInt(el.innerText) + 1;
-                    el.innerText = newPts;
-                    document.getElementById('estimated-earnings-value').textContent = `$${(newPts / 10000).toFixed(2)}`;
+                    text.innerText = `+$${formatToUSD(sessionPoints)}`;
+                    const currentTotalPoints = (userData.points || 0) + sessionPoints;
+                    document.getElementById('total-points-value').innerText = `$${formatToUSD(currentTotalPoints)}`;
                 }
             }, 1000);
         }
@@ -1678,21 +1685,16 @@
 
         async function fetchAdminDashboardData() {
             try {
-                // Backend မှ Data လှမ်းယူမယ်
                 const res = await fetch(`${backendUrl}/api/get-admin-stats`);
                 const data = await res.json();
-
                 if (data) {
-                    // UI ပေါ်မှာ ဂဏန်းတွေ ပြမယ်
                     document.getElementById('admin-total-users-value').innerText = data.totalUsers || 0;
                     document.getElementById('admin-total-videos-value').innerText = data.totalVideos || 0;
-                    document.getElementById('admin-total-points-earned-value').innerText = data.totalPoints || 0;
-                    // ငွေပမာဏ ရှေ့မှာ $ သင်္ကေတခံမယ်
+                    document.getElementById('admin-total-points-earned-value').innerText = `$${formatToUSD(data.totalPoints || 0)}`;
+
                     document.getElementById('admin-total-payouts-value').innerText = `$${data.totalPayouts || "0.00"}`;
                 }
-            } catch (err) {
-                console.error("Failed to load admin stats:", err);
-            }
+            } catch (err) { console.error(err); }
         }
 
         // Manage Videos Table ဆွဲထုတ်ခြင်း
