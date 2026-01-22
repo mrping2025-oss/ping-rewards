@@ -336,8 +336,6 @@
                         <span class="text-xs text-white">Help</span>
                     </a>
 
-                    <!-- ================= ADMIN BUTTONS (Admin Only) ================= -->
-
                     <!-- Invite & Earn (Moved to Menu) -->
                     <button
                         onclick="showView('invite-and-earn-view'); document.getElementById('more-menu-modal').classList.add('hidden')"
@@ -1610,33 +1608,42 @@
                 showView('watch-videos-view');
             }
         }
-
-
+        
+        let lastPosition = 0; 
+        
         function startPointTimer() {
             if (videoTimerInterval) clearInterval(videoTimerInterval);
             const container = document.getElementById('circular-points-tracker');
             const text = document.getElementById('progress-value-text');
             const circle = document.getElementById('progress-circle');
             container.style.display = 'flex';
-
+        
             secondsCount = 0;
-            sessionPoints = 0; // session တစ်ခုချင်းစီအတွက် အမှတ်ကို ၀ ကစမယ်
-
+            sessionPoints = 0;
+            lastPosition = 0; 
+        
             videoTimerInterval = setInterval(() => {
-                if (!isVideoPlaying) return;
-                secondsCount++;
-
-                let degrees = (secondsCount % 10) * 36;
-                circle.style.background = `conic-gradient(#F59E0B ${degrees || 360}deg, #334155 0deg)`;
-
-                if (secondsCount % 10 === 0) {
-                    sessionPoints++;
-                    text.innerText = `+$${formatToUSD(sessionPoints)}`;
-                    const currentTotalPoints = (userData.points || 0) + sessionPoints;
-                    document.getElementById('total-points-value').innerText = `$${formatToUSD(currentTotalPoints)}`;
-                }
+                if (!isVideoPlaying || !player || typeof player.getCurrentTime !== 'function') return;
+        
+                let currentPos = Math.floor(player.getCurrentTime());
+                if (currentPos > lastPosition) {
+                    secondsCount++;
+                    lastPosition = currentPos; 
+        
+                    let degrees = (secondsCount % 10) * 36;
+                    circle.style.background = `conic-gradient(#F59E0B ${degrees || 360}deg, #334155 0deg)`;
+        
+                    if (secondsCount % 10 === 0) {
+                        sessionPoints++;
+                        text.innerText = `+$${formatToUSD(sessionPoints)}`;
+                        const currentTotalPoints = (userData.points || 0) + sessionPoints;
+                        document.getElementById('total-points-value').innerText = `$${formatToUSD(currentTotalPoints)}`;
+                    }
+                } 
+              
             }, 1000);
         }
+               
 
         async function stopPointTimer() {
             if (videoTimerInterval) { clearInterval(videoTimerInterval); videoTimerInterval = null; }
