@@ -1183,18 +1183,33 @@
                             <option value="Binance Pay">Binance Pay</option>
                         </select>
                     </div>
-                    <div>
-                        <label for="payout-amount" class="block text-sm font-medium mb-1">Amount ($)</label>
-                        <input type="number" id="payout-amount" name="payoutAmount" value="0.00" readonly
-                            class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 text-muted-text cursor-not-allowed">
+
+
+                    <div class="space-y-4">
+                        <div>
+                            <label for="payout-amount" class="block text-sm font-medium mb-1">ထုတ်ယူမည့် ပမာဏ
+                                (USD)</label>
+                            <select id="payout-amount" name="payoutAmount"
+                                class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary text-white">
+                                <option value="1">1.00 USD (50,000 Points)</option>
+                                <option value="2">2.00 USD (100,000 Points)</option>
+                                <option value="3">3.00 USD (150,000 Points)</option>
+                                <option value="4">4.00 USD (200,000 Points)</option>
+                                <option value="5">5.00 USD (250,000 Points)</option>
+                            </select>
+                        </div>
+
+                        <!-- ဖုန်းနံပါတ် ရိုက်ရန် -->
                         <div>
                             <label for="payout-phone" class="block text-sm font-medium mb-1">Phone Number
-                                (Kpay/Wave)</label>
+                                (Kpay/Wave/Binance)</label>
                             <input type="text" id="payout-phone" name="payoutPhone" required
-                                class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary"
-                                placeholder="09xxxxxxxxx">
+                                class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary text-white"
+                                placeholder="09xxxxxxxxx သို့မဟုတ် Binance ID">
                         </div>
+
                     </div>
+
                     <div class="flex justify-end gap-2 pt-4">
                         <button type="button"
                             class="cancel-btn px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg text-white font-semibold transition-colors duration-200">Cancel</button>
@@ -1288,13 +1303,21 @@
             });
 
             document.getElementById('cashout-button').addEventListener('click', () => {
-                const currentUSD = (userData.points / 50000);
+                const currentPoints = userData.points || 0;
 
-                if (currentUSD < 1.00) {
+                if (currentPoints < 50000) {
                     alert("ငွေထုတ်ရန် အနည်းဆုံး $1.00 လိုအပ်ပါသည်။");
                 } else {
-                    document.getElementById('payout-amount').value = currentUSD.toFixed(2);
                     document.getElementById('cashout-modal').classList.remove('hidden');
+                    const select = document.getElementById('payout-amount');
+                    for (let i = 0; i < select.options.length; i++) {
+                        const val = parseInt(select.options[i].value);
+                        if (currentPoints < val * 50000) {
+                            select.options[i].disabled = true;
+                        } else {
+                            select.options[i].disabled = false;
+                        }
+                    }
                 }
             });
 
@@ -1608,42 +1631,42 @@
                 showView('watch-videos-view');
             }
         }
-        
-        let lastPosition = 0; 
-        
+
+        let lastPosition = 0;
+
         function startPointTimer() {
             if (videoTimerInterval) clearInterval(videoTimerInterval);
             const container = document.getElementById('circular-points-tracker');
             const text = document.getElementById('progress-value-text');
             const circle = document.getElementById('progress-circle');
             container.style.display = 'flex';
-        
+
             secondsCount = 0;
             sessionPoints = 0;
-            lastPosition = 0; 
-        
+            lastPosition = 0;
+
             videoTimerInterval = setInterval(() => {
                 if (!isVideoPlaying || !player || typeof player.getCurrentTime !== 'function') return;
-        
+
                 let currentPos = Math.floor(player.getCurrentTime());
                 if (currentPos > lastPosition) {
                     secondsCount++;
-                    lastPosition = currentPos; 
-        
+                    lastPosition = currentPos;
+
                     let degrees = (secondsCount % 10) * 36;
                     circle.style.background = `conic-gradient(#F59E0B ${degrees || 360}deg, #334155 0deg)`;
-        
+
                     if (secondsCount % 10 === 0) {
                         sessionPoints++;
                         text.innerText = `+$${formatToUSD(sessionPoints)}`;
                         const currentTotalPoints = (userData.points || 0) + sessionPoints;
                         document.getElementById('total-points-value').innerText = `$${formatToUSD(currentTotalPoints)}`;
                     }
-                } 
-              
+                }
+
             }, 1000);
         }
-               
+
 
         async function stopPointTimer() {
             if (videoTimerInterval) { clearInterval(videoTimerInterval); videoTimerInterval = null; }
