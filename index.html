@@ -1016,7 +1016,7 @@
             class="modal-overlay fixed inset-0 flex justify-center items-center z-[1000] hidden">
             <div class="modal-content bg-card-bg p-8 rounded-xl w-11/12 max-w-lg shadow-2xl border border-slate-700">
                 <h3 class="text-xl font-semibold mb-4">Cash Out Request</h3>
-                <p id="cashout-message-text" class="text-muted-text mb-6">You need 1.00 USD to cash out.</p>
+                <p id="cashout-message-text" class="text-muted-text mb-6">You need 1.00 USD  to cash out.</p>
                 <div class="flex justify-end gap-2">
                     <button type="button"
                         class="px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg text-white font-semibold transition-colors duration-200"
@@ -1227,8 +1227,8 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
         const tg = window.Telegram.WebApp;
-        const user = tg.initDataUnsafe.user;
-        const userId = user ? user.id : null;
+let user = tg.initDataUnsafe.user; 
+let userId = user ? user.id : null;
         const urlParams = new URLSearchParams(window.location.search);
         const startParam = tg.initDataUnsafe.start_param || urlParams.get('start') || "";
         const backendUrl = "https://ping-rewards-bot.mr-ping2025.workers.dev"; // သင့် Backend URL သေချာပါစေ
@@ -1247,111 +1247,129 @@
         tg.expand();
 
         document.addEventListener("DOMContentLoaded", () => {
-            const navLinks = document.querySelectorAll('.nav-link');
-            navLinks.forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const targetId = link.getAttribute('data-target');
-                    if (targetId) {
-                        showView(targetId);
-                        if (window.innerWidth < 768) {
-                            document.getElementById('sidebar').classList.remove('open');
-                            document.getElementById('backdrop').classList.remove('open');
-                        }
-                    }
-                });
-            });
+    tg.ready(); 
+    tg.expand();
 
-            // Cashout Form Submit လုပ်တဲ့ အပိုင်း
-            // indexF.html ထဲက cashout-form submit အပိုင်းမှာ ဒါလေး ထည့်ပြင်ပါ
-            document.getElementById('cashout-form').addEventListener('submit', async (e) => {
-                e.preventDefault();
+function startWithRetry() {
+    const currentUser = tg.initDataUnsafe.user;
+    if (currentUser && currentUser.id) {
+        user = currentUser; 
+        userId = currentUser.id;
+        initApp();
+    } else {
+        console.log("Waiting for Telegram User Data...");
+        setTimeout(startWithRetry, 500);
+    }
+}
 
-                const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "1856743644";
-                // --- နာမည်ကို ယူတဲ့ ကုဒ်အသစ် ---
-                const userName = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.first_name : "Unknown User";
-
-                const method = document.getElementById('payment-method').value;
-                const amount = document.getElementById('payout-amount').value;
-                const phone = document.getElementById('payout-phone').value;
-                const submitBtn = document.getElementById('cashout-submit-btn');
-
-                submitBtn.innerText = "Processing...";
-                submitBtn.disabled = true;
-
-                try {
-                    const res = await fetch(`${backendUrl}/api/cashout`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        // --- body ထဲမှာ userName ကိုပါ ထည့်ပေးလိုက်ပါ ---
-                        body: JSON.stringify({ userId, userName, amount, method, phone })
-                    });
-
-                    if (res.ok) {
-                        alert("ငွေထုတ်ယူမှု တောင်းဆိုချက် အောင်မြင်ပါသည်။");
-                        document.getElementById('cashout-modal').classList.add('hidden');
-                        initApp();
-                    } else {
-                        alert("အမှားတစ်ခု ဖြစ်သွားပါသည်။");
-                    }
-                } catch (err) {
-                    console.error(err);
-                } finally {
-                    submitBtn.innerText = "Submit Request";
-                    submitBtn.disabled = false;
+    const navLinks = document.querySelectorAll('.nav-link');
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetId = link.getAttribute('data-target');
+            if (targetId) {
+                showView(targetId);
+                if (window.innerWidth < 768) {
+                    document.getElementById('sidebar').classList.remove('open');
+                    document.getElementById('backdrop').classList.remove('open');
                 }
-            });
-
-            document.getElementById('cashout-button').addEventListener('click', () => {
-                const currentPoints = userData.points || 0;
-
-                if (currentPoints < 50000) {
-                    alert("ငွေထုတ်ရန် အနည်းဆုံး $1.00 လိုအပ်ပါသည်။");
-                } else {
-                    document.getElementById('cashout-modal').classList.remove('hidden');
-                    const select = document.getElementById('payout-amount');
-                    for (let i = 0; i < select.options.length; i++) {
-                        const val = parseInt(select.options[i].value);
-                        if (currentPoints < val * 50000) {
-                            select.options[i].disabled = true;
-                        } else {
-                            select.options[i].disabled = false;
-                        }
-                    }
-                }
-            });
-
-            document.getElementById('menu-toggle').addEventListener('click', () => {
-                document.getElementById('sidebar').classList.add('open');
-                document.getElementById('backdrop').classList.add('open');
-            });
-
-            document.getElementById('backdrop').addEventListener('click', () => {
-                document.getElementById('sidebar').classList.remove('open');
-                document.getElementById('backdrop').classList.remove('open');
-            });
-
-            document.getElementById('video-player-back-btn').addEventListener('click', () => {
-                stopPointTimer(); // Point သိမ်းမယ်
-                if (player) player.stopVideo(); // Video ကို ရပ်မယ်
-                showView('watch-videos-view'); // Dashboard ပြန်သွားမယ်
-            });
-            const filterBtns = document.querySelectorAll('.filter-btn');
-            filterBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    filterBtns.forEach(b => {
-                        b.classList.remove('bg-primary', 'text-white', 'border-primary');
-                        b.classList.add('bg-card-bg', 'text-sm', 'border-slate-700');
-                    });
-                    btn.classList.remove('bg-card-bg', 'text-sm', 'border-slate-700');
-                    btn.classList.add('bg-primary', 'text-white', 'border-primary');
-                    loadVideos(btn.getAttribute('data-category'));
-                });
-            });
-
-            setupCopyButtons();
-            initApp(); // စတင်ပွင့်ချိန်မှာ တစ်ကြိမ်ပဲခေါ်မယ်
+            }
         });
+    });
+
+    // Cashout Form Submit Logic
+    document.getElementById('cashout-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const currentUser = tg.initDataUnsafe.user;
+        const userId = currentUser ? currentUser.id : "1856743644";
+        const userName = currentUser ? currentUser.first_name : "Unknown User";
+
+        const method = document.getElementById('payment-method').value;
+        const amount = document.getElementById('payout-amount').value;
+        const phone = document.getElementById('payout-phone').value;
+        const submitBtn = document.getElementById('cashout-submit-btn');
+
+        submitBtn.innerText = "Processing...";
+        submitBtn.disabled = true;
+
+        try {
+            const res = await fetch(`${backendUrl}/api/cashout`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId, userName, amount, method, phone })
+            });
+
+            if (res.ok) {
+                alert("ငွေထုတ်ယူမှု တောင်းဆိုချက် အောင်မြင်ပါသည်။");
+                document.getElementById('cashout-modal').classList.add('hidden');
+                initApp();
+            } else {
+                const errData = await res.json();
+                alert("အမှား: " + (errData.error || "မအောင်မြင်ပါ"));
+            }
+        } catch (err) {
+            console.error(err);
+        } finally {
+            submitBtn.innerText = "Submit Request";
+            submitBtn.disabled = false;
+        }
+    });
+
+    // Cashout Button Click Logic
+    document.getElementById('cashout-button').addEventListener('click', () => {
+        const currentPoints = userData.points || 0;
+        if (currentPoints < 50000) {
+            alert("ငွေထုတ်ရန် အနည်းဆုံး $1.00  လိုအပ်ပါသည်။");
+        } else {
+            document.getElementById('cashout-modal').classList.remove('hidden');
+            const select = document.getElementById('payout-amount');
+            for (let i = 0; i < select.options.length; i++) {
+                const val = parseInt(select.options[i].value);
+                if (currentPoints < val * 50000) {
+                    select.options[i].disabled = true;
+                    select.options[i].innerText = `${val}.00 USD (Insufficient Points)`;
+                } else {
+                    select.options[i].disabled = false;
+                    select.options[i].innerText = `${val}.00 USD (${(val * 50000).toLocaleString()} Points)`;
+                }
+            }
+        }
+    });
+
+    document.getElementById('menu-toggle').addEventListener('click', () => {
+        document.getElementById('sidebar').classList.add('open');
+        document.getElementById('backdrop').classList.add('open');
+    });
+
+    document.getElementById('backdrop').addEventListener('click', () => {
+        document.getElementById('sidebar').classList.remove('open');
+        document.getElementById('backdrop').classList.remove('open');
+    });
+
+    document.getElementById('video-player-back-btn').addEventListener('click', () => {
+        stopPointTimer();
+        if (player) player.stopVideo();
+        showView('watch-videos-view');
+    });
+
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            filterBtns.forEach(b => {
+                b.classList.remove('bg-primary', 'text-white', 'border-primary');
+                b.classList.add('bg-card-bg', 'text-sm', 'border-slate-700');
+            });
+            btn.classList.remove('bg-card-bg', 'text-sm', 'border-slate-700');
+            btn.classList.add('bg-primary', 'text-white', 'border-primary');
+            loadVideos(btn.getAttribute('data-category'));
+        });
+    });
+
+    setupCopyButtons();
+    
+    // ပုံမှန် initApp ခေါ်မယ့်အစား Retry logic နဲ့ စမယ်
+    startWithRetry(); 
+});
 
         function showView(viewId) {
             // Video Player ကနေ ထွက်ရင် Point သိမ်းမယ်
@@ -1936,6 +1954,7 @@
                 });
             }
         });
+        
         async function fetchPayouts() {
             try {
                 const res = await fetch(`${backendUrl}/api/admin/payouts`);
