@@ -1318,24 +1318,26 @@ function startWithRetry() {
     // Cashout Button Click Logic
     document.getElementById('cashout-button').addEventListener('click', () => {
         const currentPoints = userData.points || 0;
+    
         if (currentPoints < 50000) {
-            alert("ငွေထုတ်ရန် အနည်းဆုံး $1.00  လိုအပ်ပါသည်။");
+            alert("ငွေထုတ်ရန် အနည်းဆုံး $1.00 လိုအပ်ပါသည်။");
         } else {
             document.getElementById('cashout-modal').classList.remove('hidden');
             const select = document.getElementById('payout-amount');
+            
             for (let i = 0; i < select.options.length; i++) {
                 const val = parseInt(select.options[i].value);
+                select.options[i].innerText = `${val}.00 USD`; 
+                
                 if (currentPoints < val * 50000) {
                     select.options[i].disabled = true;
-                    select.options[i].innerText = `${val}.00 USD (Insufficient Points)`;
                 } else {
                     select.options[i].disabled = false;
-                    select.options[i].innerText = `${val}.00 USD (${(val * 50000).toLocaleString()} Points)`;
                 }
             }
         }
     });
-
+            
     document.getElementById('menu-toggle').addEventListener('click', () => {
         document.getElementById('sidebar').classList.add('open');
         document.getElementById('backdrop').classList.add('open');
