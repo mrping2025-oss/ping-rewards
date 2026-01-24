@@ -622,7 +622,7 @@
 
                     <!-- balance နဲ့ ဝယ်တဲ့အပိုင်း -->
                     <div class="p-4 bg-slate-800 rounded-xl border border-primary/30 mb-6">
-                        <p class="text-xs text-muted-text mb-3">သင့် Balance ထဲမှ $0.10000 (5,000 Pts) နှုတ်ပြီး
+                        <p class="text-xs text-muted-text mb-3">သင့် Balance ထဲမှ $0.10000 ဖြင့်
                             တိုက်ရိုက်ဝယ်ယူပါ။</p>
                         <button onclick="buySeedPoints()"
                             class="w-full py-3 bg-primary text-white font-bold rounded-xl text-sm hover:bg-indigo-600 transition">
@@ -639,7 +639,7 @@
                     <!-- Cash နဲ့ ဝယ်တဲ့အပိုင်း (နံပါတ်များ ထည့်သွင်းထားသည်) -->
                     <div class="space-y-4">
                         <div class="bg-slate-800 p-4 rounded-xl border border-yellow-500/30">
-                            <p class="text-[13px] text-yellow-500 font-bold mb-2">ငွေလွှဲရမည့် ပမာဏ - ၅၀၀ ကျပ်</p>
+                            <p class="text-[13px] text-yellow-500 font-bold mb-2">ငွေလွှဲရမည့် ပမာဏ - ၆၀၀ ကျပ်</p>
                             <ul class="text-[11px] text-slate-300 space-y-1 mb-3">
                                 <li>🔹 Kpay: <b class="text-white">09885618553</b> (Win Naing Soe )</li>
                                 <li>🔹 Wave: <b class="text-white">09885618553</b> (Win Naing Soe )</li>
@@ -2438,7 +2438,7 @@
         async function buySeedCash() {
             const method = document.getElementById('cash-method').value;
             const txnId = document.getElementById('cash-txn').value;
-            if (!txnId) return alert("Transaction ID ထည့်သွင်းပေးပါ။");
+            if (!txnId) return alert("ငွေလွဲသူအမည် သို့မဟုတ် ဖုန်းနံပါတ်နှောက်ဆုံး ၄ လုံး ထည့်ပါ။");
 
             try {
                 const res = await fetch(`${backendUrl}/api/request-seed-cash`, {
