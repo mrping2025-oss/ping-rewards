@@ -231,16 +231,16 @@
                     <span class="text-xs text-gray-400 group-hover:text-primary">Home</span>
                 </button>
 
-                <!-- 2. Video -->
-                <button type="button" onclick="showMonetagPopupAd()"
+                <!-- 2. garden-view -->
+                <button type="button" onclick="showView('garden-view')"
                     class="inline-flex flex-col items-center justify-center px-5 hover:bg-slate-700 group">
-                    <!-- Star Icon (Daily Bonus အတွက်) -->
-                    <svg class="w-6 h-6 mb-1 text-gray-400 group-hover:text-pink-400 transition duration-200"
+                    <svg class="w-6 h-6 mb-1 text-gray-400 group-hover:text-green-400 transition duration-200"
                         fill="currentColor" viewBox="0 0 24 24">
-                        <path
-                            d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                        <path d="M12 3v18M3 12h18M5.5 5.5l13 13M18.5 5.5l-13 13" stroke="currentColor"
+                            stroke-width="2" />
+                        <path d="M12 2c0 0-4 4-4 8s4 8 4 8 4-4 4-8-4-8-4-8z" />
                     </svg>
-                    <span class="text-[10px] text-gray-400 group-hover:text-pink-400">Daily</span>
+                    <span class="text-[10px] text-gray-400 group-hover:text-green-400 uppercase">Garden</span>
                 </button>
 
                 <!-- 3. Tasks -->
@@ -411,7 +411,6 @@
         <div id="backdrop" class="backdrop fixed inset-0 bg-black bg-opacity-50 z-[99] hidden md:hidden"></div>
 
         <!-- Main Content Area -->
-        <!-- mb-16 ထည့်လိုက်တာက အောက်ဆုံးက Nav Bar နဲ့ ကွယ်မနေအောင်ပါ -->
         <div id="app-content" class="flex-grow p-2 md:p-6 pb-24 w-full h-screen overflow-y-auto">
             <header class="flex justify-between items-center mb-6">
                 <h1 class="text-2xl md:text-3xl font-bold flex items-center">
@@ -504,6 +503,7 @@
                             data-target="social-tasks-view">
                             Complete Tasks
                         </a>
+
                     </div>
                 </div>
 
@@ -597,6 +597,74 @@
                 </div>
             </div>
 
+            <!-- Garden View -->
+            <div id="garden-view" class="content-view" style="display: none;">
+                <div class="bg-card-bg p-6 rounded-xl border border-green-500/50 mb-6 text-center">
+                    <h2 class="text-2xl font-bold text-white mb-2">Ping Garden 🌱</h2>
+                    <p class="text-muted-text text-sm mb-4">အပင်စိုက်ပါ၊ ရေလောင်းပါ၊ အမြတ်ထုတ်ယူပါ။</p>
+                    <button onclick="document.getElementById('seed-modal').classList.remove('hidden')"
+                        class="px-8 py-3 bg-green-600 hover:bg-green-500 text-white font-bold rounded-full transition shadow-lg">
+                        + Buy New Seed
+                    </button>
+                </div>
+
+                <div id="garden-grid" class="grid grid-cols-2 gap-4 pb-20">
+                    <!-- အပင်များ ဤနေရာတွင် ပေါ်လာမည် -->
+                    <div class="col-span-2 text-center py-10 text-slate-500">Loading Garden...</div>
+                </div>
+            </div>
+
+            <!-- Seed Modal -->
+            <div id="seed-modal" class="modal-overlay fixed inset-0 flex justify-center items-center z-[2000] hidden">
+                <div
+                    class="bg-card-bg p-8 rounded-2xl w-11/12 max-w-md border border-slate-700 shadow-2xl overflow-y-auto max-h-[90vh]">
+                    <h3 class="text-xl font-bold text-white mb-4">မျိုးစေ့ဝယ်ယူရန်</h3>
+
+                    <!-- balance နဲ့ ဝယ်တဲ့အပိုင်း -->
+                    <div class="p-4 bg-slate-800 rounded-xl border border-primary/30 mb-6">
+                        <p class="text-xs text-muted-text mb-3">သင့် Balance ထဲမှ $0.10000 (5,000 Pts) နှုတ်ပြီး
+                            တိုက်ရိုက်ဝယ်ယူပါ။</p>
+                        <button onclick="buySeedPoints()"
+                            class="w-full py-3 bg-primary text-white font-bold rounded-xl text-sm hover:bg-indigo-600 transition">
+                            Pay $0.10000 with Balance
+                        </button>
+                    </div>
+
+                    <div class="relative py-4 text-center">
+                        <span class="bg-card-bg px-2 text-xs text-slate-500 relative z-10">OR BUY WITH CASH
+                            (မြန်မာငွေ)</span>
+                        <div class="absolute top-1/2 left-0 w-full h-[1px] bg-slate-700"></div>
+                    </div>
+
+                    <!-- Cash နဲ့ ဝယ်တဲ့အပိုင်း (နံပါတ်များ ထည့်သွင်းထားသည်) -->
+                    <div class="space-y-4">
+                        <div class="bg-slate-800 p-4 rounded-xl border border-yellow-500/30">
+                            <p class="text-[13px] text-yellow-500 font-bold mb-2">ငွေလွှဲရမည့် ပမာဏ - ၅၀၀ ကျပ်</p>
+                            <ul class="text-[11px] text-slate-300 space-y-1 mb-3">
+                                <li>🔹 Kpay: <b class="text-white">09885618553</b> (Win Naing Soe )</li>
+                                <li>🔹 Wave: <b class="text-white">09885618553</b> (Win Naing Soe )</li>
+
+                            </ul>
+                            <p class="text-[10px] text-red-400">*(ငွေလွှဲပြီးမှ အောက်ပါဖောင်ကို ဖြည့်သွင်းပါ)*</p>
+                        </div>
+
+                        <select id="cash-method"
+                            class="w-full p-3 bg-slate-700 border border-slate-600 rounded-xl text-white text-sm">
+                            <option value="Kpay">Kpay</option>
+                            <option value="Wave">Wave</option>
+                        </select>
+                        <input type="text" id="cash-txn" placeholder="လွှဲသူနာမည် သို့မဟုတ် ဖုန်းနံပါတ်နောက်ဆုံး ၄ လုံးထည့်ပါ"
+                            class="w-full p-3 bg-slate-700 border border-slate-600 rounded-xl text-white text-sm">
+                        <button onclick="buySeedCash()"
+                            class="w-full py-3 bg-accent-orange text-white font-bold rounded-xl hover:bg-amber-600 transition">
+                            Cash တောင်းဆိုမှု တင်မည်
+                        </button>
+                    </div>
+                    <button onclick="document.getElementById('seed-modal').classList.add('hidden')"
+                        class="mt-4 w-full text-slate-500 text-sm">Close</button>
+                </div>
+            </div>
+
             <!-- Social Tasks View -->
             <div id="social-tasks-view" class="content-view" style="display: none;">
                 <h2 class="text-xl font-semibold mb-4">Complete Social Tasks</h2>
@@ -612,6 +680,19 @@
                         Start Task (20s)
                     </button>
                 </div>
+
+                <!-- Adsterra Task Card ရဲ့ အောက်မှာ ကပ်လျက်ထည့်ပါ -->
+                <div
+                    class="card bg-card-bg p-4 mb-6 rounded-xl border border-pink-500/50 text-center shadow-lg relative overflow-hidden">
+                    <div class="absolute top-0 left-0 bg-pink-600 text-white text-[9px] px-2 py-1 rounded-br-lg">AD
+                        REWARD</div>
+                    <h3 class="text-md font-bold text-white">🎁 Daily Lucky Reward</h3>
+                    <button onclick="showMonetagPopupAd()"
+                        class="w-full mt-2 py-2 bg-pink-600 hover:bg-pink-500 text-white font-bold rounded-lg transition text-sm">
+                        Claim Daily Reward
+                    </button>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="social-tasks-grid">
                     <!-- Social task cards  -->
                     <div class="col-span-full text-center text-muted-text p-6">Loading tasks...</div>
@@ -1016,7 +1097,7 @@
             class="modal-overlay fixed inset-0 flex justify-center items-center z-[1000] hidden">
             <div class="modal-content bg-card-bg p-8 rounded-xl w-11/12 max-w-lg shadow-2xl border border-slate-700">
                 <h3 class="text-xl font-semibold mb-4">Cash Out Request</h3>
-                <p id="cashout-message-text" class="text-muted-text mb-6">You need 1.00 USD  to cash out.</p>
+                <p id="cashout-message-text" class="text-muted-text mb-6">You need 1.00 USD to cash out.</p>
                 <div class="flex justify-end gap-2">
                     <button type="button"
                         class="px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg text-white font-semibold transition-colors duration-200"
@@ -1227,11 +1308,11 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
         const tg = window.Telegram.WebApp;
-let user = tg.initDataUnsafe.user; 
-let userId = user ? user.id : null;
+        let user = tg.initDataUnsafe.user;
+        let userId = user ? user.id : null;
         const urlParams = new URLSearchParams(window.location.search);
         const startParam = tg.initDataUnsafe.start_param || urlParams.get('start') || "";
-        const backendUrl = "https://ping-rewards-bot.mr-ping2025.workers.dev"; // သင့် Backend URL သေချာပါစေ
+        const backendUrl = "https://ping-rewards-bot.mr-ping2025.workers.dev";
         function formatToUSD(points) {
             return (points / 50000).toFixed(5);
         }
@@ -1247,134 +1328,131 @@ let userId = user ? user.id : null;
         tg.expand();
 
         document.addEventListener("DOMContentLoaded", () => {
-    tg.ready(); 
-    tg.expand();
+            tg.ready();
+            tg.expand();
 
-function startWithRetry() {
-    const currentUser = tg.initDataUnsafe.user;
-    if (currentUser && currentUser.id) {
-        user = currentUser; 
-        userId = currentUser.id;
-        initApp();
-    } else {
-        console.log("Waiting for Telegram User Data...");
-        setTimeout(startWithRetry, 500);
-    }
-}
-
-    const navLinks = document.querySelectorAll('.nav-link');
-    navLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const targetId = link.getAttribute('data-target');
-            if (targetId) {
-                showView(targetId);
-                if (window.innerWidth < 768) {
-                    document.getElementById('sidebar').classList.remove('open');
-                    document.getElementById('backdrop').classList.remove('open');
-                }
-            }
-        });
-    });
-
-    // Cashout Form Submit Logic
-    document.getElementById('cashout-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const currentUser = tg.initDataUnsafe.user;
-        const userId = currentUser ? currentUser.id : "1856743644";
-        const userName = currentUser ? currentUser.first_name : "Unknown User";
-
-        const method = document.getElementById('payment-method').value;
-        const amount = document.getElementById('payout-amount').value;
-        const phone = document.getElementById('payout-phone').value;
-        const submitBtn = document.getElementById('cashout-submit-btn');
-
-        submitBtn.innerText = "Processing...";
-        submitBtn.disabled = true;
-
-        try {
-            const res = await fetch(`${backendUrl}/api/cashout`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId, userName, amount, method, phone })
-            });
-
-            if (res.ok) {
-                alert("ငွေထုတ်ယူမှု တောင်းဆိုချက် အောင်မြင်ပါသည်။");
-                document.getElementById('cashout-modal').classList.add('hidden');
-                initApp();
-            } else {
-                const errData = await res.json();
-                alert("အမှား: " + (errData.error || "မအောင်မြင်ပါ"));
-            }
-        } catch (err) {
-            console.error(err);
-        } finally {
-            submitBtn.innerText = "Submit Request";
-            submitBtn.disabled = false;
-        }
-    });
-
-    // Cashout Button Click Logic
-    document.getElementById('cashout-button').addEventListener('click', () => {
-        const currentPoints = userData.points || 0;
-    
-        if (currentPoints < 50000) {
-            alert("ငွေထုတ်ရန် အနည်းဆုံး $1.00 လိုအပ်ပါသည်။");
-        } else {
-            document.getElementById('cashout-modal').classList.remove('hidden');
-            const select = document.getElementById('payout-amount');
-            
-            for (let i = 0; i < select.options.length; i++) {
-                const val = parseInt(select.options[i].value);
-                select.options[i].innerText = `${val}.00 USD`; 
-                
-                if (currentPoints < val * 50000) {
-                    select.options[i].disabled = true;
+            function startWithRetry() {
+                const currentUser = tg.initDataUnsafe.user;
+                if (currentUser && currentUser.id) {
+                    user = currentUser;
+                    userId = currentUser.id;
+                    initApp();
                 } else {
-                    select.options[i].disabled = false;
+                    console.log("Waiting for Telegram User Data...");
+                    setTimeout(startWithRetry, 500);
                 }
             }
-        }
-    });
-            
-    document.getElementById('menu-toggle').addEventListener('click', () => {
-        document.getElementById('sidebar').classList.add('open');
-        document.getElementById('backdrop').classList.add('open');
-    });
 
-    document.getElementById('backdrop').addEventListener('click', () => {
-        document.getElementById('sidebar').classList.remove('open');
-        document.getElementById('backdrop').classList.remove('open');
-    });
-
-    document.getElementById('video-player-back-btn').addEventListener('click', () => {
-        stopPointTimer();
-        if (player) player.stopVideo();
-        showView('watch-videos-view');
-    });
-
-    const filterBtns = document.querySelectorAll('.filter-btn');
-    filterBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            filterBtns.forEach(b => {
-                b.classList.remove('bg-primary', 'text-white', 'border-primary');
-                b.classList.add('bg-card-bg', 'text-sm', 'border-slate-700');
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = link.getAttribute('data-target');
+                    if (targetId) {
+                        showView(targetId);
+                        if (window.innerWidth < 768) {
+                            document.getElementById('sidebar').classList.remove('open');
+                            document.getElementById('backdrop').classList.remove('open');
+                        }
+                    }
+                });
             });
-            btn.classList.remove('bg-card-bg', 'text-sm', 'border-slate-700');
-            btn.classList.add('bg-primary', 'text-white', 'border-primary');
-            loadVideos(btn.getAttribute('data-category'));
-        });
-    });
 
-    setupCopyButtons();
-    
-    // ပုံမှန် initApp ခေါ်မယ့်အစား Retry logic နဲ့ စမယ်
-    startWithRetry(); 
-});
+            // Cashout Form Submit Logic
+            document.getElementById('cashout-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const currentUser = tg.initDataUnsafe.user;
+                const userId = currentUser ? currentUser.id : "1856743644";
+                const userName = currentUser ? currentUser.first_name : "Unknown User";
+
+                const method = document.getElementById('payment-method').value;
+                const amount = document.getElementById('payout-amount').value;
+                const phone = document.getElementById('payout-phone').value;
+                const submitBtn = document.getElementById('cashout-submit-btn');
+
+                submitBtn.innerText = "Processing...";
+                submitBtn.disabled = true;
+
+                try {
+                    const res = await fetch(`${backendUrl}/api/cashout`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ userId, userName, amount, method, phone })
+                    });
+
+                    if (res.ok) {
+                        alert("ငွေထုတ်ယူမှု တောင်းဆိုချက် အောင်မြင်ပါသည်။");
+                        document.getElementById('cashout-modal').classList.add('hidden');
+                        initApp();
+                    } else {
+                        const errData = await res.json();
+                        alert("အမှား: " + (errData.error || "မအောင်မြင်ပါ"));
+                    }
+                } catch (err) {
+                    console.error(err);
+                } finally {
+                    submitBtn.innerText = "Submit Request";
+                    submitBtn.disabled = false;
+                }
+            });
+
+            // Cashout Button Click Logic
+            document.getElementById('cashout-button').addEventListener('click', () => {
+                const currentPoints = userData.points || 0;
+
+                if (currentPoints < 50000) {
+                    alert("ငွေထုတ်ရန် အနည်းဆုံး $1.00 လိုအပ်ပါသည်။");
+                } else {
+                    document.getElementById('cashout-modal').classList.remove('hidden');
+                    const select = document.getElementById('payout-amount');
+
+                    for (let i = 0; i < select.options.length; i++) {
+                        const val = parseInt(select.options[i].value);
+                        select.options[i].innerText = `${val}.00 USD`;
+
+                        if (currentPoints < val * 50000) {
+                            select.options[i].disabled = true;
+                        } else {
+                            select.options[i].disabled = false;
+                        }
+                    }
+                }
+            });
+
+            document.getElementById('menu-toggle').addEventListener('click', () => {
+                document.getElementById('sidebar').classList.add('open');
+                document.getElementById('backdrop').classList.add('open');
+            });
+
+            document.getElementById('backdrop').addEventListener('click', () => {
+                document.getElementById('sidebar').classList.remove('open');
+                document.getElementById('backdrop').classList.remove('open');
+            });
+
+            document.getElementById('video-player-back-btn').addEventListener('click', () => {
+                stopPointTimer();
+                if (player) player.stopVideo();
+                showView('watch-videos-view');
+            });
+
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterBtns.forEach(b => {
+                        b.classList.remove('bg-primary', 'text-white', 'border-primary');
+                        b.classList.add('bg-card-bg', 'text-sm', 'border-slate-700');
+                    });
+                    btn.classList.remove('bg-card-bg', 'text-sm', 'border-slate-700');
+                    btn.classList.add('bg-primary', 'text-white', 'border-primary');
+                    loadVideos(btn.getAttribute('data-category'));
+                });
+            });
+
+            setupCopyButtons();
+            startWithRetry();
+        });
 
         function showView(viewId) {
-            // Video Player ကနေ ထွက်ရင် Point သိမ်းမယ်
             const currentPlayerView = document.getElementById('video-player-view');
             if (currentPlayerView && currentPlayerView.style.display === 'block' && viewId !== 'video-player-view') {
                 stopPointTimer();
@@ -1387,8 +1465,6 @@ function startWithRetry() {
             if (target) {
                 target.style.display = 'block';
                 document.getElementById('page-title').innerText = viewId.replace(/-/g, ' ').replace('view', '').toUpperCase();
-
-                // Dashboard ရောက်ရင် Point ကို ဒေါ်လာနဲ့ တွက်ပြဖို့
                 if (viewId === 'user-dashboard-view' && userData.points !== undefined) {
                     const earningsEl = document.getElementById('estimated-earnings-value');
                     if (earningsEl) earningsEl.textContent = `$${(userData.points / 50000).toFixed(2)}`;
@@ -1400,6 +1476,9 @@ function startWithRetry() {
                 if (viewId === 'manage-videos-view') renderManageVideosTable();
                 if (viewId === 'manage-users-view') fetchAllUsers();
                 if (viewId === 'manage-social-tasks-view') renderManageSocialTasksTable();
+                if (viewId === 'garden-view') {
+                    loadGarden();
+                }
             }
         }
 
@@ -1810,7 +1889,7 @@ function startWithRetry() {
             renderManageSocialTasksTable();
         }
 
-        
+
         async function fetchAllUsers() {
             try {
                 const res = await fetch(`${backendUrl}/api/admin/users`);
@@ -1957,7 +2036,7 @@ function startWithRetry() {
                 });
             }
         });
-        
+
         async function fetchPayouts() {
             try {
                 const res = await fetch(`${backendUrl}/api/admin/payouts`);
@@ -2286,6 +2365,133 @@ function startWithRetry() {
                     fetchPayouts(); // Refresh table
                 }
             } catch (e) { console.error(e); alert("Error updating status"); }
+        }
+
+        async function loadGarden() {
+            try {
+                const res = await fetch(`${backendUrl}/api/get-my-plants?userId=${userId}`);
+                const plants = await res.json();
+                const grid = document.getElementById('garden-grid');
+
+                if (!plants || plants.length === 0) {
+                    grid.innerHTML = `<div class="col-span-2 text-center py-10 text-slate-500 text-sm">စိုက်ထားသော အပင်မရှိသေးပါ။ မျိုးစေ့ဝယ်ယူပါ။</div>`;
+                    return;
+                }
+
+                grid.innerHTML = plants.map(p => {
+                    const createdAt = new Date(p.created_at).getTime();
+                    const now = Date.now();
+                    const timeLeft = (createdAt + (24 * 60 * 60 * 1000)) - now; // ၂၄ နာရီအထိ ကျန်ချိန်
+
+                    let timeLabel = "";
+                    if (timeLeft > 0) {
+                        const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+                        const mins = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                        timeLabel = `Ready in: ${hours}h ${mins}m`;
+                    } else {
+                        timeLabel = "READY TO HARVEST";
+                    }
+
+                    const isTimeUp = timeLeft <= 0;
+                    const isDead = isTimeUp && p.water_count < 20;
+
+                    return `
+                <div class="bg-card-bg p-4 rounded-2xl border ${isDead ? 'border-red-600' : (isTimeUp ? 'border-yellow-500 animate-pulse' : 'border-slate-700')} text-center">
+                    <div class="text-5xl mb-3">${isDead ? '🥀' : (isTimeUp ? '🌳' : '🌱')}</div>
+                    <div class="text-[10px] text-slate-400 mb-1 uppercase">${isDead ? 'Dead' : timeLabel}</div>
+                    <div class="text-xs font-bold text-white mb-2">Water: ${p.water_count}/20</div>
+                    
+                    ${isTimeUp ?
+                            `<button onclick="harvestPlant('${p.id}')" class="w-full py-2 ${isDead ? 'bg-red-600' : 'bg-yellow-500'} text-black font-extrabold rounded-xl text-xs transition transform active:scale-95">
+                            ${isDead ? 'REMOVE DEAD PLANT' : 'HARVEST ($0.11000)'}
+                        </button>` :
+                            `<button onclick="waterPlant('${p.id}', this)" class="w-full py-2 bg-primary hover:bg-indigo-500 text-white font-bold rounded-xl text-xs transition transform active:scale-95">
+                            WATER (ADS)
+                        </button>`
+                        }
+                </div>
+            `;
+                }).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        async function buySeedPoints() {
+            if (!confirm("မျိုးစေ့ဝယ်ရန် $0.10000 သုံးစွဲမှာ သေချာပါသလား?")) return;
+            try {
+                const res = await fetch(`${backendUrl}/api/buy-seed-points`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId })
+                });
+                if (res.ok) {
+                    alert("✅ မျိုးစေ့ဝယ်ယူမှု အောင်မြင်ပါသည်။ စိုက်ပျိုးနိုင်ပါပြီ။");
+                    document.getElementById('seed-modal').classList.add('hidden');
+                    initApp(); // Balance update လုပ်ရန်
+                    loadGarden();
+                } else {
+                    const err = await res.json();
+                    alert("❌ " + (err.error || "ဝယ်ယူမှု မအောင်မြင်ပါ။"));
+                }
+            } catch (e) { alert("Connection error."); }
+        }
+
+        async function buySeedCash() {
+            const method = document.getElementById('cash-method').value;
+            const txnId = document.getElementById('cash-txn').value;
+            if (!txnId) return alert("Transaction ID ထည့်သွင်းပေးပါ။");
+
+            try {
+                const res = await fetch(`${backendUrl}/api/request-seed-cash`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId, userName: userData.name, method, txnId })
+                });
+                if (res.ok) {
+                    alert("📩 တောင်းဆိုမှု ပေးပို့ပြီးပါပြီ။ Admin မှ စစ်ဆေးပြီးလျှင် အပင်စာရင်းထဲ ရောက်လာပါမည်။");
+                    document.getElementById('seed-modal').classList.add('hidden');
+                    document.getElementById('cash-txn').value = "";
+                }
+            } catch (e) { alert("Error sending request."); }
+        }
+
+        async function waterPlant(plantId, btn) {
+            btn.disabled = true;
+            const oldText = btn.innerText;
+            btn.innerText = "Loading Ad...";
+
+            if (typeof show_10474083 === 'function') {
+                show_10474083().then(async () => {
+                    const res = await fetch(`${backendUrl}/api/water-plant`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ plantId })
+                    });
+                    if (res.ok) { loadGarden(); }
+                }).catch(() => {
+                    alert("ကြော်ငြာပြသရန် အဆင်မပြေပါ။ ခဏနေမှ ပြန်ကြိုးစားပါ။");
+                    btn.disabled = false;
+                    btn.innerText = oldText;
+                });
+            } else {
+                alert("ကြော်ငြာစနစ် မဆွဲရသေးပါ။");
+                btn.disabled = false;
+                btn.innerText = oldText;
+            }
+        }
+
+        async function harvestPlant(plantId) {
+            try {
+                const res = await fetch(`${backendUrl}/api/harvest-plant`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId, plantId })
+                });
+                if (res.ok) {
+                    alert("🎉 ဂုဏ်ယူပါတယ်။ အသီးခူးပြီး $0.11000  ရရှိပါပြီ။");
+                    initApp();
+                    loadGarden();
+                }
+            } catch (e) { console.error(e); }
         }
 
     </script>
