@@ -89,6 +89,25 @@
             background-color: rgba(0, 0, 0, 0.7);
         }
 
+        @keyframes plantSway {
+
+            0%,
+            100% {
+                transform: rotate(-3deg);
+            }
+
+            50% {
+                transform: rotate(3deg);
+            }
+        }
+
+        .animate-plant {
+            display: inline-block;
+            animation: plantSway 3s ease-in-out infinite;
+            transform-origin: bottom center;
+            /* အောက်ခြေ (အမြစ်) ကနေ လှုပ်စေရန် */
+        }
+
         /* Animation */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
@@ -163,7 +182,6 @@
             /* စာလုံးအရောင် အဝါ */
         }
 
-        /* Make app-content scrollable on small screens */
         #app-content {
             overflow-y: auto;
             height: 100vh;
@@ -403,6 +421,17 @@
                                 d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                         </svg>
                         <span class="text-xs text-white">Admin</span>
+                    </button>
+                    <!-- Seed Requests Button -->
+                    <button
+                        onclick="showView('manage-seed-requests-view'); document.getElementById('more-menu-modal').classList.add('hidden')"
+                        class="admin-link flex flex-col items-center p-4 bg-red-900/50 border border-red-700 rounded-xl hover:bg-red-800"
+                        style="display:none;">
+                        <svg class="w-8 h-8 mb-2 text-green-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 3v18M3 12h18M5.5 5.5l13 13M18.5 5.5l-13 13" stroke="currentColor"
+                                stroke-width="2" />
+                        </svg>
+                        <span class="text-xs text-white">Seed Req</span>
                     </button>
                 </div>
             </div>
@@ -653,7 +682,8 @@
                             <option value="Kpay">Kpay</option>
                             <option value="Wave">Wave</option>
                         </select>
-                        <input type="text" id="cash-txn" placeholder="လွှဲသူနာမည် သို့မဟုတ် ဖုန်းနံပါတ်နောက်ဆုံး ၄ လုံးထည့်ပါ"
+                        <input type="text" id="cash-txn"
+                            placeholder="လွှဲသူနာမည် သို့မဟုတ် ဖုန်းနံပါတ်နောက်ဆုံး ၄ လုံးထည့်ပါ"
                             class="w-full p-3 bg-slate-700 border border-slate-600 rounded-xl text-white text-sm">
                         <button onclick="buySeedCash()"
                             class="w-full py-3 bg-accent-orange text-white font-bold rounded-xl hover:bg-amber-600 transition">
@@ -1080,6 +1110,27 @@
                     </div>
                 </div>
             </div>
+            <!-- Manage Seed Requests View -->
+            <div id="manage-seed-requests-view" class="content-view" style="display: none;">
+                <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
+                    <h2 class="text-xl font-semibold mb-4 text-green-400">Cash Seed Requests</h2>
+                    <div class="overflow-x-auto rounded-lg">
+                        <table class="w-full text-left table-auto">
+                            <thead class="bg-slate-700 text-slate-400 uppercase text-xs">
+                                <tr>
+                                    <th class="p-4 rounded-tl-lg">User</th>
+                                    <th class="p-4">Method</th>
+                                    <th class="p-4">Sender Info</th>
+                                    <th class="p-4 rounded-tr-lg">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="seed-requests-table-body" class="divide-y divide-slate-700">
+                                <!-- Data will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
             <!-- NEW: Floating Scroll-to-Top Rocket Button (Hidden by default) -->
             <button id="scroll-to-top-btn"
                 class="hidden fixed bottom-6 right-6 z-50 p-4 bg-accent-orange hover:bg-amber-600 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-110 active:scale-95">
@@ -1472,6 +1523,7 @@
                 if (viewId === 'manage-payouts-view') {
                     fetchPayouts();
                 }
+                if (viewId === 'manage-seed-requests-view') fetchSeedRequests();
                 if (viewId === 'admin-dashboard-view') fetchAdminDashboardData();
                 if (viewId === 'manage-videos-view') renderManageVideosTable();
                 if (viewId === 'manage-users-view') fetchAllUsers();
@@ -2397,7 +2449,9 @@
 
                     return `
                 <div class="bg-card-bg p-4 rounded-2xl border ${isDead ? 'border-red-600' : (isTimeUp ? 'border-yellow-500 animate-pulse' : 'border-slate-700')} text-center">
-                    <div class="text-5xl mb-3">${isDead ? '🥀' : (isTimeUp ? '🌳' : '🌱')}</div>
+                   <div class="text-5xl mb-3 ${isDead ? '' : 'animate-plant'} ${isTimeUp && !isDead ? 'scale-110 drop-shadow-[0_0_10px_rgba(234,179,8,0.8)]' : ''}">
+                        ${isDead ? '🥀' : (isTimeUp ? '🌳' : '🌱')}
+                    </div>
                     <div class="text-[10px] text-slate-400 mb-1 uppercase">${isDead ? 'Dead' : timeLabel}</div>
                     <div class="text-xs font-bold text-white mb-2">Water: ${p.water_count}/20</div>
                     
@@ -2494,6 +2548,51 @@
             } catch (e) { console.error(e); }
         }
 
+        // Seed Requests အချက်အလက်များကို ဆွဲထုတ်ရန်
+        async function fetchSeedRequests() {
+            try {
+                const res = await fetch(`${backendUrl}/api/admin/seed-requests`);
+                const requests = await res.json();
+                const tbody = document.getElementById('seed-requests-table-body');
+
+                if (!requests || requests.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-muted-text">No pending requests.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = requests.map(r => `
+            <tr class="border-b border-slate-700">
+                <td class="p-4">
+                    <div class="text-white font-bold">${r.user_name}</div>
+                    <div class="text-[10px] text-slate-500">${r.user_id}</div>
+                </td>
+                <td class="p-4 text-sm text-accent-orange">${r.method}</td>
+                <td class="p-4 text-sm text-white">${r.txn_id}</td>
+                <td class="p-4 flex gap-2">
+                    <button onclick="handleSeedRequest('${r.id}', 'approved', '${r.user_id}', '${r.user_name}')" class="px-3 py-1 bg-green-600 hover:bg-green-500 rounded text-white text-xs">Approve</button>
+                    <button onclick="handleSeedRequest('${r.id}', 'rejected', '${r.user_id}', '${r.user_name}')" class="px-3 py-1 bg-red-600 hover:bg-red-500 rounded text-white text-xs">Reject</button>
+                </td>
+            </tr>
+        `).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        // Approve သို့မဟုတ် Reject လုပ်ဆောင်ရန်
+        async function handleSeedRequest(requestId, status, userId, userName) {
+            if (!confirm(`Are you sure you want to ${status} this request?`)) return;
+
+            try {
+                const res = await fetch(`${backendUrl}/api/admin/handle-seed-request`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ requestId, status, userId, userName })
+                });
+                if (res.ok) {
+                    alert(`Request ${status} successfully!`);
+                    fetchSeedRequests(); // Refresh the table
+                }
+            } catch (e) { console.error(e); alert("Error processing request."); }
+        }
     </script>
 </body>
 
