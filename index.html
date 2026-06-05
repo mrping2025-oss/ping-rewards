@@ -8,7 +8,7 @@
         content="Ping Rewards သည် Watch video , Complete social tasks , Earn points , Get rewards , Cash out platform တစ်ခုဖြစ်သည်။">
     <meta name="keywords"
         content="Ping Rewards, Money Making, Earn Money, Watch Videos, Social Tasks, Points, Rewards, Cash Out, Online Earning, Video Rewards, Task Completion, Referral Program">
-   
+
     <meta property="og:description"
         content="Ping Rewards သည် video ကြည့်ခြင်းနှင့် social tasks ပြုလုပ်ခြင်းအားဖြင့် အွန်လိုင်းတွင်ပိုက်ဆံရှာဖွေရန်အတွက် platform တစ်ခုဖြစ်သည်။">
     <!-- NAMO TASSA BHAGAVATO ARAHATO SAMMA SAMBUDDHASSa -->
@@ -21,7 +21,7 @@
     <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://adsgram.ai/sdk/v1/adsgram-sdk.js"></script>
-   <script src='//libtl.com/sdk.js' data-zone='11105329' data-sdk='show_11105329'></script>
+    <script src='//libtl.com/sdk.js' data-zone='11105329' data-sdk='show_11105329'></script>
     <script>
         tailwind.config = {
             theme: {
@@ -195,6 +195,18 @@
     <div id="loading-overlay"
         class="fixed inset-0 bg-background bg-opacity-70 flex justify-center items-center z-[1002] transition-opacity duration-300 opacity-0 pointer-events-none">
         <div class="animate-spin rounded-full h-12 w-12 border-4 border-text-color border-t-primary"></div>
+    </div>
+    <!-- VPN Block Overlay -->
+    <div id="vpn-blocker"
+        class="fixed inset-0 bg-background z-[2000] hidden flex flex-col justify-center items-center p-6 text-center">
+        <div class="bg-card-bg p-8 rounded-2xl border border-red-500 shadow-2xl">
+            <div class="text-6xl mb-4">🚫</div>
+            <h2 class="text-2xl font-bold text-white mb-2">VPN Detected!</h2>
+            <p class="text-muted-text mb-6">ကျွန်ုပ်တို့၏ App ကို VPN ဖွင့်၍ အသုံးပြုခြင်းအား
+                ခွင့်မပြုပါ။<br>ကျေးဇူးပြု၍ VPN ပိတ်ပြီးမှ ပြန်ဝင်ပေးပါ။</p>
+            <button onclick="location.reload()"
+                class="px-6 py-3 bg-primary text-white font-bold rounded-xl">Retry</button>
+        </div>
     </div>
 
     <!-- START: Login Page View (This is shown only when user needs to log in) -->
@@ -1379,9 +1391,30 @@
 
         tg.expand();
 
-        document.addEventListener("DOMContentLoaded", () => {
+        document.addEventListener("DOMContentLoaded", async () => {
             tg.ready();
             tg.expand();
+
+             async function checkVPN() {
+                try {
+                    // အခမဲ့ IP API တစ်ခုကို သုံးပြီး စစ်ဆေးမယ်
+                    const res = await fetch('https://ipwho.is/');
+                    const data = await res.json();
+
+                    // အကယ်၍ proxy, vpn သို့မဟုတ် hosting (Data Center) ဖြစ်နေရင် တားမယ်
+                    if (data.security && (data.security.proxy || data.security.vpn || data.security.hosting)) {
+                        document.getElementById('vpn-blocker').classList.remove('hidden');
+                        return true; // VPN ရှိတယ်
+                    }
+                    return false; // VPN မရှိဘူး
+                } catch (e) {
+                    console.error("VPN Check Error:", e);
+                    return false; // API Error တက်ရင်တော့ ပေးဝင်လိုက်မယ် (သို့မဟုတ် တားချင်ရင် true ပြောင်းပါ)
+                }
+            }
+
+            const isVPN = await checkVPN();
+            if (isVPN) return; // VPN ရှိရင် အောက်က ကုဒ်တွေကို ဆက်မလုပ်တော့ဘူး
 
             function startWithRetry() {
                 const currentUser = tg.initDataUnsafe.user;
@@ -1390,7 +1423,6 @@
                     userId = currentUser.id;
                     initApp();
                 } else {
-                    console.log("Waiting for Telegram User Data...");
                     setTimeout(startWithRetry, 500);
                 }
             }
