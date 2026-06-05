@@ -8,7 +8,7 @@
         content="Ping Rewards သည် Watch video , Complete social tasks , Earn points , Get rewards , Cash out platform တစ်ခုဖြစ်သည်။">
     <meta name="keywords"
         content="Ping Rewards, Money Making, Earn Money, Watch Videos, Social Tasks, Points, Rewards, Cash Out, Online Earning, Video Rewards, Task Completion, Referral Program">
-    <meta name="monetag" content="8ae5d8b8976c2a3ef2e37b1a8a5d219a">
+   
     <meta property="og:description"
         content="Ping Rewards သည် video ကြည့်ခြင်းနှင့် social tasks ပြုလုပ်ခြင်းအားဖြင့် အွန်လိုင်းတွင်ပိုက်ဆံရှာဖွေရန်အတွက် platform တစ်ခုဖြစ်သည်။">
     <!-- NAMO TASSA BHAGAVATO ARAHATO SAMMA SAMBUDDHASSa -->
@@ -21,7 +21,7 @@
     <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://adsgram.ai/sdk/v1/adsgram-sdk.js"></script>
-    <script src='//libtl.com/sdk.js' data-zone='10474083' data-sdk='show_10474083'></script>
+   <script src='//libtl.com/sdk.js' data-zone='11105329' data-sdk='show_11105329'></script>
     <script>
         tailwind.config = {
             theme: {
@@ -1555,8 +1555,8 @@
                     if (adminIds.includes(String(userId))) {
                         document.querySelectorAll('.admin-link').forEach(el => el.style.display = 'flex');
                     }
-                    if (typeof show_10474083 === 'function') {
-                        show_10474083({
+                    if (typeof show_11105329 === 'function') {
+                        show_11105329({
                             type: 'inApp',
                             inAppSettings: {
                                 frequency: 2,   // ၆ မိနစ်မှာ ၂ ကြိမ်
@@ -1838,14 +1838,14 @@
 
                     if (!res.ok) {
                         // Backend က Cooldown ကြောင့်ဖြစ်စေ၊ Error ကြောင့်ဖြစ်စေ ငြင်းလိုက်ရင် ပြမယ်
-                        tg.showtg.showAlert(result.error || "အရမ်းမြန်လွန်းနေပါတယ် ads ကြည့်ပြီးမှ အမှတ်တိုးပေးမှာ ဖြစ်ပါတယ်။ ဖြေးဖြေးနဲ့မှန်မှန်ကြည့်ပါ။");
+                        tg.showAlert(result.error || "အရမ်းမြန်လွန်းနေပါတယ် ads ကြည့်ပြီးမှ အမှတ်တိုးပေးမှာ ဖြစ်ပါတယ်။ ဖြေးဖြေးနဲ့မှန်မှန်ကြည့်ပါ။");
                     } else {
                         loadHistory();
                         updateWatchCount();
                         setTimeout(() => loadVideos(), 1000);
                     }
                 } catch (e) {
-                    tg.showtg.showAlert("Connection Error: အမှတ်တိုးရန် Backend ဆီ ချိတ်ဆက်၍ မရပါ။");
+                    tg.showAlert("Connection Error: အမှတ်တိုးရန် Backend ဆီ ချိတ်ဆက်၍ မရပါ။");
                 }
             }
         }
@@ -2204,7 +2204,7 @@
                 const result = await AdController.show();
 
                 if (result.done) {
-                    tg.showtg.showAlert("✅ ဂုဏ်ယူပါတယ်။ အမှတ် ၃၀ ရရှိပါပြီ။ (Test Mode)");
+                    tg.showAlert("✅ ဂုဏ်ယူပါတယ်။ အမှတ် ၃၀ ရရှိပါပြီ။ (Test Mode)");
                     const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "1856743644";
 
                     await fetch(`${backendUrl}/api/award-points`, {
@@ -2248,8 +2248,8 @@
             if (btn) btn.disabled = true;
 
             try {
-                if (typeof show_10474083 === 'function') {
-                    show_10474083().then(async () => {
+                if (typeof show_11105329 === 'function') {
+                    show_11105329().then(async () => {
                         lastAdTime = Date.now();
 
                         const res = await fetch(`${backendUrl}/api/award-points`, {
@@ -2269,7 +2269,7 @@
                             if (typeof initApp === "function") initApp();
                         } else {
                             // မြန်လွန်းနေရင် ဒီမှာ သတိပေးစာ ပြပါမယ်
-                            tg.showtg.showAlert(result.error || "အရမ်းမြန်လွန်းနေပါတယ် ads ကြည့်ပြီးမှ အမှတ်တိုးပေးမှာ ဖြစ်ပါတယ်။ ဖြေးဖြေးနဲ့မှန်မှန်ကြည့်ပါ။");
+                            tg.showAlert(result.error || "အရမ်းမြန်လွန်းနေပါတယ် ads ကြည့်ပြီးမှ အမှတ်တိုးပေးမှာ ဖြစ်ပါတယ်။ ဖြေးဖြေးနဲ့မှန်မှန်ကြည့်ပါ။");
                         }
 
                     }).catch(err => {
@@ -2352,15 +2352,15 @@
                             let data = JSON.parse(localStorage.getItem(storageKey)) || { count: 0, date: new Date().toLocaleDateString() };
                             data.count++;
                             localStorage.setItem(storageKey, JSON.stringify(data));
-                           tg.showtg.showAlert("✅ ဂုဏ်ယူပါတယ်။ အမှတ်  ရရှိပါပြီ။");
+                            tg.showAlert("✅ ဂုဏ်ယူပါတယ်။ အမှတ်  ရရှိပါပြီ။");
                             updateQuickTaskUI();
                             if (typeof initApp === "function") initApp();
                         } else {
                             // --- ဒီနေရာမှာ User ကို Pop-up ပြပါမယ် ---
-                            tg.showtg.showAlert(result.error || "အမှားတစ်ခုရှိနေပါသည်။");
+                            tg.showAlert(result.error || "အမှားတစ်ခုရှိနေပါသည်။");
                         }
                     } catch (e) {
-                        tg.showtg.showAlert("Connection Error: အင်တာနက်ကို စစ်ဆေးပေးပါ။");
+                        tg.showAlert("Connection Error: အင်တာနက်ကို စစ်ဆေးပေးပါ။");
                     } finally {
                         btn.innerText = originalText;
                         btn.disabled = false;
@@ -2384,8 +2384,8 @@
             }
 
             try {
-                if (typeof show_10474083 === 'function') {
-                    show_10474083('pop').then(async () => {
+                if (typeof show_11105329 === 'function') {
+                    show_11105329('pop').then(async () => {
                         lastPopupTime = Date.now();
 
                         const res = await fetch(`${backendUrl}/api/award-points`, {
@@ -2401,16 +2401,16 @@
                         const result = await res.json();
 
                         if (res.ok) {
-                           tg.showtg.showAlert('✅ ဂုဏ်ယူပါတယ်။ ကြော်ငြာကြည့်ပြီးလို့ အမှတ် ၁၅ ရရှိပါပြီ။');
+                            tg.showAlert('✅ ဂုဏ်ယူပါတယ်။ ကြော်ငြာကြည့်ပြီးလို့ အမှတ် ၁၅ ရရှိပါပြီ။');
                             if (typeof initApp === "function") initApp();
                         } else {
                             // မြန်လွန်းနေရင် သတိပေးစာ ပြမယ်
-                            tg.showtg.showAlert(result.error || "အရမ်းမြန်လွန်းနေပါတယ် ads ကြည့်ပြီးမှ အမှတ်တိုးပေးမှာ ဖြစ်ပါတယ်။ ဖြေးဖြေးနဲ့မှန်မှန်ကြည့်ပါ။");
+                            tg.showAlert(result.error || "အရမ်းမြန်လွန်းနေပါတယ် ads ကြည့်ပြီးမှ အမှတ်တိုးပေးမှာ ဖြစ်ပါတယ်။ ဖြေးဖြေးနဲ့မှန်မှန်ကြည့်ပါ။");
                         }
 
                     }).catch(e => {
                         console.error("Popup Error:", e);
-                        tg.showtg.showAlert("⚠️ ကြော်ငြာပြသရန် အဆင်မပြေသေးပါ။");
+                        tg.showAlert("⚠️ ကြော်ငြာပြသရန် အဆင်မပြေသေးပါ။");
                     });
                 }
             } catch (err) {
@@ -2488,7 +2488,6 @@
         }
 
         async function buySeedPoints() {
-            // ၁။ အပင် ၁၀ ပင် ပြည့်မပြည့် အရင်စစ်မယ်
             const resPlants = await fetch(`${backendUrl}/api/get-my-plants?userId=${userId}`);
             const plants = await resPlants.json();
             if (plants && plants.length >= 10) {
@@ -2496,23 +2495,27 @@
                 return;
             }
 
-            if (!confirm("မျိုးစေ့ဝယ်ရန် 18,000 Pts သုံးစွဲမှာ သေချာပါသလား?")) return;
-            try {
-                const res = await fetch(`${backendUrl}/api/buy-seed-points`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId })
-                });
-                if (res.ok) {
-                    tg.showAlert("✅ မျိုးစေ့ဝယ်ယူမှု အောင်မြင်ပါသည်။");
-                    document.getElementById('seed-modal').classList.add('hidden');
-                    initApp();
-                    loadGarden();
-                } else {
-                    const err = await res.json();
-                    tg.showAlert("❌ " + (err.error || "မအောင်မြင်ပါ"));
+            // confirm(...) အစား tg.showConfirm သုံးခြင်း
+            tg.showConfirm("မျိုးစေ့ဝယ်ရန် 18,000 Pts သုံးစွဲမှာ သေချာပါသလား?", async (isConfirmed) => {
+                if (isConfirmed) {
+                    try {
+                        const res = await fetch(`${backendUrl}/api/buy-seed-points`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ userId })
+                        });
+                        if (res.ok) {
+                            tg.showAlert("✅ မျိုးစေ့ဝယ်ယူမှု အောင်မြင်ပါသည်။");
+                            document.getElementById('seed-modal').classList.add('hidden');
+                            initApp();
+                            loadGarden();
+                        } else {
+                            const err = await res.json();
+                            tg.showAlert("❌ " + (err.error || "မအောင်မြင်ပါ"));
+                        }
+                    } catch (e) { tg.showAlert("Connection error."); }
                 }
-            } catch (e) { tg.showAlert("Connection error."); }
+            });
         }
 
         async function buySeedCash() {
@@ -2547,8 +2550,8 @@
             const oldText = btn.innerText;
             btn.innerText = "Loading Ad...";
 
-            if (typeof show_10474083 === 'function') {
-                show_10474083().then(async () => {
+            if (typeof show_11105329 === 'function') {
+                show_11105329().then(async () => {
                     const res = await fetch(`${backendUrl}/api/water-plant`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
