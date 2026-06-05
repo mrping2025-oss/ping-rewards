@@ -1433,12 +1433,12 @@
                     });
 
                     if (res.ok) {
-                        alert("ငွေထုတ်ယူမှု တောင်းဆိုချက် အောင်မြင်ပါသည်။");
+                        tg.showAlert("ငွေထုတ်ယူမှု တောင်းဆိုချက် အောင်မြင်ပါသည်။");
                         document.getElementById('cashout-modal').classList.add('hidden');
                         initApp();
                     } else {
                         const errData = await res.json();
-                        alert("အမှား: " + (errData.error || "မအောင်မြင်ပါ"));
+                        tg.showAlert("အမှား: " + (errData.error || "မအောင်မြင်ပါ"));
                     }
                 } catch (err) {
                     console.error(err);
@@ -1453,7 +1453,7 @@
                 const currentPoints = userData.points || 0;
 
                 if (currentPoints < 100000) {
-                    alert("ငွေထုတ်ရန် အနည်းဆုံး $1.00 လိုအပ်ပါသည်။");
+                    tg.showAlert("ငွေထုတ်ရန် အနည်းဆုံး $1.00 လိုအပ်ပါသည်။");
                 } else {
                     document.getElementById('cashout-modal').classList.remove('hidden');
                     const select = document.getElementById('payout-amount');
@@ -1676,7 +1676,7 @@
                     const result = await res.json();
 
                     if (result.success) {
-                        alert(`Success! Task Completed. +${result.earned} points.`);
+                        tg.showAlert(`Success! Task Completed. +${result.earned} points.`);
 
                         // UI Update
                         btn.innerText = "Completed ✅";
@@ -1690,7 +1690,7 @@
                         loadHistory();
                     } else {
                         // မအောင်မြင်ရင်
-                        alert(result.message || "Something went wrong!");
+                        tg.showAlert(result.message || "Something went wrong!");
                         btn.innerText = originalText;
                         btn.style.pointerEvents = "auto";
                         btn.classList.add("bg-primary");
@@ -1838,14 +1838,14 @@
 
                     if (!res.ok) {
                         // Backend က Cooldown ကြောင့်ဖြစ်စေ၊ Error ကြောင့်ဖြစ်စေ ငြင်းလိုက်ရင် ပြမယ်
-                        tg.showAlert(result.error || "အရမ်းမြန်လွန်းနေပါတယ် ads ကြည့်ပြီးမှ အမှတ်တိုးပေးမှာ ဖြစ်ပါတယ်။ ဖြေးဖြေးနဲ့မှန်မှန်ကြည့်ပါ။");
+                        tg.showtg.showAlert(result.error || "အရမ်းမြန်လွန်းနေပါတယ် ads ကြည့်ပြီးမှ အမှတ်တိုးပေးမှာ ဖြစ်ပါတယ်။ ဖြေးဖြေးနဲ့မှန်မှန်ကြည့်ပါ။");
                     } else {
                         loadHistory();
                         updateWatchCount();
                         setTimeout(() => loadVideos(), 1000);
                     }
                 } catch (e) {
-                    tg.showAlert("Connection Error: အမှတ်တိုးရန် Backend ဆီ ချိတ်ဆက်၍ မရပါ။");
+                    tg.showtg.showAlert("Connection Error: အမှတ်တိုးရန် Backend ဆီ ချိတ်ဆက်၍ မရပါ။");
                 }
             }
         }
@@ -1868,11 +1868,11 @@
         function setupCopyButtons() {
             document.getElementById('copy-referral-btn').onclick = () => {
                 navigator.clipboard.writeText(document.getElementById('referral-code-input').value);
-                alert("Copied!");
+                tg.showAlert("Copied!");
             };
             document.getElementById('copy-link-btn').onclick = () => {
                 navigator.clipboard.writeText(document.getElementById('referral-link-input').value);
-                alert("Copied!");
+                tg.showAlert("Copied!");
             };
         }
 
@@ -2013,15 +2013,15 @@
                         });
 
                         if (res.ok) {
-                            alert("Video added successfully!");
+                            tg.showAlert("Video added successfully!");
                             document.getElementById('add-video-modal').classList.add('hidden');
                             renderManageVideosTable(); // Table ကို Refresh လုပ်မယ်
                         } else {
-                            alert("Error adding video.");
+                            tg.showAlert("Error adding video.");
                         }
                     } catch (err) {
                         console.error(err);
-                        alert("Connection failed.");
+                        tg.showAlert("Connection failed.");
                     } finally {
                         saveBtn.innerText = originalText;
                         saveBtn.disabled = false;
@@ -2062,15 +2062,15 @@
                         });
 
                         if (res.ok) {
-                            alert("Task added successfully!");
+                            tg.showAlert("Task added successfully!");
                             document.getElementById('add-social-task-modal').classList.add('hidden');
                             renderManageSocialTasksTable(); // Table Refresh
                         } else {
-                            alert("Error adding task.");
+                            tg.showAlert("Error adding task.");
                         }
                     } catch (err) {
                         console.error(err);
-                        alert("Connection failed.");
+                        tg.showAlert("Connection failed.");
                     } finally {
                         saveBtn.innerText = originalText;
                         saveBtn.disabled = false;
@@ -2196,7 +2196,7 @@
                 }
 
                 if (!AdController) {
-                    alert("⚠️ Adsgram စနစ် ချိတ်ဆက်၍ မရပါ။ (Internet Connection စစ်ဆေးပါ)");
+                    tg.showAlert("⚠️ Adsgram စနစ် ချိတ်ဆက်၍ မရပါ။ (Internet Connection စစ်ဆေးပါ)");
                     if (btn) btn.disabled = false;
                     return;
                 }
@@ -2204,7 +2204,7 @@
                 const result = await AdController.show();
 
                 if (result.done) {
-                    alert("✅ ဂုဏ်ယူပါတယ်။ အမှတ် ၃၀ ရရှိပါပြီ။ (Test Mode)");
+                    tg.showtg.showAlert("✅ ဂုဏ်ယူပါတယ်။ အမှတ် ၃၀ ရရှိပါပြီ။ (Test Mode)");
                     const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "1856743644";
 
                     await fetch(`${backendUrl}/api/award-points`, {
@@ -2223,9 +2223,9 @@
                 console.error("Adsgram Error:", error);
 
                 if (error.error === 'not_filled') {
-                    alert("⚠️ ကြည့်ရှုရန် ကြော်ငြာမရှိသေးပါ။ (No Ads Available)");
+                    tg.showAlert("⚠️ ကြည့်ရှုရန် ကြော်ငြာမရှိသေးပါ။ (No Ads Available)");
                 } else {
-                    alert("Error: " + JSON.stringify(error));
+                    tg.showAlert("Error: " + JSON.stringify(error));
                 }
             } finally {
                 if (btn) btn.disabled = false; // ခလုတ်ပြန်ဖွင့်မယ်
@@ -2240,7 +2240,7 @@
             const currentTime = Date.now();
             if (currentTime - lastAdTime < 60000) {
                 const timeLeft = Math.ceil((60000 - (currentTime - lastAdTime)) / 1000);
-                alert(`⚠️ ကျေးဇူးပြု၍ ${timeLeft} စက္ကန့် ခဏစောင့်ပေးပါ။`);
+                tg.showAlert(`⚠️ ကျေးဇူးပြု၍ ${timeLeft} စက္ကန့် ခဏစောင့်ပေးပါ။`);
                 return;
             }
 
@@ -2265,16 +2265,16 @@
                         const result = await res.json();
 
                         if (res.ok) {
-                            alert('✅ ဂုဏ်ယူပါတယ်။ ဗီဒီယိုကြည့်ပြီးလို့ အမှတ် ၂၀ ရရှိပါပြီ။');
+                            tg.showAlert('✅ ဂုဏ်ယူပါတယ်။ ဗီဒီယိုကြည့်ပြီးလို့ အမှတ် ၂၀ ရရှိပါပြီ။');
                             if (typeof initApp === "function") initApp();
                         } else {
                             // မြန်လွန်းနေရင် ဒီမှာ သတိပေးစာ ပြပါမယ်
-                            tg.showAlert(result.error || "အရမ်းမြန်လွန်းနေပါတယ် ads ကြည့်ပြီးမှ အမှတ်တိုးပေးမှာ ဖြစ်ပါတယ်။ ဖြေးဖြေးနဲ့မှန်မှန်ကြည့်ပါ။");
+                            tg.showtg.showAlert(result.error || "အရမ်းမြန်လွန်းနေပါတယ် ads ကြည့်ပြီးမှ အမှတ်တိုးပေးမှာ ဖြစ်ပါတယ်။ ဖြေးဖြေးနဲ့မှန်မှန်ကြည့်ပါ။");
                         }
 
                     }).catch(err => {
                         console.error("Monetag Error:", err);
-                        alert("⚠️ ကြော်ငြာပြသရန် အဆင်မပြေသေးပါ။");
+                        tg.showAlert("⚠️ ကြော်ငြာပြသရန် အဆင်မပြေသေးပါ။");
                     });
                 }
             } catch (e) {
@@ -2352,15 +2352,15 @@
                             let data = JSON.parse(localStorage.getItem(storageKey)) || { count: 0, date: new Date().toLocaleDateString() };
                             data.count++;
                             localStorage.setItem(storageKey, JSON.stringify(data));
-                            alert("✅ ဂုဏ်ယူပါတယ်။ အမှတ် ၁၀ ရရှိပါပြီ။");
+                           tg.showtg.showAlert("✅ ဂုဏ်ယူပါတယ်။ အမှတ်  ရရှိပါပြီ။");
                             updateQuickTaskUI();
                             if (typeof initApp === "function") initApp();
                         } else {
                             // --- ဒီနေရာမှာ User ကို Pop-up ပြပါမယ် ---
-                            tg.showAlert(result.error || "အမှားတစ်ခုရှိနေပါသည်။");
+                            tg.showtg.showAlert(result.error || "အမှားတစ်ခုရှိနေပါသည်။");
                         }
                     } catch (e) {
-                        tg.showAlert("Connection Error: အင်တာနက်ကို စစ်ဆေးပေးပါ။");
+                        tg.showtg.showAlert("Connection Error: အင်တာနက်ကို စစ်ဆေးပေးပါ။");
                     } finally {
                         btn.innerText = originalText;
                         btn.disabled = false;
@@ -2379,7 +2379,7 @@
             // ၂ မိနစ် Cooldown ထားပါမယ် (Popup က ခဏခဏပေါ်ရင် User စိတ်ညစ်တတ်လို့ပါ)
             if (currentTime - lastPopupTime < 120000) {
                 const timeLeft = Math.ceil((120000 - (currentTime - lastPopupTime)) / 1000);
-                alert(`⚠️ Popup အတွက် ${timeLeft} စက္ကန့် ခဏစောင့်ပေးပါ။`);
+                tg.showAlert(`⚠️ Popup အတွက် ${timeLeft} စက္ကန့် ခဏစောင့်ပေးပါ။`);
                 return;
             }
 
@@ -2401,16 +2401,16 @@
                         const result = await res.json();
 
                         if (res.ok) {
-                            alert('✅ ဂုဏ်ယူပါတယ်။ ကြော်ငြာကြည့်ပြီးလို့ အမှတ် ၁၅ ရရှိပါပြီ။');
+                           tg.showtg.showAlert('✅ ဂုဏ်ယူပါတယ်။ ကြော်ငြာကြည့်ပြီးလို့ အမှတ် ၁၅ ရရှိပါပြီ။');
                             if (typeof initApp === "function") initApp();
                         } else {
                             // မြန်လွန်းနေရင် သတိပေးစာ ပြမယ်
-                            tg.showAlert(result.error || "အရမ်းမြန်လွန်းနေပါတယ် ads ကြည့်ပြီးမှ အမှတ်တိုးပေးမှာ ဖြစ်ပါတယ်။ ဖြေးဖြေးနဲ့မှန်မှန်ကြည့်ပါ။");
+                            tg.showtg.showAlert(result.error || "အရမ်းမြန်လွန်းနေပါတယ် ads ကြည့်ပြီးမှ အမှတ်တိုးပေးမှာ ဖြစ်ပါတယ်။ ဖြေးဖြေးနဲ့မှန်မှန်ကြည့်ပါ။");
                         }
 
                     }).catch(e => {
                         console.error("Popup Error:", e);
-                        alert("⚠️ ကြော်ငြာပြသရန် အဆင်မပြေသေးပါ။");
+                        tg.showtg.showAlert("⚠️ ကြော်ငြာပြသရန် အဆင်မပြေသေးပါ။");
                     });
                 }
             } catch (err) {
@@ -2428,10 +2428,10 @@
                     body: JSON.stringify({ payoutId, status, userId, amount })
                 });
                 if (res.ok) {
-                    alert("Updated successfully!");
+                    tg.showAlert("Updated successfully!");
                     fetchPayouts(); // Refresh table
                 }
-            } catch (e) { console.error(e); alert("Error updating status"); }
+            } catch (e) { console.error(e); tg.showAlert("Error updating status"); }
         }
 
         async function loadGarden() {
@@ -2492,7 +2492,7 @@
             const resPlants = await fetch(`${backendUrl}/api/get-my-plants?userId=${userId}`);
             const plants = await resPlants.json();
             if (plants && plants.length >= 10) {
-                alert("⚠️ အပင် ၁၀ ပင်ထက်ပို၍ စိုက်ပျိုးခွင့်မရှိပါ။");
+                tg.showAlert("⚠️ အပင် ၁၀ ပင်ထက်ပို၍ စိုက်ပျိုးခွင့်မရှိပါ။");
                 return;
             }
 
@@ -2504,15 +2504,15 @@
                     body: JSON.stringify({ userId })
                 });
                 if (res.ok) {
-                    alert("✅ မျိုးစေ့ဝယ်ယူမှု အောင်မြင်ပါသည်။");
+                    tg.showAlert("✅ မျိုးစေ့ဝယ်ယူမှု အောင်မြင်ပါသည်။");
                     document.getElementById('seed-modal').classList.add('hidden');
                     initApp();
                     loadGarden();
                 } else {
                     const err = await res.json();
-                    alert("❌ " + (err.error || "မအောင်မြင်ပါ"));
+                    tg.showAlert("❌ " + (err.error || "မအောင်မြင်ပါ"));
                 }
-            } catch (e) { alert("Connection error."); }
+            } catch (e) { tg.showAlert("Connection error."); }
         }
 
         async function buySeedCash() {
@@ -2520,13 +2520,13 @@
             const currentPlantsRes = await fetch(`${backendUrl}/api/get-my-plants?userId=${userId}`);
             const currentPlants = await currentPlantsRes.json();
             if (currentPlants && currentPlants.length >= 10) {
-                alert("⚠️ အပင် ၁၀ ပင်ထက်ပို၍ စိုက်ပျိုးခွင့်မရှိပါ။");
+                tg.showAlert("⚠️ အပင် ၁၀ ပင်ထက်ပို၍ စိုက်ပျိုးခွင့်မရှိပါ။");
                 return;
             }
 
             const method = document.getElementById('cash-method').value;
             const txnId = document.getElementById('cash-txn').value;
-            if (!txnId) return alert("ငွေလွဲသူအမည် သို့မဟုတ် ဖုန်းနံပါတ်နှောက်ဆုံး ၄ လုံး ထည့်ပါ။");
+            if (!txnId) return tg.showAlert("ငွေလွဲသူအမည် သို့မဟုတ် ဖုန်းနံပါတ်နှောက်ဆုံး ၄ လုံး ထည့်ပါ။");
 
             try {
                 const res = await fetch(`${backendUrl}/api/request-seed-cash`, {
@@ -2535,11 +2535,11 @@
                     body: JSON.stringify({ userId, userName: userData.name, method, txnId })
                 });
                 if (res.ok) {
-                    alert("📩 တောင်းဆိုမှု ပေးပို့ပြီးပါပြီ။ Admin မှ စစ်ဆေးပြီးလျှင် အပင်စာရင်းထဲ ရောက်လာပါမည်။");
+                    tg.showAlert("📩 တောင်းဆိုမှု ပေးပို့ပြီးပါပြီ။ Admin မှ စစ်ဆေးပြီးလျှင် အပင်စာရင်းထဲ ရောက်လာပါမည်။");
                     document.getElementById('seed-modal').classList.add('hidden');
                     document.getElementById('cash-txn').value = "";
                 }
-            } catch (e) { alert("Error sending request."); }
+            } catch (e) { tg.showAlert("Error sending request."); }
         }
 
         async function waterPlant(plantId, btn) {
@@ -2556,12 +2556,12 @@
                     });
                     if (res.ok) { loadGarden(); }
                 }).catch(() => {
-                    alert("ကြော်ငြာပြသရန် အဆင်မပြေပါ။ ခဏနေမှ ပြန်ကြိုးစားပါ။");
+                    tg.showAlert("ကြော်ငြာပြသရန် အဆင်မပြေပါ။ ခဏနေမှ ပြန်ကြိုးစားပါ။");
                     btn.disabled = false;
                     btn.innerText = oldText;
                 });
             } else {
-                alert("ကြော်ငြာစနစ် မဆွဲရသေးပါ။");
+                tg.showAlert("ကြော်ငြာစနစ် မဆွဲရသေးပါ။");
                 btn.disabled = false;
                 btn.innerText = oldText;
             }
@@ -2575,7 +2575,7 @@
                     body: JSON.stringify({ userId, plantId })
                 });
                 if (res.ok) {
-                    alert("🎉 ဂုဏ်ယူပါတယ်။ အသီးခူးပြီး $0.25000  ရရှိပါပြီ။");
+                    tg.showAlert("🎉 ဂုဏ်ယူပါတယ်။ အသီးခူးပြီး $0.25000  ရရှိပါပြီ။");
                     initApp();
                     loadGarden();
                 }
@@ -2622,10 +2622,10 @@
                     body: JSON.stringify({ requestId, status, userId, userName })
                 });
                 if (res.ok) {
-                    alert(`Request ${status} successfully!`);
+                    tg.showAlert(`Request ${status} successfully!`);
                     fetchSeedRequests(); // Refresh the table
                 }
-            } catch (e) { console.error(e); alert("Error processing request."); }
+            } catch (e) { console.error(e); tg.showAlert("Error processing request."); }
         }
     </script>
 </body>
