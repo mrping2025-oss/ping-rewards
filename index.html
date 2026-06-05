@@ -651,11 +651,10 @@
 
                     <!-- balance နဲ့ ဝယ်တဲ့အပိုင်း -->
                     <div class="p-4 bg-slate-800 rounded-xl border border-primary/30 mb-6">
-                        <p class="text-xs text-muted-text mb-3">သင့် Balance ထဲမှ $0.10000 ဖြင့်
-                            တိုက်ရိုက်ဝယ်ယူပါ။</p>
+                        <p class="text-xs text-muted-text mb-3">သင့် Balance ထဲမှ 18,000 Pts ($0.18) ဖြင့် ဝယ်ယူပါ။</p>
                         <button onclick="buySeedPoints()"
                             class="w-full py-3 bg-primary text-white font-bold rounded-xl text-sm hover:bg-indigo-600 transition">
-                            Pay $0.10000 with Balance
+                            Pay 18,000 Pts with Balance
                         </button>
                     </div>
 
@@ -668,14 +667,16 @@
                     <!-- Cash နဲ့ ဝယ်တဲ့အပိုင်း (နံပါတ်များ ထည့်သွင်းထားသည်) -->
                     <div class="space-y-4">
                         <div class="bg-slate-800 p-4 rounded-xl border border-yellow-500/30">
-                            <p class="text-[13px] text-yellow-500 font-bold mb-2">ငွေလွှဲရမည့် ပမာဏ - ၆၀၀ ကျပ်</p>
-                            <ul class="text-[11px] text-slate-300 space-y-1 mb-3">
-                                <li>🔹 Kpay: <b class="text-white">09885618553</b> (Win Naing Soe )</li>
-                                <li>🔹 Wave: <b class="text-white">09885618553</b> (Win Naing Soe )</li>
-
+                            <p class="text-[14px] text-yellow-500 font-bold mb-2">🔥 အထူးဈေးနှုန်း - ၈၀၀ ကျပ်</p>
+                            <ul class="text-[11px] text-slate-300 space-y-2 mb-3">
+                                <li>🔹 Kpay: <b class="text-white">09885618553</b> (Win Naing Soe)</li>
+                                <li>🔹 Wave: <b class="text-white">09885618553</b> (Win Naing Soe)</li>
+                                <li>💰 ခူးဆွတ်ချိန်ရမှတ်: <b class="text-green-400">25,000 Pts ($0.25)</b></li>
                             </ul>
-                            <p class="text-[10px] text-red-400">*(ငွေလွှဲပြီးမှ အောက်ပါဖောင်ကို ဖြည့်သွင်းပါ)*</p>
+                            <p class="text-[10px] text-red-400 font-semibold">*(ငွေလွှဲပြီးမှ အောက်ပါဖောင်ကို
+                                ဖြည့်သွင်းပါ)*</p>
                         </div>
+
 
                         <select id="cash-method"
                             class="w-full p-3 bg-slate-700 border border-slate-600 rounded-xl text-white text-sm">
@@ -1365,7 +1366,7 @@
         const startParam = tg.initDataUnsafe.start_param || urlParams.get('start') || "";
         const backendUrl = "https://ping-rewards-bot.mr-ping2025.workers.dev";
         function formatToUSD(points) {
-            return (points / 50000).toFixed(5);
+            return (points / 100000).toFixed(5);
         }
         let userData = {};
         let player;
@@ -1451,7 +1452,7 @@
             document.getElementById('cashout-button').addEventListener('click', () => {
                 const currentPoints = userData.points || 0;
 
-                if (currentPoints < 50000) {
+                if (currentPoints < 100000) {
                     alert("ငွေထုတ်ရန် အနည်းဆုံး $1.00 လိုအပ်ပါသည်။");
                 } else {
                     document.getElementById('cashout-modal').classList.remove('hidden');
@@ -1461,7 +1462,7 @@
                         const val = parseInt(select.options[i].value);
                         select.options[i].innerText = `${val}.00 USD`;
 
-                        if (currentPoints < val * 50000) {
+                        if (currentPoints < val * 100000) {
                             select.options[i].disabled = true;
                         } else {
                             select.options[i].disabled = false;
@@ -1518,7 +1519,7 @@
                 document.getElementById('page-title').innerText = viewId.replace(/-/g, ' ').replace('view', '').toUpperCase();
                 if (viewId === 'user-dashboard-view' && userData.points !== undefined) {
                     const earningsEl = document.getElementById('estimated-earnings-value');
-                    if (earningsEl) earningsEl.textContent = `$${(userData.points / 50000).toFixed(2)}`;
+                    if (earningsEl) earningsEl.textContent = `$${(userData.points / 100000).toFixed(2)}`;
                 }
                 if (viewId === 'manage-payouts-view') {
                     fetchPayouts();
@@ -1645,7 +1646,7 @@
                     return `
                         <div class="card bg-card-bg p-6 rounded-xl border border-slate-700 text-center">
                             <h3 class="text-lg font-bold text-white">${t.title}</h3>
-                            <p class="text-accent-green font-bold my-2">+$${(t.points / 50000).toFixed(5)}</p>
+                            <p class="text-accent-green font-bold my-2">+$${(t.points / 100000).toFixed(5)}</p>
                             <button ${btnAction} class="inline-block px-6 py-2 rounded-lg font-bold transition text-white ${btnClass}">
                                 ${btnText}
                             </button>
@@ -2340,7 +2341,7 @@
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
                                 userId: String(userId),
-                                amount: 10,
+                                amount: 20,
                                 desc: "Daily Task: Adsterra Visit"
                             })
                         });
@@ -2444,47 +2445,58 @@
                     return;
                 }
 
+                // User တစ်ယောက်လုံးစာ နောက်ဆုံးရေလောင်းခဲ့တဲ့အချိန်ကို ရှာမယ် (၃ မိနစ် Cooldown အတွက်)
+                const lastAnyWateredAt = Math.max(...plants.map(pl => pl.last_watered_at ? new Date(pl.last_watered_at).getTime() : 0));
+
                 grid.innerHTML = plants.map(p => {
-                    const createdAt = new Date(p.created_at).getTime();
                     const now = Date.now();
-                    const timeLeft = (createdAt + (24 * 60 * 60 * 1000)) - now; // ၂၄ နာရီအထိ ကျန်ချိန်
+                    const lastWatered = p.last_watered_at ? new Date(p.last_watered_at).getTime() : 0;
 
-                    let timeLabel = "";
-                    if (timeLeft > 0) {
-                        const hours = Math.floor(timeLeft / (1000 * 60 * 60));
-                        const mins = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                        timeLabel = `Ready in: ${hours}h ${mins}m`;
-                    } else {
-                        timeLabel = "READY TO HARVEST";
-                    }
+                    const specificCooldownLeft = (lastWatered + (30 * 60 * 1000)) - now; // ဒီအပင်အတွက် ၃၀ မိနစ်
+                    const globalCooldownLeft = (lastAnyWateredAt + (3 * 60 * 1000)) - now; // User အားလုံးအတွက် ၃ မိနစ်
 
-                    const isTimeUp = timeLeft <= 0;
+                    const createdAt = new Date(p.created_at).getTime();
+                    const timeUntilReady = (createdAt + (24 * 60 * 60 * 1000)) - now;
+                    let statusLabel = timeUntilReady > 0 ? "GROWING..." : "READY TO HARVEST";
+                    const isTimeUp = timeUntilReady <= 0;
                     const isDead = isTimeUp && p.water_count < 20;
 
+                    let buttonHTML = "";
+                    if (isTimeUp) {
+                        buttonHTML = `<button onclick="harvestPlant('${p.id}')" class="w-full py-2 ${isDead ? 'bg-red-600' : 'bg-yellow-500'} text-black font-bold rounded-xl text-xs">${isDead ? 'REMOVE DEAD' : 'HARVEST (+$0.25)'}</button>`;
+                    } else if (globalCooldownLeft > 0) {
+                        // ၃ မိနစ် Cooldown ကျန်နေရင် စက္ကန့်နဲ့ ပြမယ်
+                        const waitSecs = Math.ceil(globalCooldownLeft / 1000);
+                        buttonHTML = `<button disabled class="w-full py-2 bg-slate-700 text-slate-500 font-bold rounded-xl text-xs">Wait ${waitSecs}s</button>`;
+                    } else if (specificCooldownLeft > 0) {
+                        // ၃၀ မိနစ် Cooldown ကျန်နေရင် မိနစ်နဲ့ ပြမယ်
+                        const waitMins = Math.ceil(specificCooldownLeft / 60000);
+                        buttonHTML = `<button disabled class="w-full py-2 bg-slate-600 text-slate-400 font-bold rounded-xl text-xs">Wait ${waitMins}m</button>`;
+                    } else {
+                        buttonHTML = `<button onclick="waterPlant('${p.id}', this)" class="w-full py-2 bg-primary text-white font-bold rounded-xl text-xs">WATER (ADS)</button>`;
+                    }
+
                     return `
-                <div class="bg-card-bg p-4 rounded-2xl border ${isDead ? 'border-red-600' : (isTimeUp ? 'border-yellow-500 animate-pulse' : 'border-slate-700')} text-center">
-                   <div class="text-5xl mb-3 ${isDead ? '' : 'animate-plant'} ${isTimeUp && !isDead ? 'scale-110 drop-shadow-[0_0_10px_rgba(234,179,8,0.8)]' : ''}">
-                        ${isDead ? '🥀' : (isTimeUp ? '🌳' : '🌱')}
-                    </div>
-                    <div class="text-[10px] text-slate-400 mb-1 uppercase">${isDead ? 'Dead' : timeLabel}</div>
+                <div class="bg-card-bg p-4 rounded-2xl border ${isDead ? 'border-red-600' : (isTimeUp ? 'border-yellow-500' : 'border-slate-700')} text-center">
+                    <div class="text-5xl mb-3 ${isDead ? '' : 'animate-plant'}">${isDead ? '🥀' : (isTimeUp ? '🌳' : '🌱')}</div>
+                    <div class="text-[10px] text-slate-400 mb-1 uppercase">${statusLabel}</div>
                     <div class="text-xs font-bold text-white mb-2">Water: ${p.water_count}/20</div>
-                    
-                    ${isTimeUp ?
-                            `<button onclick="harvestPlant('${p.id}')" class="w-full py-2 ${isDead ? 'bg-red-600' : 'bg-yellow-500'} text-black font-extrabold rounded-xl text-xs transition transform active:scale-95">
-                            ${isDead ? 'REMOVE DEAD PLANT' : 'HARVEST ($0.11000)'}
-                        </button>` :
-                            `<button onclick="waterPlant('${p.id}', this)" class="w-full py-2 bg-primary hover:bg-indigo-500 text-white font-bold rounded-xl text-xs transition transform active:scale-95">
-                            WATER (ADS)
-                        </button>`
-                        }
-                </div>
-            `;
+                    ${buttonHTML}
+                </div>`;
                 }).join('');
             } catch (e) { console.error(e); }
         }
 
         async function buySeedPoints() {
-            if (!confirm("မျိုးစေ့ဝယ်ရန် $0.10000 သုံးစွဲမှာ သေချာပါသလား?")) return;
+            // ၁။ အပင် ၁၀ ပင် ပြည့်မပြည့် အရင်စစ်မယ်
+            const resPlants = await fetch(`${backendUrl}/api/get-my-plants?userId=${userId}`);
+            const plants = await resPlants.json();
+            if (plants && plants.length >= 10) {
+                alert("⚠️ အပင် ၁၀ ပင်ထက်ပို၍ စိုက်ပျိုးခွင့်မရှိပါ။");
+                return;
+            }
+
+            if (!confirm("မျိုးစေ့ဝယ်ရန် 18,000 Pts သုံးစွဲမှာ သေချာပါသလား?")) return;
             try {
                 const res = await fetch(`${backendUrl}/api/buy-seed-points`, {
                     method: 'POST',
@@ -2492,18 +2504,26 @@
                     body: JSON.stringify({ userId })
                 });
                 if (res.ok) {
-                    alert("✅ မျိုးစေ့ဝယ်ယူမှု အောင်မြင်ပါသည်။ စိုက်ပျိုးနိုင်ပါပြီ။");
+                    alert("✅ မျိုးစေ့ဝယ်ယူမှု အောင်မြင်ပါသည်။");
                     document.getElementById('seed-modal').classList.add('hidden');
-                    initApp(); // Balance update လုပ်ရန်
+                    initApp();
                     loadGarden();
                 } else {
                     const err = await res.json();
-                    alert("❌ " + (err.error || "ဝယ်ယူမှု မအောင်မြင်ပါ။"));
+                    alert("❌ " + (err.error || "မအောင်မြင်ပါ"));
                 }
             } catch (e) { alert("Connection error."); }
         }
 
         async function buySeedCash() {
+
+            const currentPlantsRes = await fetch(`${backendUrl}/api/get-my-plants?userId=${userId}`);
+            const currentPlants = await currentPlantsRes.json();
+            if (currentPlants && currentPlants.length >= 10) {
+                alert("⚠️ အပင် ၁၀ ပင်ထက်ပို၍ စိုက်ပျိုးခွင့်မရှိပါ။");
+                return;
+            }
+
             const method = document.getElementById('cash-method').value;
             const txnId = document.getElementById('cash-txn').value;
             if (!txnId) return alert("ငွေလွဲသူအမည် သို့မဟုတ် ဖုန်းနံပါတ်နှောက်ဆုံး ၄ လုံး ထည့်ပါ။");
@@ -2555,7 +2575,7 @@
                     body: JSON.stringify({ userId, plantId })
                 });
                 if (res.ok) {
-                    alert("🎉 ဂုဏ်ယူပါတယ်။ အသီးခူးပြီး $0.11000  ရရှိပါပြီ။");
+                    alert("🎉 ဂုဏ်ယူပါတယ်။ အသီးခူးပြီး $0.25000  ရရှိပါပြီ။");
                     initApp();
                     loadGarden();
                 }
