@@ -357,7 +357,7 @@
                     </button>
 
                     <!-- Help -->
-                    <a href="https://t.me/Mr_PingGP" target="_blank"
+                    <a href="https://t.me/Ping_Assistant" target="_blank"
                         class="flex flex-col items-center p-4 bg-slate-700 rounded-xl hover:bg-slate-600">
                         <svg class="w-8 h-8 mb-2 text-pink-400" fill="currentColor" viewBox="0 0 24 24">
                             <path
@@ -479,7 +479,7 @@
                             <div class="flex animate-scroll min-w-max">
                                 <span
                                     class="text-sm sm:text-sm font-extrabold text-gray-900 uppercase tracking-wide whitespace-nowrap px-0">
-                                    🎉 အရေးကြီးသည် About ကို နိပ်ပြီး စည်းကမ်းချက်ကို အရင်ဖတ်ပေးပါ 🎉
+                                    🎉 Important: Please read the rules in the 'About' section before starting! 🎉
                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 </span>
                                 <span
@@ -642,7 +642,7 @@
             <div id="garden-view" class="content-view" style="display: none;">
                 <div class="bg-card-bg p-6 rounded-xl border border-green-500/50 mb-6 text-center">
                     <h2 class="text-2xl font-bold text-white mb-2">Ping Garden 🌱</h2>
-                    <p class="text-muted-text text-sm mb-4">အပင်စိုက်ပါ၊ ရေလောင်းပါ၊ အမြတ်ထုတ်ယူပါ။</p>
+                    <p class="text-muted-text text-sm mb-4">Plant seeds, water them, and harvest your profits!</p>
                     <button onclick="document.getElementById('seed-modal').classList.remove('hidden')"
                         class="px-8 py-3 bg-green-600 hover:bg-green-500 text-white font-bold rounded-full transition shadow-lg">
                         + Buy New Seed
@@ -659,11 +659,12 @@
             <div id="seed-modal" class="modal-overlay fixed inset-0 flex justify-center items-center z-[2000] hidden">
                 <div
                     class="bg-card-bg p-8 rounded-2xl w-11/12 max-w-md border border-slate-700 shadow-2xl overflow-y-auto max-h-[90vh]">
-                    <h3 class="text-xl font-bold text-white mb-4">မျိုးစေ့ဝယ်ယူရန်</h3>
+                    <h3 class="text-xl font-bold text-white mb-4">Purchase Seeds</h3>
 
                     <!-- balance နဲ့ ဝယ်တဲ့အပိုင်း -->
                     <div class="p-4 bg-slate-800 rounded-xl border border-primary/30 mb-6">
-                        <p class="text-xs text-muted-text mb-3">သင့် Balance ထဲမှ 18,000 Pts ($0.18) ဖြင့် ဝယ်ယူပါ။</p>
+                        <p class="text-xs text-muted-text mb-3">Buy directly from your balance for 18,000 Pts ($0.18).
+                        </p>
                         <button onclick="buySeedPoints()"
                             class="w-full py-3 bg-primary text-white font-bold rounded-xl text-sm hover:bg-indigo-600 transition">
                             Pay 18,000 Pts with Balance
@@ -672,21 +673,21 @@
 
                     <div class="relative py-4 text-center">
                         <span class="bg-card-bg px-2 text-xs text-slate-500 relative z-10">OR BUY WITH CASH
-                            (မြန်မာငွေ)</span>
+                        </span>
                         <div class="absolute top-1/2 left-0 w-full h-[1px] bg-slate-700"></div>
                     </div>
 
                     <!-- Cash နဲ့ ဝယ်တဲ့အပိုင်း (နံပါတ်များ ထည့်သွင်းထားသည်) -->
                     <div class="space-y-4">
                         <div class="bg-slate-800 p-4 rounded-xl border border-yellow-500/30">
-                            <p class="text-[14px] text-yellow-500 font-bold mb-2">🔥 အထူးဈေးနှုန်း - ၈၀၀ ကျပ်</p>
+                            <p class="text-[14px] text-yellow-500 font-bold mb-2">🔥 Special Price - 800 Ks</p>
                             <ul class="text-[11px] text-slate-300 space-y-2 mb-3">
                                 <li>🔹 Kpay: <b class="text-white">09885618553</b> (Win Naing Soe)</li>
                                 <li>🔹 Wave: <b class="text-white">09885618553</b> (Win Naing Soe)</li>
-                                <li>💰 ခူးဆွတ်ချိန်ရမှတ်: <b class="text-green-400">25,000 Pts ($0.25)</b></li>
+                                <li>💰 Harvest Reward: <b class="text-green-400">25,000 Pts ($0.25)</b></li>
                             </ul>
-                            <p class="text-[10px] text-red-400 font-semibold">*(ငွေလွှဲပြီးမှ အောက်ပါဖောင်ကို
-                                ဖြည့်သွင်းပါ)*</p>
+                            <p class="text-[10px] text-red-400 font-semibold">*(Fill the form after completing your
+                                transfer)*</p>
                         </div>
 
 
@@ -695,12 +696,11 @@
                             <option value="Kpay">Kpay</option>
                             <option value="Wave">Wave</option>
                         </select>
-                        <input type="text" id="cash-txn"
-                            placeholder="လွှဲသူနာမည် သို့မဟုတ် ဖုန်းနံပါတ်နောက်ဆုံး ၄ လုံးထည့်ပါ"
+                        <input type="text" id="cash-txn" placeholder="Sender Name or Last 4 digits of phone number"
                             class="w-full p-3 bg-slate-700 border border-slate-600 rounded-xl text-white text-sm">
                         <button onclick="buySeedCash()"
                             class="w-full py-3 bg-accent-orange text-white font-bold rounded-xl hover:bg-amber-600 transition">
-                            Cash တောင်းဆိုမှု တင်မည်
+                            Submit Cash Request
                         </button>
                     </div>
                     <button onclick="document.getElementById('seed-modal').classList.add('hidden')"
@@ -768,16 +768,14 @@
 
             <div id="invite-and-earn-view" class="content-view" style="display: none;">
                 <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700 mb-6">
-                    <h2 class="text-xl font-semibold mb-4 text-primary">သူငယ်ချင်းများကို ဖိတ်ခေါ်ပြီး အမှတ်များရယူပါ
+                    <h2 class="text-xl font-semibold mb-4 text-primary">Invite Friends & Earn Points
                         (Invite & Earn)</h2>
-                    <p class="text-muted-text mb-6">သင်၏ ကိုယ်ပိုင်ဖိတ်ခေါ်ကုဒ် (Referral Code) ကို အသုံးပြု၍
-                        သူငယ်ချင်းများကို ဖိတ်ခေါ်ပါ။ သူငယ်ချင်းတစ်ဦး အကောင့်ဖွင့်တိုင်း <span
-                            class="text-white font-bold">$0.00200</span> ရရှိမည်။</p>
+                    <p class="text-muted-text mb-6">Share your referral code with friends. Earn <span
+                            class="text-white font-bold">$0.00200</span> for every friend who joins. </p>
 
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium mb-2">သင့်ရဲ့ ဖိတ်ခေါ်ကုဒ် (Your Referral
-                                Code)</label>
+                            <label class="block text-sm font-medium mb-2">Your Referral Code</label>
                             <div class="flex">
                                 <input type="text" id="referral-code-input" value="Loading..." readonly
                                     class="flex-grow px-4 py-3 rounded-l-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary text-text-color font-mono tracking-wider">
@@ -792,12 +790,11 @@
                                 </button>
                             </div>
                             <p id="copy-status" class="text-sm mt-2 text-primary" style="display:none;">
-                                ကုဒ်ကူးယူပြီးပါပြီ။</p>
+                                Code Copied Successfully!</p>
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium mb-2">သင့်ရဲ့ ဖိတ်ခေါ်လင့် (Your Referral
-                                Link)</label>
+                            <label class="block text-sm font-medium mb-2">Your Referral Link</label>
                             <div class="flex">
                                 <input type="text" id="referral-link-input" value="Loading..." readonly
                                     class="flex-grow px-4 py-3 rounded-l-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary text-text-color text-sm">
@@ -811,22 +808,24 @@
                                     Copy
                                 </button>
                             </div>
+                            <p id="copy-status-link" class="text-sm mt-2 text-primary" style="display:none;">
+                                Link Copied Successfully!</p>
                         </div>
 
                         <div class="pt-4">
-                            <h3 class="text-lg font-semibold mb-2">ဖိတ်ခေါ်မှု မှတ်တမ်း (Invite History)</h3>
+                            <h3 class="text-lg font-semibold mb-2">Your Referral History</h3>
                             <div class="bg-slate-700/50 p-4 rounded-lg overflow-x-auto">
                                 <table class="w-full text-left table-auto">
                                     <thead class="text-slate-400 uppercase text-xs">
                                         <tr>
-                                            <th class="p-2">အသုံးပြုသူ</th>
-                                            <th class="p-2">ရရှိခဲ့သည့် အမှတ်</th>
+                                            <th class="p-2">Username</th>
+                                            <th class="p-2">Reward Earned</th>
                                         </tr>
                                     </thead>
                                     <tbody id="invited-users-table">
                                         <tr>
-                                            <td colspan="2" class="p-2 text-center text-muted-text">သူငယ်ချင်းများ
-                                                ဖိတ်ခေါ်ခြင်း မရှိသေးပါ။</td>
+                                            <td colspan="2" class="p-2 text-center text-muted-text">No referrals yet.
+                                                Start inviting to earn rewards!</td>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -841,58 +840,61 @@
             <!-- About View -->
             <div id="about-view" class="content-view" style="display: none;">
                 <div class="bg-card-bg p-6 rounded-xl shadow-md border border-slate-700">
-                    <h2 class="text-2xl font-bold mb-4 text-primary">Ping Rewards အကြောင်း</h2>
-                    <p class="text-muted-text mb-6">Ping Rewards တွင် ဗီဒီယိုကြည့်ရင်း၊ Task များလုပ်ဆောင်ရင်း
-                        တိုက်ရိုက် USD ($) များ စုဆောင်းကာ ငွေသားအဖြစ် ထုတ်ယူနိုင်ပါသည်။</p>
+                    <h2 class="text-2xl font-bold mb-4 text-primary">About Ping Rewards</h2>
+                    <p class="text-muted-text mb-6">In Ping Rewards, you can accumulate USD ($) directly by watching
+                        videos and completing tasks, then withdraw your earnings as cash.</p>
 
                     <div class="space-y-6 text-text-color">
-                        <!-- အပိုင်း (၁) -->
+                        <!-- Section (1) -->
                         <section>
                             <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                                <span class="bg-primary/20 text-primary px-2 py-1 rounded">၁</span>
-                                ဝင်ငွေရယူနည်းလမ်းများ
+                                <span class="bg-primary/20 text-primary px-2 py-1 rounded">1</span>
+                                Earning Methods
                             </h3>
                             <ul class="list-disc list-inside mt-2 space-y-2 ml-4 text-sm md:text-base">
                                 <li><span class="font-semibold text-accent-orange">Watch Videos:</span>
-                                    ဗီဒီယိုကြည့်ရှုပါ (၁၀ စက္ကန့်လျှင် <span
-                                        class="text-white font-bold">$0.00002</span> တိုက်ရိုက်တိုးပါမည်)။</li>
-                                <li><span class="font-semibold text-accent-green">Social Tasks:</span> Facebook,
-                                    Telegram, YouTube စသည်တို့ကို Follow/Join လုပ်ပြီး သတ်မှတ်ထားသော USD ပမာဏများ ရယူပါ။
+                                    Watch videos and earn <span class="text-white font-bold">$0.00001</span> for every
+                                    10 seconds of viewing.
                                 </li>
-                                <li><span class="font-semibold text-primary">Invite & Earn:</span> သူငယ်ချင်းကို
-                                    ဖိတ်ခေါ်ပြီး တစ်ဦးလျှင် <span class="text-white font-bold">$0.00200</span> ရယူပါ။
+                                <li><span class="font-semibold text-accent-green">Social Tasks:</span>
+                                    Earn USD rewards by following or joining our Facebook, Telegram, and YouTube
+                                    channels.
+                                </li>
+                                <li><span class="font-semibold text-primary">Invite & Earn:</span>
+                                    Refer a friend and earn <span class="text-white font-bold">$0.00200</span> per
+                                    successful referral.
                                 </li>
                             </ul>
                         </section>
 
-                        <!-- အပိုင်း (၂) -->
+                        <!-- Section (2) -->
                         <section>
                             <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                                <span class="bg-primary/20 text-primary px-2 py-1 rounded">၂</span>
-                                ငွေထုတ်ယူခြင်း (Cash Out)
+                                <span class="bg-primary/20 text-primary px-2 py-1 rounded">2</span>
+                                Cash Out (Withdrawals)
                             </h3>
                             <ul class="list-disc list-inside mt-2 space-y-2 ml-4 text-sm md:text-base">
-                                <li>အနည်းဆုံးလက်ကျန်ငွေ <span class="text-white font-bold">$1.00</span> ပြည့်ပါက
-                                    ငွေထုတ်နိုင်ပါသည်။</li>
-                                <li>KBZ Pay, Wave Pay နှင့် Binance (USDT) တို့ဖြင့် ထုတ်ယူနိုင်ပါသည်။</li>
-                                <li>ငွေထုတ်ယူပြီး <span class="text-accent-orange font-semibold">၂၄ နာရီမှ ၄၈
-                                        နာရီအတွင်း</span> လူကြီးမင်းတို့ထံ ပေးပို့ပေးသွားမည်ဖြစ်ပါသည်။</li>
+                                <li>You can request a withdrawal once your balance reaches at least <span
+                                        class="text-white font-bold">$1.00</span>.</li>
+                                <li>Withdrawal methods include KBZ Pay, Wave Pay, and Binance (USDT).</li>
+                                <li>Payments will be processed and sent to you within <span
+                                        class="text-accent-orange font-semibold">24 to 48 hours</span>.</li>
                             </ul>
                         </section>
 
-                        <!-- အပိုင်း (၃) -->
+                        <!-- Section (3) -->
                         <section class="bg-red-500/10 p-4 rounded-lg border border-red-500/30">
                             <h3 class="text-lg font-bold text-red-400 flex items-center gap-2">
-                                ⚠️ တင်းကြပ်သော စည်းကမ်းချက်များ
+                                ⚠️ Strict Rules & Regulations
                             </h3>
                             <ul class="list-disc list-inside mt-2 space-y-2 ml-4 text-xs md:text-sm text-red-200">
-                                <li>တစ်ဦးလျှင် အကောင့်တစ်ခုသာ အသုံးပြုရပါမည်။</li>
-                                <li>VPN အသုံးပြုခြင်းကို လုံးဝ (လုံးဝ) ခွင့်မပြုပါ။ VPN သုံးစွဲမှု တွေ့ရှိပါက
-                                    ငွေထုတ်ပေးမည် မဟုတ်ပါ။</li>
-                                <li>ဗီဒီယိုများကို Fake View (Bot) များဖြင့် ကြည့်ရှုခြင်း တွေ့ရှိပါက
-                                    အကောင့်ပိတ်သိမ်းပါမည်။</li>
-                                <li>Social Task များကို အမှန်တကယ် လုပ်ဆောင်ရပါမည် (Admin မှ စစ်ဆေးပါသည်)။</li>
-                                <li>စည်းကမ်းဖောက်ဖျက်ထားသော အကောင့်များ၏ ငွေထုတ်ယူမှုများကို ပယ်ဖျက်သွားပါမည်။</li>
+                                <li>Only one account is allowed per person.</li>
+                                <li>VPN usage is strictly prohibited. If VPN usage is detected, your withdrawal will not
+                                    be processed.</li>
+                                <li>Using bots or fake views to manipulate video earnings will result in a permanent
+                                    account ban.</li>
+                                <li>Social tasks must be completed genuinely (Verified by Admins).</li>
+                                <li>Withdrawal requests from accounts violating these rules will be rejected.</li>
                             </ul>
                         </section>
                     </div>
@@ -1332,7 +1334,7 @@
 
                     <div class="space-y-4">
                         <div>
-                            <label for="payout-amount" class="block text-sm font-medium mb-1">ထုတ်ယူမည့် ပမာဏ
+                            <label for="payout-amount" class="block text-sm font-medium mb-1">Amount
                                 (USD)</label>
                             <select id="payout-amount" name="payoutAmount"
                                 class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary text-white">
@@ -1395,7 +1397,7 @@
             tg.ready();
             tg.expand();
 
-             async function checkVPN() {
+            async function checkVPN() {
                 try {
                     // အခမဲ့ IP API တစ်ခုကို သုံးပြီး စစ်ဆေးမယ်
                     const res = await fetch('https://ipwho.is/');
@@ -1465,12 +1467,12 @@
                     });
 
                     if (res.ok) {
-                        tg.showAlert("ငွေထုတ်ယူမှု တောင်းဆိုချက် အောင်မြင်ပါသည်။");
+                        tg.showAlert("Your cashout request has been submitted successfully!");
                         document.getElementById('cashout-modal').classList.add('hidden');
                         initApp();
                     } else {
                         const errData = await res.json();
-                        tg.showAlert("အမှား: " + (errData.error || "မအောင်မြင်ပါ"));
+                        tg.showAlert("အမှား: " + (errData.error || "not able to process cashout request."));
                     }
                 } catch (err) {
                     console.error(err);
@@ -1485,7 +1487,7 @@
                 const currentPoints = userData.points || 0;
 
                 if (currentPoints < 100000) {
-                    tg.showAlert("ငွေထုတ်ရန် အနည်းဆုံး $1.00 လိုအပ်ပါသည်။");
+                    tg.showAlert("You need at least 1.00 USD (100,000 points) to cash out.");
                 } else {
                     document.getElementById('cashout-modal').classList.remove('hidden');
                     const select = document.getElementById('payout-amount');
@@ -1870,14 +1872,14 @@
 
                     if (!res.ok) {
                         // Backend က Cooldown ကြောင့်ဖြစ်စေ၊ Error ကြောင့်ဖြစ်စေ ငြင်းလိုက်ရင် ပြမယ်
-                        tg.showAlert(result.error || "အရမ်းမြန်လွန်းနေပါတယ် ads ကြည့်ပြီးမှ အမှတ်တိုးပေးမှာ ဖြစ်ပါတယ်။ ဖြေးဖြေးနဲ့မှန်မှန်ကြည့်ပါ။");
+                        tg.showAlert(result.error || "Too fast! Please take it slow and steady. Points will be awarded after properly viewing the ad.");
                     } else {
                         loadHistory();
                         updateWatchCount();
                         setTimeout(() => loadVideos(), 1000);
                     }
                 } catch (e) {
-                    tg.showAlert("Connection Error: အမှတ်တိုးရန် Backend ဆီ ချိတ်ဆက်၍ မရပါ။");
+                    tg.showAlert("Connection Error: Points may not be awarded.");
                 }
             }
         }
@@ -2228,7 +2230,7 @@
                 }
 
                 if (!AdController) {
-                    tg.showAlert("⚠️ Adsgram စနစ် ချိတ်ဆက်၍ မရပါ။ (Internet Connection စစ်ဆေးပါ)");
+                    tg.showAlert("⚠️ Adsgram is not available at the moment. Please try again later.");
                     if (btn) btn.disabled = false;
                     return;
                 }
@@ -2236,7 +2238,7 @@
                 const result = await AdController.show();
 
                 if (result.done) {
-                    tg.showAlert("✅ ဂုဏ်ယူပါတယ်။ အမှတ် ၃၀ ရရှိပါပြီ။ (Test Mode)");
+                    tg.showAlert("✅ Congratulations! You've earned points from the Adsgram ad (30 points).");
                     const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "1856743644";
 
                     await fetch(`${backendUrl}/api/award-points`, {
@@ -2255,7 +2257,7 @@
                 console.error("Adsgram Error:", error);
 
                 if (error.error === 'not_filled') {
-                    tg.showAlert("⚠️ ကြည့်ရှုရန် ကြော်ငြာမရှိသေးပါ။ (No Ads Available)");
+                    tg.showAlert("⚠️ No ads available for viewing. Please try again later.");
                 } else {
                     tg.showAlert("Error: " + JSON.stringify(error));
                 }
@@ -2272,7 +2274,7 @@
             const currentTime = Date.now();
             if (currentTime - lastAdTime < 60000) {
                 const timeLeft = Math.ceil((60000 - (currentTime - lastAdTime)) / 1000);
-                tg.showAlert(`⚠️ ကျေးဇူးပြု၍ ${timeLeft} စက္ကန့် ခဏစောင့်ပေးပါ။`);
+                tg.showAlert(`⚠️ Please wait ${timeLeft} seconds before watching another ad.`);
                 return;
             }
 
@@ -2297,16 +2299,16 @@
                         const result = await res.json();
 
                         if (res.ok) {
-                            tg.showAlert('✅ ဂုဏ်ယူပါတယ်။ ဗီဒီယိုကြည့်ပြီးလို့ အမှတ် ၂၀ ရရှိပါပြီ။');
+                            tg.showAlert('✅ Congratulations! You\'ve earned points from the bonus ad (20 points).');
                             if (typeof initApp === "function") initApp();
                         } else {
                             // မြန်လွန်းနေရင် ဒီမှာ သတိပေးစာ ပြပါမယ်
-                            tg.showAlert(result.error || "အရမ်းမြန်လွန်းနေပါတယ် ads ကြည့်ပြီးမှ အမှတ်တိုးပေးမှာ ဖြစ်ပါတယ်။ ဖြေးဖြေးနဲ့မှန်မှန်ကြည့်ပါ။");
+                            tg.showAlert(result.error || "too fast! Please watch the ad completely to earn points.");
                         }
 
                     }).catch(err => {
                         console.error("Monetag Error:", err);
-                        tg.showAlert("⚠️ ကြော်ငြာပြသရန် အဆင်မပြေသေးပါ။");
+                        tg.showAlert("⚠️ Ad failed to load or was closed too early. Please try again.");
                     });
                 }
             } catch (e) {
@@ -2384,15 +2386,15 @@
                             let data = JSON.parse(localStorage.getItem(storageKey)) || { count: 0, date: new Date().toLocaleDateString() };
                             data.count++;
                             localStorage.setItem(storageKey, JSON.stringify(data));
-                            tg.showAlert("✅ ဂုဏ်ယူပါတယ်။ အမှတ်  ရရှိပါပြီ။");
+                            tg.showAlert("✅ Congratulations! You've earned points from the daily task.");
                             updateQuickTaskUI();
                             if (typeof initApp === "function") initApp();
                         } else {
                             // --- ဒီနေရာမှာ User ကို Pop-up ပြပါမယ် ---
-                            tg.showAlert(result.error || "အမှားတစ်ခုရှိနေပါသည်။");
+                            tg.showAlert(result.error || "An error occurred while processing your request.");
                         }
                     } catch (e) {
-                        tg.showAlert("Connection Error: အင်တာနက်ကို စစ်ဆေးပေးပါ။");
+                        tg.showAlert("Connection Error: Unable to verify task completion. Please try again later.");
                     } finally {
                         btn.innerText = originalText;
                         btn.disabled = false;
@@ -2411,7 +2413,7 @@
             // ၂ မိနစ် Cooldown ထားပါမယ် (Popup က ခဏခဏပေါ်ရင် User စိတ်ညစ်တတ်လို့ပါ)
             if (currentTime - lastPopupTime < 120000) {
                 const timeLeft = Math.ceil((120000 - (currentTime - lastPopupTime)) / 1000);
-                tg.showAlert(`⚠️ Popup အတွက် ${timeLeft} စက္ကန့် ခဏစောင့်ပေးပါ။`);
+                tg.showAlert(`⚠️ Please wait ${timeLeft} seconds before viewing another popup.`);
                 return;
             }
 
@@ -2433,16 +2435,16 @@
                         const result = await res.json();
 
                         if (res.ok) {
-                            tg.showAlert('✅ ဂုဏ်ယူပါတယ်။ ကြော်ငြာကြည့်ပြီးလို့ အမှတ် ၁၅ ရရှိပါပြီ။');
+                            tg.showAlert('✅ concratulations! You earned points from the popup ad (15 points).');
                             if (typeof initApp === "function") initApp();
                         } else {
                             // မြန်လွန်းနေရင် သတိပေးစာ ပြမယ်
-                            tg.showAlert(result.error || "အရမ်းမြန်လွန်းနေပါတယ် ads ကြည့်ပြီးမှ အမှတ်တိုးပေးမှာ ဖြစ်ပါတယ်။ ဖြေးဖြေးနဲ့မှန်မှန်ကြည့်ပါ။");
+                            tg.showAlert(result.error || "Too fast! Please take it slow and steady. Points will be awarded after properly viewing the ad.");
                         }
 
                     }).catch(e => {
                         console.error("Popup Error:", e);
-                        tg.showAlert("⚠️ ကြော်ငြာပြသရန် အဆင်မပြေသေးပါ။");
+                        tg.showAlert("⚠️ Popup ad cannot be displayed at the moment.");
                     });
                 }
             } catch (err) {
@@ -2473,7 +2475,7 @@
                 const grid = document.getElementById('garden-grid');
 
                 if (!plants || plants.length === 0) {
-                    grid.innerHTML = `<div class="col-span-2 text-center py-10 text-slate-500 text-sm">စိုက်ထားသော အပင်မရှိသေးပါ။ မျိုးစေ့ဝယ်ယူပါ။</div>`;
+                    grid.innerHTML = `<div class="col-span-2 text-center py-10 text-slate-500 text-sm">No plants in your garden yet. Start by buying a seed!</div>`;
                     return;
                 }
 
@@ -2523,12 +2525,12 @@
             const resPlants = await fetch(`${backendUrl}/api/get-my-plants?userId=${userId}`);
             const plants = await resPlants.json();
             if (plants && plants.length >= 10) {
-                tg.showAlert("⚠️ အပင် ၁၀ ပင်ထက်ပို၍ စိုက်ပျိုးခွင့်မရှိပါ။");
+                tg.showAlert("Maximum limit reached! You can only have 10 plants.");
                 return;
             }
 
             // confirm(...) အစား tg.showConfirm သုံးခြင်း
-            tg.showConfirm("မျိုးစေ့ဝယ်ရန် 18,000 Pts သုံးစွဲမှာ သေချာပါသလား?", async (isConfirmed) => {
+            tg.showConfirm("Are you sure you want to spend 18,000 Pts to buy a seed?", async (isConfirmed) => {
                 if (isConfirmed) {
                     try {
                         const res = await fetch(`${backendUrl}/api/buy-seed-points`, {
@@ -2537,13 +2539,13 @@
                             body: JSON.stringify({ userId })
                         });
                         if (res.ok) {
-                            tg.showAlert("✅ မျိုးစေ့ဝယ်ယူမှု အောင်မြင်ပါသည်။");
+                            tg.showAlert("✅Seed purchased successfully! Your plant has been added to the garden. ");
                             document.getElementById('seed-modal').classList.add('hidden');
                             initApp();
                             loadGarden();
                         } else {
                             const err = await res.json();
-                            tg.showAlert("❌ " + (err.error || "မအောင်မြင်ပါ"));
+                            tg.showAlert("❌ " + (err.error || "❌ Purchase Failed: Please try again later."));
                         }
                     } catch (e) { tg.showAlert("Connection error."); }
                 }
@@ -2555,13 +2557,13 @@
             const currentPlantsRes = await fetch(`${backendUrl}/api/get-my-plants?userId=${userId}`);
             const currentPlants = await currentPlantsRes.json();
             if (currentPlants && currentPlants.length >= 10) {
-                tg.showAlert("⚠️ အပင် ၁၀ ပင်ထက်ပို၍ စိုက်ပျိုးခွင့်မရှိပါ။");
+                tg.showAlert("⚠️ Maximum limit reached! You can only have 10 plants.");
                 return;
             }
 
             const method = document.getElementById('cash-method').value;
             const txnId = document.getElementById('cash-txn').value;
-            if (!txnId) return tg.showAlert("ငွေလွဲသူအမည် သို့မဟုတ် ဖုန်းနံပါတ်နှောက်ဆုံး ၄ လုံး ထည့်ပါ။");
+            if (!txnId) return tg.showAlert("Sender Name or Last 4 digits of phone number is required.");
 
             try {
                 const res = await fetch(`${backendUrl}/api/request-seed-cash`, {
@@ -2570,7 +2572,7 @@
                     body: JSON.stringify({ userId, userName: userData.name, method, txnId })
                 });
                 if (res.ok) {
-                    tg.showAlert("📩 တောင်းဆိုမှု ပေးပို့ပြီးပါပြီ။ Admin မှ စစ်ဆေးပြီးလျှင် အပင်စာရင်းထဲ ရောက်လာပါမည်။");
+                    tg.showAlert("📩 Request submitted successfully! Admin will review it and add the plants to your garden.");
                     document.getElementById('seed-modal').classList.add('hidden');
                     document.getElementById('cash-txn').value = "";
                 }
@@ -2591,12 +2593,12 @@
                     });
                     if (res.ok) { loadGarden(); }
                 }).catch(() => {
-                    tg.showAlert("ကြော်ငြာပြသရန် အဆင်မပြေပါ။ ခဏနေမှ ပြန်ကြိုးစားပါ။");
+                    tg.showAlert("Unable to load ads. Please try again shortly.");
                     btn.disabled = false;
                     btn.innerText = oldText;
                 });
             } else {
-                tg.showAlert("ကြော်ငြာစနစ် မဆွဲရသေးပါ။");
+                tg.showAlert("Unable to load ads. Please try again shortly.");
                 btn.disabled = false;
                 btn.innerText = oldText;
             }
@@ -2610,7 +2612,7 @@
                     body: JSON.stringify({ userId, plantId })
                 });
                 if (res.ok) {
-                    tg.showAlert("🎉 ဂုဏ်ယူပါတယ်။ အသီးခူးပြီး $0.25000  ရရှိပါပြီ။");
+                    tg.showAlert("congrats! You harvested your plant and earned $0.25! (Test Mode)");
                     initApp();
                     loadGarden();
                 }
