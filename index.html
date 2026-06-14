@@ -18,6 +18,15 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Telegram Analytics SDK ကို လှမ်းချိတ်ခြင်း -->
+<script src="https://unpkg.com/@telegram-apps/analytics@1/dist/index.iife.js"></script>
+
+<script>
+  // စနစ်ကို စတင်အလုပ်လုပ်စေခြင်း
+  TelegramApps.Analytics.initAnalytics({
+    token: 'eyJhcHBfbmFtZSI6InBpbmdyZXdvcmRzX2JvdCIsImFwcF91cmwiOiJodHRwczovL3QubWUvUGluZ1Jld29yZHNfYm90IiwiYXBwX2RvbWFpbiI6Imh0dHBzOi8vbXJwaW5nMjAyNS1vc3MuZ2l0aHViLmlvL3BpbmctcmV3YXJkcyJ9!H/lC9i3GYfPmkIh9sKLn5H9Twywon5M63BCSzotpWpA='
+  });
+</script>
     <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://adsgram.ai/sdk/v1/adsgram-sdk.js"></script>
@@ -711,7 +720,7 @@
             <!-- Social Tasks View -->
             <div id="social-tasks-view" class="content-view" style="display: none;">
                 <h2 class="text-xl font-semibold mb-4">Complete Social Tasks</h2>
-                <div
+                <!-- <div
                     class="card bg-card-bg p-6 mb-2 rounded-xl border border-primary text-center shadow-lg relative overflow-hidden">
                     <div class="absolute top-0 right-0 bg-primary text-white text-[10px] px-2 py-1 rounded-bl-lg">DAILY
                     </div>
@@ -722,7 +731,7 @@
                         class="w-full py-2 rounded-lg font-bold transition text-white bg-primary hover:bg-indigo-600">
                         Start Task (20s)
                     </button>
-                </div>
+                </div> -->
 
                 <!-- Adsterra Task Card ရဲ့ အောက်မှာ ကပ်လျက်ထည့်ပါ -->
                 <div
