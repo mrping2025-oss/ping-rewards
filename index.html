@@ -2275,57 +2275,77 @@
             }
         }
 
-        // Monetag အတွက် Cooldown သိမ်းမည့် variable
-        let lastAdTime = 0;
+    
+        let lastAdTime = 0; // Cooldown အတွက်
 
         async function showMonetagAd(event) {
             const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "1856743644";
             const currentTime = Date.now();
-            if (currentTime - lastAdTime < 60000) {
-                const timeLeft = Math.ceil((60000 - (currentTime - lastAdTime)) / 1000);
-                tg.showAlert(`⚠️ Please wait ${timeLeft} seconds before watching another ad.`);
+            const directAdLink = "https://omg10.com/4/11208853";
+            
+            // ၅ မိနစ် Cooldown (၃၀၀,၀၀၀ မီလီစက္ကန့်)
+            const bonusCooldown = 200000; 
+
+            if (currentTime - lastAdTime < bonusCooldown) {
+                const timeLeft = Math.ceil((bonusCooldown - (currentTime - lastAdTime)) / 1000);
+                const mins = Math.floor(timeLeft / 60);
+                const secs = timeLeft % 60;
+                tg.showAlert(`⚠️ Please wait ${mins}m ${secs}s before watching another bonus ad.`);
                 return;
             }
 
             const btn = event.currentTarget;
             if (btn) btn.disabled = true;
+            const originalText = btn.innerHTML; // မူလ Button စာသားကို မှတ်ထားမယ်
 
             try {
-                if (typeof show_11105329 === 'function') {
-                    show_11105329().then(async () => {
-                        lastAdTime = Date.now();
-
-                        const res = await fetch(`${backendUrl}/api/award-points`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                userId: userId,
-                                amount: 20,
-                                desc: "Monetag: Watched Bonus Ad"
-                            })
-                        });
-
-                        const result = await res.json();
-
-                        if (res.ok) {
-                            tg.showAlert('✅ Congratulations! You\'ve earned points from the bonus ad (20 points).');
-                            if (typeof initApp === "function") initApp();
-                        } else {
-                            // မြန်လွန်းနေရင် ဒီမှာ သတိပေးစာ ပြပါမယ်
-                            tg.showAlert(result.error || "too fast! Please watch the ad completely to earn points.");
-                        }
-
-                    }).catch(err => {
-                        console.error("Monetag Error:", err);
-                        tg.showAlert("⚠️ Ad failed to load or was closed too early. Please try again.");
-                    });
+                // ၁။ Link ကို အရင်ဖွင့်မယ်
+                if (window.Telegram && window.Telegram.WebApp) {
+                    window.Telegram.WebApp.openLink(directAdLink);
+                } else {
+                    window.open(directAdLink, '_blank');
                 }
+
+                // ၂။ Verifying အဆင့် (၅ စက္ကန့်လောက် စောင့်ခိုင်းတဲ့ ပုံစံမျိုး လုပ်ပါမယ်)
+                btn.innerHTML = "Verifying...";
+                
+                setTimeout(async () => {
+                    // ၃။ Backend ဆီ Point တောင်းမယ်
+                    const res = await fetch(`${backendUrl}/api/award-points`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            userId: userId,
+                            amount: 20, // ၂၀ points
+                            desc: "Bonus Ad: Clicked Direct Link"
+                        })
+                    });
+
+                    if (res.ok) {
+                        lastAdTime = Date.now(); // အောင်မြင်မှ အချိန်စမှတ်မယ်
+                        tg.showAlert('✅ Congratulations! You\'ve earned 20 points from the bonus ad.');
+                        if (typeof initApp === "function") initApp();
+                    } else {
+                        const result = await res.json();
+                        tg.showAlert(result.error || "Verification failed. Please try again.");
+                    }
+                    
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.innerHTML = originalText;
+                    }
+                }, 5000); // ၅ စက္ကန့်ကြာရင် အမှတ်ပေးမယ်
+
             } catch (e) {
                 console.error(e);
-            } finally {
-                if (btn) btn.disabled = false;
+                tg.showAlert("⚠️ Connection Error. Please try again.");
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
             }
         }
+        
         // Daily Limit အတွက် Variables များ
         let quickTaskLimit = 10;
         let storageKey = "quick_task_data";
